@@ -9,6 +9,7 @@ This application was generated using JHipster 8.7.3 for the team project 2024-20
    - Muhammed Nawfal Fareed Jaman mnf350@student.bham.ac.uk
    - Rohit Mamtora rxm631@student.bham.ac.uk
    - Eashan Nirav Nair EXS415@student.bham.ac.uk
+   - Hasaan Afroze hxa402@student.bham.ac.uk
 
 
 
