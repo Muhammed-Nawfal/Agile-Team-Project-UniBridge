@@ -2,7 +2,7 @@
 
 This application was generated using JHipster 8.7.3 for the team project 2024-2025 module at the university of Birmingham.
 
-# Team X
+# Team 32
 
 TODO:
 
@@ -10,7 +10,7 @@ TODO:
 
 2. Add your name below:
 
-   - Alice S. example@student.bham.ac.uk
+   - Muhammed Nawfal Fareed Jaman mnf350@student.bham.ac.uk
    - Bob S. example@student.bham.ac.uk
    - <!-- this is a comment: delete this (and Alice and Bob), add your name and email  -->
 
