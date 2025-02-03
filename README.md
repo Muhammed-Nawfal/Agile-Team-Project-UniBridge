@@ -4,15 +4,12 @@ This application was generated using JHipster 8.7.3 for the team project 2024-20
 
 # Team 32
 
-TODO:
-
-1. Add your team number above (replace X)
-
 2. Add your name below:
 
    - Muhammed Nawfal Fareed Jaman mnf350@student.bham.ac.uk
-   - Bob S. example@student.bham.ac.uk
-   - <!-- this is a comment: delete this (and Alice and Bob), add your name and email  -->
+   -	
+
+
 
 3. Modify [gdpr-policy.component.html](src/main/webapp/app/gdpr-policy/gdpr-policy.component.html) to add your team number (replace X) and team members to the contact section.
 
