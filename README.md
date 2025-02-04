@@ -13,6 +13,7 @@ This application was generated using JHipster 8.7.3 for the team project 2024-20
    - Ou Kai Ying kxo476@student.bham.ac.uk
    - Aarij Khan axk1327@student.bham.ac.uk
    - Dorian Alsop cxa339@student.bham.ac.uk
+   - Saw Yin Rui YXS518@student.bham.ac.uk
 
 
 
