@@ -11,6 +11,7 @@ This application was generated using JHipster 8.7.3 for the team project 2024-20
    - Eashan Nirav Nair EXS415@student.bham.ac.uk
    - Hasaan Afroze hxa402@student.bham.ac.uk
    - Ou Kai Ying kxo476@student.bham.ac.uk
+   - Aarij Khan axk1327@student.bham.ac.uk
 
 
 
