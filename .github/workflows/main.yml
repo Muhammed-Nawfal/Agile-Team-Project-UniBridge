@@ -175,7 +175,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up SSH key for connection
+      # Set up SSH key for  connection
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
