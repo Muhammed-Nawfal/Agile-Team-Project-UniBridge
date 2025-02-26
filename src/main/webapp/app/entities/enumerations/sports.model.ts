@@ -1,0 +1,11 @@
+export enum Sports {
+  FOOTBALL = 'FOOTBALL',
+
+  CRICKET = 'CRICKET',
+
+  BADMINTON = 'BADMINTON',
+
+  TENNIS = 'TENNIS',
+
+  NETBALL = 'NETBALL',
+}

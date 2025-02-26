@@ -1,0 +1,69 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170643"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "bookingName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "bookingStatus",
+      "fieldType": "Status",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "ANNOUNCED,CURRENTLY_HAPPENING,FINISHED,CANCELED"
+    },
+    {
+      "fieldName": "bookingTime",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "bookingDate",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "phoneNum",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "minlength", "maxlength"],
+      "fieldValidateRulesMaxlength": "11",
+      "fieldValidateRulesMinlength": "11"
+    },
+    {
+      "fieldName": "bookingType",
+      "fieldType": "BookingType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "FOOTBALL_PITCH,TENNIS_COURT,BASKETBALL_COURT,STUDY_SPACES,EVENT_ROOMS,DOJO,SWIMMING_POOL,SQUASH_COURT"
+    },
+    {
+      "fieldName": "numOfParticipants",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "1"
+    },
+    {
+      "fieldName": "bookStartTime",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "bookEndTime",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Booking",
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "relationshipName": "requestedUser",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    }
+  ],
+  "searchEngine": "no"
+}

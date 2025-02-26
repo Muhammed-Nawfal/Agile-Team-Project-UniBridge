@@ -1,0 +1,52 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (friendsList(); as friendsListRef) {
+      <div>
+        <h2 data-cy="friendsListDetailsHeading"><span>Friends List</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ friendsListRef.id }}</span>
+          </dd>
+          <dt><span>Friend Request</span></dt>
+          <dd>
+            <span>{{
+              { null: '', ACCEPT: 'ACCEPT', DECLINED: 'DECLINED', PENDING: 'PENDING' }[friendsListRef.friendRequest ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span>Friend Since</span></dt>
+          <dd>
+            <span>{{ friendsListRef.friendSince | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>User Id</span></dt>
+          <dd>
+            @for (userId of friendsListRef.userIds; track $index; let last = $last) {
+              <span> {{ userId.id }}{{ last ? '' : ', ' }} </span>
+            }
+          </dd>
+          <dt><span>Friend Id</span></dt>
+          <dd>
+            @for (friendId of friendsListRef.friendIds; track $index; let last = $last) {
+              <span> {{ friendId.id }}{{ last ? '' : ', ' }} </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/friends-list', friendsListRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

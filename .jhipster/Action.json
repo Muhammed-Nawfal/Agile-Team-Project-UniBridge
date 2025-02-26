@@ -1,0 +1,37 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170649"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "type",
+      "fieldType": "ActionType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "UNMATCH,REPORT"
+    },
+    {
+      "fieldName": "timestamp",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Action",
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "relationshipName": "performedByID",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    },
+    {
+      "otherEntityName": "user",
+      "relationshipName": "targetUserID",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    }
+  ],
+  "searchEngine": "no"
+}

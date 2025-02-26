@@ -1,0 +1,36 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170648"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "message",
+      "fieldType": "TextBlob",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "timestamp",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Chat",
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "relationshipName": "senderID",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    },
+    {
+      "otherEntityName": "user",
+      "relationshipName": "recieverID",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    }
+  ],
+  "searchEngine": "no"
+}

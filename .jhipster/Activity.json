@@ -1,0 +1,95 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170641"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "activityName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "minlength", "maxlength"],
+      "fieldValidateRulesMaxlength": "120",
+      "fieldValidateRulesMinlength": "1"
+    },
+    {
+      "fieldName": "activityType",
+      "fieldType": "ActivityType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "SOCIAL,ACADEMIC,SPORTS,GYM,OTHER"
+    },
+    {
+      "fieldName": "activityDate",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "numberOfParticipants",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "maxNumberOfParticipants",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "2"
+    },
+    {
+      "fieldName": "location",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "maxlength"],
+      "fieldValidateRulesMaxlength": "95"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "createdOn",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "updatedOn",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "Status",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "ANNOUNCED,CURRENTLY_HAPPENING,FINISHED,CANCELED"
+    },
+    {
+      "fieldName": "coverImage",
+      "fieldType": "ImageBlob"
+    },
+    {
+      "fieldName": "paid",
+      "fieldType": "IsPaid",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "PAID,NOTPAID"
+    },
+    {
+      "fieldName": "costOfactivity",
+      "fieldType": "BigDecimal",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Activity",
+  "relationships": [
+    {
+      "otherEntityName": "booking",
+      "relationshipName": "booking",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "user",
+      "relationshipName": "requesteduser",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    }
+  ],
+  "searchEngine": "no"
+}

@@ -1,0 +1,188 @@
+package bham.team.web.rest;
+
+import bham.team.domain.FriendsList;
+import bham.team.repository.FriendsListRepository;
+import bham.team.web.rest.errors.BadRequestAlertException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.ResponseUtil;
+
+/**
+ * REST controller for managing {@link bham.team.domain.FriendsList}.
+ */
+@RestController
+@RequestMapping("/api/friends-lists")
+@Transactional
+public class FriendsListResource {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FriendsListResource.class);
+
+    private static final String ENTITY_NAME = "friendsList";
+
+    @Value("${jhipster.clientApp.name}")
+    private String applicationName;
+
+    private final FriendsListRepository friendsListRepository;
+
+    public FriendsListResource(FriendsListRepository friendsListRepository) {
+        this.friendsListRepository = friendsListRepository;
+    }
+
+    /**
+     * {@code POST  /friends-lists} : Create a new friendsList.
+     *
+     * @param friendsList the friendsList to create.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new friendsList, or with status {@code 400 (Bad Request)} if the friendsList has already an ID.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PostMapping("")
+    public ResponseEntity<FriendsList> createFriendsList(@Valid @RequestBody FriendsList friendsList) throws URISyntaxException {
+        LOG.debug("REST request to save FriendsList : {}", friendsList);
+        if (friendsList.getId() != null) {
+            throw new BadRequestAlertException("A new friendsList cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+        friendsList = friendsListRepository.save(friendsList);
+        return ResponseEntity.created(new URI("/api/friends-lists/" + friendsList.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, friendsList.getId().toString()))
+            .body(friendsList);
+    }
+
+    /**
+     * {@code PUT  /friends-lists/:id} : Updates an existing friendsList.
+     *
+     * @param id the id of the friendsList to save.
+     * @param friendsList the friendsList to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated friendsList,
+     * or with status {@code 400 (Bad Request)} if the friendsList is not valid,
+     * or with status {@code 500 (Internal Server Error)} if the friendsList couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<FriendsList> updateFriendsList(
+        @PathVariable(value = "id", required = false) final Long id,
+        @Valid @RequestBody FriendsList friendsList
+    ) throws URISyntaxException {
+        LOG.debug("REST request to update FriendsList : {}, {}", id, friendsList);
+        if (friendsList.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, friendsList.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!friendsListRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        friendsList = friendsListRepository.save(friendsList);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, friendsList.getId().toString()))
+            .body(friendsList);
+    }
+
+    /**
+     * {@code PATCH  /friends-lists/:id} : Partial updates given fields of an existing friendsList, field will ignore if it is null
+     *
+     * @param id the id of the friendsList to save.
+     * @param friendsList the friendsList to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated friendsList,
+     * or with status {@code 400 (Bad Request)} if the friendsList is not valid,
+     * or with status {@code 404 (Not Found)} if the friendsList is not found,
+     * or with status {@code 500 (Internal Server Error)} if the friendsList couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    public ResponseEntity<FriendsList> partialUpdateFriendsList(
+        @PathVariable(value = "id", required = false) final Long id,
+        @NotNull @RequestBody FriendsList friendsList
+    ) throws URISyntaxException {
+        LOG.debug("REST request to partial update FriendsList partially : {}, {}", id, friendsList);
+        if (friendsList.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, friendsList.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!friendsListRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<FriendsList> result = friendsListRepository
+            .findById(friendsList.getId())
+            .map(existingFriendsList -> {
+                if (friendsList.getFriendRequest() != null) {
+                    existingFriendsList.setFriendRequest(friendsList.getFriendRequest());
+                }
+                if (friendsList.getFriendSince() != null) {
+                    existingFriendsList.setFriendSince(friendsList.getFriendSince());
+                }
+
+                return existingFriendsList;
+            })
+            .map(friendsListRepository::save);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, friendsList.getId().toString())
+        );
+    }
+
+    /**
+     * {@code GET  /friends-lists} : get all the friendsLists.
+     *
+     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of friendsLists in body.
+     */
+    @GetMapping("")
+    public List<FriendsList> getAllFriendsLists(
+        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
+    ) {
+        LOG.debug("REST request to get all FriendsLists");
+        if (eagerload) {
+            return friendsListRepository.findAllWithEagerRelationships();
+        } else {
+            return friendsListRepository.findAll();
+        }
+    }
+
+    /**
+     * {@code GET  /friends-lists/:id} : get the "id" friendsList.
+     *
+     * @param id the id of the friendsList to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the friendsList, or with status {@code 404 (Not Found)}.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<FriendsList> getFriendsList(@PathVariable("id") Long id) {
+        LOG.debug("REST request to get FriendsList : {}", id);
+        Optional<FriendsList> friendsList = friendsListRepository.findOneWithEagerRelationships(id);
+        return ResponseUtil.wrapOrNotFound(friendsList);
+    }
+
+    /**
+     * {@code DELETE  /friends-lists/:id} : delete the "id" friendsList.
+     *
+     * @param id the id of the friendsList to delete.
+     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteFriendsList(@PathVariable("id") Long id) {
+        LOG.debug("REST request to delete FriendsList : {}", id);
+        friendsListRepository.deleteById(id);
+        return ResponseEntity.noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
+            .build();
+    }
+}
