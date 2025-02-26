@@ -50,6 +50,19 @@ public class CacheConfiguration {
             createCache(cm, bham.team.domain.User.class.getName());
             createCache(cm, bham.team.domain.Authority.class.getName());
             createCache(cm, bham.team.domain.User.class.getName() + ".authorities");
+            createCache(cm, bham.team.domain.Profile.class.getName());
+            createCache(cm, bham.team.domain.Activity.class.getName());
+            createCache(cm, bham.team.domain.Activity.class.getName() + ".bookings");
+            createCache(cm, bham.team.domain.ActivityMatch.class.getName());
+            createCache(cm, bham.team.domain.Booking.class.getName());
+            createCache(cm, bham.team.domain.Notification.class.getName());
+            createCache(cm, bham.team.domain.FriendsList.class.getName());
+            createCache(cm, bham.team.domain.FriendsList.class.getName() + ".userIds");
+            createCache(cm, bham.team.domain.FriendsList.class.getName() + ".friendIds");
+            createCache(cm, bham.team.domain.Ranking.class.getName());
+            createCache(cm, bham.team.domain.Review.class.getName());
+            createCache(cm, bham.team.domain.Chat.class.getName());
+            createCache(cm, bham.team.domain.Action.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

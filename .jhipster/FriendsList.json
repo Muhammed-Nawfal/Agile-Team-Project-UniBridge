@@ -1,0 +1,37 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170645"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "friendRequest",
+      "fieldType": "Decision",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "ACCEPT,DECLINED,PENDING"
+    },
+    {
+      "fieldName": "friendSince",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "FriendsList",
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "relationshipName": "userId",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many",
+      "relationshipWithBuiltInEntity": true
+    },
+    {
+      "otherEntityName": "user",
+      "relationshipName": "friendId",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many",
+      "relationshipWithBuiltInEntity": true
+    }
+  ],
+  "searchEngine": "no"
+}

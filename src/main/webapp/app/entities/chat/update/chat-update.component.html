@@ -1,0 +1,107 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-chat-heading" data-cy="ChatCreateUpdateHeading">Create or edit a Chat</h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let messageRef = editForm.get('message')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_message">Message</label>
+          <textarea class="form-control" name="message" id="field_message" data-cy="message" formControlName="message"></textarea>
+          @if (messageRef.invalid && (messageRef.dirty || messageRef.touched)) {
+            <div>
+              @if (editForm.get('message')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let timestampRef = editForm.get('timestamp')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_timestamp">Timestamp</label>
+          <div class="d-flex">
+            <input
+              id="field_timestamp"
+              data-cy="timestamp"
+              type="datetime-local"
+              class="form-control"
+              name="timestamp"
+              formControlName="timestamp"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (timestampRef.invalid && (timestampRef.dirty || timestampRef.touched)) {
+            <div>
+              @if (editForm.get('timestamp')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('timestamp')?.errors?.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_senderID">Sender ID</label>
+          <select
+            class="form-control"
+            id="field_senderID"
+            data-cy="senderID"
+            name="senderID"
+            formControlName="senderID"
+            [compareWith]="compareUser"
+          >
+            <option [ngValue]="null"></option>
+            @for (userOption of usersSharedCollection; track $index) {
+              <option [ngValue]="userOption">{{ userOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_recieverID">Reciever ID</label>
+          <select
+            class="form-control"
+            id="field_recieverID"
+            data-cy="recieverID"
+            name="recieverID"
+            formControlName="recieverID"
+            [compareWith]="compareUser"
+          >
+            <option [ngValue]="null"></option>
+            @for (userOption of usersSharedCollection; track $index) {
+              <option [ngValue]="userOption">{{ userOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,46 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (action(); as actionRef) {
+      <div>
+        <h2 data-cy="actionDetailsHeading"><span>Action</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ actionRef.id }}</span>
+          </dd>
+          <dt><span>Type</span></dt>
+          <dd>
+            <span>{{ { null: '', UNMATCH: 'UNMATCH', REPORT: 'REPORT' }[actionRef.type ?? 'null'] }}</span>
+          </dd>
+          <dt><span>Timestamp</span></dt>
+          <dd>
+            <span>{{ actionRef.timestamp | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Performed By ID</span></dt>
+          <dd>
+            <span>{{ actionRef.performedByID?.id }}</span>
+          </dd>
+          <dt><span>Target User ID</span></dt>
+          <dd>
+            <span>{{ actionRef.targetUserID?.id }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/action', actionRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

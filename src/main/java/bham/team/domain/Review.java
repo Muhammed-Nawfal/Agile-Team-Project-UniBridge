@@ -1,0 +1,157 @@
+package bham.team.domain;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.Instant;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+/**
+ * A Review.
+ */
+@Entity
+@Table(name = "review")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@SuppressWarnings("common-java:DuplicatedBlocks")
+public class Review implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
+    @Column(name = "id")
+    private Long id;
+
+    @NotNull
+    @Column(name = "date_published", nullable = false)
+    private Instant datePublished;
+
+    @NotNull
+    @DecimalMin(value = "0")
+    @DecimalMax(value = "5")
+    @Column(name = "star", precision = 21, scale = 2, nullable = false)
+    private BigDecimal star;
+
+    @Size(min = 0, max = 300)
+    @Column(name = "text", length = 300)
+    private String text;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User aboutUser;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User fromUser;
+
+    // jhipster-needle-entity-add-field - JHipster will add fields here
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public Review id(Long id) {
+        this.setId(id);
+        return this;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Instant getDatePublished() {
+        return this.datePublished;
+    }
+
+    public Review datePublished(Instant datePublished) {
+        this.setDatePublished(datePublished);
+        return this;
+    }
+
+    public void setDatePublished(Instant datePublished) {
+        this.datePublished = datePublished;
+    }
+
+    public BigDecimal getStar() {
+        return this.star;
+    }
+
+    public Review star(BigDecimal star) {
+        this.setStar(star);
+        return this;
+    }
+
+    public void setStar(BigDecimal star) {
+        this.star = star;
+    }
+
+    public String getText() {
+        return this.text;
+    }
+
+    public Review text(String text) {
+        this.setText(text);
+        return this;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public User getAboutUser() {
+        return this.aboutUser;
+    }
+
+    public void setAboutUser(User user) {
+        this.aboutUser = user;
+    }
+
+    public Review aboutUser(User user) {
+        this.setAboutUser(user);
+        return this;
+    }
+
+    public User getFromUser() {
+        return this.fromUser;
+    }
+
+    public void setFromUser(User user) {
+        this.fromUser = user;
+    }
+
+    public Review fromUser(User user) {
+        this.setFromUser(user);
+        return this;
+    }
+
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Review)) {
+            return false;
+        }
+        return getId() != null && getId().equals(((Review) o).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
+    }
+
+    // prettier-ignore
+    @Override
+    public String toString() {
+        return "Review{" +
+            "id=" + getId() +
+            ", datePublished='" + getDatePublished() + "'" +
+            ", star=" + getStar() +
+            ", text='" + getText() + "'" +
+            "}";
+    }
+}

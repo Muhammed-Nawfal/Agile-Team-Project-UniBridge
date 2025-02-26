@@ -1,0 +1,49 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170644"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "notificationType",
+      "fieldType": "Notificationstype",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "NEW_CHAT_MESSAGE,FRIEND_REQUEST,ACTIVITY_MATCH,BOOKING_CONFIRMATION"
+    },
+    {
+      "fieldName": "title",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "minlength", "maxlength"],
+      "fieldValidateRulesMaxlength": "255",
+      "fieldValidateRulesMinlength": "1"
+    },
+    {
+      "fieldName": "message",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "minlength", "maxlength"],
+      "fieldValidateRulesMaxlength": "1000",
+      "fieldValidateRulesMinlength": "1"
+    },
+    {
+      "fieldName": "timestamp",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "isRead",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Notification",
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "relationshipName": "userID",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    }
+  ],
+  "searchEngine": "no"
+}

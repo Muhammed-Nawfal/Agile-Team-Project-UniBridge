@@ -1,0 +1,105 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (activity(); as activityRef) {
+      <div>
+        <h2 data-cy="activityDetailsHeading"><span>Activity</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ activityRef.id }}</span>
+          </dd>
+          <dt><span>Activity Name</span></dt>
+          <dd>
+            <span>{{ activityRef.activityName }}</span>
+          </dd>
+          <dt><span>Activity Type</span></dt>
+          <dd>
+            <span>{{
+              { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[
+                activityRef.activityType ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span>Activity Date</span></dt>
+          <dd>
+            <span>{{ activityRef.activityDate | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Number Of Participants</span></dt>
+          <dd>
+            <span>{{ activityRef.numberOfParticipants }}</span>
+          </dd>
+          <dt><span>Max Number Of Participants</span></dt>
+          <dd>
+            <span>{{ activityRef.maxNumberOfParticipants }}</span>
+          </dd>
+          <dt><span>Location</span></dt>
+          <dd>
+            <span>{{ activityRef.location }}</span>
+          </dd>
+          <dt><span>Description</span></dt>
+          <dd>
+            <span>{{ activityRef.description }}</span>
+          </dd>
+          <dt><span>Created On</span></dt>
+          <dd>
+            <span>{{ activityRef.createdOn | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Updated On</span></dt>
+          <dd>
+            <span>{{ activityRef.updatedOn | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Status</span></dt>
+          <dd>
+            <span>{{
+              { null: '', ANNOUNCED: 'ANNOUNCED', CURRENTLY_HAPPENING: 'CURRENTLY_HAPPENING', FINISHED: 'FINISHED', CANCELED: 'CANCELED' }[
+                activityRef.status ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span>Cover Image</span></dt>
+          <dd>
+            @if (activityRef.coverImage) {
+              <div>
+                <a (click)="openFile(activityRef.coverImage ?? '', activityRef.coverImageContentType)">
+                  <img
+                    [src]="'data:' + activityRef.coverImageContentType + ';base64,' + activityRef.coverImage"
+                    style="max-width: 100%"
+                    alt="activity"
+                  />
+                </a>
+                {{ activityRef.coverImageContentType }}, {{ byteSize(activityRef.coverImage ?? '') }}
+              </div>
+            }
+          </dd>
+          <dt><span>Paid</span></dt>
+          <dd>
+            <span>{{ { null: '', PAID: 'PAID', NOTPAID: 'NOTPAID' }[activityRef.paid ?? 'null'] }}</span>
+          </dd>
+          <dt><span>Cost Ofactivity</span></dt>
+          <dd>
+            <span>{{ activityRef.costOfactivity }}</span>
+          </dd>
+          <dt><span>Requesteduser</span></dt>
+          <dd>
+            <span>{{ activityRef.requesteduser?.id }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/activity', activityRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>
