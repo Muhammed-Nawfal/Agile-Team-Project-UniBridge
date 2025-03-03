@@ -1,6 +1,6 @@
 <div>
   <h2 id="page-heading" data-cy="ReviewHeading">
-    <span>Reviews</span>
+    <span>User Reviews</span>
 
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
@@ -15,7 +15,7 @@
         [routerLink]="['/review/new']"
       >
         <fa-icon icon="plus"></fa-icon>
-        <span>Create a new Review</span>
+        <span>Submit review</span>
       </button>
     </div>
   </h2>
@@ -35,13 +35,6 @@
       <table class="table table-striped" aria-describedby="page-heading">
         <thead>
           <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
             <th scope="col" jhiSortBy="datePublished">
               <div class="d-flex">
                 <span>Date Published</span>
@@ -81,9 +74,6 @@
         <tbody>
           @for (review of reviews; track trackId(review)) {
             <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/review', review.id, 'view']">{{ review.id }}</a>
-              </td>
               <td>{{ review.datePublished | formatMediumDatetime }}</td>
               <td>{{ review.star }}</td>
               <td>{{ review.text }}</td>
@@ -95,17 +85,8 @@
               </td>
               <td class="text-end">
                 <div class="btn-group">
-                  <a [routerLink]="['/review', review.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                    <fa-icon icon="eye"></fa-icon>
-                    <span class="d-none d-md-inline">View</span>
-                  </a>
-
-                  <a [routerLink]="['/review', review.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline">Edit</span>
-                  </a>
-
                   <button type="submit" (click)="delete(review)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <!--if user = fromUser then delete else not your review. actually else button not shown-->
                     <fa-icon icon="times"></fa-icon>
                     <span class="d-none d-md-inline">Delete</span>
                   </button>
