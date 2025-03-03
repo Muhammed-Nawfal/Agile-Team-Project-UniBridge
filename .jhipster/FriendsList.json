@@ -20,16 +20,16 @@
   "relationships": [
     {
       "otherEntityName": "user",
-      "relationshipName": "userId",
+      "relationshipName": "user",
       "relationshipSide": "left",
-      "relationshipType": "many-to-many",
+      "relationshipType": "many-to-one",
       "relationshipWithBuiltInEntity": true
     },
     {
       "otherEntityName": "user",
-      "relationshipName": "friendId",
+      "relationshipName": "friend",
       "relationshipSide": "left",
-      "relationshipType": "many-to-many",
+      "relationshipType": "many-to-one",
       "relationshipWithBuiltInEntity": true
     }
   ],
