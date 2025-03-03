@@ -1,6 +1,15 @@
+<style>
+  table,
+  th,
+  td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+</style>
+
 <div>
   <h2 id="page-heading" data-cy="ReviewHeading">
-    <span>User Reviews</span>
+    <span>[User] Reviews</span>
 
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
@@ -31,7 +40,7 @@
   }
 
   @if (reviews && reviews.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
+    <div class="table-responsive table-reviews" id="reviews" style="overflow-y: auto">
       <table class="table table-striped" aria-describedby="page-heading">
         <thead>
           <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
@@ -42,23 +51,17 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="star">
+            <th scope="col" jhiSortBy="star" width="5%">
               <div class="d-flex">
                 <span>Star</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="text">
+            <th scope="col" jhiSortBy="text" width="50%">
               <div class="d-flex">
                 <span>Text</span>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="aboutUser.id">
-              <div class="d-flex">
-                <span>About User</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
@@ -77,9 +80,6 @@
               <td>{{ review.datePublished | formatMediumDatetime }}</td>
               <td>{{ review.star }}</td>
               <td>{{ review.text }}</td>
-              <td>
-                {{ review.aboutUser?.id }}
-              </td>
               <td>
                 {{ review.fromUser?.id }}
               </td>
