@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   selector: 'jhi-friends-list',
   templateUrl: './friends-list.component.html',
+  styleUrls: ['./friends-list.component.scss'],
   imports: [CommonModule, FormsModule],
 })
 export class FriendsListComponent implements OnInit {
@@ -67,7 +68,7 @@ export class FriendsListComponent implements OnInit {
 
   // Shows friend requests alert
   viewFriendRequests(): void {
-    alert(`Viewing friend requests`);
+    alert('Viewing friend requests');
   }
 
   // Placeholder avatar URLs
