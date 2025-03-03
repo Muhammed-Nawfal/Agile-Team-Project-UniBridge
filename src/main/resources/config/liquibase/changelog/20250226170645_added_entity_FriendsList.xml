@@ -20,34 +20,15 @@
             <column name="friend_since" type="${datetimeType}">
                 <constraints nullable="false" />
             </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="friend_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
         <dropDefaultValue tableName="friends_list" columnName="friend_since" columnDataType="${datetimeType}"/>
-    </changeSet>
-
-    <changeSet id="20250226170645-1-relations" author="jhipster">
-
-        <createTable tableName="rel_friends_list__user_id">
-            <column name="user_id_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="friends_list_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addPrimaryKey columnNames="friends_list_id, user_id_id" tableName="rel_friends_list__user_id"/>
-
-        <createTable tableName="rel_friends_list__friend_id">
-            <column name="friend_id_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="friends_list_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addPrimaryKey columnNames="friends_list_id, friend_id_id" tableName="rel_friends_list__friend_id"/>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->

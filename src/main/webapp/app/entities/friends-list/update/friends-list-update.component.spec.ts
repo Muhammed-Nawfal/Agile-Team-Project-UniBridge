@@ -49,14 +49,14 @@ describe('FriendsList Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call User query and add missing value', () => {
       const friendsList: IFriendsList = { id: 456 };
-      const userIds: IUser[] = [{ id: 925 }];
-      friendsList.userIds = userIds;
-      const friendIds: IUser[] = [{ id: 21422 }];
-      friendsList.friendIds = friendIds;
+      const user: IUser = { id: 925 };
+      friendsList.user = user;
+      const friend: IUser = { id: 21422 };
+      friendsList.friend = friend;
 
       const userCollection: IUser[] = [{ id: 30357 }];
       jest.spyOn(userService, 'query').mockReturnValue(of(new HttpResponse({ body: userCollection })));
-      const additionalUsers = [...userIds, ...friendIds];
+      const additionalUsers = [user, friend];
       const expectedCollection: IUser[] = [...additionalUsers, ...userCollection];
       jest.spyOn(userService, 'addUserToCollectionIfMissing').mockReturnValue(expectedCollection);
 
@@ -73,16 +73,16 @@ describe('FriendsList Management Update Component', () => {
 
     it('Should update editForm', () => {
       const friendsList: IFriendsList = { id: 456 };
-      const userId: IUser = { id: 19295 };
-      friendsList.userIds = [userId];
-      const friendId: IUser = { id: 30091 };
-      friendsList.friendIds = [friendId];
+      const user: IUser = { id: 19295 };
+      friendsList.user = user;
+      const friend: IUser = { id: 30091 };
+      friendsList.friend = friend;
 
       activatedRoute.data = of({ friendsList });
       comp.ngOnInit();
 
-      expect(comp.usersSharedCollection).toContain(userId);
-      expect(comp.usersSharedCollection).toContain(friendId);
+      expect(comp.usersSharedCollection).toContain(user);
+      expect(comp.usersSharedCollection).toContain(friend);
       expect(comp.friendsList).toEqual(friendsList);
     });
   });

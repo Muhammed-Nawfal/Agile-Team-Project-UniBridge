@@ -27,14 +27,14 @@ type FriendsListFormRawValue = FormValueOf<IFriendsList>;
 
 type NewFriendsListFormRawValue = FormValueOf<NewFriendsList>;
 
-type FriendsListFormDefaults = Pick<NewFriendsList, 'id' | 'friendSince' | 'userIds' | 'friendIds'>;
+type FriendsListFormDefaults = Pick<NewFriendsList, 'id' | 'friendSince'>;
 
 type FriendsListFormGroupContent = {
   id: FormControl<FriendsListFormRawValue['id'] | NewFriendsList['id']>;
   friendRequest: FormControl<FriendsListFormRawValue['friendRequest']>;
   friendSince: FormControl<FriendsListFormRawValue['friendSince']>;
-  userIds: FormControl<FriendsListFormRawValue['userIds']>;
-  friendIds: FormControl<FriendsListFormRawValue['friendIds']>;
+  user: FormControl<FriendsListFormRawValue['user']>;
+  friend: FormControl<FriendsListFormRawValue['friend']>;
 };
 
 export type FriendsListFormGroup = FormGroup<FriendsListFormGroupContent>;
@@ -60,8 +60,8 @@ export class FriendsListFormService {
       friendSince: new FormControl(friendsListRawValue.friendSince, {
         validators: [Validators.required],
       }),
-      userIds: new FormControl(friendsListRawValue.userIds ?? []),
-      friendIds: new FormControl(friendsListRawValue.friendIds ?? []),
+      user: new FormControl(friendsListRawValue.user),
+      friend: new FormControl(friendsListRawValue.friend),
     });
   }
 
@@ -85,8 +85,6 @@ export class FriendsListFormService {
     return {
       id: null,
       friendSince: currentTime,
-      userIds: [],
-      friendIds: [],
     };
   }
 
@@ -105,8 +103,6 @@ export class FriendsListFormService {
     return {
       ...friendsList,
       friendSince: friendsList.friendSince ? friendsList.friendSince.format(DATE_TIME_FORMAT) : undefined,
-      userIds: friendsList.userIds ?? [],
-      friendIds: friendsList.friendIds ?? [],
     };
   }
 }

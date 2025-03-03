@@ -22,8 +22,8 @@ describe('FriendsList Form Service', () => {
             id: expect.any(Object),
             friendRequest: expect.any(Object),
             friendSince: expect.any(Object),
-            userIds: expect.any(Object),
-            friendIds: expect.any(Object),
+            user: expect.any(Object),
+            friend: expect.any(Object),
           }),
         );
       });
@@ -36,8 +36,8 @@ describe('FriendsList Form Service', () => {
             id: expect.any(Object),
             friendRequest: expect.any(Object),
             friendSince: expect.any(Object),
-            userIds: expect.any(Object),
-            friendIds: expect.any(Object),
+            user: expect.any(Object),
+            friend: expect.any(Object),
           }),
         );
       });

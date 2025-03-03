@@ -25,17 +25,13 @@
           <dd>
             <span>{{ friendsListRef.friendSince | formatMediumDatetime }}</span>
           </dd>
-          <dt><span>User Id</span></dt>
+          <dt><span>User</span></dt>
           <dd>
-            @for (userId of friendsListRef.userIds; track $index; let last = $last) {
-              <span> {{ userId.id }}{{ last ? '' : ', ' }} </span>
-            }
+            <span>{{ friendsListRef.user?.id }}</span>
           </dd>
-          <dt><span>Friend Id</span></dt>
+          <dt><span>Friend</span></dt>
           <dd>
-            @for (friendId of friendsListRef.friendIds; track $index; let last = $last) {
-              <span> {{ friendId.id }}{{ last ? '' : ', ' }} </span>
-            }
+            <span>{{ friendsListRef.friend?.id }}</span>
           </dd>
         </dl>
 

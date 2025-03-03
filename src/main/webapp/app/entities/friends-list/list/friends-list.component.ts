@@ -1,122 +1,77 @@
-import { Component, NgZone, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
-import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
-import SharedModule from 'app/shared/shared.module';
-import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
-import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
-import { FormsModule } from '@angular/forms';
-import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
+import { Component, OnInit, inject } from '@angular/core';
+import { FriendsListService } from '../service/friends-list.service';
 import { IFriendsList } from '../friends-list.model';
-import { EntityArrayResponseType, FriendsListService } from '../service/friends-list.service';
-import { FriendsListDeleteDialogComponent } from '../delete/friends-list-delete-dialog.component';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
   selector: 'jhi-friends-list',
   templateUrl: './friends-list.component.html',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    SortDirective,
-    SortByDirective,
-    DurationPipe,
-    FormatMediumDatetimePipe,
-    FormatMediumDatePipe,
-  ],
+  imports: [CommonModule, FormsModule],
 })
 export class FriendsListComponent implements OnInit {
-  subscription: Subscription | null = null;
-  friendsLists?: IFriendsList[];
+  friendsLists: IFriendsList[] = [];
   isLoading = false;
+  searchQuery = '';
+  pendingRequests = 2; // Mock value for friend requests count
 
-  sortState = sortStateSignal({});
+  // Array of sample friend names
+  friendNames: string[] = [
+    'John Doe',
+    'Jane Smith',
+    'Michael Johnson',
+    'Emily Davis',
+    'Robert Wilson',
+    'Sarah Brown',
+    'David Miller',
+    'Jessica Taylor',
+  ];
 
-  public readonly router = inject(Router);
-  protected readonly friendsListService = inject(FriendsListService);
-  protected readonly activatedRoute = inject(ActivatedRoute);
-  protected readonly sortService = inject(SortService);
-  protected modalService = inject(NgbModal);
-  protected ngZone = inject(NgZone);
-
-  trackId = (item: IFriendsList): number => this.friendsListService.getFriendsListIdentifier(item);
+  private readonly friendsListService = inject(FriendsListService);
 
   ngOnInit(): void {
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => {
-          if (!this.friendsLists || this.friendsLists.length === 0) {
-            this.load();
-          }
-        }),
-      )
-      .subscribe();
+    this.loadFriends();
   }
 
-  delete(friendsList: IFriendsList): void {
-    const modalRef = this.modalService.open(FriendsListDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
-    modalRef.componentInstance.friendsList = friendsList;
-    // unsubscribe not needed because closed completes on modal close
-    modalRef.closed
-      .pipe(
-        filter(reason => reason === ITEM_DELETED_EVENT),
-        tap(() => this.load()),
-      )
-      .subscribe();
-  }
-
-  load(): void {
-    this.queryBackend().subscribe({
-      next: (res: EntityArrayResponseType) => {
-        this.onResponseSuccess(res);
-      },
-    });
-  }
-
-  navigateToWithComponentValues(event: SortState): void {
-    this.handleNavigation(event);
-  }
-
-  protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
-    this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
-  }
-
-  protected onResponseSuccess(response: EntityArrayResponseType): void {
-    const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
-    this.friendsLists = this.refineData(dataFromBody);
-  }
-
-  protected refineData(data: IFriendsList[]): IFriendsList[] {
-    const { predicate, order } = this.sortState();
-    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
-  }
-
-  protected fillComponentAttributesFromResponseBody(data: IFriendsList[] | null): IFriendsList[] {
-    return data ?? [];
-  }
-
-  protected queryBackend(): Observable<EntityArrayResponseType> {
+  loadFriends(): void {
     this.isLoading = true;
-    const queryObject: any = {
-      eagerload: true,
-      sort: this.sortService.buildSortParam(this.sortState()),
-    };
-    return this.friendsListService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
+    this.friendsListService.query({ eagerload: true }).subscribe({
+      next: res => {
+        this.friendsLists = res.body ?? [];
+        this.isLoading = false;
+      },
+      error: () => (this.isLoading = false),
+    });
   }
 
-  protected handleNavigation(sortState: SortState): void {
-    const queryParamsObj = {
-      sort: this.sortService.buildSortParam(sortState),
-    };
+  get filteredFriends(): IFriendsList[] {
+    if (!this.searchQuery.trim()) {
+      return this.friendsLists;
+    }
+    return this.friendsLists.filter(friend => this.getFriendName(friend).toLowerCase().includes(this.searchQuery.toLowerCase()));
+  }
 
-    this.ngZone.run(() => {
-      this.router.navigate(['./'], {
-        relativeTo: this.activatedRoute,
-        queryParams: queryParamsObj,
-      });
-    });
+  // Returns friend name or a placeholder if missing
+  getFriendName(friend: IFriendsList | null | undefined, index = 0): string {
+    if (friend?.friend?.login) {
+      return String(friend.friend.login);
+    }
+    return this.friendNames[index % this.friendNames.length];
+  }
+
+  // Displays a message alert
+  messageFriend(friend: any): void {
+    alert(`Messaging ${this.getFriendName(friend)}`);
+  }
+
+  // Shows friend requests alert
+  viewFriendRequests(): void {
+    alert(`Viewing friend requests`);
+  }
+
+  // Placeholder avatar URLs
+  getAvatarUrl(index: number): string {
+    return `https://api.dicebear.com/7.x/bottts/svg?seed=Avatar${index}`;
   }
 }

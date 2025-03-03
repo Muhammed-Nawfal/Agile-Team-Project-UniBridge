@@ -64,16 +64,9 @@
         </div>
 
         <div class="mb-3">
-          <label for="field_userIds">User Id</label>
-          <select
-            class="form-control"
-            id="field_userIds"
-            data-cy="userId"
-            multiple
-            name="userIds"
-            formControlName="userIds"
-            [compareWith]="compareUser"
-          >
+          <label class="form-label" for="field_user">User</label>
+          <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUser">
+            <option [ngValue]="null"></option>
             @for (userOption of usersSharedCollection; track $index) {
               <option [ngValue]="userOption">{{ userOption.id }}</option>
             }
@@ -81,16 +74,16 @@
         </div>
 
         <div class="mb-3">
-          <label for="field_friendIds">Friend Id</label>
+          <label class="form-label" for="field_friend">Friend</label>
           <select
             class="form-control"
-            id="field_friendIds"
-            data-cy="friendId"
-            multiple
-            name="friendIds"
-            formControlName="friendIds"
+            id="field_friend"
+            data-cy="friend"
+            name="friend"
+            formControlName="friend"
             [compareWith]="compareUser"
           >
+            <option [ngValue]="null"></option>
             @for (userOption of usersSharedCollection; track $index) {
               <option [ngValue]="userOption">{{ userOption.id }}</option>
             }

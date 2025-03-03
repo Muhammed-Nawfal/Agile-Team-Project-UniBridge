@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -36,23 +34,11 @@ public class FriendsList implements Serializable {
     @Column(name = "friend_since", nullable = false)
     private Instant friendSince;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "rel_friends_list__user_id",
-        joinColumns = @JoinColumn(name = "friends_list_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id_id")
-    )
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    private Set<User> userIds = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "rel_friends_list__friend_id",
-        joinColumns = @JoinColumn(name = "friends_list_id"),
-        inverseJoinColumns = @JoinColumn(name = "friend_id_id")
-    )
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    private Set<User> friendIds = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User friend;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -95,49 +81,29 @@ public class FriendsList implements Serializable {
         this.friendSince = friendSince;
     }
 
-    public Set<User> getUserIds() {
-        return this.userIds;
+    public User getUser() {
+        return this.user;
     }
 
-    public void setUserIds(Set<User> users) {
-        this.userIds = users;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public FriendsList userIds(Set<User> users) {
-        this.setUserIds(users);
+    public FriendsList user(User user) {
+        this.setUser(user);
         return this;
     }
 
-    public FriendsList addUserId(User user) {
-        this.userIds.add(user);
-        return this;
+    public User getFriend() {
+        return this.friend;
     }
 
-    public FriendsList removeUserId(User user) {
-        this.userIds.remove(user);
-        return this;
+    public void setFriend(User user) {
+        this.friend = user;
     }
 
-    public Set<User> getFriendIds() {
-        return this.friendIds;
-    }
-
-    public void setFriendIds(Set<User> users) {
-        this.friendIds = users;
-    }
-
-    public FriendsList friendIds(Set<User> users) {
-        this.setFriendIds(users);
-        return this;
-    }
-
-    public FriendsList addFriendId(User user) {
-        this.friendIds.add(user);
-        return this;
-    }
-
-    public FriendsList removeFriendId(User user) {
-        this.friendIds.remove(user);
+    public FriendsList friend(User user) {
+        this.setFriend(user);
         return this;
     }
 
