@@ -16,6 +16,7 @@ import { ActivityMatchDeleteDialogComponent } from '../delete/activity-match-del
   standalone: true,
   selector: 'jhi-activity-match',
   templateUrl: './activity-match.component.html',
+  styleUrl: 'activity-match.component.scss',
   imports: [
     RouterModule,
     FormsModule,
@@ -119,3 +120,24 @@ export class ActivityMatchComponent implements OnInit {
     });
   }
 }
+
+// @Component({
+//   standalone: true,
+//   selector: 'jhi-events-buddy',
+//   templateUrl: './events-buddy.component.html',
+//   styleUrl: 'events-buddy.component.scss',
+//   imports: [
+//     RouterModule,
+//     FormsModule,
+//     SharedModule,
+//   ],
+// })
+// export class EventsBuddyComponent implements OnInit {
+//   preferredSociety: string = '';
+//   preferredEventType: string = '';
+//   timing: string = '';
+//
+//   ngOnInit(): void {
+//     // Initialize component
+//   }
+// }

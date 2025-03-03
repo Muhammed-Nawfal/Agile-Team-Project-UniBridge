@@ -1,118 +1,39 @@
-<div>
-  <h2 id="page-heading" data-cy="ActivityMatchHeading">
-    <span>Activity Matches</span>
+<body>
+  <div>
+    <div class="page" id="page-activity-match">
+      <h1 id="page-heading" class="title" data-cy="ActivityMatchHeading">
+        <span>Welcome to UNIBRIDGE</span>
+      </h1>
 
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span>Refresh list</span>
-      </button>
+      <jhi-alert-error></jhi-alert-error>
+      <jhi-alert></jhi-alert>
 
-      <button
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-activity-match"
-        [routerLink]="['/activity-match/new']"
-      >
-        <fa-icon icon="plus"></fa-icon>
-        <span>Create a new Activity Match</span>
-      </button>
+      <h2>Match With a Buddy</h2>
+      <div class="buddy-buttons">
+        <button>Study Buddy</button>
+        <!-- Study Buddy Button -->
+        <button>Gym Buddy</button>
+        <!-- Gym Buddy Button -->
+        <button>Sports Buddy</button>
+        <!-- Sports Buddy Button -->
+        <!--    <a href="#page-events-buddy" onclick="showPage('page-events-buddy'); return false;">-->
+        <!--      <button>Events Buddy</button>-->
+        <!--    </a>-->
+        <button onclick="showPage('page-events-buddy')" class="buddy-button">Events Buddy</button>
+      </div>
+
+      <h2>Book/Create</h2>
+      <div class="activity-buttons">
+        <button>Book an activity</button>
+        <button>Post an activity</button>
+      </div>
     </div>
-  </h2>
+  </div>
 
-  <jhi-alert-error></jhi-alert-error>
-
-  <jhi-alert></jhi-alert>
-
-  @if (activityMatches?.length === 0) {
-    <div class="alert alert-warning" id="no-result">
-      <span>No Activity Matches found</span>
+  <div class="page" id="page-events-buddy" style="display: none">
+    <div class="container">
+      <h1>WHO IS YOUR EVENTS BUDDY?</h1>
+      <p>Find a buddy to attend events with!</p>
     </div>
-  }
-
-  @if (activityMatches && activityMatches.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
-        <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="activityType">
-              <div class="d-flex">
-                <span>Activity Type</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="status">
-              <div class="d-flex">
-                <span>Status</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="requestUser.id">
-              <div class="d-flex">
-                <span>Request User</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="matchedUser.id">
-              <div class="d-flex">
-                <span>Matched User</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (activityMatch of activityMatches; track trackId(activityMatch)) {
-            <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/activity-match', activityMatch.id, 'view']">{{ activityMatch.id }}</a>
-              </td>
-              <td>
-                {{
-                  { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[
-                    activityMatch.activityType ?? 'null'
-                  ]
-                }}
-              </td>
-              <td>{{ { null: '', ACCEPT: 'ACCEPT', DECLINED: 'DECLINED', PENDING: 'PENDING' }[activityMatch.status ?? 'null'] }}</td>
-              <td>
-                {{ activityMatch.requestUser?.id }}
-              </td>
-              <td>
-                {{ activityMatch.matchedUser?.id }}
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
-                  <a [routerLink]="['/activity-match', activityMatch.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                    <fa-icon icon="eye"></fa-icon>
-                    <span class="d-none d-md-inline">View</span>
-                  </a>
-
-                  <a [routerLink]="['/activity-match', activityMatch.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline">Edit</span>
-                  </a>
-
-                  <button type="submit" (click)="delete(activityMatch)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline">Delete</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
-</div>
+  </div>
+</body>
