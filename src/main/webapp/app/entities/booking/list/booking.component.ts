@@ -11,111 +11,40 @@ import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigati
 import { IBooking } from '../booking.model';
 import { BookingService, EntityArrayResponseType } from '../service/booking.service';
 import { BookingDeleteDialogComponent } from '../delete/booking-delete-dialog.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
   selector: 'jhi-booking',
   templateUrl: './booking.component.html',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    SortDirective,
-    SortByDirective,
-    DurationPipe,
-    FormatMediumDatetimePipe,
-    FormatMediumDatePipe,
-  ],
+  styleUrls: ['./booking.component.css'],
+  imports: [RouterModule, FormsModule, SharedModule, CommonModule],
 })
-export class BookingComponent implements OnInit {
-  subscription: Subscription | null = null;
-  bookings?: IBooking[];
-  isLoading = false;
+export class BookingComponent {
+  events = [
+    { name: 'Football Pitch', value: 'Football_Pitch', min: 1, max: 22 },
+    { name: 'Tennis Court', value: 'Tennis_Court', min: 2, max: 4 },
+    { name: 'Basketball Court', value: 'Basketball_Court', min: 1, max: 10 },
+    { name: 'Study Spaces', value: 'Study_Spaces', min: 2, max: 8 },
+    { name: 'Event Rooms', value: 'Event_Rooms', min: 2, max: 15 },
+    { name: 'DOJO', value: 'DOJO', min: 1, max: 20 },
+    { name: 'Swimming Pool', value: 'Swimming_Pool', min: 1, max: 20 },
+    { name: 'Squash Court', value: 'Squash_Court', min: 2, max: 4 },
+  ];
 
-  sortState = sortStateSignal({});
+  partySizes: number[] = [];
 
-  public readonly router = inject(Router);
-  protected readonly bookingService = inject(BookingService);
-  protected readonly activatedRoute = inject(ActivatedRoute);
-  protected readonly sortService = inject(SortService);
-  protected modalService = inject(NgbModal);
-  protected ngZone = inject(NgZone);
+  onEventChange(event: any): void {
+    const currentSelectedEvent = event.target.value;
+    const findSelectedEvent = this.events.find(e => e.value === currentSelectedEvent);
 
-  trackId = (item: IBooking): number => this.bookingService.getBookingIdentifier(item);
-
-  ngOnInit(): void {
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => {
-          if (!this.bookings || this.bookings.length === 0) {
-            this.load();
-          }
-        }),
-      )
-      .subscribe();
-  }
-
-  delete(booking: IBooking): void {
-    const modalRef = this.modalService.open(BookingDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
-    modalRef.componentInstance.booking = booking;
-    // unsubscribe not needed because closed completes on modal close
-    modalRef.closed
-      .pipe(
-        filter(reason => reason === ITEM_DELETED_EVENT),
-        tap(() => this.load()),
-      )
-      .subscribe();
-  }
-
-  load(): void {
-    this.queryBackend().subscribe({
-      next: (res: EntityArrayResponseType) => {
-        this.onResponseSuccess(res);
-      },
-    });
-  }
-
-  navigateToWithComponentValues(event: SortState): void {
-    this.handleNavigation(event);
-  }
-
-  protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
-    this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
-  }
-
-  protected onResponseSuccess(response: EntityArrayResponseType): void {
-    const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
-    this.bookings = this.refineData(dataFromBody);
-  }
-
-  protected refineData(data: IBooking[]): IBooking[] {
-    const { predicate, order } = this.sortState();
-    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
-  }
-
-  protected fillComponentAttributesFromResponseBody(data: IBooking[] | null): IBooking[] {
-    return data ?? [];
-  }
-
-  protected queryBackend(): Observable<EntityArrayResponseType> {
-    this.isLoading = true;
-    const queryObject: any = {
-      sort: this.sortService.buildSortParam(this.sortState()),
-    };
-    return this.bookingService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
-  }
-
-  protected handleNavigation(sortState: SortState): void {
-    const queryParamsObj = {
-      sort: this.sortService.buildSortParam(sortState),
-    };
-
-    this.ngZone.run(() => {
-      this.router.navigate(['./'], {
-        relativeTo: this.activatedRoute,
-        queryParams: queryParamsObj,
-      });
-    });
+    if (findSelectedEvent) {
+      this.partySizes = [];
+      for (let size = findSelectedEvent.min; size <= findSelectedEvent.max; size++) {
+        this.partySizes.push(size);
+      }
+    } else {
+      this.partySizes = [];
+    }
   }
 }
