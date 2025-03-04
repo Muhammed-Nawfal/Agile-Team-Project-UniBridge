@@ -5,6 +5,12 @@
     border: 1px solid black;
     border-collapse: collapse;
   }
+  table {
+    width: 75%;
+  }
+  .pfp {
+    width: 20%;
+  }
 </style>
 
 <div>
@@ -41,49 +47,33 @@
 
   @if (reviews && reviews.length > 0) {
     <div class="table-responsive table-reviews" id="reviews" style="overflow-y: auto">
-      <table class="table table-striped" aria-describedby="page-heading">
+      <img class="pfp" src="../../../content/images/pfp.jpg" alt="profile picture" style="float: left" />
+      <table class="table table-striped" aria-describedby="page-heading" align="right">
         <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="datePublished">
-              <div class="d-flex">
-                <span>Date Published</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="star" width="5%">
-              <div class="d-flex">
-                <span>Star</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="text" width="50%">
-              <div class="d-flex">
-                <span>Text</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="fromUser.id">
-              <div class="d-flex">
-                <span>From User</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col"></th>
+          <tr>
+            <table align="left"></table>
           </tr>
         </thead>
         <tbody>
           @for (review of reviews; track trackId(review)) {
             <tr data-cy="entityTable">
-              <td>{{ review.datePublished | formatMediumDatetime }}</td>
-              <td>{{ review.star }}</td>
-              <td>{{ review.text }}</td>
+              <td width="15%">{{ review.datePublished | formatMediumDatetime }}</td>
               <td>
-                {{ review.fromUser?.id }}
+                <tr>
+                  ({{
+                    review.star
+                  }}) stars
+                </tr>
+                <tr height="90px">
+                  {{
+                    review.text
+                  }}
+                </tr>
+                <tr>
+                  Anonymous
+                </tr>
               </td>
-              <td class="text-end">
+              <td class="text-end" width="8%">
                 <div class="btn-group">
                   <button type="submit" (click)="delete(review)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                     <!--if user = fromUser then delete else not your review. actually else button not shown-->
@@ -99,3 +89,5 @@
     </div>
   }
 </div>
+
+<img src="https://tse2.mm.bing.net/th?id=OIP.6W2ogLXdf48OKWgl_5jSPgHaHa&pid=Api" alt="blank profile picture" style="float: left" />
