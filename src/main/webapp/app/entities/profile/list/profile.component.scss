@@ -1,10 +1,10 @@
 /* Profile Wrapper */
 .profile-wrapper {
   display: flex;
-  flex-direction: row; /* Horizontal layout */
-  justify-content: center; /* Center the items horizontally */
-  align-items: flex-start; /* Align items to the top */
-  gap: 20px; /* Space between containers */
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
   margin-top: 20px;
   width: 100%;
   max-width: 900px;
@@ -14,14 +14,13 @@
 
 /* Profile Card */
 .profile-card {
-  flex: 1; /* Allow it to grow */
-  max-width: 350px; /* Reasonable width */
-  min-width: 350px; /* Prevent it from shrinking too much */
-  overflow: hidden; /* Prevent weird stretching */
+  flex: 1;
+  max-width: 350px;
+  min-width: 350px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
-  word-wrap: break-word;
   text-align: center;
 }
 
@@ -88,7 +87,7 @@
   font-size: 0.9em;
 }
 
-/* Edit Profile Button */
+/* Button */
 .button {
   background-color: lightblue;
   padding: 8px 12px;

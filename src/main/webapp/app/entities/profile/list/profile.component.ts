@@ -99,7 +99,7 @@ export class ProfileComponent implements OnInit {
     this.profiles = this.refineData(dataFromBody);
 
     // Filter profiles to only include user_id = 1
-    this.profile = this.profiles.find(profile => profile.id === 1);
+    this.profile = this.profiles.find(profile => profile.id === 2);
   }
 
   protected refineData(data: IProfile[]): IProfile[] {
