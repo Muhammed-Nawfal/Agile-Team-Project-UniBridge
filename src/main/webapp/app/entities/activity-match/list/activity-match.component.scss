@@ -1,11 +1,3 @@
-body {
-  font-family: 'Arial', sans-serif;
-  color: black;
-  margin: 0;
-  padding: 0;
-  background-color: #f8f9fa;
-}
-
 h1 {
   text-align: center;
   font-family: 'Times New Roman', Times, serif;
@@ -14,6 +6,174 @@ h1 {
   margin-top: 20px;
   margin-bottom: 20px;
 }
+
+//h2 {
+//  padding: 10px;
+//  text-align: left;
+//  font-size: 16px;
+//}
+//
+//
+//body {
+//  display: flex;
+//  justify-content: center;
+//  background-color: #f0f0f0;
+//}
+//
+////.page {
+////  width: 400px;
+////  background-color: white;
+////  border: 1px solid #ddd;
+////  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+////}
+//
+//
+//
+//#gym-buddy-filters {
+//  display: flex;
+//  justify-content: space-between;
+//  width: 100%;
+//  margin: 0 auto;
+//  background-color: white;
+//}
+//
+//.filter-group label {
+//  display: block;
+//  margin-bottom: 5px;
+//  font-size: 14px;
+//  font-family: 'Georgia', serif;
+//}
+//
+//.filter-group select {
+//  font-family: 'Georgia', serif;
+//  width: 100%;
+//  padding: 8px;
+//  border: 1px solid #ccc;
+//  border-radius: 4px;
+//}
+//
+//.filter-actions {
+//  display: flex;
+//  justify-content: space-between;
+//  margin-top: 15px;
+//}
+//
+//.filter-actions button {
+//  padding: 8px 15px;
+//  border: none;
+//  border-radius: 4px;
+//  cursor: pointer;
+//}
+//
+//.filter-actions button[type="submit"] {
+//  background-color: black;
+//  color: white;
+//}
+//
+//.filter-actions button[type="reset"] {
+//  background-color: grey;
+//  color: black;
+//}
+//
+//.selection-buttons {
+//  display: flex;
+//  justify-content: space-between;
+//  padding: 10px;
+//}
+//
+//.select-button {
+//  width: 50px;
+//  height: 50px;
+//  border-radius: 50%;
+//  display: flex;
+//  justify-content: center;
+//  align-items: center;
+//}
+//
+//.select-button.accept {
+//  background-color: green;
+//}
+//
+//.select-button.reject {
+//  background-color: red;
+//}
+//
+//.select-button button {
+//  background: none;
+//  border: none;
+//  color: white;
+//  cursor: pointer;
+//}
+//
+//.card {
+//  width: 300px;  /* Set the card's width */
+//  height: 400px; /* Set the card's height */
+//  background-color: white; /* Optional: Card background */
+//  border: 1px solid #ddd; /* Border for the card */
+//  border-radius: 8px; /* Optional: Rounded corners */
+//  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for better appearance */
+//  display: flex;
+//  flex-direction: column; /* Ensure the card's contents stack vertically */
+//}
+//
+//.card .image {
+//  width: 50%;
+//  height: 100px;
+//  object-fit: cover;
+//}
+//
+//.name {
+//  justify-content: left;
+//  color: black;
+//  font-size: 25px;
+//  font-weight: bold;
+//  margin-bottom: 10px;
+//}
+//
+//.card-details {
+//  color: black;
+//  margin-bottom: 5px;
+//}
+//
+//.gym-info {
+//  justify-content: space-between;
+//  display: flex;
+//  background-color: black;
+//  color: white;
+//  padding: 10px;
+//  border-radius: 4px;
+//  margin-top: 10px;
+//}
+//
+//.buttons {
+//  display: flex;
+//  border-top: 1px solid #ddd;
+//}
+//
+//.button {
+//  flex: 1;
+//  text-align: center;
+//  padding: 10px;
+//  text-decoration: none;
+//  color: white;
+//}
+//
+//.button.view-profile {
+//  background-color: #4CAF50;
+//}
+//
+//.button.follow {
+//  background-color: #2196F3;
+//}
+
+//body {
+//  font-family: 'Arial', sans-serif;
+//  color: black;
+//  margin: 0;
+//  padding: 0;
+//  background-color: #f8f9fa;
+//}
+//
 
 h2 {
   font-family: 'Georgia', serif;

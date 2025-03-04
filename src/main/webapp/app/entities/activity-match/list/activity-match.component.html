@@ -1,26 +1,129 @@
-<body>
-  <div class="page" id="page-activity-match">
-    <h1 id="page-heading" class="title" data-cy="ActivityMatchHeading">
-      <span>Welcome to UNIBRIDGE</span>
-    </h1>
+<div class="page" id="page-activity-match">
+  <h1 id="page-heading" class="title" data-cy="ActivityMatchHeading">
+    <span>Welcome to UNIBRIDGE</span>
+  </h1>
 
-    <jhi-alert-error></jhi-alert-error>
-    <jhi-alert></jhi-alert>
+  <jhi-alert-error></jhi-alert-error>
+  <jhi-alert></jhi-alert>
 
-    <h2>Match With a Buddy</h2>
-    <div class="buddy-buttons">
-      <button>Study Buddy</button>
-      <button>Gym Buddy</button>
-      <button>Sports Buddy</button>
-      <button [routerLink]="'#page-events-buddy'">Events Buddy</button>
-    </div>
-
-    <h2>Book/Create</h2>
-    <div class="activity-buttons">
-      <button>Book an activity</button>
-      <button>Post an activity</button>
-    </div>
-
-    <router-outlet></router-outlet>
+  <h2>Match With a Buddy</h2>
+  <div class="buddy-buttons">
+    <button>Study Buddy</button>
+    <button>Gym Buddy</button>
+    <button>Sports Buddy</button>
+    <button [routerLink]="'#page-events-buddy'">Events Buddy</button>
   </div>
-</body>
+
+  <h2>Book/Create</h2>
+  <div class="activity-buttons">
+    <button>Book an activity</button>
+    <button>Post an activity</button>
+  </div>
+
+  <router-outlet></router-outlet>
+</div>
+
+<!--<div class="page" id="page-gym-buddy">-->
+<!--  <header>-->
+<!--    <h1>WHO IS YOUR GYM BUDDY?</h1>-->
+<!--  </header>-->
+<!--  <h2>Select Filters</h2>-->
+<!--  <form id="gym-buddy-filters">-->
+<!--    <div class="filter-group">-->
+<!--      <label for="location">Gym Location:</label>-->
+<!--      <select id="location" name="location">-->
+<!--        <option value="">All Locations</option>-->
+<!--        <option value="sports-and-fitness">Sports and Fitness Gym</option>-->
+<!--        <option value="tiverton">Tiverton Center</option>-->
+<!--        <option value="gym-group-selly-oak">The Gym Group Selly Oak</option>-->
+<!--        <option value="puregym-five-ways">PureGym Five Ways</option>-->
+<!--      </select>-->
+<!--    </div>-->
+
+<!--    <div class="filter-group">-->
+<!--      <label for="skill-level">Skill Level:</label>-->
+<!--      <select id="skill-level" name="skill-level">-->
+<!--        <option value="">Any Skill Level</option>-->
+<!--        <option value="novice">Novice</option>-->
+<!--        <option value="intermediate">Intermediate</option>-->
+<!--        <option value="confident">Confident</option>-->
+<!--        <option value="professional">Professional</option>-->
+<!--      </select>-->
+<!--    </div>-->
+
+<!--    <div class="filter-group">-->
+<!--      <label for="timing">Preferred Workout Time:</label>-->
+<!--      <select id="timing" name="timing">-->
+<!--        <option value="">Anytime</option>-->
+<!--        <option value="early-morning">Early Morning (5-8 AM)</option>-->
+<!--        <option value="morning">Morning (8-12 AM)</option>-->
+<!--        <option value="afternoon">Afternoon (12-4 PM)</option>-->
+<!--        <option value="evening">Evening (4-8 PM)</option>-->
+<!--        <option value="night">Night (8-11 PM)</option>-->
+<!--        <option value="late-night">Late Night (11 PM - 5 AM)</option>-->
+<!--      </select>-->
+<!--    </div>-->
+
+<!--&lt;!&ndash;    <div class="filter-group">&ndash;&gt;-->
+<!--&lt;!&ndash;      <label for="workout-type">Workout Type:</label>&ndash;&gt;-->
+<!--&lt;!&ndash;      <select id="workout-type" name="workout-type">&ndash;&gt;-->
+<!--&lt;!&ndash;        <option value="">All Workout Types</option>&ndash;&gt;-->
+<!--&lt;!&ndash;        <option value="strength">Strength Training</option>&ndash;&gt;-->
+<!--&lt;!&ndash;        <option value="cardio">Cardio</option>&ndash;&gt;-->
+<!--&lt;!&ndash;        <option value="yoga">Yoga</option>&ndash;&gt;-->
+<!--&lt;!&ndash;        <option value="crossfit">CrossFit</option>&ndash;&gt;-->
+<!--&lt;!&ndash;        <option value="weight-loss">Weight Loss</option>&ndash;&gt;-->
+<!--&lt;!&ndash;      </select>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;    &lt;!&ndash; Gender Preference Filter &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;    <div class="filter-group">&ndash;&gt;-->
+<!--&lt;!&ndash;      <label for="gender-preference">Gender Preference:</label>&ndash;&gt;-->
+<!--&lt;!&ndash;      <select id="gender-preference" name="gender-preference">&ndash;&gt;-->
+<!--&lt;!&ndash;        <option value="">No Preference</option>&ndash;&gt;-->
+<!--&lt;!&ndash;        <option value="male">Male</option>&ndash;&gt;-->
+<!--&lt;!&ndash;        <option value="female">Female</option>&ndash;&gt;-->
+<!--&lt;!&ndash;        <option value="non-binary">Non-Binary</option>&ndash;&gt;-->
+<!--&lt;!&ndash;      </select>&ndash;&gt;-->
+<!--&lt;!&ndash;    </div>&ndash;&gt;-->
+
+<!--    <div class="filter-actions">-->
+<!--      <button type="submit">Apply Filters</button>-->
+<!--      <button type="reset">Reset Filters</button>-->
+<!--    </div>-->
+<!--  </form>-->
+
+<!--  <div class="selection-buttons">-->
+<!--    <div class="select-button accept">-->
+<!--      <button>Accept</button>-->
+<!--    </div>-->
+<!--    <div class="select-button reject">-->
+<!--      <button>Reject</button>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--  <body>-->
+<!--  <div class="card">-->
+<!--    <img src="content/images/5imrkq.jpg" alt="Profile" class="image">-->
+<!--    <div class="card-content">-->
+<!--      <div class="name">Nawfal</div>-->
+<!--      <div class="card-details">-->
+<!--        <p>My Bio</p>-->
+<!--        <p>Computer Science</p>-->
+<!--        <p>Year 2</p>-->
+<!--        <div class="gym-info">-->
+<!--          <p>The Gym Group Selly Oak</p>-->
+<!--          <p>Evening</p>-->
+<!--          <p>Intermediate</p>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  </body>-->
+
+<!--    <div class="buttons">-->
+<!--      <a href="#" class="button view-profile">View Profile</a>-->
+<!--      <a href="#" class="button follow">Follow</a>-->
+<!--    </div>-->
+
+<!--  </div>-->
