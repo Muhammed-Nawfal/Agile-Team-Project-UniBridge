@@ -17,4 +17,53 @@
       <span>No Activities found</span>
     </div>
   }
+
+  @if (activities && activities.length > 0) {
+    <div class="card-container">
+      @for (activity of activities; track trackId(activity)) {
+        <div class="card">
+          <div class="card-content">
+            <div class="card-header">
+              <h3>
+                <strong>{{ activity.activityName }}</strong>
+              </h3>
+              <span class="activity-type {{ activity.activityType }}">{{ activity.activityType }}</span>
+            </div>
+
+            <!-- conditional to add cover image if it exists  -->
+            @if (activity.coverImage) {
+              <div class="image-container">
+                <a (click)="openFile(activity.coverImage, activity.coverImageContentType)">
+                  <img [src]="'data:' + activity.coverImageContentType + ';base64,' + activity.coverImage" alt="Image of the activity" />
+                </a>
+              </div>
+            }
+
+            <div class="card-content">
+              <p><strong>Location:</strong> {{ activity.location }}</p>
+              <p><strong>Date:</strong> {{ activity.activityDate | formatMediumDatetime }}</p>
+              <p><strong>Participants:</strong> {{ activity.numberOfParticipants }} / {{ activity.maxNumberOfParticipants }}</p>
+              <p><strong>Cost:</strong> {{ activity.costOfactivity }}</p>
+            </div>
+
+            <span class="activity-status-label {{ activity.status }}">
+              {{
+                {
+                  null: '',
+                  ANNOUNCED: 'ANNOUNCED',
+                  CURRENTLY_HAPPENING: 'CURRENTLY HAPPENING',
+                  FINISHED: 'FINISHED',
+                  CANCELED: 'CANCELED',
+                }[activity.status ?? 'null']
+              }}
+            </span>
+
+            <div class="card-view">
+              <a [routerLink]="['/activity', activity.id, 'view']" class="btn btn-info btn-sm"> <fa-icon icon="eye"></fa-icon> View </a>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
 </div>
