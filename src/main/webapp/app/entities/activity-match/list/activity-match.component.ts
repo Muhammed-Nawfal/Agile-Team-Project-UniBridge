@@ -44,6 +44,10 @@ export class ActivityMatchComponent implements OnInit {
 
   trackId = (item: IActivityMatch): number => this.activityMatchService.getActivityMatchIdentifier(item);
 
+  goToEventsBuddy(): void {
+    this.router.navigate(['events-buddy']);
+  }
+
   ngOnInit(): void {
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
       .pipe(
@@ -124,24 +128,3 @@ export class ActivityMatchComponent implements OnInit {
     });
   }
 }
-
-// @Component({
-//   standalone: true,
-//   selector: 'jhi-events-buddy',
-//   templateUrl: './events-buddy.component.html',
-//   styleUrl: 'events-buddy.component.scss',
-//   imports: [
-//     RouterModule,
-//     FormsModule,
-//     SharedModule,
-//   ],
-// })
-// export class EventsBuddyComponent implements OnInit {
-//   preferredSociety: string = '';
-//   preferredEventType: string = '';
-//   timing: string = '';
-//
-//   ngOnInit(): void {
-//     // Initialize component
-//   }
-// }
