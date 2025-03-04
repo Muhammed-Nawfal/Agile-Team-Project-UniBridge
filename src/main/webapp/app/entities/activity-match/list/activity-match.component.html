@@ -1,39 +1,26 @@
 <body>
-  <div>
-    <div class="page" id="page-activity-match">
-      <h1 id="page-heading" class="title" data-cy="ActivityMatchHeading">
-        <span>Welcome to UNIBRIDGE</span>
-      </h1>
+  <div class="page" id="page-activity-match">
+    <h1 id="page-heading" class="title" data-cy="ActivityMatchHeading">
+      <span>Welcome to UNIBRIDGE</span>
+    </h1>
 
-      <jhi-alert-error></jhi-alert-error>
-      <jhi-alert></jhi-alert>
+    <jhi-alert-error></jhi-alert-error>
+    <jhi-alert></jhi-alert>
 
-      <h2>Match With a Buddy</h2>
-      <div class="buddy-buttons">
-        <button>Study Buddy</button>
-        <!-- Study Buddy Button -->
-        <button>Gym Buddy</button>
-        <!-- Gym Buddy Button -->
-        <button>Sports Buddy</button>
-        <!-- Sports Buddy Button -->
-        <!--    <a href="#page-events-buddy" onclick="showPage('page-events-buddy'); return false;">-->
-        <!--      <button>Events Buddy</button>-->
-        <!--    </a>-->
-        <button onclick="showPage('page-events-buddy')" class="buddy-button">Events Buddy</button>
-      </div>
-
-      <h2>Book/Create</h2>
-      <div class="activity-buttons">
-        <button>Book an activity</button>
-        <button>Post an activity</button>
-      </div>
+    <h2>Match With a Buddy</h2>
+    <div class="buddy-buttons">
+      <button>Study Buddy</button>
+      <button>Gym Buddy</button>
+      <button>Sports Buddy</button>
+      <button [routerLink]="'#page-events-buddy'">Events Buddy</button>
     </div>
-  </div>
 
-  <div class="page" id="page-events-buddy" style="display: none">
-    <div class="container">
-      <h1>WHO IS YOUR EVENTS BUDDY?</h1>
-      <p>Find a buddy to attend events with!</p>
+    <h2>Book/Create</h2>
+    <div class="activity-buttons">
+      <button>Book an activity</button>
+      <button>Post an activity</button>
     </div>
+
+    <router-outlet></router-outlet>
   </div>
 </body>
