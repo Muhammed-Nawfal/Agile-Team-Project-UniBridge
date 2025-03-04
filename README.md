@@ -1,6 +1,197 @@
 # teamproject24
 
 This application was generated using JHipster 8.7.3, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.7.3](https://www.jhipster.tech/documentation-archive/v8.7.3).
+This application was generated using JHipster 8.7.3 for the team project 2024-2025 module at the university of Birmingham.
+
+# Team 32
+
+2. Add your name below:
+
+   - Muhammed Nawfal Fareed Jaman mnf350@student.bham.ac.uk
+   - Rohit Mamtora rxm631@student.bham.ac.uk
+   - Eashan Nirav Nair EXS415@student.bham.ac.uk
+   - Hasaan Afroze hxa402@student.bham.ac.uk
+   - Ou Kai Ying kxo476@student.bham.ac.uk
+   - Aarij Khan axk1327@student.bham.ac.uk
+   - Dorian Alsop cxa339@student.bham.ac.uk
+   - Saw Yin Rui YXS518@student.bham.ac.uk
+
+3. Modify [gdpr-policy.component.html](src/main/webapp/app/gdpr-policy/gdpr-policy.component.html) to add your team number (replace X) and team members to the contact section.
+
+<!-- this is a comment: delete lines TODO: and 1. 2. 3. once done... -->
+
+# Required software
+
+To run the code from this repository requires at least:
+
+- `git` - any modern version - to clone this repository
+- `java` JDK v21 - to run the SpringBoot backend
+- `node` LTS v20 - to run the Angular frontend and other `npm` commands
+- `jhipster` v8.7.3 - to run the JDL code generation
+- `docker` - any modern version - to run a dockerised version of the application
+
+There will be a development enviroment provided on the course.
+
+### Install JHipster 8.7.3
+
+After installing node do:
+
+```
+npm install -g generator-jhipster@8.7.3
+```
+
+### Verify software versions
+
+each of the following commands will help you verify the installation:
+
+````
+% git --version
+git version 2.39.3 (Apple Git-146)
+
+% java --version
+OpenJDK Runtime Environment Temurin-21.0.4+7 (build 21.0.4+7-LTS)
+OpenJDK 64-Bit Server VM Temurin-21.0.4+7 (build 21.0.4+7-LTS, mixed mode)```
+
+% node --version
+v20.18.1
+
+jhipster --version
+8.7.3
+
+% docker --version
+Docker version 27.4.0, build bde2b89
+````
+
+# Run the application
+
+### Local development with frontend+backend on port 8080 - must restart every code change
+
+In a terminal, `clone` the repo, `cd` into the cloned folder do on linux/mac:
+
+```
+./mvnw
+```
+
+or Windows:
+
+```
+mvnw.cmd
+```
+
+This compiles and runs the app. then open a web browser at http://localhost:8080
+
+### For frontend develpment on port 9000 - automatically updated frontend
+
+`npm start`
+
+This compiles and runs the frontend only, the back end needs to be running. open a web browser at http://localhost:9000 It will show front end changes straight away.
+
+### Docker compose containerised run
+
+In a terminal, `clone` the repo, `cd` into the cloned folder and do:
+
+```
+npm run java:docker
+```
+
+or for macswith M1 (arm64) chips
+
+```
+npm run java:docker:arm64
+```
+
+The above will build the production version of the app
+
+and then do:
+
+```
+docker compose -f src/main/docker/app.yml up
+```
+
+The above will run a local production version of the app on port 8080.
+
+# Changes for team project 2024
+
+Modified by Madasar Shah for Team Project 2024 - 2025 as follows:
+
+### added gdpr policy page
+
+- ran `ng generate component gdpr-policy` to create [gdpr-policy](src/main/webapp/app/gdpr-policy) angular component with a template gdpr policy in [gdpr-policy.component.html](src/main/webapp/app/gdpr-policy/gdpr-policy.component.html)
+
+### updated footer
+
+- [footer.component.html](src/main/webapp/app/layouts/footer/footer.component.html) modified to add the text ` <p><a href="https://team00.bham.team/">Team Project</a> application developed in Birmingham, by a team of students. <a href="/gdpr-policy">Privacy Policy</a></p>`
+
+### removed docker compose from spring
+
+- [application-dev.yml](src/main/resources/config/application-dev.yml) changed `spring: ... docker: compose: enabled: false` as not needed unless you want to run postgres locally in docker
+
+### added ci-cd files for gitlab and github
+
+- [main.yml](.github/workflows/main.yml) for github and [.gitlab-ci.yml](.gitlab-ci.yml) for gitlab
+
+### added deployment scripts and configs
+
+- see the [docker](src/main/docker) folder
+
+# Settings used to generate the application
+
+These settings can also be found in the file [.yo-rc.json](.yo-rc.json)
+
+- `? Which *type* of application would you like to create? Monolithic application (recommended for simple projects) `
+- `? What is the base name of your application? teamproject24`
+- `? Do you want to make it reactive with Spring WebFlux? No `
+- `? What is your default Java package name? bham.team `
+- `? Which *type* of authentication would you like to use? JWT authentication (stateless, with a token) `
+- `? Which *type* of database would you like to use? SQL (H2, PostgreSQL, MySQL, MariaDB, Oracle, MSSQL) `
+- `? Which *production* database would you like to use? PostgreSQL `
+- `? Which *development* database would you like to use? H2 with in-memory persistence `
+- `? Which cache do you want to use? (Spring cache abstraction) Ehcache (local cache, for a single node) `
+- `? Do you want to use Hibernate 2nd level cache? Yes `
+- `? Would you like to use Maven or Gradle for building the backend? Maven `
+- `? Do you want to use the JHipster Registry to configure, monitor and scale your application? No `
+- `? Which other technologies would you like to use? `
+- `? Which *Framework* would you like to use for the client? Angular `
+- `? Do you want to generate the admin UI? Yes ? Would you like to use a Bootswatch theme (https://bootswatch.com/)? Materia `
+- `? Choose a Bootswatch variant navbar theme (https://bootswatch.com/)? Primary `
+- `? Would you like to enable internationalization support? No `
+- `? Please choose the native language of the application English `
+- `? Besides JUnit and Jest, which testing frameworks would you like to use? `
+- `? Would you like to install other generators from the JHipster Marketplace? No`
+
+# Regenerating the application
+
+If you would like to regrenrate the application from scratch, there are some files and folder you should keep:
+
+    .github/*
+    .gitlab-ci.yml
+    .yo-rc.json
+    .git
+    README.md
+
+    src/main/docker/Caddyfile
+    src/main/docker/caddy.yml
+    src/main/docker/dev.yml
+    src/main/docker/install-app.sh
+    src/main/docker/install-docker.sh
+    src/main/docker/prd.yml
+
+    src/main/webapp/app/gdpr-policy/*
+
+    src/main/resources/config/application-dev.yml
+
+    src/main/webapp/app/app.routes.ts
+    src/main/webapp/app/layouts/footer/footer.component.html
+
+delete all the other files and run:
+
+`jhipster`
+
+# Documentation
+
+You can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.7.3](https://www.jhipster.tech/documentation-archive/v8.7.3).
+
+> > > > > > > ddeb0d6606f2c98b6bb6c1b4bd63d0ff83e67645
 
 ## Project Structure
 

@@ -1,0 +1,62 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (notification(); as notificationRef) {
+      <div>
+        <h2 data-cy="notificationDetailsHeading"><span>Notification</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ notificationRef.id }}</span>
+          </dd>
+          <dt><span>Notification Type</span></dt>
+          <dd>
+            <span>{{
+              {
+                null: '',
+                NEW_CHAT_MESSAGE: 'NEW_CHAT_MESSAGE',
+                FRIEND_REQUEST: 'FRIEND_REQUEST',
+                ACTIVITY_MATCH: 'ACTIVITY_MATCH',
+                BOOKING_CONFIRMATION: 'BOOKING_CONFIRMATION',
+              }[notificationRef.notificationType ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span>Title</span></dt>
+          <dd>
+            <span>{{ notificationRef.title }}</span>
+          </dd>
+          <dt><span>Message</span></dt>
+          <dd>
+            <span>{{ notificationRef.message }}</span>
+          </dd>
+          <dt><span>Timestamp</span></dt>
+          <dd>
+            <span>{{ notificationRef.timestamp | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Is Read</span></dt>
+          <dd>
+            <span>{{ notificationRef.isRead }}</span>
+          </dd>
+          <dt><span>User ID</span></dt>
+          <dd>
+            <span>{{ notificationRef.userID?.id }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/notification', notificationRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

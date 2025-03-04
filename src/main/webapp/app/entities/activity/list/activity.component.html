@@ -1,0 +1,218 @@
+<div>
+  <h2 id="page-heading" data-cy="ActivityHeading">
+    <span>Activities</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span>Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-activity"
+        [routerLink]="['/activity/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span>Create a new Activity</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (activities?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span>No Activities found</span>
+    </div>
+  }
+
+  @if (activities && activities.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span>ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="activityName">
+              <div class="d-flex">
+                <span>Activity Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="activityType">
+              <div class="d-flex">
+                <span>Activity Type</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="activityDate">
+              <div class="d-flex">
+                <span>Activity Date</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="numberOfParticipants">
+              <div class="d-flex">
+                <span>Number Of Participants</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="maxNumberOfParticipants">
+              <div class="d-flex">
+                <span>Max Number Of Participants</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="location">
+              <div class="d-flex">
+                <span>Location</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="description">
+              <div class="d-flex">
+                <span>Description</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="createdOn">
+              <div class="d-flex">
+                <span>Created On</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="updatedOn">
+              <div class="d-flex">
+                <span>Updated On</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="status">
+              <div class="d-flex">
+                <span>Status</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="coverImage">
+              <div class="d-flex">
+                <span>Cover Image</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="paid">
+              <div class="d-flex">
+                <span>Paid</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="costOfactivity">
+              <div class="d-flex">
+                <span>Cost Ofactivity</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="requesteduser.id">
+              <div class="d-flex">
+                <span>Requesteduser</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (activity of activities; track trackId(activity)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/activity', activity.id, 'view']">{{ activity.id }}</a>
+              </td>
+              <td>{{ activity.activityName }}</td>
+              <td>
+                {{
+                  { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[
+                    activity.activityType ?? 'null'
+                  ]
+                }}
+              </td>
+              <td>{{ activity.activityDate | formatMediumDatetime }}</td>
+              <td>{{ activity.numberOfParticipants }}</td>
+              <td>{{ activity.maxNumberOfParticipants }}</td>
+              <td>{{ activity.location }}</td>
+              <td>{{ activity.description }}</td>
+              <td>{{ activity.createdOn | formatMediumDatetime }}</td>
+              <td>{{ activity.updatedOn | formatMediumDatetime }}</td>
+              <td>
+                {{
+                  {
+                    null: '',
+                    ANNOUNCED: 'ANNOUNCED',
+                    CURRENTLY_HAPPENING: 'CURRENTLY_HAPPENING',
+                    FINISHED: 'FINISHED',
+                    CANCELED: 'CANCELED',
+                  }[activity.status ?? 'null']
+                }}
+              </td>
+              <td>
+                @if (activity.coverImage) {
+                  <a (click)="openFile(activity.coverImage, activity.coverImageContentType)">
+                    <img
+                      [src]="'data:' + activity.coverImageContentType + ';base64,' + activity.coverImage"
+                      style="max-height: 30px"
+                      alt="activity"
+                    />
+                  </a>
+                  <span>{{ activity.coverImageContentType }}, {{ byteSize(activity.coverImage) }}</span>
+                }
+              </td>
+              <td>{{ { null: '', PAID: 'PAID', NOTPAID: 'NOTPAID' }[activity.paid ?? 'null'] }}</td>
+              <td>{{ activity.costOfactivity }}</td>
+              <td>
+                {{ activity.requesteduser?.id }}
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/activity', activity.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline">View</span>
+                  </a>
+
+                  <a [routerLink]="['/activity', activity.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(activity)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

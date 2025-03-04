@@ -1,0 +1,70 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170640"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "bio",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "profilePicture",
+      "fieldType": "ImageBlob"
+    },
+    {
+      "fieldName": "course",
+      "fieldType": "Course",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "COMPUTER_SCIENCE,ECONOMICS,PSYCHOLOGY,MATHS,ENGLISH"
+    },
+    {
+      "fieldName": "courseYear",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required", "min", "max"],
+      "fieldValidateRulesMax": "6",
+      "fieldValidateRulesMin": "1"
+    },
+    {
+      "fieldName": "gymSkill",
+      "fieldType": "Skill",
+      "fieldValues": "NOVICE,INTERMEDIATE,CONFIDENT,PROFESSIONAL"
+    },
+    {
+      "fieldName": "gymLocation",
+      "fieldType": "GymLocation",
+      "fieldValues": "THE_GYM_SELLY_OAK,TIVERTON,PUREGYM_FIVE_WAYS"
+    },
+    {
+      "fieldName": "gymTime",
+      "fieldType": "PreferredTime",
+      "fieldValues": "MORNING,AFTERNOON,EVENING,NIGHT"
+    },
+    {
+      "fieldName": "studyTime",
+      "fieldType": "PreferredTime",
+      "fieldValues": "MORNING,AFTERNOON,EVENING,NIGHT"
+    },
+    {
+      "fieldName": "sports",
+      "fieldType": "Sports",
+      "fieldValues": "FOOTBALL,CRICKET,BADMINTON,TENNIS,NETBALL"
+    },
+    {
+      "fieldName": "sportsSkill",
+      "fieldType": "Skill",
+      "fieldValues": "NOVICE,INTERMEDIATE,CONFIDENT,PROFESSIONAL"
+    }
+  ],
+  "name": "Profile",
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "relationshipName": "user",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one",
+      "relationshipWithBuiltInEntity": true
+    }
+  ],
+  "searchEngine": "no"
+}

@@ -1,0 +1,241 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-profile-heading" data-cy="ProfileCreateUpdateHeading">Create or edit a Profile</h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label" for="field_bio">Bio</label>
+          <textarea class="form-control" name="bio" id="field_bio" data-cy="bio" formControlName="bio"></textarea>
+        </div>
+
+        @let profilePictureRef = editForm.get('profilePicture')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_profilePicture">Profile Picture</label>
+          <div>
+            @if (profilePictureRef.value) {
+              <img
+                [src]="'data:' + editForm.get('profilePictureContentType')!.value + ';base64,' + profilePictureRef.value"
+                style="max-height: 100px"
+                alt="profile"
+              />
+            }
+            @if (profilePictureRef.value) {
+              <div class="form-text text-danger clearfix">
+                <span class="pull-start"
+                  >{{ editForm.get('profilePictureContentType')!.value }}, {{ byteSize(profilePictureRef.value!) }}</span
+                >
+                <button
+                  type="button"
+                  (click)="clearInputImage('profilePicture', 'profilePictureContentType', 'file_profilePicture')"
+                  class="btn btn-secondary btn-xs pull-end"
+                >
+                  <fa-icon icon="times"></fa-icon>
+                </button>
+              </div>
+            }
+            <input
+              type="file"
+              id="file_profilePicture"
+              data-cy="profilePicture"
+              (change)="setFileData($event, 'profilePicture', true)"
+              accept="image/*"
+            />
+          </div>
+          <input
+            type="hidden"
+            class="form-control"
+            name="profilePicture"
+            id="field_profilePicture"
+            data-cy="profilePicture"
+            formControlName="profilePicture"
+          />
+          <input
+            type="hidden"
+            class="form-control"
+            name="profilePictureContentType"
+            id="field_profilePictureContentType"
+            formControlName="profilePictureContentType"
+          />
+        </div>
+
+        @let courseRef = editForm.get('course')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_course">Course</label>
+          <select class="form-control" name="course" formControlName="course" id="field_course" data-cy="course">
+            <option [ngValue]="null"></option>
+            @for (course of courseValues; track $index) {
+              <option [value]="course">
+                {{
+                  {
+                    null: '',
+                    COMPUTER_SCIENCE: 'COMPUTER_SCIENCE',
+                    ECONOMICS: 'ECONOMICS',
+                    PSYCHOLOGY: 'PSYCHOLOGY',
+                    MATHS: 'MATHS',
+                    ENGLISH: 'ENGLISH',
+                  }[course]
+                }}
+              </option>
+            }
+          </select>
+          @if (courseRef.invalid && (courseRef.dirty || courseRef.touched)) {
+            <div>
+              @if (editForm.get('course')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let courseYearRef = editForm.get('courseYear')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_courseYear">Course Year</label>
+          <input
+            type="number"
+            class="form-control"
+            name="courseYear"
+            id="field_courseYear"
+            data-cy="courseYear"
+            formControlName="courseYear"
+          />
+          @if (courseYearRef.invalid && (courseYearRef.dirty || courseYearRef.touched)) {
+            <div>
+              @if (editForm.get('courseYear')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              @if (editForm.get('courseYear')?.errors?.min) {
+                <small class="form-text text-danger">This field should be at least 1.</small>
+              }
+              @if (editForm.get('courseYear')?.errors?.max) {
+                <small class="form-text text-danger">This field cannot be more than 6.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('courseYear')?.errors?.number"
+                >This field should be a number.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_gymSkill">Gym Skill</label>
+          <select class="form-control" name="gymSkill" formControlName="gymSkill" id="field_gymSkill" data-cy="gymSkill">
+            <option [ngValue]="null"></option>
+            @for (skill of skillValues; track $index) {
+              <option [value]="skill">
+                {{
+                  { null: '', NOVICE: 'NOVICE', INTERMEDIATE: 'INTERMEDIATE', CONFIDENT: 'CONFIDENT', PROFESSIONAL: 'PROFESSIONAL' }[skill]
+                }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_gymLocation">Gym Location</label>
+          <select class="form-control" name="gymLocation" formControlName="gymLocation" id="field_gymLocation" data-cy="gymLocation">
+            <option [ngValue]="null"></option>
+            @for (gymLocation of gymLocationValues; track $index) {
+              <option [value]="gymLocation">
+                {{
+                  { null: '', THE_GYM_SELLY_OAK: 'THE_GYM_SELLY_OAK', TIVERTON: 'TIVERTON', PUREGYM_FIVE_WAYS: 'PUREGYM_FIVE_WAYS' }[
+                    gymLocation
+                  ]
+                }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_gymTime">Gym Time</label>
+          <select class="form-control" name="gymTime" formControlName="gymTime" id="field_gymTime" data-cy="gymTime">
+            <option [ngValue]="null"></option>
+            @for (preferredTime of preferredTimeValues; track $index) {
+              <option [value]="preferredTime">
+                {{ { null: '', MORNING: 'MORNING', AFTERNOON: 'AFTERNOON', EVENING: 'EVENING', NIGHT: 'NIGHT' }[preferredTime] }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_studyTime">Study Time</label>
+          <select class="form-control" name="studyTime" formControlName="studyTime" id="field_studyTime" data-cy="studyTime">
+            <option [ngValue]="null"></option>
+            @for (preferredTime of preferredTimeValues; track $index) {
+              <option [value]="preferredTime">
+                {{ { null: '', MORNING: 'MORNING', AFTERNOON: 'AFTERNOON', EVENING: 'EVENING', NIGHT: 'NIGHT' }[preferredTime] }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_sports">Sports</label>
+          <select class="form-control" name="sports" formControlName="sports" id="field_sports" data-cy="sports">
+            <option [ngValue]="null"></option>
+            @for (sports of sportsValues; track $index) {
+              <option [value]="sports">
+                {{
+                  { null: '', FOOTBALL: 'FOOTBALL', CRICKET: 'CRICKET', BADMINTON: 'BADMINTON', TENNIS: 'TENNIS', NETBALL: 'NETBALL' }[
+                    sports
+                  ]
+                }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_sportsSkill">Sports Skill</label>
+          <select class="form-control" name="sportsSkill" formControlName="sportsSkill" id="field_sportsSkill" data-cy="sportsSkill">
+            <option [ngValue]="null"></option>
+            @for (skill of skillValues; track $index) {
+              <option [value]="skill">
+                {{
+                  { null: '', NOVICE: 'NOVICE', INTERMEDIATE: 'INTERMEDIATE', CONFIDENT: 'CONFIDENT', PROFESSIONAL: 'PROFESSIONAL' }[skill]
+                }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_user">User</label>
+          <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUser">
+            <option [ngValue]="null"></option>
+            @for (userOption of usersSharedCollection; track $index) {
+              <option [ngValue]="userOption">{{ userOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

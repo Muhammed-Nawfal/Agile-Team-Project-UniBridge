@@ -1,0 +1,111 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-friends-list-heading" data-cy="FriendsListCreateUpdateHeading">Create or edit a Friends List</h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let friendRequestRef = editForm.get('friendRequest')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_friendRequest">Friend Request</label>
+          <select
+            class="form-control"
+            name="friendRequest"
+            formControlName="friendRequest"
+            id="field_friendRequest"
+            data-cy="friendRequest"
+          >
+            <option [ngValue]="null"></option>
+            @for (decision of decisionValues; track $index) {
+              <option [value]="decision">{{ { null: '', ACCEPT: 'ACCEPT', DECLINED: 'DECLINED', PENDING: 'PENDING' }[decision] }}</option>
+            }
+          </select>
+          @if (friendRequestRef.invalid && (friendRequestRef.dirty || friendRequestRef.touched)) {
+            <div>
+              @if (editForm.get('friendRequest')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let friendSinceRef = editForm.get('friendSince')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_friendSince">Friend Since</label>
+          <div class="d-flex">
+            <input
+              id="field_friendSince"
+              data-cy="friendSince"
+              type="datetime-local"
+              class="form-control"
+              name="friendSince"
+              formControlName="friendSince"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (friendSinceRef.invalid && (friendSinceRef.dirty || friendSinceRef.touched)) {
+            <div>
+              @if (editForm.get('friendSince')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('friendSince')?.errors?.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_user">User</label>
+          <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUser">
+            <option [ngValue]="null"></option>
+            @for (userOption of usersSharedCollection; track $index) {
+              <option [ngValue]="userOption">{{ userOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_friend">Friend</label>
+          <select
+            class="form-control"
+            id="field_friend"
+            data-cy="friend"
+            name="friend"
+            formControlName="friend"
+            [compareWith]="compareUser"
+          >
+            <option [ngValue]="null"></option>
+            @for (userOption of usersSharedCollection; track $index) {
+              <option [ngValue]="userOption">{{ userOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

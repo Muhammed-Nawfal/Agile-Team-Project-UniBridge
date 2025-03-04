@@ -1,0 +1,208 @@
+entity Profile {
+    Bio TextBlob, //max bio length set to 50 characters
+    profilePicture ImageBlob,
+    course Course required,
+    courseYear Long required min(1) max(6), //Course year range 1-6
+    gymSkill Skill,
+    gymLocation GymLocation,
+    gymTime PreferredTime,
+    studyTime PreferredTime,
+    sports Sports,
+    sportsSkill Skill
+}
+
+relationship OneToOne {
+	Profile{user} to User with builtInEntity
+}
+enum Course {
+	COMPUTER_SCIENCE,
+	ECONOMICS,
+    PSYCHOLOGY,
+    MATHS,
+    ENGLISH
+}
+enum Skill {
+    NOVICE,
+    INTERMEDIATE,
+    CONFIDENT,
+    PROFESSIONAL
+}
+enum PreferredTime {
+    MORNING,
+    AFTERNOON,
+    EVENING,
+    NIGHT
+}
+enum GymLocation {
+    THE_GYM_SELLY_OAK,
+    TIVERTON,
+    PUREGYM_FIVE_WAYS
+}
+enum Sports{
+	FOOTBALL,
+    CRICKET,
+    BADMINTON,
+    TENNIS,
+    NETBALL
+}
+
+
+
+entity Activity {
+    activityName String required minlength(1) maxlength(120),
+    activityType ActivityType required,
+    activityDate Instant required,
+    numberOfParticipants Integer required, //There can be some logic that incremenets the number of participants of an event
+    maxNumberOfParticipants Integer required min(2),
+    location String required maxlength(95),
+    description TextBlob,
+    createdOn Instant required,
+    updatedOn Instant required,
+    status Status required,
+    coverImage ImageBlob,
+    //New fields added
+    paid IsPaid required,
+    costOfactivity BigDecimal required //We can add a conditional statement that if the paid field evaluates to notPaid then the cost of the activity is 0
+}
+enum IsPaid {
+	PAID,
+    NOTPAID
+}
+enum Status {
+    ANNOUNCED,
+    CURRENTLY_HAPPENING,
+    FINISHED,
+    CANCELED
+}
+
+enum ActivityType {
+	SOCIAL,
+    ACADEMIC,
+    SPORTS,
+    GYM,
+    OTHER
+}
+
+
+relationship ManyToOne {
+	Activity{requesteduser} to User with builtInEntity // Many activities can be linked to multiple Profiles
+}
+
+relationship OneToMany {
+	Activity{booking} to Booking //One activity can have several bookings
+}
+
+
+entity ActivityMatch {
+    activityType ActivityType required,
+    status Decision required,
+}
+
+enum Decision {
+  ACCEPT,
+  DECLINED,
+  PENDING
+}
+
+relationship ManyToOne {
+    ActivityMatch{requestUser} to User with builtInEntity
+}
+relationship ManyToOne {
+    ActivityMatch{matchedUser} to User with builtInEntity
+}
+entity Booking {
+    bookingName String required,
+    bookingStatus Status required,
+    bookingTime Instant required,
+    bookingDate Instant required,
+    phoneNum String required minlength(11) maxlength(11),
+    bookingType BookingType required,
+    numOfParticipants Integer required min(1),
+    bookStartTime Instant required,
+    bookEndTime Instant required
+}
+enum BookingType{
+	FOOTBALL_PITCH,
+	TENNIS_COURT,
+	BASKETBALL_COURT,
+	STUDY_SPACES,
+	EVENT_ROOMS,
+	DOJO,
+	SWIMMING_POOL,
+	SQUASH_COURT
+}
+
+relationship ManyToOne {
+	Booking{requestedUser} to User with builtInEntity
+}
+
+entity Notification {
+    notificationType Notificationstype required,
+    title String required minlength(1) maxlength(255),
+    message String required minlength(1) maxlength(1000),
+    timestamp Instant required,
+    isRead Boolean required
+}
+relationship ManyToOne {
+    Notification{userID} to User with builtInEntity
+}
+enum Notificationstype{
+  NEW_CHAT_MESSAGE,
+  FRIEND_REQUEST,
+  ACTIVITY_MATCH,
+  BOOKING_CONFIRMATION
+}
+entity FriendsList {
+    friendRequest Decision required,
+    friendSince Instant required
+}
+
+
+relationship ManyToMany {
+    FriendsList{userId} to User with builtInEntity,
+    FriendsList{friendId} to User with builtInEntity
+}
+entity Ranking {
+  reviewNumber Integer required,
+  activityNumber Integer required,
+  starAverage BigDecimal required min(0) max(5),
+  reliable Reliability required
+}
+
+enum Reliability {
+  UNRELIABLE,
+  RELIABLE
+}
+
+entity Review {
+  datePublished Instant required,
+  star BigDecimal required min(0) max(5),
+  text String minlength(0) maxlength(300)
+}
+relationship ManyToOne {
+  Review{aboutUser} to User with builtInEntity,
+  Review{fromUser} to User with builtInEntity
+}
+relationship OneToOne {
+  Ranking{user} to User with builtInEntity
+}
+entity Chat {
+    message TextBlob required,
+    timestamp Instant required
+}
+entity Action {
+    type ActionType required,
+    timestamp Instant required
+}
+enum ActionType{
+    UNMATCH,
+    REPORT
+}
+relationship ManyToOne {
+    Chat{senderID} to User with builtInEntity,
+    Chat{recieverID} to User with builtInEntity,
+}
+relationship ManyToOne {
+    Action{performedByID} to User with builtInEntity,
+    Action{targetUserID} to User with builtInEntity
+}

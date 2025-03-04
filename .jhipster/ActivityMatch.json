@@ -1,0 +1,38 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170642"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "activityType",
+      "fieldType": "ActivityType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "SOCIAL,ACADEMIC,SPORTS,GYM,OTHER"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "Decision",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "ACCEPT,DECLINED,PENDING"
+    }
+  ],
+  "name": "ActivityMatch",
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "relationshipName": "requestUser",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    },
+    {
+      "otherEntityName": "user",
+      "relationshipName": "matchedUser",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    }
+  ],
+  "searchEngine": "no"
+}

@@ -1,0 +1,42 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170646"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "reviewNumber",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "activityNumber",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "starAverage",
+      "fieldType": "BigDecimal",
+      "fieldValidateRules": ["required", "min", "max"],
+      "fieldValidateRulesMax": "5",
+      "fieldValidateRulesMin": "0"
+    },
+    {
+      "fieldName": "reliable",
+      "fieldType": "Reliability",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "UNRELIABLE,RELIABLE"
+    }
+  ],
+  "name": "Ranking",
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "relationshipName": "user",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one",
+      "relationshipWithBuiltInEntity": true
+    }
+  ],
+  "searchEngine": "no"
+}

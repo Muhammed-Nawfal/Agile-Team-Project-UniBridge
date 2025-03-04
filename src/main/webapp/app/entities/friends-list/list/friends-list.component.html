@@ -1,0 +1,56 @@
+<div class="friends-page">
+  <!-- App navigation bar -->
+  <div class="app-navbar">
+    <button class="nav-icon home"></button>
+    <button class="nav-icon activity"></button>
+    <button class="nav-icon people"></button>
+    <button class="nav-icon stats"></button>
+    <button class="nav-icon profile"></button>
+    <button class="nav-icon notification"></button>
+    <button class="nav-icon settings"></button>
+  </div>
+
+  <!-- Friends content -->
+  <div class="main-content">
+    <h1>FRIENDS</h1>
+
+    <!-- Search and requests -->
+    <div class="search-row">
+      <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" [(ngModel)]="searchQuery" placeholder="Search friends" />
+      </div>
+
+      <button class="requests-button" (click)="viewFriendRequests()">
+        <div class="request-icon">
+          <span *ngIf="pendingRequests > 0" class="badge">{{ pendingRequests }}</span>
+        </div>
+        <span>Requests</span>
+      </button>
+    </div>
+
+    <h2>All Friends</h2>
+
+    <!-- Loading indicator -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading friends...</p>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!isLoading && filteredFriends.length === 0" class="empty-state">
+      <p>No friends found.</p>
+    </div>
+
+    <!-- Friends grid -->
+    <div *ngIf="!isLoading && filteredFriends.length > 0" class="friends-grid">
+      <div *ngFor="let friend of filteredFriends; let i = index" class="friend-card">
+        <img [src]="getAvatarUrl(i)" alt="Friend Avatar" class="friend-avatar" />
+        <div class="friend-info">
+          <h3>{{ getFriendName(friend, i) }}</h3>
+          <button class="message-button" (click)="messageFriend(friend)">Message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
