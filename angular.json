@@ -106,6 +106,6 @@
       "environment": "all"
     },
     "packageManager": "npm",
-    "analytics": false
+    "analytics": "653e4c44-6746-4c06-a098-11abf6e133ba"
   }
 }
