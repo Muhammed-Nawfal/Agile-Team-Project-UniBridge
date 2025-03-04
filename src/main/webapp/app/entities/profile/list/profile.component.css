@@ -1,0 +1,109 @@
+/* Profile Wrapper */
+.profile-wrapper {
+  display: flex;
+  flex-direction: row; /* Horizontal layout */
+  justify-content: center; /* Center the items horizontally */
+  align-items: flex-start; /* Align items to the top */
+  gap: 20px; /* Space between containers */
+  margin-top: 20px;
+  width: 100%;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Profile Card */
+.profile-card {
+  flex: 1; /* Allow it to grow */
+  max-width: 350px; /* Reasonable width */
+  min-width: 350px; /* Prevent it from shrinking too much */
+  overflow: hidden; /* Prevent weird stretching */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  word-wrap: break-word;
+  text-align: center;
+}
+
+/* Header */
+.profile-header {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.profile-name {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+/* Profile Body */
+.profile-body {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.profile-picture img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid black;
+}
+
+.profile-info {
+  flex: 1;
+  text-align: left;
+}
+
+/* Preferences */
+.preferences-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.preference-box {
+  flex: 1;
+  background-color: lightblue;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+/* Stars */
+.stars-container {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+/* View Ratings Link */
+.view-ratings {
+  color: blue;
+  text-decoration: underline;
+  font-size: 0.9em;
+}
+
+/* Edit Profile Button */
+.button {
+  background-color: lightblue;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Left & Right Containers */
+.left-container,
+.right-container {
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
