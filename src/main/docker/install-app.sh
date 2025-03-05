@@ -18,6 +18,7 @@ docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}
 
 echo "the app deployment script is configuring the development docker compose script"
 sed -i "4s|teamproject|${CI_REGISTRY_IMAGE}|" ~/team-project/dev.yml
+sed -i "4s|latest|${CI_COMMIT_TAG}|" ~/team-project/dev.yml
 
 echo "the app deployment script is configuring the production docker compose script"
 if [ -n "${CI_COMMIT_TAG}" ]; then
