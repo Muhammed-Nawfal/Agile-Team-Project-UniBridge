@@ -67,14 +67,14 @@
           <dd>
             @if (activityRef.coverImage) {
               <div>
-                <a (click)="openFile(activityRef.coverImage ?? '', activityRef.coverImageContentType)">
+                <a (click)="openFile(activityRef.coverImage, activityRef.coverImageContentType)">
                   <img
                     [src]="'data:' + activityRef.coverImageContentType + ';base64,' + activityRef.coverImage"
                     style="max-width: 100%"
                     alt="activity"
                   />
                 </a>
-                {{ activityRef.coverImageContentType }}, {{ byteSize(activityRef.coverImage ?? '') }}
+                {{ activityRef.coverImageContentType }}, {{ byteSize(activityRef.coverImage) }}
               </div>
             }
           </dd>
