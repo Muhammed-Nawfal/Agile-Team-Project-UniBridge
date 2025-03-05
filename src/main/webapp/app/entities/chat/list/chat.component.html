@@ -1,65 +1,112 @@
-<div class="app-container">
-  <!-- Navigation toolbar -->
-  <div class="app-toolbar">
-    <div class="nav-icons">
-      <div class="nav-icon home-icon"></div>
-      <div class="nav-icon messages-icon active"></div>
-      <div class="nav-icon profile-icon"></div>
-      <div class="nav-icon activity-icon"></div>
+<div>
+  <h2 id="page-heading" data-cy="ChatHeading">
+    <span>Chats</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span>Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-chat"
+        [routerLink]="['/chat/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span>Create a new Chat</span>
+      </button>
     </div>
-    <div class="settings-icon"></div>
-  </div>
+  </h2>
 
-  <div class="chat-container">
-    <!-- Left sidebar with contacts -->
-    <div class="contacts-sidebar">
-      <div class="contact-item" *ngFor="let contact of contacts; let i = index">
-        <div class="avatar-circle"></div>
-        <div class="contact-name">{{ contact.name }}</div>
-      </div>
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (chats?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span>No Chats found</span>
     </div>
+  }
 
-    <!-- Main chat area -->
-    <div class="chat-main">
-      <!-- Chat header -->
-      <div class="chat-header">
-        <div class="match-info">
-          <div class="avatar-small"></div>
-          <div class="match-text">You matched with {{ selectedContact.name }} on {{ matchDate | date: 'MMM d' }}</div>
-        </div>
-      </div>
+  @if (chats && chats.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span>ID</span>
 
-      <!-- Chat messages area -->
-      <div class="chat-messages">
-        <div
-          *ngFor="let msg of messages"
-          class="message-container"
-          [ngClass]="{ sent: msg.sender === currentUser, received: msg.sender !== currentUser }"
-        >
-          <div class="message-avatar" *ngIf="msg.sender !== currentUser"></div>
-          <div class="message-bubble">
-            <span class="message-text">{{ msg.message }}</span>
-          </div>
-          <span class="message-time">{{ msg.timestamp | date: 'shortTime' }}</span>
-        </div>
-      </div>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="message">
+              <div class="d-flex">
+                <span>Message</span>
 
-      <!-- Chat input area -->
-      <div class="chat-input">
-        <input type="text" [(ngModel)]="newMessage" placeholder="Type a message..." />
-        <button (click)="sendMessage()">Send</button>
-      </div>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="timestamp">
+              <div class="d-flex">
+                <span>Timestamp</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="senderID.id">
+              <div class="d-flex">
+                <span>Sender ID</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="recieverID.id">
+              <div class="d-flex">
+                <span>Reciever ID</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (chat of chats; track trackId(chat)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/chat', chat.id, 'view']">{{ chat.id }}</a>
+              </td>
+              <td>{{ chat.message }}</td>
+              <td>{{ chat.timestamp | formatMediumDatetime }}</td>
+              <td>
+                {{ chat.senderID?.id }}
+              </td>
+              <td>
+                {{ chat.recieverID?.id }}
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/chat', chat.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline">View</span>
+                  </a>
+
+                  <a [routerLink]="['/chat', chat.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(chat)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
-
-    <!-- Right profile sidebar -->
-    <div class="profile-sidebar">
-      <div class="profile-avatar"></div>
-      <div class="profile-info">
-        <div class="profile-name">{{ selectedContact.name }}, {{ selectedContact.age }}</div>
-        <div class="profile-distance">{{ selectedContact.distance }} miles away</div>
-      </div>
-      <button class="unmatch-button">Unmatch</button>
-      <button class="report-button">Report</button>
-    </div>
-  </div>
+  }
 </div>
