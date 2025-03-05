@@ -1,75 +1,131 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, NgZone, OnInit, inject } from '@angular/core';
+import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
+import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
+import SharedModule from 'app/shared/shared.module';
+import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
+import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
 import { FormsModule } from '@angular/forms';
-
-interface Contact {
-  id: number;
-  name: string;
-  age: number;
-  distance: number;
-}
-
-interface Message {
-  id: number;
-  message: string;
-  timestamp: Date;
-  sender: string;
-  receiver: string;
-}
+import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
+import { DataUtils } from 'app/core/util/data-util.service';
+import { IChat } from '../chat.model';
+import { ChatService, EntityArrayResponseType } from '../service/chat.service';
+import { ChatDeleteDialogComponent } from '../delete/chat-delete-dialog.component';
 
 @Component({
-  selector: 'app-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  selector: 'jhi-chat',
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css'],
+  imports: [
+    RouterModule,
+    FormsModule,
+    SharedModule,
+    SortDirective,
+    SortByDirective,
+    DurationPipe,
+    FormatMediumDatetimePipe,
+    FormatMediumDatePipe,
+  ],
 })
-export class ChatComponent {
-  currentUser: string = 'Me';
-  matchDate: Date = new Date();
+export class ChatComponent implements OnInit {
+  subscription: Subscription | null = null;
+  chats?: IChat[];
+  isLoading = false;
 
-  contacts: Contact[] = [
-    { id: 1, name: 'Andre', age: 25, distance: 2 },
-    { id: 2, name: 'Jeffrey', age: 28, distance: 5 },
-    { id: 3, name: 'Ivan', age: 24, distance: 3 },
-  ];
+  sortState = sortStateSignal({});
 
-  selectedContact: Contact = {
-    id: 1,
-    name: 'Daniel',
-    age: 25,
-    distance: 2,
-  };
+  public readonly router = inject(Router);
+  protected readonly chatService = inject(ChatService);
+  protected readonly activatedRoute = inject(ActivatedRoute);
+  protected readonly sortService = inject(SortService);
+  protected dataUtils = inject(DataUtils);
+  protected modalService = inject(NgbModal);
+  protected ngZone = inject(NgZone);
 
-  messages: Message[] = [
-    {
-      id: 1,
-      message: 'Hey, are you down for a session at the Library later today?',
-      timestamp: new Date(new Date().setHours(12, 56)),
-      sender: 'Name 1',
-      receiver: 'Me',
-    },
-    {
-      id: 2,
-      message: 'Yes sure! See you there!',
-      timestamp: new Date(new Date().setHours(13, 12)),
-      sender: 'Me',
-      receiver: 'Name 1',
-    },
-  ];
+  trackId = (item: IChat): number => this.chatService.getChatIdentifier(item);
 
-  newMessage: string = '';
+  ngOnInit(): void {
+    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
+      .pipe(
+        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
+        tap(() => {
+          if (!this.chats || this.chats.length === 0) {
+            this.load();
+          }
+        }),
+      )
+      .subscribe();
+  }
 
-  sendMessage() {
-    if (this.newMessage.trim()) {
-      this.messages.push({
-        id: this.messages.length + 1,
-        message: this.newMessage,
-        timestamp: new Date(),
-        sender: this.currentUser,
-        receiver: this.selectedContact.name,
+  byteSize(base64String: string): string {
+    return this.dataUtils.byteSize(base64String);
+  }
+
+  openFile(base64String: string, contentType: string | null | undefined): void {
+    return this.dataUtils.openFile(base64String, contentType);
+  }
+
+  delete(chat: IChat): void {
+    const modalRef = this.modalService.open(ChatDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.chat = chat;
+    // unsubscribe not needed because closed completes on modal close
+    modalRef.closed
+      .pipe(
+        filter(reason => reason === ITEM_DELETED_EVENT),
+        tap(() => this.load()),
+      )
+      .subscribe();
+  }
+
+  load(): void {
+    this.queryBackend().subscribe({
+      next: (res: EntityArrayResponseType) => {
+        this.onResponseSuccess(res);
+      },
+    });
+  }
+
+  navigateToWithComponentValues(event: SortState): void {
+    this.handleNavigation(event);
+  }
+
+  protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
+    this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
+  }
+
+  protected onResponseSuccess(response: EntityArrayResponseType): void {
+    const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
+    this.chats = this.refineData(dataFromBody);
+  }
+
+  protected refineData(data: IChat[]): IChat[] {
+    const { predicate, order } = this.sortState();
+    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
+  }
+
+  protected fillComponentAttributesFromResponseBody(data: IChat[] | null): IChat[] {
+    return data ?? [];
+  }
+
+  protected queryBackend(): Observable<EntityArrayResponseType> {
+    this.isLoading = true;
+    const queryObject: any = {
+      sort: this.sortService.buildSortParam(this.sortState()),
+    };
+    return this.chatService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
+  }
+
+  protected handleNavigation(sortState: SortState): void {
+    const queryParamsObj = {
+      sort: this.sortService.buildSortParam(sortState),
+    };
+
+    this.ngZone.run(() => {
+      this.router.navigate(['./'], {
+        relativeTo: this.activatedRoute,
+        queryParams: queryParamsObj,
       });
-      this.newMessage = ''; // Clear input
-    }
+    });
   }
 }
