@@ -126,7 +126,7 @@ jobs:
                CI_REGISTRY_IMAGE=${{ env.CI_REGISTRY_IMAGE }} \
                CI_COMMIT_TAG=${{ github.sha }} \
                CI_REGISTRY=${{ env.CI_REGISTRY }} \
-               ACME=${{ env.ACME }} \
+               ACME=${{ env.ACME_STAGING }} \
                DEVURL=${{ env.DEVURL }} \
                URL=${{ env.URL }} \
                DEPLOY_IP=${{ secrets.DEPLOY_IP }} \
@@ -175,7 +175,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up SSH key for  connection
+      # Set up SSH key for connection
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
