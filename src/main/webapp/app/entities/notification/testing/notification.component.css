@@ -1,0 +1,54 @@
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000; /* Ensure notifications are on top of other content */
+  }
+  
+  .notification {
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: fadeIn 0.5s; /* Fade-in animation */
+  }
+  
+  /* Notification types */
+  .notification.success {
+    background-color: #28a745; /* Green */
+  }
+  
+  .notification.error {
+    background-color: #dc3545; /* Red */
+  }
+  
+  .notification.info {
+    background-color: #17a2b8; /* Blue */
+  }
+  
+  .notification.warning {
+    background-color: #ffc107; /* Yellow */
+  }
+  
+  /* Dismiss button */
+  button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 10px;
+  }
+  
+  /* Fade-in animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }

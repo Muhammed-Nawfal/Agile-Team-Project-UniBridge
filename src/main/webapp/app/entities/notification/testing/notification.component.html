@@ -1,0 +1,7 @@
+<div class="notification-container">
+    <!-- Loop through notifications and display them -->
+    <div *ngFor="let notification of notifications" class="notification {{ notification.type }}">
+      <span>{{ notification.message }}</span>
+      <button (click)="dismissNotification(notification.id)">×</button>
+    </div>
+  </div>

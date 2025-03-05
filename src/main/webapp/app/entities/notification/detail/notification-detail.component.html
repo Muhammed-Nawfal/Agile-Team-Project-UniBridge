@@ -1,62 +1,40 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
-    @if (notification(); as notificationRef) {
-      <div>
-        <h2 data-cy="notificationDetailsHeading"><span>Notification</span></h2>
+import { Component } from '@angular/core';
 
-        <hr />
-
-        <jhi-alert-error></jhi-alert-error>
-
-        <jhi-alert></jhi-alert>
-
-        <dl class="row-md jh-entity-details">
-          <dt><span>ID</span></dt>
-          <dd>
-            <span>{{ notificationRef.id }}</span>
-          </dd>
-          <dt><span>Notification Type</span></dt>
-          <dd>
-            <span>{{
-              {
-                null: '',
-                NEW_CHAT_MESSAGE: 'NEW_CHAT_MESSAGE',
-                FRIEND_REQUEST: 'FRIEND_REQUEST',
-                ACTIVITY_MATCH: 'ACTIVITY_MATCH',
-                BOOKING_CONFIRMATION: 'BOOKING_CONFIRMATION',
-              }[notificationRef.notificationType ?? 'null']
-            }}</span>
-          </dd>
-          <dt><span>Title</span></dt>
-          <dd>
-            <span>{{ notificationRef.title }}</span>
-          </dd>
-          <dt><span>Message</span></dt>
-          <dd>
-            <span>{{ notificationRef.message }}</span>
-          </dd>
-          <dt><span>Timestamp</span></dt>
-          <dd>
-            <span>{{ notificationRef.timestamp | formatMediumDatetime }}</span>
-          </dd>
-          <dt><span>Is Read</span></dt>
-          <dd>
-            <span>{{ notificationRef.isRead }}</span>
-          </dd>
-          <dt><span>User ID</span></dt>
-          <dd>
-            <span>{{ notificationRef.userID?.id }}</span>
-          </dd>
-        </dl>
-
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
-          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
-        </button>
-
-        <button type="button" [routerLink]="['/notification', notificationRef.id, 'edit']" class="btn btn-primary">
-          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
-        </button>
+@Component({
+  selector: 'app-notifications',
+  template: `
+    <div class="container">
+      <h2>Notifications</h2>
+      <div *ngFor="let notification of notifications" class="notification">
+        <p>{{ notification.message }}</p>
+        <span class="timestamp">{{ notification.timestamp }}</span>
       </div>
+    </div>
+  `,
+  styles: [`
+    .container {
+      width: 50%;
+      margin: auto;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-  </div>
-</div>
+    .notification {
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #f9f9f9;
+      border-left: 5px solid #007bff;
+    }
+    .timestamp {
+      font-size: 12px;
+      color: #888;
+    }
+  `]
+})
+export class NotificationsComponent {
+  notifications = [
+    { message: 'New message received', timestamp: '2025-03-03 10:00 AM' },
+    { message: 'System update completed', timestamp: '2025-03-03 09:30 AM' },
+    { message: 'Meeting scheduled for tomorrow', timestamp: '2025-03-02 05:00 PM' }
+  ];
+}
