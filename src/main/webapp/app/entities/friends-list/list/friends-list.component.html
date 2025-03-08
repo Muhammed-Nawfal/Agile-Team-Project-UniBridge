@@ -1,56 +1,67 @@
-<div class="friends-page">
-  <!-- App navigation bar -->
-  <div class="app-navbar">
-    <button class="nav-icon home"></button>
-    <button class="nav-icon activity"></button>
-    <button class="nav-icon people"></button>
-    <button class="nav-icon stats"></button>
-    <button class="nav-icon profile"></button>
-    <button class="nav-icon notification"></button>
-    <button class="nav-icon settings"></button>
-  </div>
+<div>
+  <h2 id="page-heading" data-cy="FriendsListHeading">
+    <span>All Friends</span>
+  </h2>
 
-  <!-- Friends content -->
-  <div class="main-content">
-    <h1>FRIENDS</h1>
+  <jhi-alert-error></jhi-alert-error>
 
-    <!-- Search and requests -->
-    <div class="search-row">
-      <div class="search-container">
-        <span class="search-icon">🔍</span>
-        <input type="text" [(ngModel)]="searchQuery" placeholder="Search friends" />
-      </div>
+  <jhi-alert></jhi-alert>
 
-      <button class="requests-button" (click)="viewFriendRequests()">
-        <div class="request-icon">
-          <span *ngIf="pendingRequests > 0" class="badge">{{ pendingRequests }}</span>
+  @if (friendsLists?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span>No Friends Lists found</span>
+    </div>
+  }
+
+  @if (friendsLists && friendsLists.length > 0) {
+    <div class="card-container">
+      @for (friendsList of friendsLists; track trackId(friendsList)) {
+        <div class="card">
+          <div class="friend-card-content">
+            <div class="friend-status-tag {{ friendsList.friendRequest }}">
+              {{ { null: '', ACCEPT: 'ACCEPT', DECLINED: 'DECLINED', PENDING: 'PENDING' }[friendsList.friendRequest ?? 'null'] }}
+            </div>
+
+            <!-- Profile area - will be populated later -->
+            <div class="profile-area">
+              <!-- This is a placeholder for the profile picture -->
+              <div class="profile-pic-placeholder"></div>
+
+              <!-- Placeholder for name -->
+              <h3 class="friend-name">Friend #{{ friendsList.friend?.id }}</h3>
+
+              <!-- Message button -->
+              <button class="btn btn-primary message-btn"><fa-icon icon="envelope"></fa-icon> Message</button>
+            </div>
+
+            <div class="friend-details">
+              <p>
+                <strong>Location:</strong>
+                <!-- Will be from profile -->
+              </p>
+              <p><strong>Date:</strong> {{ friendsList.friendSince | formatMediumDatetime }}</p>
+              <p><strong>Participants:</strong> {{ friendsList.user?.id }} / {{ friendsList.friend?.id }}</p>
+              <p><strong>ID:</strong> {{ friendsList.id }}</p>
+            </div>
+
+            <div class="view-button">
+              <a [routerLink]="['/friends-list', friendsList.id, 'view']" class="btn btn-info"> <fa-icon icon="eye"></fa-icon> VIEW </a>
+            </div>
+
+            <div class="card-actions">
+              <a [routerLink]="['/friends-list', friendsList.id, 'edit']" class="btn btn-primary btn-sm">
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline">Edit</span>
+              </a>
+
+              <button type="submit" (click)="delete(friendsList)" class="btn btn-danger btn-sm">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline">Delete</span>
+              </button>
+            </div>
+          </div>
         </div>
-        <span>Requests</span>
-      </button>
+      }
     </div>
-
-    <h2>All Friends</h2>
-
-    <!-- Loading indicator -->
-    <div *ngIf="isLoading" class="loading-state">
-      <div class="loading-spinner"></div>
-      <p>Loading friends...</p>
-    </div>
-
-    <!-- Empty state -->
-    <div *ngIf="!isLoading && filteredFriends.length === 0" class="empty-state">
-      <p>No friends found.</p>
-    </div>
-
-    <!-- Friends grid -->
-    <div *ngIf="!isLoading && filteredFriends.length > 0" class="friends-grid">
-      <div *ngFor="let friend of filteredFriends; let i = index" class="friend-card">
-        <img [src]="getAvatarUrl(i)" alt="Friend Avatar" class="friend-avatar" />
-        <div class="friend-info">
-          <h3>{{ getFriendName(friend, i) }}</h3>
-          <button class="message-button" (click)="messageFriend(friend)">Message</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  }
 </div>
