@@ -1,6 +1,21 @@
+<style>
+  table,
+  th,
+  td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+  table {
+    width: 75%;
+  }
+  .pfp {
+    width: 20%;
+  }
+</style>
+
 <div>
   <h2 id="page-heading" data-cy="ReviewHeading">
-    <span>Reviews</span>
+    <span>[User] Reviews</span>
 
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
@@ -15,7 +30,7 @@
         [routerLink]="['/review/new']"
       >
         <fa-icon icon="plus"></fa-icon>
-        <span>Create a new Review</span>
+        <span>Submit review</span>
       </button>
     </div>
   </h2>
@@ -31,81 +46,37 @@
   }
 
   @if (reviews && reviews.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
+    <div class="table-responsive table-reviews" id="reviews" style="overflow-y: auto">
+      <img class="pfp" src="../../../content/images/pfp.jpg" alt="profile picture" style="float: left" />
+      <table class="table table-striped" aria-describedby="page-heading" align="right">
         <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="datePublished">
-              <div class="d-flex">
-                <span>Date Published</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="star">
-              <div class="d-flex">
-                <span>Star</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="text">
-              <div class="d-flex">
-                <span>Text</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="aboutUser.id">
-              <div class="d-flex">
-                <span>About User</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="fromUser.id">
-              <div class="d-flex">
-                <span>From User</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col"></th>
+          <tr>
+            <table align="left"></table>
           </tr>
         </thead>
         <tbody>
           @for (review of reviews; track trackId(review)) {
             <tr data-cy="entityTable">
+              <td width="15%">{{ review.datePublished | formatMediumDatetime }}</td>
               <td>
-                <a [routerLink]="['/review', review.id, 'view']">{{ review.id }}</a>
+                <tr>
+                  ({{
+                    review.star
+                  }}) stars
+                </tr>
+                <tr height="90px">
+                  {{
+                    review.text
+                  }}
+                </tr>
+                <tr>
+                  Anonymous
+                </tr>
               </td>
-              <td>{{ review.datePublished | formatMediumDatetime }}</td>
-              <td>{{ review.star }}</td>
-              <td>{{ review.text }}</td>
-              <td>
-                {{ review.aboutUser?.id }}
-              </td>
-              <td>
-                {{ review.fromUser?.id }}
-              </td>
-              <td class="text-end">
+              <td class="text-end" width="8%">
                 <div class="btn-group">
-                  <a [routerLink]="['/review', review.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                    <fa-icon icon="eye"></fa-icon>
-                    <span class="d-none d-md-inline">View</span>
-                  </a>
-
-                  <a [routerLink]="['/review', review.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline">Edit</span>
-                  </a>
-
                   <button type="submit" (click)="delete(review)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <!--if user = fromUser then delete else not your review. actually else button not shown-->
                     <fa-icon icon="times"></fa-icon>
                     <span class="d-none d-md-inline">Delete</span>
                   </button>
@@ -118,3 +89,5 @@
     </div>
   }
 </div>
+
+<img src="https://tse2.mm.bing.net/th?id=OIP.6W2ogLXdf48OKWgl_5jSPgHaHa&pid=Api" alt="blank profile picture" style="float: left" />
