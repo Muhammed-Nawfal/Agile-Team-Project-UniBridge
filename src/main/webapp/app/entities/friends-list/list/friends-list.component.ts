@@ -11,6 +11,7 @@ import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigati
 import { IFriendsList } from '../friends-list.model';
 import { EntityArrayResponseType, FriendsListService } from '../service/friends-list.service';
 import { FriendsListDeleteDialogComponent } from '../delete/friends-list-delete-dialog.component';
+import { FriendRequestsComponent } from '../friend-requests/friend-requests.component'; // Import FriendRequestsComponent
 
 @Component({
   standalone: true,
@@ -26,6 +27,7 @@ import { FriendsListDeleteDialogComponent } from '../delete/friends-list-delete-
     DurationPipe,
     FormatMediumDatetimePipe,
     FormatMediumDatePipe,
+    FriendRequestsComponent,
   ],
 })
 export class FriendsListComponent implements OnInit {
