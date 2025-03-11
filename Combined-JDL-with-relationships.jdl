@@ -219,14 +219,12 @@ entity Challenge {
   expiryDate Instant,
   isCompleted Boolean required,
   completedDate Instant,
-  isDisplayed Boolean,  // For displaying in user profile
+  isDisplayed Boolean,
 }
 
 enum AchievementCategory {
   STUDY,
   SPORTS,
-  COMMUNITY,
-  PERSONAL_GROWTH,
   SOCIAL
 }
 relationship ManyToOne {
