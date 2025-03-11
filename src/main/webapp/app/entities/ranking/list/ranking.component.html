@@ -8,21 +8,30 @@
   table {
     width: 35%;
   }
-  button {
+  .mybutton {
     display: block;
+    background-color: #3e8acc;
+    color: white;
+    font-size: 30px;
+    padding: 10px;
+    border: 3px ridge #0054bc;
+    text-decoration: none;
+    font-family: Georgia, sans-serif;
+  }
+  .mybutton:hover {
+    border: 3px groove #7bc0ff;
+  }
+  .btn-group-vertical {
+    margin-top: 50px;
+    margin-bottom: 40px;
+    margin-left: 70px;
+    gap: 50px;
   }
 </style>
 
 <div>
   <h2 id="page-heading" data-cy="RankingHeading">
     <span>User Rankings</span>
-
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span>Refresh list</span>
-      </button>
-    </div>
   </h2>
 
   <jhi-alert-error></jhi-alert-error>
@@ -74,14 +83,16 @@
           }
         </tbody>
       </table>
-      <button style="float: left">Submit a review</button>
-      <button style="float: left">Find my ranking</button>
-      <p style="float: left">
-        <br />Rankings are based on user reviews. <br />
-        Star rating and number of reviews both impact rank, <br />
-        so sign up to as many events as you like, <br />
-        but make sure to attend them!
-      </p>
+      <div class="btn-group-vertical">
+        <a class="mybutton" role="button" href="../review" style="float: left">Submit a review</a>
+        <button class="mybutton" style="float: left">Find my ranking</button>
+        <p style="float: left">
+          Rankings are based on user reviews. <br />
+          Star rating and number of reviews both <br />
+          impact rank, so sign up to as many events <br />
+          as you like, but make sure to attend them!
+        </p>
+      </div>
       <table class="table table-striped" aria-describedby="page-heading" style="float: right">
         <thead>
           <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
