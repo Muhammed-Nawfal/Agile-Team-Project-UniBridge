@@ -1,0 +1,312 @@
+<header>
+  <h1>WHO IS YOUR {{ buddyType.toUpperCase() }} BUDDY?</h1>
+</header>
+
+<form id="buddyType + '-buddy-filters'">
+  <div class="filter-group-container">
+    <h2>Filters</h2>
+    <div class="filter-group">
+      <label for="filter1">
+        {{
+          buddyType === 'gym' ? 'Gym Location' : buddyType === 'study' ? 'Course' : buddyType === 'sports' ? 'Sport' : 'Preferred Society'
+        }}
+      </label>
+      <select id="filter1" name="filter1">
+        <ng-container *ngIf="buddyType === 'gym'">
+          <option value="">All Locations</option>
+          <option value="sports-and-fitness">Sports and Fitness Gym</option>
+          <option value="tiverton">Tiverton Center</option>
+          <option value="gym-group-selly-oak">The Gym Group Selly Oak</option>
+          <option value="puregym-five-ways">PureGym Five Ways</option>
+        </ng-container>
+
+        <ng-container *ngIf="buddyType === 'study'">
+          <option value="">Any Course</option>
+          <option value="computer-science">Computer Science</option>
+          <option value="mechanical-engineering">Mechanical Engineering</option>
+          <option value="law">Law</option>
+          <option value="sports-science">Sports Science</option>
+        </ng-container>
+
+        <!-- Conditional sports location options that only appear when buddyType is 'sports' -->
+        <ng-container *ngIf="buddyType === 'sports'">
+          <option value="">Any Sports</option>
+          <option value="football">Football</option>
+          <option value="basketball">Basketball</option>
+          <option value="tennis">Tennis</option>
+          <option value="swimming">Swimming</option>
+        </ng-container>
+
+        <!-- Conditional event location options that only appear when buddyType is 'events' -->
+        <ng-container *ngIf="buddyType === 'events'">
+          <option value="">All Societies</option>
+          <option value="computer-science-society">Computer Science Society</option>
+          <option value="tea-society">Tea Society</option>
+          <option value="tamil-society">Tamil Society</option>
+          <option value="arab-society">Arab Society</option>
+        </ng-container>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <!-- Dynamic label that changes based on buddy type (study uses 'Subject', others use 'Skill') -->
+      <label for="filter2">
+        {{
+          buddyType === 'gym'
+            ? 'Skill Level'
+            : buddyType === 'study'
+              ? 'University'
+              : buddyType === 'sports'
+                ? 'Skill Level'
+                : 'Preferred Event Type'
+        }}
+      </label>
+
+      <!-- Dropdown select for skill/subject level -->
+      <select id="filter2" name="filter2">
+        <ng-container *ngIf="buddyType === 'gym'">
+          <option value="">Any Skill Level</option>
+          <option value="novice">Novice</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="confident">Confident</option>
+          <option value="professional">Professional</option>
+        </ng-container>
+
+        <!-- Conditional study level options (academic years) that only appear when buddyType is 'study' -->
+        <ng-container *ngIf="buddyType === 'study'">
+          <option value="">Any University</option>
+          <option value="university-of-birmingham">University of Birmingham</option>
+          <option value="aston-university">Aston University</option>
+          <option value="birmingham-city-university">Birmingham City University</option>
+          <option value="university-of-nottingham">University of Nottingham</option>
+        </ng-container>
+
+        <!-- Conditional sports skill levels that only appear when buddyType is 'sports' -->
+        <ng-container *ngIf="buddyType === 'sports'">
+          <option value="">Any Skill Level</option>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+          <option value="competitive">Competitive</option>
+        </ng-container>
+
+        <!-- Conditional event interest categories (instead of skills) that only appear when buddyType is 'events' -->
+        <ng-container *ngIf="buddyType === 'events'">
+          <option value="">Any Event Type</option>
+          <option value="meet-&-greet">Meet & Greet</option>
+          <option value="games-night">Games Night</option>
+          <option value="religious-event">Religious Event</option>
+          <option value="movie-night">Movie Night</option>
+          <option value="dinner-&-dance">Dinner & Dance</option>
+        </ng-container>
+      </select>
+    </div>
+
+    <!-- Third filter group for timing preferences -->
+    <div class="filter-group">
+      <!-- Dynamic label that changes based on buddy type for different activities -->
+      <label>Timing</label>
+      <!-- Dropdown select for timing preferences -->
+      <select id="timing" name="timing">
+        <option value="">Anytime</option>
+        <option value="early-morning">Early Morning (5-8 AM)</option>
+        <option value="morning">Morning (8-12 AM)</option>
+        <option value="afternoon">Afternoon (12-4 PM)</option>
+        <option value="evening">Evening (4-8 PM)</option>
+        <option value="night">Night (8-11 PM)</option>
+        <option value="late-night">Late Night (11 PM - 5 AM)</option>
+      </select>
+    </div>
+
+    <!-- Buttons for applying or resetting the filters -->
+    <div class="filter-actions">
+      <button type="submit">Apply Filters</button>
+      <button type="reset">Reset Filters</button>
+    </div>
+  </div>
+</form>
+
+<!-- Main content area showing buddy profiles -->
+<div class="main-contents">
+  <!-- Accept/reject swipe-style buttons -->
+  <div class="selection-buttons">
+    <div class="select-button accept">
+      <button>Accept</button>
+    </div>
+    <div class="select-button reject">
+      <button>Reject</button>
+    </div>
+  </div>
+
+  <!-- Profile card for a potential buddy -->
+  <div class="card">
+    <!-- Profile image -->
+    <img src="content/images/5imrkq.jpg" alt="Profile" class="image" />
+
+    <!-- Profile content/information -->
+    <div class="card-content">
+      <div class="name">Nawfal</div>
+      <div class="card-details">
+        <p>My Bio</p>
+        <p>Computer Science</p>
+        <p>Year 2</p>
+
+        <!-- Dynamic information section that changes based on buddy type -->
+        <div class="other-details">
+          <div [class]="buddyType + '-info'">
+            <!-- Gym-specific info that only appears when buddyType is 'gym' -->
+            <ng-container *ngIf="buddyType === 'gym'">
+              <p>The Gym Group Selly Oak</p>
+              <p>Evening</p>
+              <p>Intermediate</p>
+            </ng-container>
+
+            <!-- Study-specific info that only appears when buddyType is 'study' -->
+            <ng-container *ngIf="buddyType === 'study'">
+              <p>Year 2</p>
+              <p>Afternoon</p>
+            </ng-container>
+
+            <!-- Sports-specific info that only appears when buddyType is 'sports' -->
+            <ng-container *ngIf="buddyType === 'sports'">
+              <p>Football</p>
+              <p>Morning</p>
+              <p>Intermediate</p>
+            </ng-container>
+
+            <!-- Events-specific info that only appears when buddyType is 'events' -->
+            <ng-container *ngIf="buddyType === 'events'">
+              <p>Computer Science Society</p>
+              <p>Night</p>
+              <p>Any Event Type</p>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons to view profile or follow this buddy -->
+  <div class="profile-buttons">
+    <a href="#" class="button view-profile">View Profile</a>
+    <a href="#" class="button follow">Follow</a>
+  </div>
+
+  <!-- Ratings section showing current rating and link to detailed ratings -->
+  <div class="rating-section">
+    <!-- Star rating display (4 out of 5 stars) -->
+    <div class="star-rating">
+      <span class="star-filled">★</span>
+      <span class="star-filled">★</span>
+      <span class="star-filled">★</span>
+      <span class="star-filled">★</span>
+      <span class="star-empty">★</span>
+    </div>
+    <!-- Link to view detailed ratings -->
+    <div class="rating-details">
+      <a href="#" id="view-ratings">View detailed ratings</a>
+    </div>
+  </div>
+</div>
+
+<!--    <div class="filter-group">-->
+<!--      <label for="skill-level">-->
+<!--        {{buddyType === 'study' ? 'Subject' : 'Skill'}} Level:-->
+<!--      </label>-->
+<!--      <select id="skill-level" name="skill-level">-->
+<!--        <option value="">Any Skill Level</option>-->
+<!--        <option value="novice">Novice</option>-->
+<!--        <option value="intermediate">Intermediate</option>-->
+<!--        <option value="confident">Confident</option>-->
+<!--        <option value="professional">Professional</option>-->
+<!--      </select>-->
+<!--    </div>-->
+
+<!--    <div class="filter-group">-->
+<!--      <label for="timing">Preferred Workout Time:</label>-->
+<!--      <select id="timing" name="timing">-->
+<!--        <option value="">Anytime</option>-->
+<!--        <option value="early-morning">Early Morning (5-8 AM)</option>-->
+<!--        <option value="morning">Morning (8-12 AM)</option>-->
+<!--        <option value="afternoon">Afternoon (12-4 PM)</option>-->
+<!--        <option value="evening">Evening (4-8 PM)</option>-->
+<!--        <option value="night">Night (8-11 PM)</option>-->
+<!--        <option value="late-night">Late Night (11 PM - 5 AM)</option>-->
+<!--      </select>-->
+<!--    </div>-->
+
+<!--      <div class="filter-actions">-->
+<!--        <button type="submit">Apply Filters</button>-->
+<!--        <button type="reset">Reset Filters</button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </form>-->
+
+<!--<div class="main-contents">-->
+<!--  <div class="selection-buttons">-->
+<!--    <div class="select-button accept">-->
+<!--      <button>Accept</button>-->
+<!--    </div>-->
+<!--    <div class="select-button reject">-->
+<!--      <button>Reject</button>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <div class="card">-->
+<!--    <img src="content/images/5imrkq.jpg" alt="Profile" class="image">-->
+<!--    <div class="card-content">-->
+<!--      <div class="name">Nawfal</div>-->
+<!--      <div class="card-details">-->
+<!--        <p>My Bio</p>-->
+<!--        <p>Computer Science</p>-->
+<!--        <p>Year 2</p>-->
+<!--        <div class="gym-info">-->
+<!--          <p>The Gym Group Selly Oak</p>-->
+<!--          <p>Evening</p>-->
+<!--          <p>Intermediate</p>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--  </div>-->
+
+<!--    <div class="profile-buttons">-->
+<!--      <a href="#" class="button view-profile">View Profile</a>-->
+<!--      <a href="#" class="button follow">Follow</a>-->
+<!--    </div>-->
+
+<!--  <div class="rating-section">-->
+<!--    <div class="star-rating">-->
+<!--      <span class="star-filled">★</span>-->
+<!--      <span class="star-filled">★</span>-->
+<!--      <span class="star-filled">★</span>-->
+<!--      <span class="star-filled">★</span>-->
+<!--      <span class="star-empty">★</span>-->
+<!--    </div>-->
+<!--    <div class="rating-details">-->
+<!--      <a href="#" id="view-ratings">View detailed ratings</a>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--  </div>-->
+
+<!--    <div class="filter-group">-->
+<!--      <label for="workout-type">Workout Type:</label>-->
+<!--      <select id="workout-type" name="workout-type">-->
+<!--        <option value="">All Workout Types</option>-->
+<!--        <option value="strength">Strength Training</option>-->
+<!--        <option value="cardio">Cardio</option>-->
+<!--        <option value="yoga">Yoga</option>-->
+<!--        <option value="crossfit">CrossFit</option>-->
+<!--        <option value="weight-loss">Weight Loss</option>-->
+<!--      </select>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Gender Preference Filter &ndash;&gt;-->
+<!--    <div class="filter-group">-->
+<!--      <label for="gender-preference">Gender Preference:</label>-->
+<!--      <select id="gender-preference" name="gender-preference">-->
+<!--        <option value="">No Preference</option>-->
+<!--        <option value="male">Male</option>-->
+<!--        <option value="female">Female</option>-->
+<!--        <option value="non-binary">Non-Binary</option>-->
+<!--      </select>-->
+<!--    </div>-->
