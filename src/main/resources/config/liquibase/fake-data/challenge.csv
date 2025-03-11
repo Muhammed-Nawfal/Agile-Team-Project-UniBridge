@@ -1,0 +1,11 @@
+id;title;description;category;points;badge;badge_content_type;created_date;expiry_date;is_completed;completed_date;is_displayed
+1;grumpy;../fake-data/blob/hipster.txt;SOCIAL;11;../fake-data/blob/hipster.png;image/png;2025-03-10T23:32:25;2025-03-11T13:59:55;true;2025-03-11T10:50:54;true
+2;gah;../fake-data/blob/hipster.txt;STUDY;7;../fake-data/blob/hipster.png;image/png;2025-03-11T06:56:34;2025-03-11T08:51:49;false;2025-03-11T09:41:43;false
+3;now other;../fake-data/blob/hipster.txt;SOCIAL;17;../fake-data/blob/hipster.png;image/png;2025-03-11T13:16:35;2025-03-11T09:48:13;false;2025-03-11T07:21:47;true
+4;fundraising lest apud;../fake-data/blob/hipster.txt;STUDY;72;../fake-data/blob/hipster.png;image/png;2025-03-10T20:13:07;2025-03-11T10:46:33;false;2025-03-11T04:03:32;true
+5;probe drat within;../fake-data/blob/hipster.txt;SOCIAL;18;../fake-data/blob/hipster.png;image/png;2025-03-11T10:25:43;2025-03-11T14:22:10;true;2025-03-11T07:35:56;false
+6;knowingly phooey;../fake-data/blob/hipster.txt;STUDY;93;../fake-data/blob/hipster.png;image/png;2025-03-10T19:49:36;2025-03-11T01:25:36;true;2025-03-10T18:03:08;true
+7;zowie whether massage;../fake-data/blob/hipster.txt;STUDY;52;../fake-data/blob/hipster.png;image/png;2025-03-10T19:27:36;2025-03-11T11:51:27;false;2025-03-10T19:37:35;true
+8;yogurt loudly gah;../fake-data/blob/hipster.txt;SPORTS;35;../fake-data/blob/hipster.png;image/png;2025-03-11T15:30:29;2025-03-11T06:20:53;true;2025-03-11T10:54:07;false
+9;jaggedly whether;../fake-data/blob/hipster.txt;STUDY;97;../fake-data/blob/hipster.png;image/png;2025-03-11T00:29:57;2025-03-11T07:03:50;false;2025-03-10T16:06:51;true
+10;in whenever supposing;../fake-data/blob/hipster.txt;SOCIAL;27;../fake-data/blob/hipster.png;image/png;2025-03-10T20:08:37;2025-03-10T17:13:11;false;2025-03-10T19:01:46;true
