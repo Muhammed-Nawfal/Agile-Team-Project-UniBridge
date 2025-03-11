@@ -1,3 +1,18 @@
+<style>
+  table,
+  th,
+  td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+  table {
+    width: 35%;
+  }
+  button {
+    display: block;
+  }
+</style>
+
 <div>
   <h2 id="page-heading" data-cy="RankingHeading">
     <span>User Rankings</span>
@@ -21,27 +36,13 @@
   }
 
   @if (rankings && rankings.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
+    <div class="table-responsive table-entities" id="tables">
+      <table class="table table-striped" aria-describedby="page-heading" style="float: left">
         <thead>
           <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
             <th scope="col" jhiSortBy="reviewNumber">
               <div class="d-flex">
                 <span>Review Number</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="activityNumber">
-              <div class="d-flex">
-                <span>Activity Number</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
@@ -53,9 +54,47 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="reliable">
+            <th scope="col" jhiSortBy="user.id">
               <div class="d-flex">
-                <span>Reliable</span>
+                <span>User</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ranking of rankings; track trackId(ranking)) {
+            <tr data-cy="entityTable">
+              <td>{{ ranking.reviewNumber }}</td>
+              <td>{{ ranking.starAverage }}</td>
+              <td>
+                {{ ranking.user?.id }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <button style="float: left">Submit a review</button>
+      <button style="float: left">Find my ranking</button>
+      <p style="float: left">
+        <br />Rankings are based on user reviews. <br />
+        Star rating and number of reviews both impact rank, <br />
+        so sign up to as many events as you like, <br />
+        but make sure to attend them!
+      </p>
+      <table class="table table-striped" aria-describedby="page-heading" style="float: right">
+        <thead>
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="reviewNumber">
+              <div class="d-flex">
+                <span>Review Number</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="starAverage">
+              <div class="d-flex">
+                <span>Star Average</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
@@ -66,19 +105,13 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
           @for (ranking of rankings; track trackId(ranking)) {
             <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/ranking', ranking.id, 'view']">{{ ranking.id }}</a>
-              </td>
               <td>{{ ranking.reviewNumber }}</td>
-              <td>{{ ranking.activityNumber }}</td>
               <td>{{ ranking.starAverage }}</td>
-              <td>{{ { null: '', UNRELIABLE: 'UNRELIABLE', RELIABLE: 'RELIABLE' }[ranking.reliable ?? 'null'] }}</td>
               <td>
                 {{ ranking.user?.id }}
               </td>
