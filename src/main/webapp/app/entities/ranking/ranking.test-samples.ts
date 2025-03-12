@@ -2,33 +2,33 @@ import { IRanking, NewRanking } from './ranking.model';
 
 export const sampleWithRequiredData: IRanking = {
   id: 3905,
-  reviewNumber: 25400,
-  activityNumber: 32193,
-  starAverage: 1.69,
+  reviewNumber: 254,
+  activityNumber: 321,
+  starAverage: 1.5,
   reliable: 'UNRELIABLE',
 };
 
 export const sampleWithPartialData: IRanking = {
   id: 27686,
-  reviewNumber: 5493,
+  reviewNumber: 549,
   activityNumber: 660,
-  starAverage: 2.12,
-  reliable: 'RELIABLE',
+  starAverage: 2,
+  reliable: 'UNRELIABLE',
 };
 
 export const sampleWithFullData: IRanking = {
   id: 32553,
-  reviewNumber: 21130,
-  activityNumber: 1651,
-  starAverage: 3.77,
-  reliable: 'UNRELIABLE',
+  reviewNumber: 211,
+  activityNumber: 165,
+  starAverage: 4,
+  reliable: 'RELIABLE',
 };
 
 export const sampleWithNewData: NewRanking = {
-  reviewNumber: 26152,
-  activityNumber: 25354,
-  starAverage: 4.96,
-  reliable: 'UNRELIABLE',
+  reviewNumber: 261,
+  activityNumber: 253,
+  starAverage: 5,
+  reliable: 'RELIABLE',
   id: null,
 };
 
