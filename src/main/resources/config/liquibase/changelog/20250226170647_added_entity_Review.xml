@@ -23,6 +23,9 @@
             <column name="text" type="varchar(300)">
                 <constraints nullable="true" />
             </column>
+            <column name="reviews_given_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
             <column name="about_user_id" type="bigint">
                 <constraints nullable="true" />
             </column>

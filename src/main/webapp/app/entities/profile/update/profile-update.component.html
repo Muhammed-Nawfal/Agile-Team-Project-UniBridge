@@ -83,6 +83,7 @@
                     PSYCHOLOGY: 'PSYCHOLOGY',
                     MATHS: 'MATHS',
                     ENGLISH: 'ENGLISH',
+                    ENGINEERING: 'ENGINEERING',
                   }[course]
                 }}
               </option>
@@ -162,7 +163,17 @@
             <option [ngValue]="null"></option>
             @for (preferredTime of preferredTimeValues; track $index) {
               <option [value]="preferredTime">
-                {{ { null: '', MORNING: 'MORNING', AFTERNOON: 'AFTERNOON', EVENING: 'EVENING', NIGHT: 'NIGHT' }[preferredTime] }}
+                {{
+                  {
+                    null: '',
+                    EARLY: 'EARLY',
+                    MORNING: 'MORNING',
+                    AFTERNOON: 'AFTERNOON',
+                    EVENING: 'EVENING',
+                    NIGHT: 'NIGHT',
+                    LATE: 'LATE',
+                  }[preferredTime]
+                }}
               </option>
             }
           </select>
@@ -174,7 +185,17 @@
             <option [ngValue]="null"></option>
             @for (preferredTime of preferredTimeValues; track $index) {
               <option [value]="preferredTime">
-                {{ { null: '', MORNING: 'MORNING', AFTERNOON: 'AFTERNOON', EVENING: 'EVENING', NIGHT: 'NIGHT' }[preferredTime] }}
+                {{
+                  {
+                    null: '',
+                    EARLY: 'EARLY',
+                    MORNING: 'MORNING',
+                    AFTERNOON: 'AFTERNOON',
+                    EVENING: 'EVENING',
+                    NIGHT: 'NIGHT',
+                    LATE: 'LATE',
+                  }[preferredTime]
+                }}
               </option>
             }
           </select>

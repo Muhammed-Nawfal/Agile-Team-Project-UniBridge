@@ -331,6 +331,23 @@
         </div>
 
         <div class="mb-3">
+          <label class="form-label" for="field_userName">User Name</label>
+          <select
+            class="form-control"
+            id="field_userName"
+            data-cy="userName"
+            name="userName"
+            formControlName="userName"
+            [compareWith]="compareProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
           <label class="form-label" for="field_requesteduser">Requesteduser</label>
           <select
             class="form-control"

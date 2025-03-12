@@ -2,6 +2,7 @@ package bham.team.domain;
 
 import static bham.team.domain.ActivityTestSamples.*;
 import static bham.team.domain.BookingTestSamples.*;
+import static bham.team.domain.ProfileTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import bham.team.web.rest.TestUtil;
@@ -45,5 +46,17 @@ class ActivityTest {
         activity.setBookings(new HashSet<>());
         assertThat(activity.getBookings()).doesNotContain(bookingBack);
         assertThat(bookingBack.getActivity()).isNull();
+    }
+
+    @Test
+    void userNameTest() {
+        Activity activity = getActivityRandomSampleGenerator();
+        Profile profileBack = getProfileRandomSampleGenerator();
+
+        activity.setUserName(profileBack);
+        assertThat(activity.getUserName()).isEqualTo(profileBack);
+
+        activity.userName(null);
+        assertThat(activity.getUserName()).isNull();
     }
 }

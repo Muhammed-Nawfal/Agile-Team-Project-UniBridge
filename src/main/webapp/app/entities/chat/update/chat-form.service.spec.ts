@@ -22,8 +22,11 @@ describe('Chat Form Service', () => {
             id: expect.any(Object),
             message: expect.any(Object),
             timestamp: expect.any(Object),
-            senderID: expect.any(Object),
-            recieverID: expect.any(Object),
+            type: expect.any(Object),
+            friendChat: expect.any(Object),
+            chats: expect.any(Object),
+            sender: expect.any(Object),
+            receiver: expect.any(Object),
           }),
         );
       });
@@ -36,8 +39,11 @@ describe('Chat Form Service', () => {
             id: expect.any(Object),
             message: expect.any(Object),
             timestamp: expect.any(Object),
-            senderID: expect.any(Object),
-            recieverID: expect.any(Object),
+            type: expect.any(Object),
+            friendChat: expect.any(Object),
+            chats: expect.any(Object),
+            sender: expect.any(Object),
+            receiver: expect.any(Object),
           }),
         );
       });

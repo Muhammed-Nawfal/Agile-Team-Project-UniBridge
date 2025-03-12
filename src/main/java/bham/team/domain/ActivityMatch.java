@@ -2,6 +2,7 @@ package bham.team.domain;
 
 import bham.team.domain.enumeration.ActivityType;
 import bham.team.domain.enumeration.Decision;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -36,10 +37,18 @@ public class ActivityMatch implements Serializable {
     private Decision status;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "user", "booking", "ranking" }, allowSetters = true)
+    private Profile userName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private User requestUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User matchedUser;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "bookings", "userName", "requesteduser" }, allowSetters = true)
+    private Activity matchedActivity;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -82,6 +91,19 @@ public class ActivityMatch implements Serializable {
         this.status = status;
     }
 
+    public Profile getUserName() {
+        return this.userName;
+    }
+
+    public void setUserName(Profile profile) {
+        this.userName = profile;
+    }
+
+    public ActivityMatch userName(Profile profile) {
+        this.setUserName(profile);
+        return this;
+    }
+
     public User getRequestUser() {
         return this.requestUser;
     }
@@ -105,6 +127,19 @@ public class ActivityMatch implements Serializable {
 
     public ActivityMatch matchedUser(User user) {
         this.setMatchedUser(user);
+        return this;
+    }
+
+    public Activity getMatchedActivity() {
+        return this.matchedActivity;
+    }
+
+    public void setMatchedActivity(Activity activity) {
+        this.matchedActivity = activity;
+    }
+
+    public ActivityMatch matchedActivity(Activity activity) {
+        this.setMatchedActivity(activity);
         return this;
     }
 

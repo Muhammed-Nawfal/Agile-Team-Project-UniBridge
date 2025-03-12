@@ -56,6 +56,9 @@
             <column name="cost_ofactivity" type="decimal(21,2)">
                 <constraints nullable="false" />
             </column>
+            <column name="user_name_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
             <column name="requesteduser_id" type="bigint">
                 <constraints nullable="true" />
             </column>

@@ -27,6 +27,12 @@
   "name": "Review",
   "relationships": [
     {
+      "otherEntityName": "profile",
+      "relationshipName": "reviewsGiven",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
       "otherEntityName": "user",
       "relationshipName": "aboutUser",
       "relationshipSide": "left",

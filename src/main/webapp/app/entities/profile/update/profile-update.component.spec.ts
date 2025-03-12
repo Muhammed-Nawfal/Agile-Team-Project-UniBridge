@@ -49,10 +49,10 @@ describe('Profile Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call User query and add missing value', () => {
       const profile: IProfile = { id: 456 };
-      const user: IUser = { id: 17384 };
+      const user: IUser = { id: 4532 };
       profile.user = user;
 
-      const userCollection: IUser[] = [{ id: 17601 }];
+      const userCollection: IUser[] = [{ id: 11917 }];
       jest.spyOn(userService, 'query').mockReturnValue(of(new HttpResponse({ body: userCollection })));
       const additionalUsers = [user];
       const expectedCollection: IUser[] = [...additionalUsers, ...userCollection];
@@ -71,7 +71,7 @@ describe('Profile Management Update Component', () => {
 
     it('Should update editForm', () => {
       const profile: IProfile = { id: 456 };
-      const user: IUser = { id: 7852 };
+      const user: IUser = { id: 18910 };
       profile.user = user;
 
       activatedRoute.data = of({ profile });

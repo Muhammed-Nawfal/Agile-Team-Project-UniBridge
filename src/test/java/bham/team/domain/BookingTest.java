@@ -2,6 +2,7 @@ package bham.team.domain;
 
 import static bham.team.domain.ActivityTestSamples.*;
 import static bham.team.domain.BookingTestSamples.*;
+import static bham.team.domain.ProfileTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import bham.team.web.rest.TestUtil;
@@ -21,6 +22,30 @@ class BookingTest {
 
         booking2 = getBookingSample2();
         assertThat(booking1).isNotEqualTo(booking2);
+    }
+
+    @Test
+    void bookingDoneByTest() {
+        Booking booking = getBookingRandomSampleGenerator();
+        Profile profileBack = getProfileRandomSampleGenerator();
+
+        booking.setBookingDoneBy(profileBack);
+        assertThat(booking.getBookingDoneBy()).isEqualTo(profileBack);
+
+        booking.bookingDoneBy(null);
+        assertThat(booking.getBookingDoneBy()).isNull();
+    }
+
+    @Test
+    void bookedActivityTest() {
+        Booking booking = getBookingRandomSampleGenerator();
+        Activity activityBack = getActivityRandomSampleGenerator();
+
+        booking.setBookedActivity(activityBack);
+        assertThat(booking.getBookedActivity()).isEqualTo(activityBack);
+
+        booking.bookedActivity(null);
+        assertThat(booking.getBookedActivity()).isNull();
     }
 
     @Test

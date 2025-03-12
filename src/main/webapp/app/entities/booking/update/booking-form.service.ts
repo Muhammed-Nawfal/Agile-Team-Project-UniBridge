@@ -43,7 +43,9 @@ type BookingFormGroupContent = {
   numOfParticipants: FormControl<BookingFormRawValue['numOfParticipants']>;
   bookStartTime: FormControl<BookingFormRawValue['bookStartTime']>;
   bookEndTime: FormControl<BookingFormRawValue['bookEndTime']>;
+  bookingDoneBy: FormControl<BookingFormRawValue['bookingDoneBy']>;
   requestedUser: FormControl<BookingFormRawValue['requestedUser']>;
+  bookedActivity: FormControl<BookingFormRawValue['bookedActivity']>;
   activity: FormControl<BookingFormRawValue['activity']>;
 };
 
@@ -91,7 +93,9 @@ export class BookingFormService {
       bookEndTime: new FormControl(bookingRawValue.bookEndTime, {
         validators: [Validators.required],
       }),
+      bookingDoneBy: new FormControl(bookingRawValue.bookingDoneBy),
       requestedUser: new FormControl(bookingRawValue.requestedUser),
+      bookedActivity: new FormControl(bookingRawValue.bookedActivity),
       activity: new FormControl(bookingRawValue.activity),
     });
   }

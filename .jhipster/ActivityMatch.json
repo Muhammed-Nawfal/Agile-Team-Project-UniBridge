@@ -20,6 +20,12 @@
   "name": "ActivityMatch",
   "relationships": [
     {
+      "otherEntityName": "profile",
+      "relationshipName": "userName",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
       "otherEntityName": "user",
       "relationshipName": "requestUser",
       "relationshipSide": "left",
@@ -32,6 +38,12 @@
       "relationshipSide": "left",
       "relationshipType": "many-to-one",
       "relationshipWithBuiltInEntity": true
+    },
+    {
+      "otherEntityName": "activity",
+      "relationshipName": "matchedActivity",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
     }
   ],
   "searchEngine": "no"

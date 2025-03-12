@@ -7,10 +7,12 @@ import { finalize, map } from 'rxjs/operators';
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { IProfile } from 'app/entities/profile/profile.model';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
 import { IUser } from 'app/entities/user/user.model';
 import { UserService } from 'app/entities/user/service/user.service';
-import { IReview } from '../review.model';
 import { ReviewService } from '../service/review.service';
+import { IReview } from '../review.model';
 import { ReviewFormGroup, ReviewFormService } from './review-form.service';
 
 @Component({
@@ -23,15 +25,19 @@ export class ReviewUpdateComponent implements OnInit {
   isSaving = false;
   review: IReview | null = null;
 
+  profilesSharedCollection: IProfile[] = [];
   usersSharedCollection: IUser[] = [];
 
   protected reviewService = inject(ReviewService);
   protected reviewFormService = inject(ReviewFormService);
+  protected profileService = inject(ProfileService);
   protected userService = inject(UserService);
   protected activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: ReviewFormGroup = this.reviewFormService.createReviewFormGroup();
+
+  compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
 
   compareUser = (o1: IUser | null, o2: IUser | null): boolean => this.userService.compareUser(o1, o2);
 
@@ -83,6 +89,10 @@ export class ReviewUpdateComponent implements OnInit {
     this.review = review;
     this.reviewFormService.resetForm(this.editForm, review);
 
+    this.profilesSharedCollection = this.profileService.addProfileToCollectionIfMissing<IProfile>(
+      this.profilesSharedCollection,
+      review.reviewsGiven,
+    );
     this.usersSharedCollection = this.userService.addUserToCollectionIfMissing<IUser>(
       this.usersSharedCollection,
       review.aboutUser,
@@ -91,6 +101,14 @@ export class ReviewUpdateComponent implements OnInit {
   }
 
   protected loadRelationshipsOptions(): void {
+    this.profileService
+      .query()
+      .pipe(map((res: HttpResponse<IProfile[]>) => res.body ?? []))
+      .pipe(
+        map((profiles: IProfile[]) => this.profileService.addProfileToCollectionIfMissing<IProfile>(profiles, this.review?.reviewsGiven)),
+      )
+      .subscribe((profiles: IProfile[]) => (this.profilesSharedCollection = profiles));
+
     this.userService
       .query()
       .pipe(map((res: HttpResponse<IUser[]>) => res.body ?? []))

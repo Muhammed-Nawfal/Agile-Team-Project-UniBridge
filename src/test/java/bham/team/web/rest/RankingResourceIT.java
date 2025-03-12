@@ -352,7 +352,7 @@ class RankingResourceIT {
         Ranking partialUpdatedRanking = new Ranking();
         partialUpdatedRanking.setId(ranking.getId());
 
-        partialUpdatedRanking.activityNumber(UPDATED_ACTIVITY_NUMBER);
+        partialUpdatedRanking.reviewNumber(UPDATED_REVIEW_NUMBER);
 
         restRankingMockMvc
             .perform(

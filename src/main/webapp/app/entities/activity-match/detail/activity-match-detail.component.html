@@ -27,6 +27,14 @@
           <dd>
             <span>{{ { null: '', ACCEPT: 'ACCEPT', DECLINED: 'DECLINED', PENDING: 'PENDING' }[activityMatchRef.status ?? 'null'] }}</span>
           </dd>
+          <dt><span>User Name</span></dt>
+          <dd>
+            @if (activityMatch()!.userName) {
+              <div>
+                <a [routerLink]="['/profile', activityMatch()!.userName?.id, 'view']">{{ activityMatchRef.userName?.id }}</a>
+              </div>
+            }
+          </dd>
           <dt><span>Request User</span></dt>
           <dd>
             <span>{{ activityMatchRef.requestUser?.id }}</span>
@@ -34,6 +42,14 @@
           <dt><span>Matched User</span></dt>
           <dd>
             <span>{{ activityMatchRef.matchedUser?.id }}</span>
+          </dd>
+          <dt><span>Matched Activity</span></dt>
+          <dd>
+            @if (activityMatch()!.matchedActivity) {
+              <div>
+                <a [routerLink]="['/activity', activityMatch()!.matchedActivity?.id, 'view']">{{ activityMatchRef.matchedActivity?.id }}</a>
+              </div>
+            }
           </dd>
         </dl>
 

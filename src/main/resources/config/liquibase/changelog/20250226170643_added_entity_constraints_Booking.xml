@@ -10,11 +10,25 @@
     -->
     <changeSet id="20250226170643-2" author="jhipster">
 
+        <addForeignKeyConstraint baseColumnNames="booking_done_by_id"
+                                 baseTableName="booking"
+                                 constraintName="fk_booking__booking_done_by_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="profile"
+                                 />
+
         <addForeignKeyConstraint baseColumnNames="requested_user_id"
                                  baseTableName="booking"
                                  constraintName="fk_booking__requested_user_id"
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_user"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="booked_activity_id"
+                                 baseTableName="booking"
+                                 constraintName="fk_booking__booked_activity_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="activity"
                                  />
 
         <addForeignKeyConstraint baseColumnNames="activity_id"

@@ -551,10 +551,12 @@ class ActivityResourceIT {
         partialUpdatedActivity.setId(activity.getId());
 
         partialUpdatedActivity
+            .activityName(UPDATED_ACTIVITY_NAME)
             .activityType(UPDATED_ACTIVITY_TYPE)
             .activityDate(UPDATED_ACTIVITY_DATE)
             .maxNumberOfParticipants(UPDATED_MAX_NUMBER_OF_PARTICIPANTS)
-            .status(UPDATED_STATUS);
+            .status(UPDATED_STATUS)
+            .paid(UPDATED_PAID);
 
         restActivityMockMvc
             .perform(

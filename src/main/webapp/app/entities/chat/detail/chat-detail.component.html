@@ -23,13 +23,33 @@
           <dd>
             <span>{{ chatRef.timestamp | formatMediumDatetime }}</span>
           </dd>
-          <dt><span>Sender ID</span></dt>
+          <dt><span>Type</span></dt>
           <dd>
-            <span>{{ chatRef.senderID?.id }}</span>
+            <span>{{ { null: '', UNMATCH: 'UNMATCH', REPORT: 'REPORT' }[chatRef.type ?? 'null'] }}</span>
           </dd>
-          <dt><span>Reciever ID</span></dt>
+          <dt><span>Friend Chat</span></dt>
           <dd>
-            <span>{{ chatRef.receiverID?.id }}</span>
+            @if (chat()!.friendChat) {
+              <div>
+                <a [routerLink]="['/friends-list', chat()!.friendChat?.id, 'view']">{{ chatRef.friendChat?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Chats</span></dt>
+          <dd>
+            @if (chat()!.chats) {
+              <div>
+                <a [routerLink]="['/profile', chat()!.chats?.id, 'view']">{{ chatRef.chats?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Sender</span></dt>
+          <dd>
+            <span>{{ chatRef.sender?.id }}</span>
+          </dd>
+          <dt><span>Receiver</span></dt>
+          <dd>
+            <span>{{ chatRef.receiver?.id }}</span>
           </dd>
         </dl>
 

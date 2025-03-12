@@ -1,5 +1,6 @@
 package bham.team.domain;
 
+import static bham.team.domain.ProfileTestSamples.*;
 import static bham.team.domain.RankingTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,5 +21,17 @@ class RankingTest {
 
         ranking2 = getRankingSample2();
         assertThat(ranking1).isNotEqualTo(ranking2);
+    }
+
+    @Test
+    void rankGivenTest() {
+        Ranking ranking = getRankingRandomSampleGenerator();
+        Profile profileBack = getProfileRandomSampleGenerator();
+
+        ranking.setRankGiven(profileBack);
+        assertThat(ranking.getRankGiven()).isEqualTo(profileBack);
+
+        ranking.rankGiven(null);
+        assertThat(ranking.getRankGiven()).isNull();
     }
 }

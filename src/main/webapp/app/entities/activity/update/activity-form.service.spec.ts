@@ -33,6 +33,7 @@ describe('Activity Form Service', () => {
             coverImage: expect.any(Object),
             paid: expect.any(Object),
             costOfactivity: expect.any(Object),
+            userName: expect.any(Object),
             requesteduser: expect.any(Object),
           }),
         );
@@ -57,6 +58,7 @@ describe('Activity Form Service', () => {
             coverImage: expect.any(Object),
             paid: expect.any(Object),
             costOfactivity: expect.any(Object),
+            userName: expect.any(Object),
             requesteduser: expect.any(Object),
           }),
         );

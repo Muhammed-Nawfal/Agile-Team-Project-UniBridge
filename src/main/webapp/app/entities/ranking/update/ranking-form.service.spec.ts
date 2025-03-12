@@ -24,6 +24,7 @@ describe('Ranking Form Service', () => {
             activityNumber: expect.any(Object),
             starAverage: expect.any(Object),
             reliable: expect.any(Object),
+            rankGiven: expect.any(Object),
             user: expect.any(Object),
           }),
         );
@@ -39,6 +40,7 @@ describe('Ranking Form Service', () => {
             activityNumber: expect.any(Object),
             starAverage: expect.any(Object),
             reliable: expect.any(Object),
+            rankGiven: expect.any(Object),
             user: expect.any(Object),
           }),
         );

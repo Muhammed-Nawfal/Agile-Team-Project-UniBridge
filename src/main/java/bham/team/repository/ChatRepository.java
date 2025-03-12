@@ -11,9 +11,9 @@ import org.springframework.stereotype.Repository;
 @SuppressWarnings("unused")
 @Repository
 public interface ChatRepository extends JpaRepository<Chat, Long> {
-    @Query("select chat from Chat chat where chat.senderID.login = ?#{authentication.name}")
-    List<Chat> findBySenderIDIsCurrentUser();
+    @Query("select chat from Chat chat where chat.sender.login = ?#{authentication.name}")
+    List<Chat> findBySenderIsCurrentUser();
 
-    @Query("select chat from Chat chat where chat.recieverID.login = ?#{authentication.name}")
-    List<Chat> findByRecieverIDIsCurrentUser();
+    @Query("select chat from Chat chat where chat.receiver.login = ?#{authentication.name}")
+    List<Chat> findByReceiverIsCurrentUser();
 }

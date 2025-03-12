@@ -4,10 +4,12 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, from, of } from 'rxjs';
 
+import { IProfile } from 'app/entities/profile/profile.model';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
 import { IUser } from 'app/entities/user/user.model';
 import { UserService } from 'app/entities/user/service/user.service';
-import { RankingService } from '../service/ranking.service';
 import { IRanking } from '../ranking.model';
+import { RankingService } from '../service/ranking.service';
 import { RankingFormService } from './ranking-form.service';
 
 import { RankingUpdateComponent } from './ranking-update.component';
@@ -18,6 +20,7 @@ describe('Ranking Management Update Component', () => {
   let activatedRoute: ActivatedRoute;
   let rankingFormService: RankingFormService;
   let rankingService: RankingService;
+  let profileService: ProfileService;
   let userService: UserService;
 
   beforeEach(() => {
@@ -41,18 +44,37 @@ describe('Ranking Management Update Component', () => {
     activatedRoute = TestBed.inject(ActivatedRoute);
     rankingFormService = TestBed.inject(RankingFormService);
     rankingService = TestBed.inject(RankingService);
+    profileService = TestBed.inject(ProfileService);
     userService = TestBed.inject(UserService);
 
     comp = fixture.componentInstance;
   });
 
   describe('ngOnInit', () => {
+    it('Should call rankGiven query and add missing value', () => {
+      const ranking: IRanking = { id: 456 };
+      const rankGiven: IProfile = { id: 9011 };
+      ranking.rankGiven = rankGiven;
+
+      const rankGivenCollection: IProfile[] = [{ id: 15935 }];
+      jest.spyOn(profileService, 'query').mockReturnValue(of(new HttpResponse({ body: rankGivenCollection })));
+      const expectedCollection: IProfile[] = [rankGiven, ...rankGivenCollection];
+      jest.spyOn(profileService, 'addProfileToCollectionIfMissing').mockReturnValue(expectedCollection);
+
+      activatedRoute.data = of({ ranking });
+      comp.ngOnInit();
+
+      expect(profileService.query).toHaveBeenCalled();
+      expect(profileService.addProfileToCollectionIfMissing).toHaveBeenCalledWith(rankGivenCollection, rankGiven);
+      expect(comp.rankGivensCollection).toEqual(expectedCollection);
+    });
+
     it('Should call User query and add missing value', () => {
       const ranking: IRanking = { id: 456 };
-      const user: IUser = { id: 29565 };
+      const user: IUser = { id: 1726 };
       ranking.user = user;
 
-      const userCollection: IUser[] = [{ id: 21831 }];
+      const userCollection: IUser[] = [{ id: 2302 }];
       jest.spyOn(userService, 'query').mockReturnValue(of(new HttpResponse({ body: userCollection })));
       const additionalUsers = [user];
       const expectedCollection: IUser[] = [...additionalUsers, ...userCollection];
@@ -71,12 +93,15 @@ describe('Ranking Management Update Component', () => {
 
     it('Should update editForm', () => {
       const ranking: IRanking = { id: 456 };
-      const user: IUser = { id: 12492 };
+      const rankGiven: IProfile = { id: 19202 };
+      ranking.rankGiven = rankGiven;
+      const user: IUser = { id: 1770 };
       ranking.user = user;
 
       activatedRoute.data = of({ ranking });
       comp.ngOnInit();
 
+      expect(comp.rankGivensCollection).toContain(rankGiven);
       expect(comp.usersSharedCollection).toContain(user);
       expect(comp.ranking).toEqual(ranking);
     });
@@ -151,6 +176,16 @@ describe('Ranking Management Update Component', () => {
   });
 
   describe('Compare relationships', () => {
+    describe('compareProfile', () => {
+      it('Should forward to profileService', () => {
+        const entity = { id: 123 };
+        const entity2 = { id: 456 };
+        jest.spyOn(profileService, 'compareProfile');
+        comp.compareProfile(entity, entity2);
+        expect(profileService.compareProfile).toHaveBeenCalledWith(entity, entity2);
+      });
+    });
+
     describe('compareUser', () => {
       it('Should forward to userService', () => {
         const entity = { id: 123 };

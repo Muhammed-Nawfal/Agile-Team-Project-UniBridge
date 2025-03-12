@@ -107,6 +107,23 @@
         </div>
 
         <div class="mb-3">
+          <label class="form-label" for="field_rankGiven">Rank Given</label>
+          <select
+            class="form-control"
+            id="field_rankGiven"
+            data-cy="rankGiven"
+            name="rankGiven"
+            formControlName="rankGiven"
+            [compareWith]="compareProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (profileOption of rankGivensCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
           <label class="form-label" for="field_user">User</label>
           <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUser">
             <option [ngValue]="null"></option>

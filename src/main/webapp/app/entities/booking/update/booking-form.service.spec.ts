@@ -29,7 +29,9 @@ describe('Booking Form Service', () => {
             numOfParticipants: expect.any(Object),
             bookStartTime: expect.any(Object),
             bookEndTime: expect.any(Object),
+            bookingDoneBy: expect.any(Object),
             requestedUser: expect.any(Object),
+            bookedActivity: expect.any(Object),
             activity: expect.any(Object),
           }),
         );
@@ -50,7 +52,9 @@ describe('Booking Form Service', () => {
             numOfParticipants: expect.any(Object),
             bookStartTime: expect.any(Object),
             bookEndTime: expect.any(Object),
+            bookingDoneBy: expect.any(Object),
             requestedUser: expect.any(Object),
+            bookedActivity: expect.any(Object),
             activity: expect.any(Object),
           }),
         );

@@ -302,8 +302,6 @@ class FriendsListResourceIT {
         FriendsList partialUpdatedFriendsList = new FriendsList();
         partialUpdatedFriendsList.setId(friendsList.getId());
 
-        partialUpdatedFriendsList.friendSince(UPDATED_FRIEND_SINCE);
-
         restFriendsListMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedFriendsList.getId())

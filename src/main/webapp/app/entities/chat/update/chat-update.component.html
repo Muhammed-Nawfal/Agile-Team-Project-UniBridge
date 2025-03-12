@@ -52,14 +52,59 @@
           }
         </div>
 
+        @let typeRef = editForm.get('type')!;
         <div class="mb-3">
-          <label class="form-label" for="field_senderID">Sender ID</label>
+          <label class="form-label" for="field_type">Type</label>
+          <select class="form-control" name="type" formControlName="type" id="field_type" data-cy="type">
+            <option [ngValue]="null"></option>
+            @for (actionType of actionTypeValues; track $index) {
+              <option [value]="actionType">{{ { null: '', UNMATCH: 'UNMATCH', REPORT: 'REPORT' }[actionType] }}</option>
+            }
+          </select>
+          @if (typeRef.invalid && (typeRef.dirty || typeRef.touched)) {
+            <div>
+              @if (editForm.get('type')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_friendChat">Friend Chat</label>
           <select
             class="form-control"
-            id="field_senderID"
-            data-cy="senderID"
-            name="senderID"
-            formControlName="senderID"
+            id="field_friendChat"
+            data-cy="friendChat"
+            name="friendChat"
+            formControlName="friendChat"
+            [compareWith]="compareFriendsList"
+          >
+            <option [ngValue]="null"></option>
+            @for (friendsListOption of friendChatsCollection; track $index) {
+              <option [ngValue]="friendsListOption">{{ friendsListOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_chats">Chats</label>
+          <select class="form-control" id="field_chats" data-cy="chats" name="chats" formControlName="chats" [compareWith]="compareProfile">
+            <option [ngValue]="null"></option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_sender">Sender</label>
+          <select
+            class="form-control"
+            id="field_sender"
+            data-cy="sender"
+            name="sender"
+            formControlName="sender"
             [compareWith]="compareUser"
           >
             <option [ngValue]="null"></option>
@@ -70,13 +115,13 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_recieverID">Reciever ID</label>
+          <label class="form-label" for="field_receiver">Receiver</label>
           <select
             class="form-control"
-            id="field_recieverID"
-            data-cy="recieverID"
-            name="recieverID"
-            formControlName="recieverID"
+            id="field_receiver"
+            data-cy="receiver"
+            name="receiver"
+            formControlName="receiver"
             [compareWith]="compareUser"
           >
             <option [ngValue]="null"></option>

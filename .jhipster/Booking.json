@@ -58,11 +58,23 @@
   "name": "Booking",
   "relationships": [
     {
+      "otherEntityName": "profile",
+      "relationshipName": "bookingDoneBy",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
+    {
       "otherEntityName": "user",
       "relationshipName": "requestedUser",
       "relationshipSide": "left",
       "relationshipType": "many-to-one",
       "relationshipWithBuiltInEntity": true
+    },
+    {
+      "otherEntityName": "activity",
+      "relationshipName": "bookedActivity",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
     }
   ],
   "searchEngine": "no"

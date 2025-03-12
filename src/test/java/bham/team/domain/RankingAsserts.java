@@ -66,6 +66,8 @@ public class RankingAsserts {
      * @param actual the actual entity
      */
     public static void assertRankingUpdatableRelationshipsEquals(Ranking expected, Ranking actual) {
-        // empty method
+        assertThat(expected)
+            .as("Verify Ranking relationships")
+            .satisfies(e -> assertThat(e.getRankGiven()).as("check rankGiven").isEqualTo(actual.getRankGiven()));
     }
 }

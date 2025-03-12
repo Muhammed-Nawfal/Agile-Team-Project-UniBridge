@@ -20,8 +20,10 @@ type ActivityMatchFormGroupContent = {
   id: FormControl<IActivityMatch['id'] | NewActivityMatch['id']>;
   activityType: FormControl<IActivityMatch['activityType']>;
   status: FormControl<IActivityMatch['status']>;
+  userName: FormControl<IActivityMatch['userName']>;
   requestUser: FormControl<IActivityMatch['requestUser']>;
   matchedUser: FormControl<IActivityMatch['matchedUser']>;
+  matchedActivity: FormControl<IActivityMatch['matchedActivity']>;
 };
 
 export type ActivityMatchFormGroup = FormGroup<ActivityMatchFormGroupContent>;
@@ -47,8 +49,10 @@ export class ActivityMatchFormService {
       status: new FormControl(activityMatchRawValue.status, {
         validators: [Validators.required],
       }),
+      userName: new FormControl(activityMatchRawValue.userName),
       requestUser: new FormControl(activityMatchRawValue.requestUser),
       matchedUser: new FormControl(activityMatchRawValue.matchedUser),
+      matchedActivity: new FormControl(activityMatchRawValue.matchedActivity),
     });
   }
 

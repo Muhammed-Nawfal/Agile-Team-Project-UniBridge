@@ -1,6 +1,8 @@
 package bham.team.domain;
 
 import static bham.team.domain.ActivityMatchTestSamples.*;
+import static bham.team.domain.ActivityTestSamples.*;
+import static bham.team.domain.ProfileTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import bham.team.web.rest.TestUtil;
@@ -20,5 +22,29 @@ class ActivityMatchTest {
 
         activityMatch2 = getActivityMatchSample2();
         assertThat(activityMatch1).isNotEqualTo(activityMatch2);
+    }
+
+    @Test
+    void userNameTest() {
+        ActivityMatch activityMatch = getActivityMatchRandomSampleGenerator();
+        Profile profileBack = getProfileRandomSampleGenerator();
+
+        activityMatch.setUserName(profileBack);
+        assertThat(activityMatch.getUserName()).isEqualTo(profileBack);
+
+        activityMatch.userName(null);
+        assertThat(activityMatch.getUserName()).isNull();
+    }
+
+    @Test
+    void matchedActivityTest() {
+        ActivityMatch activityMatch = getActivityMatchRandomSampleGenerator();
+        Activity activityBack = getActivityRandomSampleGenerator();
+
+        activityMatch.setMatchedActivity(activityBack);
+        assertThat(activityMatch.getMatchedActivity()).isEqualTo(activityBack);
+
+        activityMatch.matchedActivity(null);
+        assertThat(activityMatch.getMatchedActivity()).isNull();
     }
 }

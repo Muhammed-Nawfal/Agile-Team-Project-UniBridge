@@ -52,6 +52,23 @@
         </div>
 
         <div class="mb-3">
+          <label class="form-label" for="field_userName">User Name</label>
+          <select
+            class="form-control"
+            id="field_userName"
+            data-cy="userName"
+            name="userName"
+            formControlName="userName"
+            [compareWith]="compareProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
           <label class="form-label" for="field_requestUser">Request User</label>
           <select
             class="form-control"
@@ -81,6 +98,23 @@
             <option [ngValue]="null"></option>
             @for (userOption of usersSharedCollection; track $index) {
               <option [ngValue]="userOption">{{ userOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_matchedActivity">Matched Activity</label>
+          <select
+            class="form-control"
+            id="field_matchedActivity"
+            data-cy="matchedActivity"
+            name="matchedActivity"
+            formControlName="matchedActivity"
+            [compareWith]="compareActivity"
+          >
+            <option [ngValue]="null"></option>
+            @for (activityOption of activitiesSharedCollection; track $index) {
+              <option [ngValue]="activityOption">{{ activityOption.id }}</option>
             }
           </select>
         </div>

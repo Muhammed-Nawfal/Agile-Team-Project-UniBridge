@@ -127,6 +127,9 @@ public class ChatResource {
                 if (chat.getTimestamp() != null) {
                     existingChat.setTimestamp(chat.getTimestamp());
                 }
+                if (chat.getType() != null) {
+                    existingChat.setType(chat.getType());
+                }
 
                 return existingChat;
             })

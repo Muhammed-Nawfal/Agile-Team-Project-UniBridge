@@ -1,5 +1,7 @@
 package bham.team.domain;
 
+import bham.team.domain.enumeration.ActionType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -32,11 +34,25 @@ public class Chat implements Serializable {
     @Column(name = "timestamp", nullable = false)
     private Instant timestamp;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User senderID;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
+    private ActionType type;
+
+    @JsonIgnoreProperties(value = { "friends", "user", "friend", "chat" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(unique = true)
+    private FriendsList friendChat;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User recieverID;
+    @JsonIgnoreProperties(value = { "user", "booking", "ranking" }, allowSetters = true)
+    private Profile chats;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User sender;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User receiver;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -79,29 +95,68 @@ public class Chat implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public User getSenderID() {
-        return this.senderID;
+    public ActionType getType() {
+        return this.type;
     }
 
-    public void setSenderID(User user) {
-        this.senderID = user;
-    }
-
-    public Chat senderID(User user) {
-        this.setSenderID(user);
+    public Chat type(ActionType type) {
+        this.setType(type);
         return this;
     }
 
-    public User getRecieverID() {
-        return this.recieverID;
+    public void setType(ActionType type) {
+        this.type = type;
     }
 
-    public void setRecieverID(User user) {
-        this.recieverID = user;
+    public FriendsList getFriendChat() {
+        return this.friendChat;
     }
 
-    public Chat recieverID(User user) {
-        this.setRecieverID(user);
+    public void setFriendChat(FriendsList friendsList) {
+        this.friendChat = friendsList;
+    }
+
+    public Chat friendChat(FriendsList friendsList) {
+        this.setFriendChat(friendsList);
+        return this;
+    }
+
+    public Profile getChats() {
+        return this.chats;
+    }
+
+    public void setChats(Profile profile) {
+        this.chats = profile;
+    }
+
+    public Chat chats(Profile profile) {
+        this.setChats(profile);
+        return this;
+    }
+
+    public User getSender() {
+        return this.sender;
+    }
+
+    public void setSender(User user) {
+        this.sender = user;
+    }
+
+    public Chat sender(User user) {
+        this.setSender(user);
+        return this;
+    }
+
+    public User getReceiver() {
+        return this.receiver;
+    }
+
+    public void setReceiver(User user) {
+        this.receiver = user;
+    }
+
+    public Chat receiver(User user) {
+        this.setReceiver(user);
         return this;
     }
 
@@ -131,6 +186,7 @@ public class Chat implements Serializable {
             "id=" + getId() +
             ", message='" + getMessage() + "'" +
             ", timestamp='" + getTimestamp() + "'" +
+            ", type='" + getType() + "'" +
             "}";
     }
 }

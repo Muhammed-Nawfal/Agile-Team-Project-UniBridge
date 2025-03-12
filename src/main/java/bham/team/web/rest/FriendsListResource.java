@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -143,10 +144,17 @@ public class FriendsListResource {
     /**
      * {@code GET  /friends-lists} : get all the friendsLists.
      *
+     * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of friendsLists in body.
      */
     @GetMapping("")
-    public List<FriendsList> getAllFriendsLists() {
+    public List<FriendsList> getAllFriendsLists(@RequestParam(name = "filter", required = false) String filter) {
+        if ("chat-is-null".equals(filter)) {
+            LOG.debug("REST request to get all FriendsLists where chat is null");
+            return StreamSupport.stream(friendsListRepository.findAll().spliterator(), false)
+                .filter(friendsList -> friendsList.getChat() == null)
+                .toList();
+        }
         LOG.debug("REST request to get all FriendsLists");
         return friendsListRepository.findAll();
     }

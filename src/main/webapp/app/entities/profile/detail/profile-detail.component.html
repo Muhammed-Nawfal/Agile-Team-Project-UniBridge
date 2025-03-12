@@ -23,14 +23,14 @@
           <dd>
             @if (profileRef.profilePicture) {
               <div>
-                <a (click)="openFile(profileRef.profilePicture, profileRef.profilePictureContentType)">
+                <a (click)="openFile(profileRef.profilePicture ?? '', profileRef.profilePictureContentType)">
                   <img
                     [src]="'data:' + profileRef.profilePictureContentType + ';base64,' + profileRef.profilePicture"
                     style="max-width: 100%"
                     alt="profile"
                   />
                 </a>
-                {{ profileRef.profilePictureContentType }}, {{ byteSize(profileRef.profilePicture) }}
+                {{ profileRef.profilePictureContentType }}, {{ byteSize(profileRef.profilePicture ?? '') }}
               </div>
             }
           </dd>
@@ -44,6 +44,7 @@
                 PSYCHOLOGY: 'PSYCHOLOGY',
                 MATHS: 'MATHS',
                 ENGLISH: 'ENGLISH',
+                ENGINEERING: 'ENGINEERING',
               }[profileRef.course ?? 'null']
             }}</span>
           </dd>
@@ -70,13 +71,17 @@
           <dt><span>Gym Time</span></dt>
           <dd>
             <span>{{
-              { null: '', MORNING: 'MORNING', AFTERNOON: 'AFTERNOON', EVENING: 'EVENING', NIGHT: 'NIGHT' }[profileRef.gymTime ?? 'null']
+              { null: '', EARLY: 'EARLY', MORNING: 'MORNING', AFTERNOON: 'AFTERNOON', EVENING: 'EVENING', NIGHT: 'NIGHT', LATE: 'LATE' }[
+                profileRef.gymTime ?? 'null'
+              ]
             }}</span>
           </dd>
           <dt><span>Study Time</span></dt>
           <dd>
             <span>{{
-              { null: '', MORNING: 'MORNING', AFTERNOON: 'AFTERNOON', EVENING: 'EVENING', NIGHT: 'NIGHT' }[profileRef.studyTime ?? 'null']
+              { null: '', EARLY: 'EARLY', MORNING: 'MORNING', AFTERNOON: 'AFTERNOON', EVENING: 'EVENING', NIGHT: 'NIGHT', LATE: 'LATE' }[
+                profileRef.studyTime ?? 'null'
+              ]
             }}</span>
           </dd>
           <dt><span>Sports</span></dt>

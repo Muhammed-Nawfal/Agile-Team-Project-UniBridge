@@ -1,6 +1,7 @@
 package bham.team.domain;
 
 import bham.team.domain.enumeration.Reliability;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -43,6 +44,11 @@ public class Ranking implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "reliable", nullable = false)
     private Reliability reliable;
+
+    @JsonIgnoreProperties(value = { "user", "booking", "ranking" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(unique = true)
+    private Profile rankGiven;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
@@ -113,6 +119,19 @@ public class Ranking implements Serializable {
 
     public void setReliable(Reliability reliable) {
         this.reliable = reliable;
+    }
+
+    public Profile getRankGiven() {
+        return this.rankGiven;
+    }
+
+    public void setRankGiven(Profile profile) {
+        this.rankGiven = profile;
+    }
+
+    public Ranking rankGiven(Profile profile) {
+        this.setRankGiven(profile);
+        return this;
     }
 
     public User getUser() {

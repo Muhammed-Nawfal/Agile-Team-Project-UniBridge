@@ -1,26 +1,26 @@
 import { IActivityMatch, NewActivityMatch } from './activity-match.model';
 
 export const sampleWithRequiredData: IActivityMatch = {
-  id: 12820,
-  activityType: 'SOCIAL',
-  status: 'ACCEPT',
+  id: 458,
+  activityType: 'OTHER',
+  status: 'PENDING',
 };
 
 export const sampleWithPartialData: IActivityMatch = {
-  id: 24024,
+  id: 21833,
   activityType: 'SOCIAL',
-  status: 'ACCEPT',
+  status: 'DECLINED',
 };
 
 export const sampleWithFullData: IActivityMatch = {
-  id: 27206,
-  activityType: 'SOCIAL',
-  status: 'DECLINED',
+  id: 10511,
+  activityType: 'ACADEMIC',
+  status: 'PENDING',
 };
 
 export const sampleWithNewData: NewActivityMatch = {
-  activityType: 'GYM',
-  status: 'DECLINED',
+  activityType: 'ACADEMIC',
+  status: 'PENDING',
   id: null,
 };
 

@@ -222,6 +222,57 @@
         </div>
 
         <div class="mb-3">
+          <label class="form-label" for="field_challenges">Challenges</label>
+          <select
+            class="form-control"
+            id="field_challenges"
+            data-cy="challenges"
+            name="challenges"
+            formControlName="challenges"
+            [compareWith]="compareProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_challengedFriend">Challenged Friend</label>
+          <select
+            class="form-control"
+            id="field_challengedFriend"
+            data-cy="challengedFriend"
+            name="challengedFriend"
+            formControlName="challengedFriend"
+            [compareWith]="compareFriendsList"
+          >
+            <option [ngValue]="null"></option>
+            @for (friendsListOption of friendsListsSharedCollection; track $index) {
+              <option [ngValue]="friendsListOption">{{ friendsListOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_challengedActivity">Challenged Activity</label>
+          <select
+            class="form-control"
+            id="field_challengedActivity"
+            data-cy="challengedActivity"
+            name="challengedActivity"
+            formControlName="challengedActivity"
+            [compareWith]="compareActivity"
+          >
+            <option [ngValue]="null"></option>
+            @for (activityOption of activitiesSharedCollection; track $index) {
+              <option [ngValue]="activityOption">{{ activityOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
           <label class="form-label" for="field_creator">Creator</label>
           <select
             class="form-control"

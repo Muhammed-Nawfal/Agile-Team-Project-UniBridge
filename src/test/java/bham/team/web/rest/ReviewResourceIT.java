@@ -304,7 +304,7 @@ class ReviewResourceIT {
         Review partialUpdatedReview = new Review();
         partialUpdatedReview.setId(review.getId());
 
-        partialUpdatedReview.datePublished(UPDATED_DATE_PUBLISHED).star(UPDATED_STAR).text(UPDATED_TEXT);
+        partialUpdatedReview.star(UPDATED_STAR);
 
         restReviewMockMvc
             .perform(

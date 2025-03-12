@@ -84,7 +84,7 @@ describe('FriendsList Management Component', () => {
 
     // THEN
     expect(service.query).toHaveBeenCalled();
-    expect(comp.friendsLists[0]).toEqual(expect.objectContaining({ id: 123 }));
+    expect(comp.friendsLists?.[0]).toEqual(expect.objectContaining({ id: 123 }));
   });
 
   describe('trackId', () => {

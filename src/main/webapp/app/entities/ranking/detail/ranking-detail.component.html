@@ -31,6 +31,14 @@
           <dd>
             <span>{{ { null: '', UNRELIABLE: 'UNRELIABLE', RELIABLE: 'RELIABLE' }[rankingRef.reliable ?? 'null'] }}</span>
           </dd>
+          <dt><span>Rank Given</span></dt>
+          <dd>
+            @if (ranking()!.rankGiven) {
+              <div>
+                <a [routerLink]="['/profile', ranking()!.rankGiven?.id, 'view']">{{ rankingRef.rankGiven?.id }}</a>
+              </div>
+            }
+          </dd>
           <dt><span>User</span></dt>
           <dd>
             <span>{{ rankingRef.user?.id }}</span>

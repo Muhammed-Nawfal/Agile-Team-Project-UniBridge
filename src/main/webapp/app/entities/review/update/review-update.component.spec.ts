@@ -4,10 +4,12 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, from, of } from 'rxjs';
 
+import { IProfile } from 'app/entities/profile/profile.model';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
 import { IUser } from 'app/entities/user/user.model';
 import { UserService } from 'app/entities/user/service/user.service';
-import { ReviewService } from '../service/review.service';
 import { IReview } from '../review.model';
+import { ReviewService } from '../service/review.service';
 import { ReviewFormService } from './review-form.service';
 
 import { ReviewUpdateComponent } from './review-update.component';
@@ -18,6 +20,7 @@ describe('Review Management Update Component', () => {
   let activatedRoute: ActivatedRoute;
   let reviewFormService: ReviewFormService;
   let reviewService: ReviewService;
+  let profileService: ProfileService;
   let userService: UserService;
 
   beforeEach(() => {
@@ -41,20 +44,43 @@ describe('Review Management Update Component', () => {
     activatedRoute = TestBed.inject(ActivatedRoute);
     reviewFormService = TestBed.inject(ReviewFormService);
     reviewService = TestBed.inject(ReviewService);
+    profileService = TestBed.inject(ProfileService);
     userService = TestBed.inject(UserService);
 
     comp = fixture.componentInstance;
   });
 
   describe('ngOnInit', () => {
+    it('Should call Profile query and add missing value', () => {
+      const review: IReview = { id: 456 };
+      const reviewsGiven: IProfile = { id: 25784 };
+      review.reviewsGiven = reviewsGiven;
+
+      const profileCollection: IProfile[] = [{ id: 9758 }];
+      jest.spyOn(profileService, 'query').mockReturnValue(of(new HttpResponse({ body: profileCollection })));
+      const additionalProfiles = [reviewsGiven];
+      const expectedCollection: IProfile[] = [...additionalProfiles, ...profileCollection];
+      jest.spyOn(profileService, 'addProfileToCollectionIfMissing').mockReturnValue(expectedCollection);
+
+      activatedRoute.data = of({ review });
+      comp.ngOnInit();
+
+      expect(profileService.query).toHaveBeenCalled();
+      expect(profileService.addProfileToCollectionIfMissing).toHaveBeenCalledWith(
+        profileCollection,
+        ...additionalProfiles.map(expect.objectContaining),
+      );
+      expect(comp.profilesSharedCollection).toEqual(expectedCollection);
+    });
+
     it('Should call User query and add missing value', () => {
       const review: IReview = { id: 456 };
-      const aboutUser: IUser = { id: 7226 };
+      const aboutUser: IUser = { id: 295 };
       review.aboutUser = aboutUser;
-      const fromUser: IUser = { id: 19784 };
+      const fromUser: IUser = { id: 4626 };
       review.fromUser = fromUser;
 
-      const userCollection: IUser[] = [{ id: 8255 }];
+      const userCollection: IUser[] = [{ id: 6538 }];
       jest.spyOn(userService, 'query').mockReturnValue(of(new HttpResponse({ body: userCollection })));
       const additionalUsers = [aboutUser, fromUser];
       const expectedCollection: IUser[] = [...additionalUsers, ...userCollection];
@@ -73,14 +99,17 @@ describe('Review Management Update Component', () => {
 
     it('Should update editForm', () => {
       const review: IReview = { id: 456 };
-      const aboutUser: IUser = { id: 16028 };
+      const reviewsGiven: IProfile = { id: 31007 };
+      review.reviewsGiven = reviewsGiven;
+      const aboutUser: IUser = { id: 25938 };
       review.aboutUser = aboutUser;
-      const fromUser: IUser = { id: 488 };
+      const fromUser: IUser = { id: 1466 };
       review.fromUser = fromUser;
 
       activatedRoute.data = of({ review });
       comp.ngOnInit();
 
+      expect(comp.profilesSharedCollection).toContain(reviewsGiven);
       expect(comp.usersSharedCollection).toContain(aboutUser);
       expect(comp.usersSharedCollection).toContain(fromUser);
       expect(comp.review).toEqual(review);
@@ -156,6 +185,16 @@ describe('Review Management Update Component', () => {
   });
 
   describe('Compare relationships', () => {
+    describe('compareProfile', () => {
+      it('Should forward to profileService', () => {
+        const entity = { id: 123 };
+        const entity2 = { id: 456 };
+        jest.spyOn(profileService, 'compareProfile');
+        comp.compareProfile(entity, entity2);
+        expect(profileService.compareProfile).toHaveBeenCalledWith(entity, entity2);
+      });
+    });
+
     describe('compareUser', () => {
       it('Should forward to userService', () => {
         const entity = { id: 123 };

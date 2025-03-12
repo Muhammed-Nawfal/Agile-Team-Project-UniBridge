@@ -1,4 +1,7 @@
 import dayjs from 'dayjs/esm';
+import { IProfile } from 'app/entities/profile/profile.model';
+import { IFriendsList } from 'app/entities/friends-list/friends-list.model';
+import { IActivity } from 'app/entities/activity/activity.model';
 import { IUser } from 'app/entities/user/user.model';
 import { AchievementCategory } from 'app/entities/enumerations/achievement-category.model';
 
@@ -15,6 +18,9 @@ export interface IChallenge {
   isCompleted?: boolean | null;
   completedDate?: dayjs.Dayjs | null;
   isDisplayed?: boolean | null;
+  challenges?: IProfile | null;
+  challengedFriend?: IFriendsList | null;
+  challengedActivity?: IActivity | null;
   creator?: Pick<IUser, 'id'> | null;
   recipient?: Pick<IUser, 'id'> | null;
 }

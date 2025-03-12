@@ -94,8 +94,12 @@ public class Activity implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "activity")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "requestedUser", "activity" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "bookingDoneBy", "requestedUser", "bookedActivity", "activity" }, allowSetters = true)
     private Set<Booking> bookings = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "user", "booking", "ranking" }, allowSetters = true)
+    private Profile userName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User requesteduser;
@@ -325,6 +329,19 @@ public class Activity implements Serializable {
     public Activity removeBooking(Booking booking) {
         this.bookings.remove(booking);
         booking.setActivity(null);
+        return this;
+    }
+
+    public Profile getUserName() {
+        return this.userName;
+    }
+
+    public void setUserName(Profile profile) {
+        this.userName = profile;
+    }
+
+    public Activity userName(Profile profile) {
+        this.setUserName(profile);
         return this;
     }
 

@@ -10,6 +10,27 @@
     -->
     <changeSet id="20250311153610-2" author="jhipster">
 
+        <addForeignKeyConstraint baseColumnNames="challenges_id"
+                                 baseTableName="challenge"
+                                 constraintName="fk_challenge__challenges_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="profile"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="challenged_friend_id"
+                                 baseTableName="challenge"
+                                 constraintName="fk_challenge__challenged_friend_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="friends_list"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="challenged_activity_id"
+                                 baseTableName="challenge"
+                                 constraintName="fk_challenge__challenged_activity_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="activity"
+                                 />
+
         <addForeignKeyConstraint baseColumnNames="creator_id"
                                  baseTableName="challenge"
                                  constraintName="fk_challenge__creator_id"
