@@ -11,6 +11,7 @@ import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigati
 import { IActivityMatch } from '../activity-match.model';
 import { ActivityMatchService, EntityArrayResponseType } from '../service/activity-match.service';
 import { ActivityMatchDeleteDialogComponent } from '../delete/activity-match-delete-dialog.component';
+import { MatchingComponent } from '../matching/matching.component';
 
 @Component({
   standalone: true,
@@ -26,6 +27,7 @@ import { ActivityMatchDeleteDialogComponent } from '../delete/activity-match-del
     DurationPipe,
     FormatMediumDatetimePipe,
     FormatMediumDatePipe,
+    MatchingComponent,
   ],
 })
 export class ActivityMatchComponent implements OnInit {
@@ -87,6 +89,12 @@ export class ActivityMatchComponent implements OnInit {
 
   navigateToWithComponentValues(event: SortState): void {
     this.handleNavigation(event);
+  }
+
+  // constructor(private router: Router) {}
+
+  navigateToBuddy(type: string): void {
+    this.router.navigate(['/activity-match/buddy', type]);
   }
 
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {

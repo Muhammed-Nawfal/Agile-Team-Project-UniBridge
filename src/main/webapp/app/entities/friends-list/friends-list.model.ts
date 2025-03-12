@@ -7,7 +7,7 @@ export interface IFriendsList {
   friendRequest?: keyof typeof Decision | null;
   friendSince?: dayjs.Dayjs | null;
   user?: Pick<IUser, 'id'> | null;
-  friend?: Pick<IUser, 'id' | 'login'> | null; // ✅ Now includes 'login'
+  friend?: Pick<IUser, 'id'> | null;
 }
 
 export type NewFriendsList = Omit<IFriendsList, 'id'> & { id: null };
