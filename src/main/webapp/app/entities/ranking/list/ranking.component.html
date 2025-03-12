@@ -85,19 +85,14 @@
       <table class="table table-striped" aria-describedby="page-heading" style="float: right">
         <thead>
           <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="reviewNumber">
-              <div class="d-flex">
-                <span>Review Number</span>
-              </div>
-            </th>
             <th scope="col" jhiSortBy="starAverage">
               <div class="d-flex">
-                <span>Star Average</span>
+                <span>User</span>
               </div>
             </th>
             <th scope="col" jhiSortBy="user.id">
               <div class="d-flex">
-                <span>User</span>
+                <span>Stars</span>
               </div>
             </th>
           </tr>
@@ -105,10 +100,9 @@
         <tbody>
           @for (ranking of rankings; track trackId(ranking)) {
             <tr data-cy="entityTable">
-              <td>{{ ranking.reviewNumber }}</td>
-              <td>{{ ranking.starAverage }}</td>
+              <td>{{ ranking.user?.id }}</td>
               <td>
-                {{ ranking.user?.id }}
+                {{ ranking.starAverage }}
               </td>
             </tr>
           }
