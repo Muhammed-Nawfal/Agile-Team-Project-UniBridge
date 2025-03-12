@@ -1,112 +1,68 @@
-<div>
-  <h2 id="page-heading" data-cy="ChatHeading">
-    <span>Chats</span>
-
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span>Refresh list</span>
+<div class="chat-container">
+  <!-- Contact List -->
+  <div class="contact-list">
+    <ng-container *ngFor="let contact of contacts | keyvalue">
+      <button class="contact-item" [class.selected]="selectedContact === contact.key" (click)="selectContact(contact.key)">
+        <div class="contact-avatar" [style.background-color]="contact.value.avatar">
+          {{ contact.key[0] }}
+        </div>
+        <div class="contact-name">{{ contact.key }}</div>
       </button>
+    </ng-container>
+  </div>
 
-      <button
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-chat"
-        [routerLink]="['/chat/new']"
-      >
-        <fa-icon icon="plus"></fa-icon>
-        <span>Create a new Chat</span>
-      </button>
+  <!-- Chat Area -->
+  <div class="chat-area">
+    <div class="chat-header">
+      <div class="contact-avatar" [style.background-color]="contacts[selectedContact].avatar">
+        {{ selectedContact[0] }}
+      </div>
+      <div class="match-info">You matched with {{ selectedContact }}</div>
     </div>
-  </h2>
 
-  <jhi-alert-error></jhi-alert-error>
+    <div class="messages-container" #messagesContainer>
+      <!-- Initial message from contact -->
+      <div class="message-row received">
+        <div class="contact-avatar" [style.background-color]="contacts[selectedContact].avatar">
+          {{ selectedContact[0] }}
+        </div>
+        <div class="message">
+          {{ contacts[selectedContact].initialMessage }}
+        </div>
+        <span class="message-time">12:56 PM</span>
+      </div>
 
-  <jhi-alert></jhi-alert>
+      <!-- Dynamic messages -->
+      <ng-container *ngFor="let message of messages[selectedContact]">
+        <div class="message-row" [class.sent]="message.type === 'sent'" [class.received]="message.type === 'received'">
+          <!-- Contact avatar for received messages -->
+          <ng-container *ngIf="message.type === 'received'">
+            <div class="contact-avatar" [style.background-color]="contacts[selectedContact].avatar">
+              {{ selectedContact[0] }}
+            </div>
+          </ng-container>
 
-  @if (chats?.length === 0) {
-    <div class="alert alert-warning" id="no-result">
-      <span>No Chats found</span>
+          <span class="message-time">{{ message.time }}</span>
+          <div class="message">{{ message.text }}</div>
+        </div>
+      </ng-container>
     </div>
-  }
 
-  @if (chats && chats.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
-        <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="message">
-              <div class="d-flex">
-                <span>Message</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="timestamp">
-              <div class="d-flex">
-                <span>Timestamp</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="senderID.id">
-              <div class="d-flex">
-                <span>Sender ID</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="recieverID.id">
-              <div class="d-flex">
-                <span>Reciever ID</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (chat of chats; track trackId(chat)) {
-            <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/chat', chat.id, 'view']">{{ chat.id }}</a>
-              </td>
-              <td>{{ chat.message }}</td>
-              <td>{{ chat.timestamp | formatMediumDatetime }}</td>
-              <td>
-                {{ chat.senderID?.id }}
-              </td>
-              <td>
-                {{ chat.recieverID?.id }}
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
-                  <a [routerLink]="['/chat', chat.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                    <fa-icon icon="eye"></fa-icon>
-                    <span class="d-none d-md-inline">View</span>
-                  </a>
-
-                  <a [routerLink]="['/chat', chat.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline">Edit</span>
-                  </a>
-
-                  <button type="submit" (click)="delete(chat)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline">Delete</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+    <div class="message-input-container">
+      <input type="text" class="message-input" [(ngModel)]="newMessage" placeholder="Type a message..." (keyup.enter)="sendMessage()" />
+      <button class="send-button" (click)="sendMessage()" [disabled]="!newMessage.trim()">Send</button>
     </div>
-  }
+  </div>
+
+  <!-- Profile Info -->
+  <div class="profile-info">
+    <div class="profile-avatar" [style.background-color]="contacts[selectedContact].avatar">
+      {{ selectedContact[0] }}
+    </div>
+    <div class="profile-details">
+      <h3>{{ selectedContact }}, {{ contacts[selectedContact].age }}</h3>
+    </div>
+    <button class="unmatch-button">Unmatch</button>
+    <button class="report-button">Report</button>
+  </div>
 </div>
