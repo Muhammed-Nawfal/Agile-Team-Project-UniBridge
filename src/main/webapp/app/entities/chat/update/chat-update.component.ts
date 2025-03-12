@@ -106,7 +106,7 @@ export class ChatUpdateComponent implements OnInit {
     this.usersSharedCollection = this.userService.addUserToCollectionIfMissing<IUser>(
       this.usersSharedCollection,
       chat.senderID,
-      chat.recieverID,
+      chat.receiverID,
     );
   }
 
@@ -115,7 +115,7 @@ export class ChatUpdateComponent implements OnInit {
       .query()
       .pipe(map((res: HttpResponse<IUser[]>) => res.body ?? []))
       .pipe(
-        map((users: IUser[]) => this.userService.addUserToCollectionIfMissing<IUser>(users, this.chat?.senderID, this.chat?.recieverID)),
+        map((users: IUser[]) => this.userService.addUserToCollectionIfMissing<IUser>(users, this.chat?.senderID, this.chat?.receiverID)),
       )
       .subscribe((users: IUser[]) => (this.usersSharedCollection = users));
   }

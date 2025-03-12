@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+// Added imports for new functionality
+import { Observable, map, throwError, of } from 'rxjs'; // Added throwError and of
+import { catchError, switchMap } from 'rxjs/operators'; // Added these operators
 
 import dayjs from 'dayjs/esm';
 
@@ -30,10 +32,52 @@ export class ChatService {
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/chats');
+  // Added friendship URL for API endpoint
+  protected friendshipUrl = this.applicationConfigService.getEndpointFor('api/friendships');
 
+  // Added new method to check if users are friends
+  checkFriendship(userId: number): Observable<boolean> {
+    // Assuming you have an API endpoint to check friendships
+    return this.http.get<boolean>(`${this.friendshipUrl}/check/${userId}`).pipe(
+      catchError(error => {
+        console.error('Error checking friendship:', error);
+        // Fixed the type issue by explicitly typing the return value
+        return of(false as boolean);
+      }),
+    );
+  }
+
+  // Modified create method to check friendship before creating chat
   create(chat: NewChat): Observable<EntityResponseType> {
-    const copy = this.convertDateFromClient(chat);
-    return this.http.post<RestChat>(this.resourceUrl, copy, { observe: 'response' }).pipe(map(res => this.convertResponseFromServer(res)));
+    // Check if recieverID exists and has an id property
+    if (!chat.receiverID?.id) {
+      return throwError(() => new Error('Recipient ID is required'));
+    }
+
+    const recipientId = chat.receiverID.id;
+
+    // First check if users are friends
+    return this.checkFriendship(recipientId).pipe(
+      // Use switchMap to continue with chat creation only if friendship check passes
+      switchMap(isFriend => {
+        if (!isFriend) {
+          // Return error if users are not friends
+          return throwError(() => new Error('You can only send messages to friends'));
+        }
+
+        // Original implementation continues here if users are friends
+        const copy = this.convertDateFromClient(chat);
+        return this.http
+          .post<RestChat>(this.resourceUrl, copy, { observe: 'response' })
+          .pipe(map((res: HttpResponse<RestChat>): HttpResponse<IChat> => this.convertResponseFromServer(res)));
+      }),
+      // Added error handling
+      catchError(error => {
+        console.error('Error in chat creation:', error);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return throwError(() => error);
+      }),
+    );
   }
 
   update(chat: IChat): Observable<EntityResponseType> {

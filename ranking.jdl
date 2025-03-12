@@ -1,0 +1,8 @@
+entity Ranking {
+  user String required
+  reviewNumber Integer required
+  activityNumber Integer required
+  globalRank Integer required
+  friendRank Integer
+  reliable Boolean required
+}

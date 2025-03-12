@@ -34,7 +34,7 @@ type ChatFormGroupContent = {
   message: FormControl<ChatFormRawValue['message']>;
   timestamp: FormControl<ChatFormRawValue['timestamp']>;
   senderID: FormControl<ChatFormRawValue['senderID']>;
-  recieverID: FormControl<ChatFormRawValue['recieverID']>;
+  recieverID: FormControl<ChatFormRawValue['receiverID']>;
 };
 
 export type ChatFormGroup = FormGroup<ChatFormGroupContent>;
@@ -61,7 +61,7 @@ export class ChatFormService {
         validators: [Validators.required],
       }),
       senderID: new FormControl(chatRawValue.senderID),
-      recieverID: new FormControl(chatRawValue.recieverID),
+      recieverID: new FormControl(chatRawValue.receiverID),
     });
   }
 
