@@ -1,10 +1,6 @@
 <nav data-cy="navbar" class="navbar navbar-dark navbar-expand-md bg-primary">
   <div class="container-fluid">
-    <a class="navbar-brand logo" routerLink="/" (click)="collapseNavbar()">
-      <span class="logo-img"></span>
-      <span class="navbar-title">Teamproject24</span>
-      <span class="navbar-version">{{ version }}</span>
-    </a>
+    <a class="navbar-brand logo" routerLink="/" (click)="collapseNavbar()"> </a>
     <a
       class="navbar-toggler d-lg-none"
       href="javascript:void(0);"
@@ -17,16 +13,58 @@
     >
       <fa-icon icon="bars"></fa-icon>
     </a>
+
     <div class="navbar-collapse collapse" id="navbarResponsive" [ngbCollapse]="isNavbarCollapsed()">
-      <ul class="navbar-nav ms-auto">
+      <!-- Left-aligned items -->
+      <ul class="navbar-nav mz-auto">
         <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a class="nav-link" routerLink="/" (click)="collapseNavbar()">
+          <a class="nav-link" routerLink="/activity-match" (click)="collapseNavbar()">
             <span>
               <fa-icon icon="home"></fa-icon>
               <span>Home</span>
             </span>
           </a>
         </li>
+
+        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a class="nav-link" routerLink="/activity" (click)="collapseNavbar()">
+            <span>
+              <fa-icon icon="party-horn"></fa-icon>
+              <span>Activities</span>
+            </span>
+          </a>
+        </li>
+
+        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a class="nav-link" routerLink="/profile" (click)="collapseNavbar()">
+            <span>
+              <fa-icon icon="user"></fa-icon>
+              <span>profile</span>
+            </span>
+          </a>
+        </li>
+
+        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a class="nav-link" routerLink="/friends-list" (click)="collapseNavbar()">
+            <span>
+              <fa-icon icon="user-friends"></fa-icon>
+              <span>friends-list</span>
+            </span>
+          </a>
+        </li>
+
+        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a class="nav-link" routerLink="/ranking" (click)="collapseNavbar()">
+            <span>
+              <fa-icon icon="podium-star"></fa-icon>
+              <span>Ranking</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Right-aligned items -->
+      <ul class="navbar-nav ms-auto">
         <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
         @if (account() !== null) {
           <li

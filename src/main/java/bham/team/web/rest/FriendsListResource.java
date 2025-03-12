@@ -143,19 +143,12 @@ public class FriendsListResource {
     /**
      * {@code GET  /friends-lists} : get all the friendsLists.
      *
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of friendsLists in body.
      */
     @GetMapping("")
-    public List<FriendsList> getAllFriendsLists(
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
-    ) {
+    public List<FriendsList> getAllFriendsLists() {
         LOG.debug("REST request to get all FriendsLists");
-        if (eagerload) {
-            return friendsListRepository.findAllWithEagerRelationships();
-        } else {
-            return friendsListRepository.findAll();
-        }
+        return friendsListRepository.findAll();
     }
 
     /**
@@ -167,7 +160,7 @@ public class FriendsListResource {
     @GetMapping("/{id}")
     public ResponseEntity<FriendsList> getFriendsList(@PathVariable("id") Long id) {
         LOG.debug("REST request to get FriendsList : {}", id);
-        Optional<FriendsList> friendsList = friendsListRepository.findOneWithEagerRelationships(id);
+        Optional<FriendsList> friendsList = friendsListRepository.findById(id);
         return ResponseUtil.wrapOrNotFound(friendsList);
     }
 

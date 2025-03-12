@@ -28,10 +28,12 @@ enum Skill {
     PROFESSIONAL
 }
 enum PreferredTime {
+    EARLY MORNING,
     MORNING,
     AFTERNOON,
     EVENING,
-    NIGHT
+    NIGHT,
+    LATE NIGHT
 }
 enum GymLocation {
     THE_GYM_SELLY_OAK,

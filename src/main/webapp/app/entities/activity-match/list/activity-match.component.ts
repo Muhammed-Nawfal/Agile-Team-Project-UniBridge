@@ -16,6 +16,7 @@ import { ActivityMatchDeleteDialogComponent } from '../delete/activity-match-del
   standalone: true,
   selector: 'jhi-activity-match',
   templateUrl: './activity-match.component.html',
+  styleUrl: 'activity-match.component.scss',
   imports: [
     RouterModule,
     FormsModule,
@@ -43,6 +44,10 @@ export class ActivityMatchComponent implements OnInit {
 
   trackId = (item: IActivityMatch): number => this.activityMatchService.getActivityMatchIdentifier(item);
 
+  goToEventsBuddy(): void {
+    this.router.navigate(['events-buddy']);
+  }
+
   ngOnInit(): void {
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
       .pipe(
@@ -55,6 +60,10 @@ export class ActivityMatchComponent implements OnInit {
       )
       .subscribe();
   }
+
+  // navigateToEventsBuddy(): void {
+  //   this.router.navigate(['/events-buddy']);
+  // }
 
   delete(activityMatch: IActivityMatch): void {
     const modalRef = this.modalService.open(ActivityMatchDeleteDialogComponent, { size: 'lg', backdrop: 'static' });

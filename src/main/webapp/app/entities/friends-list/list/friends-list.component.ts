@@ -11,11 +11,13 @@ import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigati
 import { IFriendsList } from '../friends-list.model';
 import { EntityArrayResponseType, FriendsListService } from '../service/friends-list.service';
 import { FriendsListDeleteDialogComponent } from '../delete/friends-list-delete-dialog.component';
+import { FriendRequestsComponent } from '../friend-requests/friend-requests.component'; // Import FriendRequestsComponent
 
 @Component({
   standalone: true,
   selector: 'jhi-friends-list',
   templateUrl: './friends-list.component.html',
+  styleUrls: ['./friends-list.component.scss'],
   imports: [
     RouterModule,
     FormsModule,
@@ -25,6 +27,7 @@ import { FriendsListDeleteDialogComponent } from '../delete/friends-list-delete-
     DurationPipe,
     FormatMediumDatetimePipe,
     FormatMediumDatePipe,
+    FriendRequestsComponent,
   ],
 })
 export class FriendsListComponent implements OnInit {
@@ -101,7 +104,6 @@ export class FriendsListComponent implements OnInit {
   protected queryBackend(): Observable<EntityArrayResponseType> {
     this.isLoading = true;
     const queryObject: any = {
-      eagerload: true,
       sort: this.sortService.buildSortParam(this.sortState()),
     };
     return this.friendsListService.query(queryObject).pipe(tap(() => (this.isLoading = false)));

@@ -23,14 +23,14 @@
           <dd>
             @if (profileRef.profilePicture) {
               <div>
-                <a (click)="openFile(profileRef.profilePicture ?? '', profileRef.profilePictureContentType)">
+                <a (click)="openFile(profileRef.profilePicture, profileRef.profilePictureContentType)">
                   <img
                     [src]="'data:' + profileRef.profilePictureContentType + ';base64,' + profileRef.profilePicture"
                     style="max-width: 100%"
                     alt="profile"
                   />
                 </a>
-                {{ profileRef.profilePictureContentType }}, {{ byteSize(profileRef.profilePicture ?? '') }}
+                {{ profileRef.profilePictureContentType }}, {{ byteSize(profileRef.profilePicture) }}
               </div>
             }
           </dd>

@@ -1,0 +1,49 @@
+h1 {
+  text-align: center;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 5rem;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+h2 {
+  font-family: 'Georgia', serif;
+  text-align: left;
+  font-size: 3rem;
+  font-weight: bold;
+  margin-top: 40px;
+}
+
+//.container {
+//  display: flex;
+//  justify-content: center;
+//  align-items: center;
+//  flex-direction: column;
+//  padding: 20px;
+//  width: 100%
+//}
+
+.buddy-buttons,
+.activity-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+button {
+  flex-grow: 1;
+  margin: 0 5px;
+  height: 100px;
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 15px 0;
+  font-size: 2rem;
+  font-family: 'Times New Roman', Times, serif;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: grey; /* Darkens button color on hover */
+}

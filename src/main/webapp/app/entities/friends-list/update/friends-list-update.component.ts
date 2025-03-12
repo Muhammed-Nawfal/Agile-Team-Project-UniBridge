@@ -87,8 +87,8 @@ export class FriendsListUpdateComponent implements OnInit {
 
     this.usersSharedCollection = this.userService.addUserToCollectionIfMissing<IUser>(
       this.usersSharedCollection,
-      ...(friendsList.userIds ?? []),
-      ...(friendsList.friendIds ?? []),
+      friendsList.user,
+      friendsList.friend,
     );
   }
 
@@ -98,11 +98,7 @@ export class FriendsListUpdateComponent implements OnInit {
       .pipe(map((res: HttpResponse<IUser[]>) => res.body ?? []))
       .pipe(
         map((users: IUser[]) =>
-          this.userService.addUserToCollectionIfMissing<IUser>(
-            users,
-            ...(this.friendsList?.userIds ?? []),
-            ...(this.friendsList?.friendIds ?? []),
-          ),
+          this.userService.addUserToCollectionIfMissing<IUser>(users, this.friendsList?.user, this.friendsList?.friend),
         ),
       )
       .subscribe((users: IUser[]) => (this.usersSharedCollection = users));

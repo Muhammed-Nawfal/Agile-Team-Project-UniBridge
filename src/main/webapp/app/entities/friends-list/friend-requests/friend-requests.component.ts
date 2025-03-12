@@ -8,16 +8,15 @@ import { SortByDirective, SortDirective, SortService, type SortState, sortStateS
 import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
 import { FormsModule } from '@angular/forms';
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
-import { DataUtils } from 'app/core/util/data-util.service';
-import { IActivity } from '../activity.model';
-import { ActivityService, EntityArrayResponseType } from '../service/activity.service';
-import { ActivityDeleteDialogComponent } from '../delete/activity-delete-dialog.component';
+import { IFriendsList } from '../friends-list.model';
+import { EntityArrayResponseType, FriendsListService } from '../service/friends-list.service';
+import { FriendsListDeleteDialogComponent } from '../delete/friends-list-delete-dialog.component';
 
 @Component({
   standalone: true,
-  selector: 'jhi-activity',
-  templateUrl: './activity.component.html',
-  styleUrl: './activity.component.scss', // Added activity-component style file to the component
+  selector: 'jhi-friend-requests',
+  templateUrl: './friend-requests.component.html',
+  styleUrls: ['./friend-requests.component.scss'],
   imports: [
     RouterModule,
     FormsModule,
@@ -29,29 +28,28 @@ import { ActivityDeleteDialogComponent } from '../delete/activity-delete-dialog.
     FormatMediumDatePipe,
   ],
 })
-export class ActivityComponent implements OnInit {
+export class FriendRequestsComponent implements OnInit {
   subscription: Subscription | null = null;
-  activities?: IActivity[];
+  friendRequests?: IFriendsList[];
   isLoading = false;
 
   sortState = sortStateSignal({});
 
   public readonly router = inject(Router);
-  protected readonly activityService = inject(ActivityService);
+  protected readonly friendsListService = inject(FriendsListService);
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
-  protected dataUtils = inject(DataUtils);
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
 
-  trackId = (item: IActivity): number => this.activityService.getActivityIdentifier(item);
+  trackId = (item: IFriendsList): number => this.friendsListService.getFriendsListIdentifier(item);
 
   ngOnInit(): void {
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
       .pipe(
         tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
         tap(() => {
-          if (!this.activities || this.activities.length === 0) {
+          if (!this.friendRequests || this.friendRequests.length === 0) {
             this.load();
           }
         }),
@@ -59,17 +57,32 @@ export class ActivityComponent implements OnInit {
       .subscribe();
   }
 
-  byteSize(base64String: string): string {
-    return this.dataUtils.byteSize(base64String);
+  acceptRequest(friendRequest: IFriendsList): void {
+    // Create a complete copy of the original object
+    const updatedRequest: IFriendsList = {
+      ...friendRequest,
+      friendRequest: 'ACCEPT',
+    };
+
+    this.friendsListService.update(updatedRequest).subscribe(() => {
+      this.load();
+    });
   }
 
-  openFile(base64String: string, contentType: string | null | undefined): void {
-    return this.dataUtils.openFile(base64String, contentType);
+  declineRequest(friendRequest: IFriendsList): void {
+    const updatedRequest: IFriendsList = {
+      ...friendRequest,
+      friendRequest: 'DECLINED',
+    };
+
+    this.friendsListService.update(updatedRequest).subscribe(() => {
+      this.load();
+    });
   }
 
-  delete(activity: IActivity): void {
-    const modalRef = this.modalService.open(ActivityDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
-    modalRef.componentInstance.activity = activity;
+  delete(friendRequest: IFriendsList): void {
+    const modalRef = this.modalService.open(FriendsListDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.friendsList = friendRequest;
     // unsubscribe not needed because closed completes on modal close
     modalRef.closed
       .pipe(
@@ -97,15 +110,16 @@ export class ActivityComponent implements OnInit {
 
   protected onResponseSuccess(response: EntityArrayResponseType): void {
     const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
-    this.activities = this.refineData(dataFromBody);
+    // Filter to only show pending friend requests
+    this.friendRequests = this.refineData(dataFromBody).filter(request => request.friendRequest === 'PENDING');
   }
 
-  protected refineData(data: IActivity[]): IActivity[] {
+  protected refineData(data: IFriendsList[]): IFriendsList[] {
     const { predicate, order } = this.sortState();
     return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
   }
 
-  protected fillComponentAttributesFromResponseBody(data: IActivity[] | null): IActivity[] {
+  protected fillComponentAttributesFromResponseBody(data: IFriendsList[] | null): IFriendsList[] {
     return data ?? [];
   }
 
@@ -114,7 +128,7 @@ export class ActivityComponent implements OnInit {
     const queryObject: any = {
       sort: this.sortService.buildSortParam(this.sortState()),
     };
-    return this.activityService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
+    return this.friendsListService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
   }
 
   protected handleNavigation(sortState: SortState): void {
