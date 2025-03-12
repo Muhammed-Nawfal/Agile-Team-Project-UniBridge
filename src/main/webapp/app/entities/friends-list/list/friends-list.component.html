@@ -1,15 +1,14 @@
 <div>
   <h2 id="page-heading" data-cy="FriendsListHeading">
-    <span>All Friends</span>
+    <span>FRIENDS</span>
   </h2>
 
-  <div class="view-button">
-    <a [routerLink]="['/friends-list/friend-requests']" class="btn btn-info"> <fa-icon icon="user-plus"></fa-icon> Friend Requests</a>
+  <div class="search-area">
+    <input type="text" placeholder="search friends" class="search-input" />
+    <a [routerLink]="['/friends-list/friend-requests']" class="requests-btn">REQUESTS</a>
   </div>
 
-  <jhi-alert-error></jhi-alert-error>
-
-  <jhi-alert></jhi-alert>
+  <h3 class="all-friends-heading">All Friends</h3>
 
   @if (friendsLists?.length === 0) {
     <div class="alert alert-warning" id="no-result">
@@ -18,36 +17,18 @@
   }
 
   @if (friendsLists && friendsLists.length > 0) {
-    <div class="card-container">
+    <div class="friends-grid">
       @for (friendsList of friendsLists; track trackId(friendsList)) {
-        <div class="card">
-          <div class="friend-card-content">
-            <div class="friend-status-tag {{ friendsList.friendRequest }}">
-              {{ { null: '', ACCEPT: 'ACCEPT', DECLINED: 'DECLINED', PENDING: 'PENDING' }[friendsList.friendRequest ?? 'null'] }}
-            </div>
+        <div class="friend-card">
+          @if (friendsList.friendRequest) {}
 
-            <!-- Profile area - will be populated later -->
-            <div class="profile-area">
-              <!-- This is a placeholder for the profile picture -->
-              <div class="profile-pic-placeholder"></div>
+          <div class="profile-pic"></div>
 
-              <!-- Placeholder for name -->
-              <h3 class="friend-name">Friend #{{ friendsList.friend?.id }}</h3>
+          <div class="friend-name">Friend{{ friendsList.user?.id }}</div>
 
-              <!-- Message button -->
-              <button class="btn btn-primary message-btn"><fa-icon icon="envelope"></fa-icon> Message</button>
-            </div>
+          <button class="message-btn" [routerLink]="['/chat']">MESSAGE</button>
 
-            <div class="friend-details">
-              <p>
-                <strong>Location:</strong>
-                <!-- Will be from profile -->
-              </p>
-              <p><strong>Date:</strong> {{ friendsList.friendSince | formatMediumDatetime }}</p>
-              <p><strong>Participants:</strong> {{ friendsList.user?.id }} / {{ friendsList.friend?.id }}</p>
-              <p><strong>ID:</strong> {{ friendsList.id }}</p>
-            </div>
-          </div>
+          <div class="friends-since">Friends Since: {{ friendsList.friendSince | formatMediumDatetime }}</div>
         </div>
       }
     </div>

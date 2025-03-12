@@ -3,41 +3,80 @@
 @import 'bootstrap/scss/variables';
 
 /* ==========================================================================
-Navbar
+Navbar Styles
 ========================================================================== */
-
-.profile-image {
-  height: 1.75em;
-  width: 1.75em;
-}
 
 .navbar {
-  padding: 0.5rem 1rem;
-  .dropdown-item.active,
-  .dropdown-item.active:focus,
-  .dropdown-item.active:hover {
-    background-color: $dark;
-  }
-
-  a.nav-link {
-    font-weight: 400;
-  }
-
-  .navbar-toggler {
-    &:hover {
-      color: $navbar-dark-hover-color;
-    }
-  }
+  background: linear-gradient(135deg, #007bff, #6610f2);
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* ==========================================================================
-Logo styles
-========================================================================== */
-.logo-img {
-  height: 45px;
-  width: 45px;
-  display: inline-block;
-  vertical-align: middle;
-  background: url('/content/images/logo-jhipster.png') no-repeat center center;
-  background-size: contain;
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-item .nav-link {
+  color: #ffffff !important;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-item .nav-link:hover {
+  color: #ffd700 !important;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  background-color: #343a40;
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.dropdown-item {
+  color: #ffffff;
+  padding: 0.75rem 1.25rem;
+}
+
+.dropdown-item:hover {
+  background-color: #495057;
+}
+
+/* Profile Image */
+.profile-image {
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff;
+}
+
+/* Navbar Toggler */
+.navbar-toggler {
+  border: none;
+  color: #ffffff;
+}
+
+.navbar-toggler:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .navbar-nav {
+    flex-direction: column;
+    text-align: center;
+  }
+  .dropdown-menu {
+    text-align: center;
+  }
 }
