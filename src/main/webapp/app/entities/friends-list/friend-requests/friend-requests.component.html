@@ -3,6 +3,10 @@
     <span>Friend Requests</span>
   </h2>
 
+  <div class="view-button">
+    <a [routerLink]="['/friends-list']" class="btn btn-info"> <fa-icon icon="arrow-left"></fa-icon> Back to All Friends </a>
+  </div>
+
   <jhi-alert-error></jhi-alert-error>
 
   <jhi-alert></jhi-alert>
@@ -61,8 +65,4 @@
       }
     </div>
   }
-
-  <div class="view-button">
-    <a [routerLink]="['/friends-list']" class="btn btn-info"> <fa-icon icon="arrow-left"></fa-icon> Back to All Friends </a>
-  </div>
 </div>

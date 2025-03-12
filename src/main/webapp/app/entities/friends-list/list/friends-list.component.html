@@ -3,6 +3,10 @@
     <span>All Friends</span>
   </h2>
 
+  <div class="view-button">
+    <a [routerLink]="['/friends-list/friend-requests']" class="btn btn-info"> <fa-icon icon="user-plus"></fa-icon> Friend Requests</a>
+  </div>
+
   <jhi-alert-error></jhi-alert-error>
 
   <jhi-alert></jhi-alert>
@@ -43,29 +47,9 @@
               <p><strong>Participants:</strong> {{ friendsList.user?.id }} / {{ friendsList.friend?.id }}</p>
               <p><strong>ID:</strong> {{ friendsList.id }}</p>
             </div>
-
-            <div class="view-button">
-              <a [routerLink]="['/friends-list', friendsList.id, 'view']" class="btn btn-info"> <fa-icon icon="eye"></fa-icon> VIEW </a>
-            </div>
-
-            <div class="card-actions">
-              <a [routerLink]="['/friends-list', friendsList.id, 'edit']" class="btn btn-primary btn-sm">
-                <fa-icon icon="pencil-alt"></fa-icon>
-                <span class="d-none d-md-inline">Edit</span>
-              </a>
-
-              <button type="submit" (click)="delete(friendsList)" class="btn btn-danger btn-sm">
-                <fa-icon icon="times"></fa-icon>
-                <span class="d-none d-md-inline">Delete</span>
-              </button>
-            </div>
           </div>
         </div>
       }
     </div>
   }
-  <jhi-friend-requests></jhi-friend-requests>
-  <div class="view-button">
-    <a [routerLink]="['/friends-list/friend-requests']" class="btn btn-info"> <fa-icon icon="user-plus"></fa-icon> View Friend Requests </a>
-  </div>
 </div>
