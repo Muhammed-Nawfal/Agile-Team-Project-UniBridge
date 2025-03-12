@@ -20,6 +20,9 @@
             <column name="friend_since" type="${datetimeType}">
                 <constraints nullable="false" />
             </column>
+            <column name="friends_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
             <column name="user_id" type="bigint">
                 <constraints nullable="true" />
             </column>

@@ -13,20 +13,38 @@
       "fieldName": "timestamp",
       "fieldType": "Instant",
       "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "ActionType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "UNMATCH,REPORT"
     }
   ],
   "name": "Chat",
   "relationships": [
     {
+      "otherEntityName": "friendsList",
+      "relationshipName": "friendChat",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "profile",
+      "relationshipName": "chats",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
       "otherEntityName": "user",
-      "relationshipName": "senderID",
+      "relationshipName": "sender",
       "relationshipSide": "left",
       "relationshipType": "many-to-one",
       "relationshipWithBuiltInEntity": true
     },
     {
       "otherEntityName": "user",
-      "relationshipName": "recieverID",
+      "relationshipName": "receiver",
       "relationshipSide": "left",
       "relationshipType": "many-to-one",
       "relationshipWithBuiltInEntity": true

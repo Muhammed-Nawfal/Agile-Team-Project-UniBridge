@@ -4,6 +4,8 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, from, of } from 'rxjs';
 
+import { IProfile } from 'app/entities/profile/profile.model';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
 import { IUser } from 'app/entities/user/user.model';
 import { UserService } from 'app/entities/user/service/user.service';
 import { IActivity } from 'app/entities/activity/activity.model';
@@ -20,6 +22,7 @@ describe('Booking Management Update Component', () => {
   let activatedRoute: ActivatedRoute;
   let bookingFormService: BookingFormService;
   let bookingService: BookingService;
+  let profileService: ProfileService;
   let userService: UserService;
   let activityService: ActivityService;
 
@@ -44,6 +47,7 @@ describe('Booking Management Update Component', () => {
     activatedRoute = TestBed.inject(ActivatedRoute);
     bookingFormService = TestBed.inject(BookingFormService);
     bookingService = TestBed.inject(BookingService);
+    profileService = TestBed.inject(ProfileService);
     userService = TestBed.inject(UserService);
     activityService = TestBed.inject(ActivityService);
 
@@ -51,12 +55,30 @@ describe('Booking Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
+    it('Should call bookingDoneBy query and add missing value', () => {
+      const booking: IBooking = { id: 456 };
+      const bookingDoneBy: IProfile = { id: 28338 };
+      booking.bookingDoneBy = bookingDoneBy;
+
+      const bookingDoneByCollection: IProfile[] = [{ id: 661 }];
+      jest.spyOn(profileService, 'query').mockReturnValue(of(new HttpResponse({ body: bookingDoneByCollection })));
+      const expectedCollection: IProfile[] = [bookingDoneBy, ...bookingDoneByCollection];
+      jest.spyOn(profileService, 'addProfileToCollectionIfMissing').mockReturnValue(expectedCollection);
+
+      activatedRoute.data = of({ booking });
+      comp.ngOnInit();
+
+      expect(profileService.query).toHaveBeenCalled();
+      expect(profileService.addProfileToCollectionIfMissing).toHaveBeenCalledWith(bookingDoneByCollection, bookingDoneBy);
+      expect(comp.bookingDoneBiesCollection).toEqual(expectedCollection);
+    });
+
     it('Should call User query and add missing value', () => {
       const booking: IBooking = { id: 456 };
-      const requestedUser: IUser = { id: 31923 };
+      const requestedUser: IUser = { id: 2370 };
       booking.requestedUser = requestedUser;
 
-      const userCollection: IUser[] = [{ id: 17859 }];
+      const userCollection: IUser[] = [{ id: 15302 }];
       jest.spyOn(userService, 'query').mockReturnValue(of(new HttpResponse({ body: userCollection })));
       const additionalUsers = [requestedUser];
       const expectedCollection: IUser[] = [...additionalUsers, ...userCollection];
@@ -75,12 +97,14 @@ describe('Booking Management Update Component', () => {
 
     it('Should call Activity query and add missing value', () => {
       const booking: IBooking = { id: 456 };
-      const activity: IActivity = { id: 8158 };
+      const bookedActivity: IActivity = { id: 28350 };
+      booking.bookedActivity = bookedActivity;
+      const activity: IActivity = { id: 13936 };
       booking.activity = activity;
 
-      const activityCollection: IActivity[] = [{ id: 12812 }];
+      const activityCollection: IActivity[] = [{ id: 19024 }];
       jest.spyOn(activityService, 'query').mockReturnValue(of(new HttpResponse({ body: activityCollection })));
-      const additionalActivities = [activity];
+      const additionalActivities = [bookedActivity, activity];
       const expectedCollection: IActivity[] = [...additionalActivities, ...activityCollection];
       jest.spyOn(activityService, 'addActivityToCollectionIfMissing').mockReturnValue(expectedCollection);
 
@@ -97,15 +121,21 @@ describe('Booking Management Update Component', () => {
 
     it('Should update editForm', () => {
       const booking: IBooking = { id: 456 };
-      const requestedUser: IUser = { id: 19458 };
+      const bookingDoneBy: IProfile = { id: 9438 };
+      booking.bookingDoneBy = bookingDoneBy;
+      const requestedUser: IUser = { id: 17577 };
       booking.requestedUser = requestedUser;
-      const activity: IActivity = { id: 21112 };
+      const bookedActivity: IActivity = { id: 23619 };
+      booking.bookedActivity = bookedActivity;
+      const activity: IActivity = { id: 32515 };
       booking.activity = activity;
 
       activatedRoute.data = of({ booking });
       comp.ngOnInit();
 
+      expect(comp.bookingDoneBiesCollection).toContain(bookingDoneBy);
       expect(comp.usersSharedCollection).toContain(requestedUser);
+      expect(comp.activitiesSharedCollection).toContain(bookedActivity);
       expect(comp.activitiesSharedCollection).toContain(activity);
       expect(comp.booking).toEqual(booking);
     });
@@ -180,6 +210,16 @@ describe('Booking Management Update Component', () => {
   });
 
   describe('Compare relationships', () => {
+    describe('compareProfile', () => {
+      it('Should forward to profileService', () => {
+        const entity = { id: 123 };
+        const entity2 = { id: 456 };
+        jest.spyOn(profileService, 'compareProfile');
+        comp.compareProfile(entity, entity2);
+        expect(profileService.compareProfile).toHaveBeenCalledWith(entity, entity2);
+      });
+    });
+
     describe('compareUser', () => {
       it('Should forward to userService', () => {
         const entity = { id: 123 };

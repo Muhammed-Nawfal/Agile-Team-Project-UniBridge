@@ -1,43 +1,238 @@
-<div class="profile-wrapper" *ngIf="profile">
-  <!-- top Container -->
-  <div class="profile-card">
-    <div class="profile-header">
-      <h2 class="profile-name">Tommy Smith</h2>
+<div>
+  <h2 id="page-heading" data-cy="ProfileHeading">
+    <span>Profiles</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span>Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-profile"
+        [routerLink]="['/profile/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span>Create a new Profile</span>
+      </button>
     </div>
+  </h2>
 
-    <div class="profile-body">
-      <div class="profile-picture">
-        <img src="profile-placeholder.png" alt="Profile Picture" />
-      </div>
-      <div class="profile-info">
-        <p class="bio-text">{{ profile.bio }}</p>
-        <p class="course-text">{{ profile.course }} - Year {{ profile.courseYear }}</p>
-      </div>
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (profiles?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span>No Profiles found</span>
     </div>
+  }
 
-    <div class="preferences-container">
-      <div class="preference-box gym">
-        <p><strong>Gym Skill:</strong> {{ profile.gymSkill }}</p>
-        <p><strong>Preferred Time:</strong> {{ profile.gymTime }}</p>
-      </div>
-      <div class="preference-box study">
-        <p><strong>Study Time Preference:</strong> {{ profile.studyTime }}</p>
-      </div>
+  @if (profiles && profiles.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span>ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="bio">
+              <div class="d-flex">
+                <span>Bio</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="profilePicture">
+              <div class="d-flex">
+                <span>Profile Picture</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="course">
+              <div class="d-flex">
+                <span>Course</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="courseYear">
+              <div class="d-flex">
+                <span>Course Year</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="gymSkill">
+              <div class="d-flex">
+                <span>Gym Skill</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="gymLocation">
+              <div class="d-flex">
+                <span>Gym Location</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="gymTime">
+              <div class="d-flex">
+                <span>Gym Time</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="studyTime">
+              <div class="d-flex">
+                <span>Study Time</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="sports">
+              <div class="d-flex">
+                <span>Sports</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="sportsSkill">
+              <div class="d-flex">
+                <span>Sports Skill</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="user.id">
+              <div class="d-flex">
+                <span>User</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (profile of profiles; track trackId(profile)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/profile', profile.id, 'view']">{{ profile.id }}</a>
+              </td>
+              <td>{{ profile.bio }}</td>
+              <td>
+                @if (profile.profilePicture) {
+                  <a (click)="openFile(profile.profilePicture, profile.profilePictureContentType)">
+                    <img
+                      [src]="'data:' + profile.profilePictureContentType + ';base64,' + profile.profilePicture"
+                      style="max-height: 30px"
+                      alt="profile"
+                    />
+                  </a>
+                  <span>{{ profile.profilePictureContentType }}, {{ byteSize(profile.profilePicture) }}</span>
+                }
+              </td>
+              <td>
+                {{
+                  {
+                    null: '',
+                    COMPUTER_SCIENCE: 'COMPUTER_SCIENCE',
+                    ECONOMICS: 'ECONOMICS',
+                    PSYCHOLOGY: 'PSYCHOLOGY',
+                    MATHS: 'MATHS',
+                    ENGLISH: 'ENGLISH',
+                    ENGINEERING: 'ENGINEERING',
+                  }[profile.course ?? 'null']
+                }}
+              </td>
+              <td>{{ profile.courseYear }}</td>
+              <td>
+                {{
+                  { null: '', NOVICE: 'NOVICE', INTERMEDIATE: 'INTERMEDIATE', CONFIDENT: 'CONFIDENT', PROFESSIONAL: 'PROFESSIONAL' }[
+                    profile.gymSkill ?? 'null'
+                  ]
+                }}
+              </td>
+              <td>
+                {{
+                  { null: '', THE_GYM_SELLY_OAK: 'THE_GYM_SELLY_OAK', TIVERTON: 'TIVERTON', PUREGYM_FIVE_WAYS: 'PUREGYM_FIVE_WAYS' }[
+                    profile.gymLocation ?? 'null'
+                  ]
+                }}
+              </td>
+              <td>
+                {{
+                  {
+                    null: '',
+                    EARLY: 'EARLY',
+                    MORNING: 'MORNING',
+                    AFTERNOON: 'AFTERNOON',
+                    EVENING: 'EVENING',
+                    NIGHT: 'NIGHT',
+                    LATE: 'LATE',
+                  }[profile.gymTime ?? 'null']
+                }}
+              </td>
+              <td>
+                {{
+                  {
+                    null: '',
+                    EARLY: 'EARLY',
+                    MORNING: 'MORNING',
+                    AFTERNOON: 'AFTERNOON',
+                    EVENING: 'EVENING',
+                    NIGHT: 'NIGHT',
+                    LATE: 'LATE',
+                  }[profile.studyTime ?? 'null']
+                }}
+              </td>
+              <td>
+                {{
+                  { null: '', FOOTBALL: 'FOOTBALL', CRICKET: 'CRICKET', BADMINTON: 'BADMINTON', TENNIS: 'TENNIS', NETBALL: 'NETBALL' }[
+                    profile.sports ?? 'null'
+                  ]
+                }}
+              </td>
+              <td>
+                {{
+                  { null: '', NOVICE: 'NOVICE', INTERMEDIATE: 'INTERMEDIATE', CONFIDENT: 'CONFIDENT', PROFESSIONAL: 'PROFESSIONAL' }[
+                    profile.sportsSkill ?? 'null'
+                  ]
+                }}
+              </td>
+              <td>
+                {{ profile.user?.id }}
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/profile', profile.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline">View</span>
+                  </a>
+
+                  <a [routerLink]="['/profile', profile.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(profile)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
-  </div>
-
-  <!-- middle Container -->
-  <div class="left-container">
-    <div class="stars-container">⭐⭐⭐⭐⭐</div>
-    <a href="#" class="view-ratings">View detailed ratings</a>
-  </div>
-
-  <!-- bottom  -->
-  <div class="right-container">
-    <button class="button">Edit Profile</button>
-  </div>
-</div>
-
-<div *ngIf="!profile" class="no-profile">
-  <p>No profile found.</p>
+  }
 </div>

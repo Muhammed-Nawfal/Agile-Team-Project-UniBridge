@@ -67,9 +67,25 @@
           <dd>
             <span>{{ bookingRef.bookEndTime | formatMediumDatetime }}</span>
           </dd>
+          <dt><span>Booking Done By</span></dt>
+          <dd>
+            @if (booking()!.bookingDoneBy) {
+              <div>
+                <a [routerLink]="['/profile', booking()!.bookingDoneBy?.id, 'view']">{{ bookingRef.bookingDoneBy?.id }}</a>
+              </div>
+            }
+          </dd>
           <dt><span>Requested User</span></dt>
           <dd>
             <span>{{ bookingRef.requestedUser?.id }}</span>
+          </dd>
+          <dt><span>Booked Activity</span></dt>
+          <dd>
+            @if (booking()!.bookedActivity) {
+              <div>
+                <a [routerLink]="['/activity', booking()!.bookedActivity?.id, 'view']">{{ bookingRef.bookedActivity?.id }}</a>
+              </div>
+            }
           </dd>
           <dt><span>Activity</span></dt>
           <dd>

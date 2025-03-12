@@ -67,11 +67,20 @@ public class Booking implements Serializable {
     @Column(name = "book_end_time", nullable = false)
     private Instant bookEndTime;
 
+    @JsonIgnoreProperties(value = { "user", "booking", "ranking" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(unique = true)
+    private Profile bookingDoneBy;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User requestedUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "bookings", "requesteduser" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "bookings", "userName", "requesteduser" }, allowSetters = true)
+    private Activity bookedActivity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "bookings", "userName", "requesteduser" }, allowSetters = true)
     private Activity activity;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -206,6 +215,19 @@ public class Booking implements Serializable {
         this.bookEndTime = bookEndTime;
     }
 
+    public Profile getBookingDoneBy() {
+        return this.bookingDoneBy;
+    }
+
+    public void setBookingDoneBy(Profile profile) {
+        this.bookingDoneBy = profile;
+    }
+
+    public Booking bookingDoneBy(Profile profile) {
+        this.setBookingDoneBy(profile);
+        return this;
+    }
+
     public User getRequestedUser() {
         return this.requestedUser;
     }
@@ -216,6 +238,19 @@ public class Booking implements Serializable {
 
     public Booking requestedUser(User user) {
         this.setRequestedUser(user);
+        return this;
+    }
+
+    public Activity getBookedActivity() {
+        return this.bookedActivity;
+    }
+
+    public void setBookedActivity(Activity activity) {
+        this.bookedActivity = activity;
+    }
+
+    public Booking bookedActivity(Activity activity) {
+        this.setBookedActivity(activity);
         return this;
     }
 

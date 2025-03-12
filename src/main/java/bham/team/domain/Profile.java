@@ -5,6 +5,7 @@ import bham.team.domain.enumeration.GymLocation;
 import bham.team.domain.enumeration.PreferredTime;
 import bham.team.domain.enumeration.Skill;
 import bham.team.domain.enumeration.Sports;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -77,6 +78,14 @@ public class Profile implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private User user;
+
+    @JsonIgnoreProperties(value = { "bookingDoneBy", "requestedUser", "bookedActivity", "activity" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "bookingDoneBy")
+    private Booking booking;
+
+    @JsonIgnoreProperties(value = { "rankGiven", "user" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "rankGiven")
+    private Ranking ranking;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -246,6 +255,44 @@ public class Profile implements Serializable {
 
     public Profile user(User user) {
         this.setUser(user);
+        return this;
+    }
+
+    public Booking getBooking() {
+        return this.booking;
+    }
+
+    public void setBooking(Booking booking) {
+        if (this.booking != null) {
+            this.booking.setBookingDoneBy(null);
+        }
+        if (booking != null) {
+            booking.setBookingDoneBy(this);
+        }
+        this.booking = booking;
+    }
+
+    public Profile booking(Booking booking) {
+        this.setBooking(booking);
+        return this;
+    }
+
+    public Ranking getRanking() {
+        return this.ranking;
+    }
+
+    public void setRanking(Ranking ranking) {
+        if (this.ranking != null) {
+            this.ranking.setRankGiven(null);
+        }
+        if (ranking != null) {
+            ranking.setRankGiven(this);
+        }
+        this.ranking = ranking;
+    }
+
+    public Profile ranking(Ranking ranking) {
+        this.setRanking(ranking);
         return this;
     }
 

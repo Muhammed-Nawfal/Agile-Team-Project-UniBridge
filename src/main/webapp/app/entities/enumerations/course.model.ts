@@ -8,4 +8,6 @@ export enum Course {
   MATHS = 'MATHS',
 
   ENGLISH = 'ENGLISH',
+
+  ENGINEERING = 'ENGINEERING',
 }

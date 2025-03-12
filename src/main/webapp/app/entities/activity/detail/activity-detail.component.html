@@ -67,14 +67,14 @@
           <dd>
             @if (activityRef.coverImage) {
               <div>
-                <a (click)="openFile(activityRef.coverImage, activityRef.coverImageContentType)">
+                <a (click)="openFile(activityRef.coverImage ?? '', activityRef.coverImageContentType)">
                   <img
                     [src]="'data:' + activityRef.coverImageContentType + ';base64,' + activityRef.coverImage"
                     style="max-width: 100%"
                     alt="activity"
                   />
                 </a>
-                {{ activityRef.coverImageContentType }}, {{ byteSize(activityRef.coverImage) }}
+                {{ activityRef.coverImageContentType }}, {{ byteSize(activityRef.coverImage ?? '') }}
               </div>
             }
           </dd>
@@ -85,6 +85,14 @@
           <dt><span>Cost Ofactivity</span></dt>
           <dd>
             <span>{{ activityRef.costOfactivity }}</span>
+          </dd>
+          <dt><span>User Name</span></dt>
+          <dd>
+            @if (activity()!.userName) {
+              <div>
+                <a [routerLink]="['/profile', activity()!.userName?.id, 'view']">{{ activityRef.userName?.id }}</a>
+              </div>
+            }
           </dd>
           <dt><span>Requesteduser</span></dt>
           <dd>

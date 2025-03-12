@@ -3,26 +3,26 @@ import dayjs from 'dayjs/esm';
 import { IFriendsList, NewFriendsList } from './friends-list.model';
 
 export const sampleWithRequiredData: IFriendsList = {
-  id: 18211,
-  friendRequest: 'PENDING',
-  friendSince: dayjs('2025-02-26T05:17'),
+  id: 30281,
+  friendRequest: 'DECLINED',
+  friendSince: dayjs('2025-02-25T17:41'),
 };
 
 export const sampleWithPartialData: IFriendsList = {
-  id: 21430,
-  friendRequest: 'PENDING',
-  friendSince: dayjs('2025-02-25T19:00'),
+  id: 1374,
+  friendRequest: 'ACCEPT',
+  friendSince: dayjs('2025-02-26T08:44'),
 };
 
 export const sampleWithFullData: IFriendsList = {
-  id: 826,
-  friendRequest: 'ACCEPT',
-  friendSince: dayjs('2025-02-26T08:35'),
+  id: 28203,
+  friendRequest: 'PENDING',
+  friendSince: dayjs('2025-02-25T19:54'),
 };
 
 export const sampleWithNewData: NewFriendsList = {
-  friendRequest: 'PENDING',
-  friendSince: dayjs('2025-02-26T11:11'),
+  friendRequest: 'ACCEPT',
+  friendSince: dayjs('2025-02-26T07:40'),
   id: null,
 };
 

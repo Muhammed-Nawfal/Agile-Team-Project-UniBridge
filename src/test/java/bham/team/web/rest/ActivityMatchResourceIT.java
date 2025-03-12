@@ -301,8 +301,6 @@ class ActivityMatchResourceIT {
         ActivityMatch partialUpdatedActivityMatch = new ActivityMatch();
         partialUpdatedActivityMatch.setId(activityMatch.getId());
 
-        partialUpdatedActivityMatch.activityType(UPDATED_ACTIVITY_TYPE);
-
         restActivityMatchMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedActivityMatch.getId())

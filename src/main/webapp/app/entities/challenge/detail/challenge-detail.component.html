@@ -66,6 +66,30 @@
           <dd>
             <span>{{ challengeRef.isDisplayed }}</span>
           </dd>
+          <dt><span>Challenges</span></dt>
+          <dd>
+            @if (challenge()!.challenges) {
+              <div>
+                <a [routerLink]="['/profile', challenge()!.challenges?.id, 'view']">{{ challengeRef.challenges?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Challenged Friend</span></dt>
+          <dd>
+            @if (challenge()!.challengedFriend) {
+              <div>
+                <a [routerLink]="['/friends-list', challenge()!.challengedFriend?.id, 'view']">{{ challengeRef.challengedFriend?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Challenged Activity</span></dt>
+          <dd>
+            @if (challenge()!.challengedActivity) {
+              <div>
+                <a [routerLink]="['/activity', challenge()!.challengedActivity?.id, 'view']">{{ challengeRef.challengedActivity?.id }}</a>
+              </div>
+            }
+          </dd>
           <dt><span>Creator</span></dt>
           <dd>
             <span>{{ challengeRef.creator?.id }}</span>

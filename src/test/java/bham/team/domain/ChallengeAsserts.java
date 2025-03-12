@@ -67,6 +67,10 @@ public class ChallengeAsserts {
      * @param actual the actual entity
      */
     public static void assertChallengeUpdatableRelationshipsEquals(Challenge expected, Challenge actual) {
-        // empty method
+        assertThat(expected)
+            .as("Verify Challenge relationships")
+            .satisfies(e -> assertThat(e.getChallenges()).as("check challenges").isEqualTo(actual.getChallenges()))
+            .satisfies(e -> assertThat(e.getChallengedFriend()).as("check challengedFriend").isEqualTo(actual.getChallengedFriend()))
+            .satisfies(e -> assertThat(e.getChallengedActivity()).as("check challengedActivity").isEqualTo(actual.getChallengedActivity()));
     }
 }

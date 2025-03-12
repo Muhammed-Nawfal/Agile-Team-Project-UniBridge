@@ -31,7 +31,6 @@ import { ProfileDeleteDialogComponent } from '../delete/profile-delete-dialog.co
 export class ProfileComponent implements OnInit {
   subscription: Subscription | null = null;
   profiles?: IProfile[];
-  profile?: IProfile; // Single profile property (filtered to user_id = 1)
   isLoading = false;
 
   sortState = sortStateSignal({});
@@ -70,6 +69,7 @@ export class ProfileComponent implements OnInit {
   delete(profile: IProfile): void {
     const modalRef = this.modalService.open(ProfileDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
     modalRef.componentInstance.profile = profile;
+    // unsubscribe not needed because closed completes on modal close
     modalRef.closed
       .pipe(
         filter(reason => reason === ITEM_DELETED_EVENT),
@@ -97,9 +97,6 @@ export class ProfileComponent implements OnInit {
   protected onResponseSuccess(response: EntityArrayResponseType): void {
     const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
     this.profiles = this.refineData(dataFromBody);
-
-    // Filter profiles to only include user_id = 1
-    this.profile = this.profiles.find(profile => profile.id === 2);
   }
 
   protected refineData(data: IProfile[]): IProfile[] {

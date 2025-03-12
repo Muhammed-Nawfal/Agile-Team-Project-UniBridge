@@ -1,6 +1,7 @@
 package bham.team.domain;
 
 import bham.team.domain.enumeration.Decision;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -35,10 +36,18 @@ public class FriendsList implements Serializable {
     private Instant friendSince;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "user", "booking", "ranking" }, allowSetters = true)
+    private Profile friends;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User friend;
+
+    @JsonIgnoreProperties(value = { "friendChat", "chats", "sender", "receiver" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "friendChat")
+    private Chat chat;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -81,6 +90,19 @@ public class FriendsList implements Serializable {
         this.friendSince = friendSince;
     }
 
+    public Profile getFriends() {
+        return this.friends;
+    }
+
+    public void setFriends(Profile profile) {
+        this.friends = profile;
+    }
+
+    public FriendsList friends(Profile profile) {
+        this.setFriends(profile);
+        return this;
+    }
+
     public User getUser() {
         return this.user;
     }
@@ -104,6 +126,25 @@ public class FriendsList implements Serializable {
 
     public FriendsList friend(User user) {
         this.setFriend(user);
+        return this;
+    }
+
+    public Chat getChat() {
+        return this.chat;
+    }
+
+    public void setChat(Chat chat) {
+        if (this.chat != null) {
+            this.chat.setFriendChat(null);
+        }
+        if (chat != null) {
+            chat.setFriendChat(this);
+        }
+        this.chat = chat;
+    }
+
+    public FriendsList chat(Chat chat) {
+        this.setChat(chat);
         return this;
     }
 

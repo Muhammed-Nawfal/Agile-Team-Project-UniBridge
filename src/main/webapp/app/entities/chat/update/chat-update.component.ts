@@ -10,8 +10,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlertError } from 'app/shared/alert/alert-error.model';
 import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
 import { DataUtils, FileLoadError } from 'app/core/util/data-util.service';
+import { IFriendsList } from 'app/entities/friends-list/friends-list.model';
+import { FriendsListService } from 'app/entities/friends-list/service/friends-list.service';
+import { IProfile } from 'app/entities/profile/profile.model';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
 import { IUser } from 'app/entities/user/user.model';
 import { UserService } from 'app/entities/user/service/user.service';
+import { ActionType } from 'app/entities/enumerations/action-type.model';
 import { ChatService } from '../service/chat.service';
 import { IChat } from '../chat.model';
 import { ChatFormGroup, ChatFormService } from './chat-form.service';
@@ -25,18 +30,27 @@ import { ChatFormGroup, ChatFormService } from './chat-form.service';
 export class ChatUpdateComponent implements OnInit {
   isSaving = false;
   chat: IChat | null = null;
+  actionTypeValues = Object.keys(ActionType);
 
+  friendChatsCollection: IFriendsList[] = [];
+  profilesSharedCollection: IProfile[] = [];
   usersSharedCollection: IUser[] = [];
 
   protected dataUtils = inject(DataUtils);
   protected eventManager = inject(EventManager);
   protected chatService = inject(ChatService);
   protected chatFormService = inject(ChatFormService);
+  protected friendsListService = inject(FriendsListService);
+  protected profileService = inject(ProfileService);
   protected userService = inject(UserService);
   protected activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: ChatFormGroup = this.chatFormService.createChatFormGroup();
+
+  compareFriendsList = (o1: IFriendsList | null, o2: IFriendsList | null): boolean => this.friendsListService.compareFriendsList(o1, o2);
+
+  compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
 
   compareUser = (o1: IUser | null, o2: IUser | null): boolean => this.userService.compareUser(o1, o2);
 
@@ -103,20 +117,42 @@ export class ChatUpdateComponent implements OnInit {
     this.chat = chat;
     this.chatFormService.resetForm(this.editForm, chat);
 
+    this.friendChatsCollection = this.friendsListService.addFriendsListToCollectionIfMissing<IFriendsList>(
+      this.friendChatsCollection,
+      chat.friendChat,
+    );
+    this.profilesSharedCollection = this.profileService.addProfileToCollectionIfMissing<IProfile>(
+      this.profilesSharedCollection,
+      chat.chats,
+    );
     this.usersSharedCollection = this.userService.addUserToCollectionIfMissing<IUser>(
       this.usersSharedCollection,
-      chat.senderID,
-      chat.receiverID,
+      chat.sender,
+      chat.receiver,
     );
   }
 
   protected loadRelationshipsOptions(): void {
+    this.friendsListService
+      .query({ filter: 'chat-is-null' })
+      .pipe(map((res: HttpResponse<IFriendsList[]>) => res.body ?? []))
+      .pipe(
+        map((friendsLists: IFriendsList[]) =>
+          this.friendsListService.addFriendsListToCollectionIfMissing<IFriendsList>(friendsLists, this.chat?.friendChat),
+        ),
+      )
+      .subscribe((friendsLists: IFriendsList[]) => (this.friendChatsCollection = friendsLists));
+
+    this.profileService
+      .query()
+      .pipe(map((res: HttpResponse<IProfile[]>) => res.body ?? []))
+      .pipe(map((profiles: IProfile[]) => this.profileService.addProfileToCollectionIfMissing<IProfile>(profiles, this.chat?.chats)))
+      .subscribe((profiles: IProfile[]) => (this.profilesSharedCollection = profiles));
+
     this.userService
       .query()
       .pipe(map((res: HttpResponse<IUser[]>) => res.body ?? []))
-      .pipe(
-        map((users: IUser[]) => this.userService.addUserToCollectionIfMissing<IUser>(users, this.chat?.senderID, this.chat?.receiverID)),
-      )
+      .pipe(map((users: IUser[]) => this.userService.addUserToCollectionIfMissing<IUser>(users, this.chat?.sender, this.chat?.receiver)))
       .subscribe((users: IUser[]) => (this.usersSharedCollection = users));
   }
 }

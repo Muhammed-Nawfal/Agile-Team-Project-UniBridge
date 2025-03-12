@@ -84,6 +84,8 @@ public class ActivityAsserts {
      * @param actual the actual entity
      */
     public static void assertActivityUpdatableRelationshipsEquals(Activity expected, Activity actual) {
-        // empty method
+        assertThat(expected)
+            .as("Verify Activity relationships")
+            .satisfies(e -> assertThat(e.getUserName()).as("check userName").isEqualTo(actual.getUserName()));
     }
 }

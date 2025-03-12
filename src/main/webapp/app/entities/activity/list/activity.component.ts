@@ -17,7 +17,6 @@ import { ActivityDeleteDialogComponent } from '../delete/activity-delete-dialog.
   standalone: true,
   selector: 'jhi-activity',
   templateUrl: './activity.component.html',
-  styleUrl: './activity.component.scss', // Added activity-component style file to the component
   imports: [
     RouterModule,
     FormsModule,

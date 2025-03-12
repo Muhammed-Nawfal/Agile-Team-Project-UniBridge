@@ -4,10 +4,16 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, from, of } from 'rxjs';
 
+import { IProfile } from 'app/entities/profile/profile.model';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
+import { IFriendsList } from 'app/entities/friends-list/friends-list.model';
+import { FriendsListService } from 'app/entities/friends-list/service/friends-list.service';
+import { IActivity } from 'app/entities/activity/activity.model';
+import { ActivityService } from 'app/entities/activity/service/activity.service';
 import { IUser } from 'app/entities/user/user.model';
 import { UserService } from 'app/entities/user/service/user.service';
-import { ChallengeService } from '../service/challenge.service';
 import { IChallenge } from '../challenge.model';
+import { ChallengeService } from '../service/challenge.service';
 import { ChallengeFormService } from './challenge-form.service';
 
 import { ChallengeUpdateComponent } from './challenge-update.component';
@@ -18,6 +24,9 @@ describe('Challenge Management Update Component', () => {
   let activatedRoute: ActivatedRoute;
   let challengeFormService: ChallengeFormService;
   let challengeService: ChallengeService;
+  let profileService: ProfileService;
+  let friendsListService: FriendsListService;
+  let activityService: ActivityService;
   let userService: UserService;
 
   beforeEach(() => {
@@ -41,20 +50,89 @@ describe('Challenge Management Update Component', () => {
     activatedRoute = TestBed.inject(ActivatedRoute);
     challengeFormService = TestBed.inject(ChallengeFormService);
     challengeService = TestBed.inject(ChallengeService);
+    profileService = TestBed.inject(ProfileService);
+    friendsListService = TestBed.inject(FriendsListService);
+    activityService = TestBed.inject(ActivityService);
     userService = TestBed.inject(UserService);
 
     comp = fixture.componentInstance;
   });
 
   describe('ngOnInit', () => {
+    it('Should call Profile query and add missing value', () => {
+      const challenge: IChallenge = { id: 456 };
+      const challenges: IProfile = { id: 8285 };
+      challenge.challenges = challenges;
+
+      const profileCollection: IProfile[] = [{ id: 4099 }];
+      jest.spyOn(profileService, 'query').mockReturnValue(of(new HttpResponse({ body: profileCollection })));
+      const additionalProfiles = [challenges];
+      const expectedCollection: IProfile[] = [...additionalProfiles, ...profileCollection];
+      jest.spyOn(profileService, 'addProfileToCollectionIfMissing').mockReturnValue(expectedCollection);
+
+      activatedRoute.data = of({ challenge });
+      comp.ngOnInit();
+
+      expect(profileService.query).toHaveBeenCalled();
+      expect(profileService.addProfileToCollectionIfMissing).toHaveBeenCalledWith(
+        profileCollection,
+        ...additionalProfiles.map(expect.objectContaining),
+      );
+      expect(comp.profilesSharedCollection).toEqual(expectedCollection);
+    });
+
+    it('Should call FriendsList query and add missing value', () => {
+      const challenge: IChallenge = { id: 456 };
+      const challengedFriend: IFriendsList = { id: 16511 };
+      challenge.challengedFriend = challengedFriend;
+
+      const friendsListCollection: IFriendsList[] = [{ id: 26937 }];
+      jest.spyOn(friendsListService, 'query').mockReturnValue(of(new HttpResponse({ body: friendsListCollection })));
+      const additionalFriendsLists = [challengedFriend];
+      const expectedCollection: IFriendsList[] = [...additionalFriendsLists, ...friendsListCollection];
+      jest.spyOn(friendsListService, 'addFriendsListToCollectionIfMissing').mockReturnValue(expectedCollection);
+
+      activatedRoute.data = of({ challenge });
+      comp.ngOnInit();
+
+      expect(friendsListService.query).toHaveBeenCalled();
+      expect(friendsListService.addFriendsListToCollectionIfMissing).toHaveBeenCalledWith(
+        friendsListCollection,
+        ...additionalFriendsLists.map(expect.objectContaining),
+      );
+      expect(comp.friendsListsSharedCollection).toEqual(expectedCollection);
+    });
+
+    it('Should call Activity query and add missing value', () => {
+      const challenge: IChallenge = { id: 456 };
+      const challengedActivity: IActivity = { id: 13942 };
+      challenge.challengedActivity = challengedActivity;
+
+      const activityCollection: IActivity[] = [{ id: 105 }];
+      jest.spyOn(activityService, 'query').mockReturnValue(of(new HttpResponse({ body: activityCollection })));
+      const additionalActivities = [challengedActivity];
+      const expectedCollection: IActivity[] = [...additionalActivities, ...activityCollection];
+      jest.spyOn(activityService, 'addActivityToCollectionIfMissing').mockReturnValue(expectedCollection);
+
+      activatedRoute.data = of({ challenge });
+      comp.ngOnInit();
+
+      expect(activityService.query).toHaveBeenCalled();
+      expect(activityService.addActivityToCollectionIfMissing).toHaveBeenCalledWith(
+        activityCollection,
+        ...additionalActivities.map(expect.objectContaining),
+      );
+      expect(comp.activitiesSharedCollection).toEqual(expectedCollection);
+    });
+
     it('Should call User query and add missing value', () => {
       const challenge: IChallenge = { id: 456 };
-      const creator: IUser = { id: 4532 };
+      const creator: IUser = { id: 30889 };
       challenge.creator = creator;
-      const recipient: IUser = { id: 11917 };
+      const recipient: IUser = { id: 11875 };
       challenge.recipient = recipient;
 
-      const userCollection: IUser[] = [{ id: 18910 }];
+      const userCollection: IUser[] = [{ id: 26853 }];
       jest.spyOn(userService, 'query').mockReturnValue(of(new HttpResponse({ body: userCollection })));
       const additionalUsers = [creator, recipient];
       const expectedCollection: IUser[] = [...additionalUsers, ...userCollection];
@@ -73,14 +151,23 @@ describe('Challenge Management Update Component', () => {
 
     it('Should update editForm', () => {
       const challenge: IChallenge = { id: 456 };
-      const creator: IUser = { id: 9078 };
+      const challenges: IProfile = { id: 24176 };
+      challenge.challenges = challenges;
+      const challengedFriend: IFriendsList = { id: 13338 };
+      challenge.challengedFriend = challengedFriend;
+      const challengedActivity: IActivity = { id: 21451 };
+      challenge.challengedActivity = challengedActivity;
+      const creator: IUser = { id: 18175 };
       challenge.creator = creator;
-      const recipient: IUser = { id: 7642 };
+      const recipient: IUser = { id: 11973 };
       challenge.recipient = recipient;
 
       activatedRoute.data = of({ challenge });
       comp.ngOnInit();
 
+      expect(comp.profilesSharedCollection).toContain(challenges);
+      expect(comp.friendsListsSharedCollection).toContain(challengedFriend);
+      expect(comp.activitiesSharedCollection).toContain(challengedActivity);
       expect(comp.usersSharedCollection).toContain(creator);
       expect(comp.usersSharedCollection).toContain(recipient);
       expect(comp.challenge).toEqual(challenge);
@@ -156,6 +243,36 @@ describe('Challenge Management Update Component', () => {
   });
 
   describe('Compare relationships', () => {
+    describe('compareProfile', () => {
+      it('Should forward to profileService', () => {
+        const entity = { id: 123 };
+        const entity2 = { id: 456 };
+        jest.spyOn(profileService, 'compareProfile');
+        comp.compareProfile(entity, entity2);
+        expect(profileService.compareProfile).toHaveBeenCalledWith(entity, entity2);
+      });
+    });
+
+    describe('compareFriendsList', () => {
+      it('Should forward to friendsListService', () => {
+        const entity = { id: 123 };
+        const entity2 = { id: 456 };
+        jest.spyOn(friendsListService, 'compareFriendsList');
+        comp.compareFriendsList(entity, entity2);
+        expect(friendsListService.compareFriendsList).toHaveBeenCalledWith(entity, entity2);
+      });
+    });
+
+    describe('compareActivity', () => {
+      it('Should forward to activityService', () => {
+        const entity = { id: 123 };
+        const entity2 = { id: 456 };
+        jest.spyOn(activityService, 'compareActivity');
+        comp.compareActivity(entity, entity2);
+        expect(activityService.compareActivity).toHaveBeenCalledWith(entity, entity2);
+      });
+    });
+
     describe('compareUser', () => {
       it('Should forward to userService', () => {
         const entity = { id: 123 };

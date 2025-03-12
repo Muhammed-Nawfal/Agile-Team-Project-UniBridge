@@ -22,6 +22,7 @@ type RankingFormGroupContent = {
   activityNumber: FormControl<IRanking['activityNumber']>;
   starAverage: FormControl<IRanking['starAverage']>;
   reliable: FormControl<IRanking['reliable']>;
+  rankGiven: FormControl<IRanking['rankGiven']>;
   user: FormControl<IRanking['user']>;
 };
 
@@ -54,6 +55,7 @@ export class RankingFormService {
       reliable: new FormControl(rankingRawValue.reliable, {
         validators: [Validators.required],
       }),
+      rankGiven: new FormControl(rankingRawValue.rankGiven),
       user: new FormControl(rankingRawValue.user),
     });
   }

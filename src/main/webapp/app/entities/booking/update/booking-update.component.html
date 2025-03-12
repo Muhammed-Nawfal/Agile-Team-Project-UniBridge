@@ -249,6 +249,23 @@
         </div>
 
         <div class="mb-3">
+          <label class="form-label" for="field_bookingDoneBy">Booking Done By</label>
+          <select
+            class="form-control"
+            id="field_bookingDoneBy"
+            data-cy="bookingDoneBy"
+            name="bookingDoneBy"
+            formControlName="bookingDoneBy"
+            [compareWith]="compareProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (profileOption of bookingDoneBiesCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
           <label class="form-label" for="field_requestedUser">Requested User</label>
           <select
             class="form-control"
@@ -261,6 +278,23 @@
             <option [ngValue]="null"></option>
             @for (userOption of usersSharedCollection; track $index) {
               <option [ngValue]="userOption">{{ userOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_bookedActivity">Booked Activity</label>
+          <select
+            class="form-control"
+            id="field_bookedActivity"
+            data-cy="bookedActivity"
+            name="bookedActivity"
+            formControlName="bookedActivity"
+            [compareWith]="compareActivity"
+          >
+            <option [ngValue]="null"></option>
+            @for (activityOption of activitiesSharedCollection; track $index) {
+              <option [ngValue]="activityOption">{{ activityOption.id }}</option>
             }
           </select>
         </div>

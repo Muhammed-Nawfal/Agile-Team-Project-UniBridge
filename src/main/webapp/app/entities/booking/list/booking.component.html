@@ -1,44 +1,222 @@
-<div class="navBar">
-  <ul id="UB">
-    UniBridge
-  </ul>
-  <ul class="nbUL">
-    <li><a href="#">Home</a></li>
-    <li><a href="#">Chats</a></li>
-    <li><a href="#">Profile</a></li>
-  </ul>
-  <ul id="set">
-    <a href="#">Settings</a>
-  </ul>
-</div>
+<div>
+  <h2 id="page-heading" data-cy="BookingHeading">
+    <span>Bookings</span>
 
-<div class="secondDiv">
-  <div class="bookSection">
-    <h1>BOOKING</h1>
-    <div class="bookDetails">
-      <input type="date" />
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span>Refresh list</span>
+      </button>
 
-      <br />
-
-      <Select name="Events" (change)="onEventChange($event)">
-        <option value="select-an-event" [disabled]="true">Select an Event</option>
-        <option *ngFor="let event of events" [value]="event.value">{{ event.name }}</option>
-      </Select>
-
-      <br />
-
-      <select name="partySize">
-        <option value="party-size" [disabled]="true">Party Size</option>
-        <option *ngFor="let size of partySizes" [value]="size">{{ size }}</option>
-      </select>
-
-      <br />
-
-      <h3>Select a Time</h3>
-      <button>Enter</button>
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-booking"
+        [routerLink]="['/booking/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span>Create a new Booking</span>
+      </button>
     </div>
-  </div>
-  <div class="activitySection">
-    <h1>ACTIVITIES</h1>
-  </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (bookings?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span>No Bookings found</span>
+    </div>
+  }
+
+  @if (bookings && bookings.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span>ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="bookingName">
+              <div class="d-flex">
+                <span>Booking Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="bookingStatus">
+              <div class="d-flex">
+                <span>Booking Status</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="bookingTime">
+              <div class="d-flex">
+                <span>Booking Time</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="bookingDate">
+              <div class="d-flex">
+                <span>Booking Date</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="phoneNum">
+              <div class="d-flex">
+                <span>Phone Num</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="bookingType">
+              <div class="d-flex">
+                <span>Booking Type</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="numOfParticipants">
+              <div class="d-flex">
+                <span>Num Of Participants</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="bookStartTime">
+              <div class="d-flex">
+                <span>Book Start Time</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="bookEndTime">
+              <div class="d-flex">
+                <span>Book End Time</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="bookingDoneBy.id">
+              <div class="d-flex">
+                <span>Booking Done By</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="requestedUser.id">
+              <div class="d-flex">
+                <span>Requested User</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="bookedActivity.id">
+              <div class="d-flex">
+                <span>Booked Activity</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="activity.id">
+              <div class="d-flex">
+                <span>Activity</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (booking of bookings; track trackId(booking)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/booking', booking.id, 'view']">{{ booking.id }}</a>
+              </td>
+              <td>{{ booking.bookingName }}</td>
+              <td>
+                {{
+                  {
+                    null: '',
+                    ANNOUNCED: 'ANNOUNCED',
+                    CURRENTLY_HAPPENING: 'CURRENTLY_HAPPENING',
+                    FINISHED: 'FINISHED',
+                    CANCELED: 'CANCELED',
+                  }[booking.bookingStatus ?? 'null']
+                }}
+              </td>
+              <td>{{ booking.bookingTime | formatMediumDatetime }}</td>
+              <td>{{ booking.bookingDate | formatMediumDatetime }}</td>
+              <td>{{ booking.phoneNum }}</td>
+              <td>
+                {{
+                  {
+                    null: '',
+                    FOOTBALL_PITCH: 'FOOTBALL_PITCH',
+                    TENNIS_COURT: 'TENNIS_COURT',
+                    BASKETBALL_COURT: 'BASKETBALL_COURT',
+                    STUDY_SPACES: 'STUDY_SPACES',
+                    EVENT_ROOMS: 'EVENT_ROOMS',
+                    DOJO: 'DOJO',
+                    SWIMMING_POOL: 'SWIMMING_POOL',
+                    SQUASH_COURT: 'SQUASH_COURT',
+                  }[booking.bookingType ?? 'null']
+                }}
+              </td>
+              <td>{{ booking.numOfParticipants }}</td>
+              <td>{{ booking.bookStartTime | formatMediumDatetime }}</td>
+              <td>{{ booking.bookEndTime | formatMediumDatetime }}</td>
+              <td>
+                @if (booking.bookingDoneBy) {
+                  <div>
+                    <a [routerLink]="['/profile', booking.bookingDoneBy.id, 'view']">{{ booking.bookingDoneBy.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                {{ booking.requestedUser?.id }}
+              </td>
+              <td>
+                @if (booking.bookedActivity) {
+                  <div>
+                    <a [routerLink]="['/activity', booking.bookedActivity.id, 'view']">{{ booking.bookedActivity.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (booking.activity) {
+                  <div>
+                    <a [routerLink]="['/activity', booking.activity.id, 'view']">{{ booking.activity.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/booking', booking.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline">View</span>
+                  </a>
+
+                  <a [routerLink]="['/booking', booking.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(booking)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
 </div>

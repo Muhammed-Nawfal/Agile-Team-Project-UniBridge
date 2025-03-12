@@ -1,5 +1,6 @@
 package bham.team.domain;
 
+import static bham.team.domain.ProfileTestSamples.*;
 import static bham.team.domain.ReviewTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,5 +21,17 @@ class ReviewTest {
 
         review2 = getReviewSample2();
         assertThat(review1).isNotEqualTo(review2);
+    }
+
+    @Test
+    void reviewsGivenTest() {
+        Review review = getReviewRandomSampleGenerator();
+        Profile profileBack = getProfileRandomSampleGenerator();
+
+        review.setReviewsGiven(profileBack);
+        assertThat(review.getReviewsGiven()).isEqualTo(profileBack);
+
+        review.reviewsGiven(null);
+        assertThat(review.getReviewsGiven()).isNull();
     }
 }

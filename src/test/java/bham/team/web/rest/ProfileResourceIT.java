@@ -61,11 +61,11 @@ class ProfileResourceIT {
     private static final GymLocation DEFAULT_GYM_LOCATION = GymLocation.THE_GYM_SELLY_OAK;
     private static final GymLocation UPDATED_GYM_LOCATION = GymLocation.TIVERTON;
 
-    private static final PreferredTime DEFAULT_GYM_TIME = PreferredTime.MORNING;
-    private static final PreferredTime UPDATED_GYM_TIME = PreferredTime.AFTERNOON;
+    private static final PreferredTime DEFAULT_GYM_TIME = PreferredTime.EARLY;
+    private static final PreferredTime UPDATED_GYM_TIME = PreferredTime.MORNING;
 
-    private static final PreferredTime DEFAULT_STUDY_TIME = PreferredTime.MORNING;
-    private static final PreferredTime UPDATED_STUDY_TIME = PreferredTime.AFTERNOON;
+    private static final PreferredTime DEFAULT_STUDY_TIME = PreferredTime.EARLY;
+    private static final PreferredTime UPDATED_STUDY_TIME = PreferredTime.MORNING;
 
     private static final Sports DEFAULT_SPORTS = Sports.FOOTBALL;
     private static final Sports UPDATED_SPORTS = Sports.CRICKET;
@@ -381,11 +381,10 @@ class ProfileResourceIT {
         partialUpdatedProfile.setId(profile.getId());
 
         partialUpdatedProfile
-            .profilePicture(UPDATED_PROFILE_PICTURE)
-            .profilePictureContentType(UPDATED_PROFILE_PICTURE_CONTENT_TYPE)
-            .course(UPDATED_COURSE)
-            .courseYear(UPDATED_COURSE_YEAR)
-            .studyTime(UPDATED_STUDY_TIME);
+            .gymSkill(UPDATED_GYM_SKILL)
+            .gymLocation(UPDATED_GYM_LOCATION)
+            .sports(UPDATED_SPORTS)
+            .sportsSkill(UPDATED_SPORTS_SKILL);
 
         restProfileMockMvc
             .perform(

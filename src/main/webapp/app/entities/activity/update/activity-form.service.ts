@@ -47,6 +47,7 @@ type ActivityFormGroupContent = {
   coverImageContentType: FormControl<ActivityFormRawValue['coverImageContentType']>;
   paid: FormControl<ActivityFormRawValue['paid']>;
   costOfactivity: FormControl<ActivityFormRawValue['costOfactivity']>;
+  userName: FormControl<ActivityFormRawValue['userName']>;
   requesteduser: FormControl<ActivityFormRawValue['requesteduser']>;
 };
 
@@ -103,6 +104,7 @@ export class ActivityFormService {
       costOfactivity: new FormControl(activityRawValue.costOfactivity, {
         validators: [Validators.required],
       }),
+      userName: new FormControl(activityRawValue.userName),
       requesteduser: new FormControl(activityRawValue.requesteduser),
     });
   }

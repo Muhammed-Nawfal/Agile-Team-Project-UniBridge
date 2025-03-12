@@ -10,6 +10,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AlertError } from 'app/shared/alert/alert-error.model';
 import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
 import { DataUtils, FileLoadError } from 'app/core/util/data-util.service';
+import { IProfile } from 'app/entities/profile/profile.model';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
 import { IUser } from 'app/entities/user/user.model';
 import { UserService } from 'app/entities/user/service/user.service';
 import { ActivityType } from 'app/entities/enumerations/activity-type.model';
@@ -32,18 +34,22 @@ export class ActivityUpdateComponent implements OnInit {
   statusValues = Object.keys(Status);
   isPaidValues = Object.keys(IsPaid);
 
+  profilesSharedCollection: IProfile[] = [];
   usersSharedCollection: IUser[] = [];
 
   protected dataUtils = inject(DataUtils);
   protected eventManager = inject(EventManager);
   protected activityService = inject(ActivityService);
   protected activityFormService = inject(ActivityFormService);
+  protected profileService = inject(ProfileService);
   protected userService = inject(UserService);
   protected elementRef = inject(ElementRef);
   protected activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: ActivityFormGroup = this.activityFormService.createActivityFormGroup();
+
+  compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
 
   compareUser = (o1: IUser | null, o2: IUser | null): boolean => this.userService.compareUser(o1, o2);
 
@@ -120,10 +126,20 @@ export class ActivityUpdateComponent implements OnInit {
     this.activity = activity;
     this.activityFormService.resetForm(this.editForm, activity);
 
+    this.profilesSharedCollection = this.profileService.addProfileToCollectionIfMissing<IProfile>(
+      this.profilesSharedCollection,
+      activity.userName,
+    );
     this.usersSharedCollection = this.userService.addUserToCollectionIfMissing<IUser>(this.usersSharedCollection, activity.requesteduser);
   }
 
   protected loadRelationshipsOptions(): void {
+    this.profileService
+      .query()
+      .pipe(map((res: HttpResponse<IProfile[]>) => res.body ?? []))
+      .pipe(map((profiles: IProfile[]) => this.profileService.addProfileToCollectionIfMissing<IProfile>(profiles, this.activity?.userName)))
+      .subscribe((profiles: IProfile[]) => (this.profilesSharedCollection = profiles));
+
     this.userService
       .query()
       .pipe(map((res: HttpResponse<IUser[]>) => res.body ?? []))

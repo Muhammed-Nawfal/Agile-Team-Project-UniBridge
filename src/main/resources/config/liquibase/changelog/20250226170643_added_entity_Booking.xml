@@ -41,7 +41,13 @@
             <column name="book_end_time" type="${datetimeType}">
                 <constraints nullable="false" />
             </column>
+            <column name="booking_done_by_id" type="bigint">
+                <constraints nullable="true" unique="true" uniqueConstraintName="ux_booking__booking_done_by_id" />
+            </column>
             <column name="requested_user_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="booked_activity_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <column name="activity_id" type="bigint">

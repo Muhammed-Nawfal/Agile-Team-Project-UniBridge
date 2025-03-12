@@ -9,4 +9,5 @@ public enum Course {
     PSYCHOLOGY,
     MATHS,
     ENGLISH,
+    ENGINEERING,
 }

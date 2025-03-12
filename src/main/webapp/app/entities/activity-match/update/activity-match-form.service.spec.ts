@@ -22,8 +22,10 @@ describe('ActivityMatch Form Service', () => {
             id: expect.any(Object),
             activityType: expect.any(Object),
             status: expect.any(Object),
+            userName: expect.any(Object),
             requestUser: expect.any(Object),
             matchedUser: expect.any(Object),
+            matchedActivity: expect.any(Object),
           }),
         );
       });
@@ -36,8 +38,10 @@ describe('ActivityMatch Form Service', () => {
             id: expect.any(Object),
             activityType: expect.any(Object),
             status: expect.any(Object),
+            userName: expect.any(Object),
             requestUser: expect.any(Object),
             matchedUser: expect.any(Object),
+            matchedActivity: expect.any(Object),
           }),
         );
       });

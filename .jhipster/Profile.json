@@ -16,7 +16,7 @@
       "fieldName": "course",
       "fieldType": "Course",
       "fieldValidateRules": ["required"],
-      "fieldValues": "COMPUTER_SCIENCE,ECONOMICS,PSYCHOLOGY,MATHS,ENGLISH"
+      "fieldValues": "COMPUTER_SCIENCE,ECONOMICS,PSYCHOLOGY,MATHS,ENGLISH,ENGINEERING"
     },
     {
       "fieldName": "courseYear",
@@ -38,12 +38,12 @@
     {
       "fieldName": "gymTime",
       "fieldType": "PreferredTime",
-      "fieldValues": "MORNING,AFTERNOON,EVENING,NIGHT"
+      "fieldValues": "EARLY,MORNING,AFTERNOON,EVENING,NIGHT,LATE"
     },
     {
       "fieldName": "studyTime",
       "fieldType": "PreferredTime",
-      "fieldValues": "MORNING,AFTERNOON,EVENING,NIGHT"
+      "fieldValues": "EARLY,MORNING,AFTERNOON,EVENING,NIGHT,LATE"
     },
     {
       "fieldName": "sports",

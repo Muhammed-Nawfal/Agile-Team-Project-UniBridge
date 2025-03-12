@@ -62,6 +62,24 @@
   "name": "Challenge",
   "relationships": [
     {
+      "otherEntityName": "profile",
+      "relationshipName": "challenges",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "friendsList",
+      "relationshipName": "challengedFriend",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "activity",
+      "relationshipName": "challengedActivity",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
       "otherEntityName": "user",
       "relationshipName": "creator",
       "relationshipSide": "left",

@@ -37,11 +37,6 @@ const friendsListRoute: Routes = [
     },
     canActivate: [UserRouteAccessService],
   },
-  {
-    path: 'friend-requests', // This is the new route for FriendRequestsComponent
-    loadComponent: () => import('./friend-requests/friend-requests.component').then(m => m.FriendRequestsComponent),
-    canActivate: [UserRouteAccessService], // Can be customized to your access control requirements
-  },
 ];
 
 export default friendsListRoute;

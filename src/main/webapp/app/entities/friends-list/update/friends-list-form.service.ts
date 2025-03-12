@@ -33,6 +33,7 @@ type FriendsListFormGroupContent = {
   id: FormControl<FriendsListFormRawValue['id'] | NewFriendsList['id']>;
   friendRequest: FormControl<FriendsListFormRawValue['friendRequest']>;
   friendSince: FormControl<FriendsListFormRawValue['friendSince']>;
+  friends: FormControl<FriendsListFormRawValue['friends']>;
   user: FormControl<FriendsListFormRawValue['user']>;
   friend: FormControl<FriendsListFormRawValue['friend']>;
 };
@@ -60,6 +61,7 @@ export class FriendsListFormService {
       friendSince: new FormControl(friendsListRawValue.friendSince, {
         validators: [Validators.required],
       }),
+      friends: new FormControl(friendsListRawValue.friends),
       user: new FormControl(friendsListRawValue.user),
       friend: new FormControl(friendsListRawValue.friend),
     });

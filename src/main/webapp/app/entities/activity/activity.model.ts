@@ -1,4 +1,5 @@
 import dayjs from 'dayjs/esm';
+import { IProfile } from 'app/entities/profile/profile.model';
 import { IUser } from 'app/entities/user/user.model';
 import { ActivityType } from 'app/entities/enumerations/activity-type.model';
 import { Status } from 'app/entities/enumerations/status.model';
@@ -20,6 +21,7 @@ export interface IActivity {
   coverImageContentType?: string | null;
   paid?: keyof typeof IsPaid | null;
   costOfactivity?: number | null;
+  userName?: IProfile | null;
   requesteduser?: Pick<IUser, 'id'> | null;
 }
 

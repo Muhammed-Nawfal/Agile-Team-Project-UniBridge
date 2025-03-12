@@ -10,16 +10,30 @@
     -->
     <changeSet id="20250226170648-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="senderid_id"
+        <addForeignKeyConstraint baseColumnNames="friend_chat_id"
                                  baseTableName="chat"
-                                 constraintName="fk_chat__senderid_id"
+                                 constraintName="fk_chat__friend_chat_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="friends_list"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="chats_id"
+                                 baseTableName="chat"
+                                 constraintName="fk_chat__chats_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="profile"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="sender_id"
+                                 baseTableName="chat"
+                                 constraintName="fk_chat__sender_id"
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_user"
                                  />
 
-        <addForeignKeyConstraint baseColumnNames="recieverid_id"
+        <addForeignKeyConstraint baseColumnNames="receiver_id"
                                  baseTableName="chat"
-                                 constraintName="fk_chat__recieverid_id"
+                                 constraintName="fk_chat__receiver_id"
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_user"
                                  />

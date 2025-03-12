@@ -58,6 +58,8 @@ public class FriendsListAsserts {
      * @param actual the actual entity
      */
     public static void assertFriendsListUpdatableRelationshipsEquals(FriendsList expected, FriendsList actual) {
-        // empty method
+        assertThat(expected)
+            .as("Verify FriendsList relationships")
+            .satisfies(e -> assertThat(e.getFriends()).as("check friends").isEqualTo(actual.getFriends()));
     }
 }

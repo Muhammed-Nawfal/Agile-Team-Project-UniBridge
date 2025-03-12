@@ -19,6 +19,12 @@
   "name": "FriendsList",
   "relationships": [
     {
+      "otherEntityName": "profile",
+      "relationshipName": "friends",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
       "otherEntityName": "user",
       "relationshipName": "user",
       "relationshipSide": "left",

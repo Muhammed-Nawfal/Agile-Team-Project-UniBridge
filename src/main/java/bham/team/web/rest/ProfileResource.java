@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -170,10 +171,24 @@ public class ProfileResource {
     /**
      * {@code GET  /profiles} : get all the profiles.
      *
+     * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of profiles in body.
      */
     @GetMapping("")
-    public List<Profile> getAllProfiles() {
+    public List<Profile> getAllProfiles(@RequestParam(name = "filter", required = false) String filter) {
+        if ("booking-is-null".equals(filter)) {
+            LOG.debug("REST request to get all Profiles where booking is null");
+            return StreamSupport.stream(profileRepository.findAll().spliterator(), false)
+                .filter(profile -> profile.getBooking() == null)
+                .toList();
+        }
+
+        if ("ranking-is-null".equals(filter)) {
+            LOG.debug("REST request to get all Profiles where ranking is null");
+            return StreamSupport.stream(profileRepository.findAll().spliterator(), false)
+                .filter(profile -> profile.getRanking() == null)
+                .toList();
+        }
         LOG.debug("REST request to get all Profiles");
         return profileRepository.findAll();
     }

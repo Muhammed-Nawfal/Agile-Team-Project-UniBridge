@@ -44,6 +44,9 @@ type ChallengeFormGroupContent = {
   isCompleted: FormControl<ChallengeFormRawValue['isCompleted']>;
   completedDate: FormControl<ChallengeFormRawValue['completedDate']>;
   isDisplayed: FormControl<ChallengeFormRawValue['isDisplayed']>;
+  challenges: FormControl<ChallengeFormRawValue['challenges']>;
+  challengedFriend: FormControl<ChallengeFormRawValue['challengedFriend']>;
+  challengedActivity: FormControl<ChallengeFormRawValue['challengedActivity']>;
   creator: FormControl<ChallengeFormRawValue['creator']>;
   recipient: FormControl<ChallengeFormRawValue['recipient']>;
 };
@@ -90,6 +93,9 @@ export class ChallengeFormService {
       }),
       completedDate: new FormControl(challengeRawValue.completedDate),
       isDisplayed: new FormControl(challengeRawValue.isDisplayed),
+      challenges: new FormControl(challengeRawValue.challenges),
+      challengedFriend: new FormControl(challengeRawValue.challengedFriend),
+      challengedActivity: new FormControl(challengeRawValue.challengedActivity),
       creator: new FormControl(challengeRawValue.creator),
       recipient: new FormControl(challengeRawValue.recipient),
     });

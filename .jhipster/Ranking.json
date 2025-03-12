@@ -31,6 +31,12 @@
   "name": "Ranking",
   "relationships": [
     {
+      "otherEntityName": "profile",
+      "relationshipName": "rankGiven",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
+    {
       "otherEntityName": "user",
       "relationshipName": "user",
       "relationshipSide": "left",

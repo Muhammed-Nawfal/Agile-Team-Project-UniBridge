@@ -84,6 +84,12 @@
       "relationshipType": "one-to-many"
     },
     {
+      "otherEntityName": "profile",
+      "relationshipName": "userName",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
       "otherEntityName": "user",
       "relationshipName": "requesteduser",
       "relationshipSide": "left",

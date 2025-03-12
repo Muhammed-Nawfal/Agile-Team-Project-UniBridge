@@ -7,6 +7,8 @@ import { finalize, map } from 'rxjs/operators';
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { IProfile } from 'app/entities/profile/profile.model';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
 import { IUser } from 'app/entities/user/user.model';
 import { UserService } from 'app/entities/user/service/user.service';
 import { Decision } from 'app/entities/enumerations/decision.model';
@@ -25,15 +27,19 @@ export class FriendsListUpdateComponent implements OnInit {
   friendsList: IFriendsList | null = null;
   decisionValues = Object.keys(Decision);
 
+  profilesSharedCollection: IProfile[] = [];
   usersSharedCollection: IUser[] = [];
 
   protected friendsListService = inject(FriendsListService);
   protected friendsListFormService = inject(FriendsListFormService);
+  protected profileService = inject(ProfileService);
   protected userService = inject(UserService);
   protected activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: FriendsListFormGroup = this.friendsListFormService.createFriendsListFormGroup();
+
+  compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
 
   compareUser = (o1: IUser | null, o2: IUser | null): boolean => this.userService.compareUser(o1, o2);
 
@@ -85,6 +91,10 @@ export class FriendsListUpdateComponent implements OnInit {
     this.friendsList = friendsList;
     this.friendsListFormService.resetForm(this.editForm, friendsList);
 
+    this.profilesSharedCollection = this.profileService.addProfileToCollectionIfMissing<IProfile>(
+      this.profilesSharedCollection,
+      friendsList.friends,
+    );
     this.usersSharedCollection = this.userService.addUserToCollectionIfMissing<IUser>(
       this.usersSharedCollection,
       friendsList.user,
@@ -93,6 +103,14 @@ export class FriendsListUpdateComponent implements OnInit {
   }
 
   protected loadRelationshipsOptions(): void {
+    this.profileService
+      .query()
+      .pipe(map((res: HttpResponse<IProfile[]>) => res.body ?? []))
+      .pipe(
+        map((profiles: IProfile[]) => this.profileService.addProfileToCollectionIfMissing<IProfile>(profiles, this.friendsList?.friends)),
+      )
+      .subscribe((profiles: IProfile[]) => (this.profilesSharedCollection = profiles));
+
     this.userService
       .query()
       .pipe(map((res: HttpResponse<IUser[]>) => res.body ?? []))

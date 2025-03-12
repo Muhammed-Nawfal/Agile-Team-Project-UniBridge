@@ -10,6 +10,13 @@
     -->
     <changeSet id="20250226170642-2" author="jhipster">
 
+        <addForeignKeyConstraint baseColumnNames="user_name_id"
+                                 baseTableName="activity_match"
+                                 constraintName="fk_activity_match__user_name_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="profile"
+                                 />
+
         <addForeignKeyConstraint baseColumnNames="request_user_id"
                                  baseTableName="activity_match"
                                  constraintName="fk_activity_match__request_user_id"
@@ -22,6 +29,13 @@
                                  constraintName="fk_activity_match__matched_user_id"
                                  referencedColumnNames="id"
                                  referencedTableName="jhi_user"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="matched_activity_id"
+                                 baseTableName="activity_match"
+                                 constraintName="fk_activity_match__matched_activity_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="activity"
                                  />
     </changeSet>
 </databaseChangeLog>

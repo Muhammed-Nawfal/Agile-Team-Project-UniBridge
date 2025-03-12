@@ -1,6 +1,7 @@
 package bham.team.domain;
 
 import bham.team.domain.enumeration.AchievementCategory;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -69,6 +70,18 @@ public class Challenge implements Serializable {
 
     @Column(name = "is_displayed")
     private Boolean isDisplayed;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "user", "booking", "ranking" }, allowSetters = true)
+    private Profile challenges;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "friends", "user", "friend", "chat" }, allowSetters = true)
+    private FriendsList challengedFriend;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "bookings", "userName", "requesteduser" }, allowSetters = true)
+    private Activity challengedActivity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User creator;
@@ -232,6 +245,45 @@ public class Challenge implements Serializable {
 
     public void setIsDisplayed(Boolean isDisplayed) {
         this.isDisplayed = isDisplayed;
+    }
+
+    public Profile getChallenges() {
+        return this.challenges;
+    }
+
+    public void setChallenges(Profile profile) {
+        this.challenges = profile;
+    }
+
+    public Challenge challenges(Profile profile) {
+        this.setChallenges(profile);
+        return this;
+    }
+
+    public FriendsList getChallengedFriend() {
+        return this.challengedFriend;
+    }
+
+    public void setChallengedFriend(FriendsList friendsList) {
+        this.challengedFriend = friendsList;
+    }
+
+    public Challenge challengedFriend(FriendsList friendsList) {
+        this.setChallengedFriend(friendsList);
+        return this;
+    }
+
+    public Activity getChallengedActivity() {
+        return this.challengedActivity;
+    }
+
+    public void setChallengedActivity(Activity activity) {
+        this.challengedActivity = activity;
+    }
+
+    public Challenge challengedActivity(Activity activity) {
+        this.setChallengedActivity(activity);
+        return this;
     }
 
     public User getCreator() {

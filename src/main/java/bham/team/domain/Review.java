@@ -1,5 +1,6 @@
 package bham.team.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
@@ -38,6 +39,10 @@ public class Review implements Serializable {
     @Size(min = 0, max = 300)
     @Column(name = "text", length = 300)
     private String text;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "user", "booking", "ranking" }, allowSetters = true)
+    private Profile reviewsGiven;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User aboutUser;
@@ -97,6 +102,19 @@ public class Review implements Serializable {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public Profile getReviewsGiven() {
+        return this.reviewsGiven;
+    }
+
+    public void setReviewsGiven(Profile profile) {
+        this.reviewsGiven = profile;
+    }
+
+    public Review reviewsGiven(Profile profile) {
+        this.setReviewsGiven(profile);
+        return this;
     }
 
     public User getAboutUser() {

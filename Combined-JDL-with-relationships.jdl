@@ -11,15 +11,18 @@ entity Profile {
     sportsSkill Skill
 }
 
+
 relationship OneToOne {
 	Profile{user} to User with builtInEntity
 }
+
 enum Course {
 	COMPUTER_SCIENCE,
 	ECONOMICS,
     PSYCHOLOGY,
     MATHS,
-    ENGLISH
+    ENGLISH,
+    ENGINEERING
 }
 enum Skill {
     NOVICE,
@@ -47,7 +50,6 @@ enum Sports{
     TENNIS,
     NETBALL
 }
-
 
 
 entity Activity {
@@ -85,6 +87,9 @@ enum ActivityType {
     OTHER
 }
 
+relationship ManyToOne {
+  Activity{UserName} to Profile
+}
 
 relationship ManyToOne {
 	Activity{requesteduser} to User with builtInEntity // Many activities can be linked to multiple Profiles
@@ -107,11 +112,20 @@ enum Decision {
 }
 
 relationship ManyToOne {
+	ActivityMatch{UserName} to Profile
+}
+
+relationship ManyToOne {
     ActivityMatch{requestUser} to User with builtInEntity
 }
 relationship ManyToOne {
     ActivityMatch{matchedUser} to User with builtInEntity
 }
+
+relationship ManyToOne {
+	ActivityMatch{matchedActivity} to Activity
+}
+
 entity Booking {
     bookingName String required,
     bookingStatus Status required,
@@ -134,36 +148,34 @@ enum BookingType{
 	SQUASH_COURT
 }
 
+relationship OneToOne {
+	Booking{bookingDoneBy} to Profile
+}
+
 relationship ManyToOne {
 	Booking{requestedUser} to User with builtInEntity
 }
 
-entity Notification {
-    notificationType Notificationstype required,
-    title String required minlength(1) maxlength(255),
-    message String required minlength(1) maxlength(1000),
-    timestamp Instant required,
-    isRead Boolean required
-}
 relationship ManyToOne {
-    Notification{userID} to User with builtInEntity
+	Booking{bookedActivity} to Activity
 }
-enum Notificationstype{
-  NEW_CHAT_MESSAGE,
-  FRIEND_REQUEST,
-  ACTIVITY_MATCH,
-  BOOKING_CONFIRMATION
-}
+
 entity FriendsList {
     friendRequest Decision required,
     friendSince Instant required
 }
 
-
-relationship ManyToMany {
-    FriendsList{userId} to User with builtInEntity,
-    FriendsList{friendId} to User with builtInEntity
+relationship ManyToOne {
+	FriendsList{friends} to Profile
 }
+
+
+relationship ManyToOne {
+    FriendsList{user} to User with builtInEntity,
+    FriendsList{friend} to User with builtInEntity
+}
+
+
 entity Ranking {
   reviewNumber Integer required,
   activityNumber Integer required,
@@ -181,6 +193,14 @@ entity Review {
   star BigDecimal required min(0) max(5),
   text String minlength(0) maxlength(300)
 }
+relationship OneToOne {
+	Ranking{rankGiven} to Profile
+}
+
+relationship ManyToOne {
+	Review{reviewsGiven} to Profile
+}
+
 relationship ManyToOne {
   Review{aboutUser} to User with builtInEntity,
   Review{fromUser} to User with builtInEntity
@@ -190,23 +210,25 @@ relationship OneToOne {
 }
 entity Chat {
     message TextBlob required,
-    timestamp Instant required
+    timestamp Instant required,
+    type ActionType required
 }
-entity Action {
-    type ActionType required,
-    timestamp Instant required
-}
+
 enum ActionType{
     UNMATCH,
     REPORT
 }
 relationship ManyToOne {
-    Chat{senderID} to User with builtInEntity,
-    Chat{recieverID} to User with builtInEntity,
+	Chat{chats} to Profile
 }
+
+relationship OneToOne {
+	Chat{friendChat} to FriendsList
+}
+
 relationship ManyToOne {
-    Action{performedByID} to User with builtInEntity,
-    Action{targetUserID} to User with builtInEntity
+    Chat{sender} to User with builtInEntity,
+    Chat{receiver} to User with builtInEntity,
 }
 
 entity Challenge {
@@ -227,7 +249,20 @@ enum AchievementCategory {
   SPORTS,
   SOCIAL
 }
+
 relationship ManyToOne {
-  Challenge{creator} to User with builtInEntity
-  Challenge{recipient} to User with builtInEntity
+	Challenge{challenges} to Profile
+}
+
+relationship ManyToOne {
+	Challenge{challengedFriend} to FriendsList
+}
+
+relationship ManyToOne {
+	Challenge{challengedActivity} to Activity
+}
+
+relationship ManyToOne {
+	Challenge{creator} to User with builtInEntity
+	Challenge{recipient} to User with builtInEntity
 }

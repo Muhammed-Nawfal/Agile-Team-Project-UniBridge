@@ -1,4 +1,5 @@
 import dayjs from 'dayjs/esm';
+import { IProfile } from 'app/entities/profile/profile.model';
 import { IUser } from 'app/entities/user/user.model';
 import { IActivity } from 'app/entities/activity/activity.model';
 import { Status } from 'app/entities/enumerations/status.model';
@@ -15,7 +16,9 @@ export interface IBooking {
   numOfParticipants?: number | null;
   bookStartTime?: dayjs.Dayjs | null;
   bookEndTime?: dayjs.Dayjs | null;
+  bookingDoneBy?: IProfile | null;
   requestedUser?: Pick<IUser, 'id'> | null;
+  bookedActivity?: IActivity | null;
   activity?: IActivity | null;
 }
 

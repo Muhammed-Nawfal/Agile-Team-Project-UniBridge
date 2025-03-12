@@ -1,42 +1,42 @@
 import { IProfile, NewProfile } from './profile.model';
 
 export const sampleWithRequiredData: IProfile = {
-  id: 1543,
+  id: 977,
   course: 'ENGLISH',
-  courseYear: 1,
+  courseYear: 5,
 };
 
 export const sampleWithPartialData: IProfile = {
-  id: 31881,
+  id: 2686,
   bio: '../fake-data/blob/hipster.txt',
   profilePicture: '../fake-data/blob/hipster.png',
   profilePictureContentType: 'unknown',
   course: 'ECONOMICS',
   courseYear: 2,
-  gymSkill: 'PROFESSIONAL',
-  gymTime: 'AFTERNOON',
-  studyTime: 'EVENING',
-  sportsSkill: 'PROFESSIONAL',
-};
-
-export const sampleWithFullData: IProfile = {
-  id: 30283,
-  bio: '../fake-data/blob/hipster.txt',
-  profilePicture: '../fake-data/blob/hipster.png',
-  profilePictureContentType: 'unknown',
-  course: 'MATHS',
-  courseYear: 2,
-  gymSkill: 'NOVICE',
-  gymLocation: 'PUREGYM_FIVE_WAYS',
-  gymTime: 'MORNING',
-  studyTime: 'AFTERNOON',
-  sports: 'TENNIS',
+  gymLocation: 'THE_GYM_SELLY_OAK',
+  studyTime: 'EARLY',
+  sports: 'CRICKET',
   sportsSkill: 'NOVICE',
 };
 
+export const sampleWithFullData: IProfile = {
+  id: 32284,
+  bio: '../fake-data/blob/hipster.txt',
+  profilePicture: '../fake-data/blob/hipster.png',
+  profilePictureContentType: 'unknown',
+  course: 'ENGLISH',
+  courseYear: 3,
+  gymSkill: 'CONFIDENT',
+  gymLocation: 'PUREGYM_FIVE_WAYS',
+  gymTime: 'AFTERNOON',
+  studyTime: 'LATE',
+  sports: 'FOOTBALL',
+  sportsSkill: 'INTERMEDIATE',
+};
+
 export const sampleWithNewData: NewProfile = {
-  course: 'MATHS',
-  courseYear: 2,
+  course: 'ECONOMICS',
+  courseYear: 1,
   id: null,
 };
 

@@ -60,6 +60,8 @@ public class ReviewAsserts {
      * @param actual the actual entity
      */
     public static void assertReviewUpdatableRelationshipsEquals(Review expected, Review actual) {
-        // empty method
+        assertThat(expected)
+            .as("Verify Review relationships")
+            .satisfies(e -> assertThat(e.getReviewsGiven()).as("check reviewsGiven").isEqualTo(actual.getReviewsGiven()));
     }
 }

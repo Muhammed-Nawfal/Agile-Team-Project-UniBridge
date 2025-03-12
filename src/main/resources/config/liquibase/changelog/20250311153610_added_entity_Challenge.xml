@@ -47,6 +47,15 @@
             <column name="is_displayed" type="boolean">
                 <constraints nullable="true" />
             </column>
+            <column name="challenges_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="challenged_friend_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="challenged_activity_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
             <column name="creator_id" type="bigint">
                 <constraints nullable="true" />
             </column>

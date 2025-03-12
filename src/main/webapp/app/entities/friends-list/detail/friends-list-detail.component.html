@@ -25,6 +25,14 @@
           <dd>
             <span>{{ friendsListRef.friendSince | formatMediumDatetime }}</span>
           </dd>
+          <dt><span>Friends</span></dt>
+          <dd>
+            @if (friendsList()!.friends) {
+              <div>
+                <a [routerLink]="['/profile', friendsList()!.friends?.id, 'view']">{{ friendsListRef.friends?.id }}</a>
+              </div>
+            }
+          </dd>
           <dt><span>User</span></dt>
           <dd>
             <span>{{ friendsListRef.user?.id }}</span>

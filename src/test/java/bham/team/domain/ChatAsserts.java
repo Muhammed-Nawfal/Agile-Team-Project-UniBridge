@@ -48,7 +48,8 @@ public class ChatAsserts {
         assertThat(expected)
             .as("Verify Chat relevant properties")
             .satisfies(e -> assertThat(e.getMessage()).as("check message").isEqualTo(actual.getMessage()))
-            .satisfies(e -> assertThat(e.getTimestamp()).as("check timestamp").isEqualTo(actual.getTimestamp()));
+            .satisfies(e -> assertThat(e.getTimestamp()).as("check timestamp").isEqualTo(actual.getTimestamp()))
+            .satisfies(e -> assertThat(e.getType()).as("check type").isEqualTo(actual.getType()));
     }
 
     /**
@@ -58,6 +59,9 @@ public class ChatAsserts {
      * @param actual the actual entity
      */
     public static void assertChatUpdatableRelationshipsEquals(Chat expected, Chat actual) {
-        // empty method
+        assertThat(expected)
+            .as("Verify Chat relationships")
+            .satisfies(e -> assertThat(e.getFriendChat()).as("check friendChat").isEqualTo(actual.getFriendChat()))
+            .satisfies(e -> assertThat(e.getChats()).as("check chats").isEqualTo(actual.getChats()));
     }
 }

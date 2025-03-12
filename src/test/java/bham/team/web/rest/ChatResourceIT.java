@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import bham.team.IntegrationTest;
 import bham.team.domain.Chat;
+import bham.team.domain.enumeration.ActionType;
 import bham.team.repository.ChatRepository;
 import bham.team.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,6 +41,9 @@ class ChatResourceIT {
 
     private static final Instant DEFAULT_TIMESTAMP = Instant.ofEpochMilli(0L);
     private static final Instant UPDATED_TIMESTAMP = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+    private static final ActionType DEFAULT_TYPE = ActionType.UNMATCH;
+    private static final ActionType UPDATED_TYPE = ActionType.REPORT;
 
     private static final String ENTITY_API_URL = "/api/chats";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -73,7 +77,7 @@ class ChatResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Chat createEntity() {
-        return new Chat().message(DEFAULT_MESSAGE).timestamp(DEFAULT_TIMESTAMP);
+        return new Chat().message(DEFAULT_MESSAGE).timestamp(DEFAULT_TIMESTAMP).type(DEFAULT_TYPE);
     }
 
     /**
@@ -83,7 +87,7 @@ class ChatResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Chat createUpdatedEntity() {
-        return new Chat().message(UPDATED_MESSAGE).timestamp(UPDATED_TIMESTAMP);
+        return new Chat().message(UPDATED_MESSAGE).timestamp(UPDATED_TIMESTAMP).type(UPDATED_TYPE);
     }
 
     @BeforeEach
@@ -156,6 +160,22 @@ class ChatResourceIT {
 
     @Test
     @Transactional
+    void checkTypeIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        chat.setType(null);
+
+        // Create the Chat, which fails.
+
+        restChatMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(chat)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void getAllChats() throws Exception {
         // Initialize the database
         insertedChat = chatRepository.saveAndFlush(chat);
@@ -167,7 +187,8 @@ class ChatResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(chat.getId().intValue())))
             .andExpect(jsonPath("$.[*].message").value(hasItem(DEFAULT_MESSAGE.toString())))
-            .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())));
+            .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())))
+            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())));
     }
 
     @Test
@@ -183,7 +204,8 @@ class ChatResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(chat.getId().intValue()))
             .andExpect(jsonPath("$.message").value(DEFAULT_MESSAGE.toString()))
-            .andExpect(jsonPath("$.timestamp").value(DEFAULT_TIMESTAMP.toString()));
+            .andExpect(jsonPath("$.timestamp").value(DEFAULT_TIMESTAMP.toString()))
+            .andExpect(jsonPath("$.type").value(DEFAULT_TYPE.toString()));
     }
 
     @Test
@@ -205,7 +227,7 @@ class ChatResourceIT {
         Chat updatedChat = chatRepository.findById(chat.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedChat are not directly saved in db
         em.detach(updatedChat);
-        updatedChat.message(UPDATED_MESSAGE).timestamp(UPDATED_TIMESTAMP);
+        updatedChat.message(UPDATED_MESSAGE).timestamp(UPDATED_TIMESTAMP).type(UPDATED_TYPE);
 
         restChatMockMvc
             .perform(
@@ -307,7 +329,7 @@ class ChatResourceIT {
         Chat partialUpdatedChat = new Chat();
         partialUpdatedChat.setId(chat.getId());
 
-        partialUpdatedChat.message(UPDATED_MESSAGE).timestamp(UPDATED_TIMESTAMP);
+        partialUpdatedChat.message(UPDATED_MESSAGE).timestamp(UPDATED_TIMESTAMP).type(UPDATED_TYPE);
 
         restChatMockMvc
             .perform(
