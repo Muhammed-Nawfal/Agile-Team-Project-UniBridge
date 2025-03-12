@@ -1,15 +1,13 @@
 <div>
   <h2 id="page-heading" data-cy="FriendRequestsHeading">
-    <span>Friend Requests</span>
+    <span>FRIEND REQUESTS</span>
   </h2>
 
-  <div class="view-button">
-    <a [routerLink]="['/friends-list']" class="btn btn-info"> <fa-icon icon="arrow-left"></fa-icon> Back to All Friends </a>
+  <div class="search-area">
+    <a [routerLink]="['/friends-list']" class="back-btn"> <fa-icon icon="arrow-left"></fa-icon> ALL FRIENDS </a>
   </div>
 
-  <jhi-alert-error></jhi-alert-error>
-
-  <jhi-alert></jhi-alert>
+  <h3 class="requests-heading">Pending Requests</h3>
 
   @if (friendRequests?.length === 0) {
     <div class="alert alert-warning" id="no-result">
@@ -18,48 +16,25 @@
   }
 
   @if (friendRequests && friendRequests.length > 0) {
-    <div class="card-container">
+    <div class="friends-grid">
       @for (request of friendRequests; track trackId(request)) {
-        <div class="card">
-          <div class="friend-card-content">
-            <div class="friend-status-tag {{ request.friendRequest }}">
-              {{ { null: '', ACCEPT: 'ACCEPTED', DECLINED: 'DECLINED', PENDING: 'PENDING' }[request.friendRequest ?? 'null'] }}
-            </div>
+        <div class="friend-card">
+          <div class="request-status {{ request.friendRequest }}">
+            {{ { null: '', ACCEPT: 'ACCEPTED', DECLINED: 'DECLINED', PENDING: 'PENDING' }[request.friendRequest ?? 'null'] }}
+          </div>
 
-            <!-- Profile area - will be populated later -->
-            <div class="profile-area">
-              <!-- This is a placeholder for the profile picture -->
-              <div class="profile-pic-placeholder"></div>
+          <div class="profile-pic"></div>
 
-              <!-- Placeholder for name -->
-              <h3 class="friend-name">Friend #{{ request.friend?.id }}</h3>
-            </div>
+          <div class="friend-name">Friend #{{ request.friend?.id }}</div>
 
-            <div class="friend-details">
-              <p>
-                <strong>Location:</strong>
-                <!-- Will be from profile -->
-              </p>
-              <p><strong>Date:</strong> {{ request.friendSince | formatMediumDatetime }}</p>
-              <p><strong>Participants:</strong> {{ request.user?.id }} / {{ request.friend?.id }}</p>
-              <p><strong>ID:</strong> {{ request.id }}</p>
-            </div>
+          <div class="action-buttons">
+            <button type="button" (click)="acceptRequest(request)" class="accept-btn"><fa-icon icon="check"></fa-icon> ACCEPT</button>
 
-            <div class="view-button">
-              <a [routerLink]="['/friends-list', request.id, 'view']" class="btn btn-info"> <fa-icon icon="eye"></fa-icon> VIEW </a>
-            </div>
+            <button type="button" (click)="declineRequest(request)" class="decline-btn"><fa-icon icon="times"></fa-icon> DECLINE</button>
+          </div>
 
-            <div class="card-actions">
-              <button type="button" (click)="acceptRequest(request)" class="btn btn-success btn-sm">
-                <fa-icon icon="check"></fa-icon>
-                <span class="d-none d-md-inline">Accept</span>
-              </button>
-
-              <button type="button" (click)="declineRequest(request)" class="btn btn-danger btn-sm">
-                <fa-icon icon="times"></fa-icon>
-                <span class="d-none d-md-inline">Decline</span>
-              </button>
-            </div>
+          <div class="view-profile-link">
+            <a [routerLink]="['/profile']">VIEW PROFILE</a>
           </div>
         </div>
       }
