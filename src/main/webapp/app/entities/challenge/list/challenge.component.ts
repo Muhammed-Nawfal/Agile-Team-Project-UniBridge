@@ -17,16 +17,8 @@ import { ChallengeDeleteDialogComponent } from '../delete/challenge-delete-dialo
   standalone: true,
   selector: 'jhi-challenge',
   templateUrl: './challenge.component.html',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    SortDirective,
-    SortByDirective,
-    DurationPipe,
-    FormatMediumDatetimePipe,
-    FormatMediumDatePipe,
-  ],
+  // styleUrl: 'challenge.component.scss,
+  imports: [RouterModule, FormsModule, SharedModule, SortDirective, SortByDirective, FormatMediumDatetimePipe],
 })
 export class ChallengeComponent implements OnInit {
   subscription: Subscription | null = null;
