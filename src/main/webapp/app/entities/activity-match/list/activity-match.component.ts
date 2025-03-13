@@ -93,6 +93,14 @@ export class ActivityMatchComponent implements OnInit {
     this.router.navigate(['/activity-match/buddy', type]);
   }
 
+  navigateToBooking(): void {
+    this.router.navigate(['/booking']);
+  }
+
+  navigateToActivity(): void {
+    this.router.navigate(['/activity']);
+  }
+
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
     this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
   }
