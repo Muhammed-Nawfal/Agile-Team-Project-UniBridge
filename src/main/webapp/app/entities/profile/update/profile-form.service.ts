@@ -42,11 +42,12 @@ export class ProfileFormService {
       ...this.getFormDefaults(),
       ...profile,
     };
+
     return new FormGroup<ProfileFormGroupContent>({
+      // Remove `nonNullable: true` so `id` can be null.
       id: new FormControl(
         { value: profileRawValue.id, disabled: true },
         {
-          nonNullable: true,
           validators: [Validators.required],
         },
       ),
@@ -65,11 +66,12 @@ export class ProfileFormService {
       studyTime: new FormControl(profileRawValue.studyTime),
       sports: new FormControl(profileRawValue.sports),
       sportsSkill: new FormControl(profileRawValue.sportsSkill),
-      user: new FormControl<IUser | undefined>(profileRawValue.user),
+      user: new FormControl<IUser | null | undefined>(profileRawValue.user),
     });
   }
 
   getProfile(form: ProfileFormGroup): IProfile | NewProfile {
+    // Returns the raw values from the form (including null if present).
     return form.getRawValue() as IProfile | NewProfile;
   }
 
