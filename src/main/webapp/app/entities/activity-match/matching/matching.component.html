@@ -2,183 +2,108 @@
   <h1>WHO IS YOUR {{ buddyType.toUpperCase() }} BUDDY?</h1>
 </header>
 
-<form id="buddyType + '-buddy-filters'">
+<!-- Filters Form -->
+<form id="{{ buddyType }}-buddy-filters" (submit)="applyFilters($event)">
   <div class="filter-group-container">
     <h2>Filters</h2>
     <div class="filter-group">
-      <label for="filter1">
-        {{
-          buddyType === 'gym' ? 'Gym Location' : buddyType === 'study' ? 'Course' : buddyType === 'sports' ? 'Sport' : 'Preferred Society'
-        }}
-      </label>
-      <select id="filter1" name="filter1">
-        <ng-container *ngIf="buddyType === 'gym'">
-          <option value="">All Locations</option>
-          <option value="sports-and-fitness">Sports and Fitness Gym</option>
-          <option value="tiverton">Tiverton Center</option>
-          <option value="gym-group-selly-oak">The Gym Group Selly Oak</option>
-          <option value="puregym-five-ways">PureGym Five Ways</option>
-        </ng-container>
-
-        <ng-container *ngIf="buddyType === 'study'">
-          <option value="">Any Course</option>
-          <option value="computer-science">Computer Science</option>
-          <option value="mechanical-engineering">Mechanical Engineering</option>
-          <option value="law">Law</option>
-          <option value="sports-science">Sports Science</option>
-        </ng-container>
-
-        <!-- Conditional sports location options that only appear when buddyType is 'sports' -->
-        <ng-container *ngIf="buddyType === 'sports'">
-          <option value="">Any Sports</option>
-          <option value="football">Football</option>
-          <option value="basketball">Basketball</option>
-          <option value="tennis">Tennis</option>
-          <option value="swimming">Swimming</option>
-        </ng-container>
-
-        <!-- Conditional event location options that only appear when buddyType is 'events' -->
-        <ng-container *ngIf="buddyType === 'events'">
-          <option value="">All Societies</option>
-          <option value="computer-science-society">Computer Science Society</option>
-          <option value="tea-society">Tea Society</option>
-          <option value="tamil-society">Tamil Society</option>
-          <option value="arab-society">Arab Society</option>
-        </ng-container>
+      <label for="filter1">{{ getLocationLabel() }}</label>
+      <select id="filter1" name="filter1" [(ngModel)]="filter1Value">
+        <option *ngFor="let option of filter1Options" [value]="option.value">{{ option.label }}</option>
       </select>
     </div>
 
     <div class="filter-group">
-      <!-- Dynamic label that changes based on buddy type (study uses 'Subject', others use 'Skill') -->
-      <label for="filter2">
-        {{
-          buddyType === 'gym'
-            ? 'Skill Level'
-            : buddyType === 'study'
-              ? 'University'
-              : buddyType === 'sports'
-                ? 'Skill Level'
-                : 'Preferred Event Type'
-        }}
-      </label>
-
-      <!-- Dropdown select for skill/subject level -->
-      <select id="filter2" name="filter2">
-        <ng-container *ngIf="buddyType === 'gym'">
-          <option value="">Any Skill Level</option>
-          <option value="novice">Novice</option>
-          <option value="intermediate">Intermediate</option>
-          <option value="confident">Confident</option>
-          <option value="professional">Professional</option>
-        </ng-container>
-
-        <!-- Conditional study level options (academic years) that only appear when buddyType is 'study' -->
-        <ng-container *ngIf="buddyType === 'study'">
-          <option value="">Any University</option>
-          <option value="university-of-birmingham">University of Birmingham</option>
-          <option value="aston-university">Aston University</option>
-          <option value="birmingham-city-university">Birmingham City University</option>
-          <option value="university-of-nottingham">University of Nottingham</option>
-        </ng-container>
-
-        <!-- Conditional sports skill levels that only appear when buddyType is 'sports' -->
-        <ng-container *ngIf="buddyType === 'sports'">
-          <option value="">Any Skill Level</option>
-          <option value="beginner">Beginner</option>
-          <option value="intermediate">Intermediate</option>
-          <option value="advanced">Advanced</option>
-          <option value="competitive">Competitive</option>
-        </ng-container>
-
-        <!-- Conditional event interest categories (instead of skills) that only appear when buddyType is 'events' -->
-        <ng-container *ngIf="buddyType === 'events'">
-          <option value="">Any Event Type</option>
-          <option value="meet-&-greet">Meet & Greet</option>
-          <option value="games-night">Games Night</option>
-          <option value="religious-event">Religious Event</option>
-          <option value="movie-night">Movie Night</option>
-          <option value="dinner-&-dance">Dinner & Dance</option>
-        </ng-container>
+      <label for="filter2">{{ getSkillLabel() }}</label>
+      <select id="filter2" name="filter2" [(ngModel)]="filter2Value">
+        <option *ngFor="let option of filter2Options" [value]="option.value">{{ option.label }}</option>
       </select>
     </div>
 
-    <!-- Third filter group for timing preferences -->
     <div class="filter-group">
-      <!-- Dynamic label that changes based on buddy type for different activities -->
-      <label>Timing</label>
-      <!-- Dropdown select for timing preferences -->
-      <select id="timing" name="timing">
-        <option value="">Anytime</option>
-        <option value="early-morning">Early Morning (5-8 AM)</option>
-        <option value="morning">Morning (8-12 AM)</option>
-        <option value="afternoon">Afternoon (12-4 PM)</option>
-        <option value="evening">Evening (4-8 PM)</option>
-        <option value="night">Night (8-11 PM)</option>
-        <option value="late-night">Late Night (11 PM - 5 AM)</option>
+      <label for="filter3">{{ getTimingLabel() }}</label>
+      <select id="filter3" name="filter3" [(ngModel)]="filter3Value">
+        <option *ngFor="let option of filter3Options" [value]="option.value">{{ option.label }}</option>
       </select>
     </div>
 
-    <!-- Buttons for applying or resetting the filters -->
     <div class="filter-actions">
-      <button type="submit">Apply Filters</button>
-      <button type="reset">Reset Filters</button>
+      <button type="submit" class="btn btn-primary">Apply Filters</button>
+      <button type="button" class="btn btn-secondary" (click)="resetFilters()">Reset Filters</button>
     </div>
   </div>
 </form>
 
+<!-- Loading Indicator -->
+<div *ngIf="isLoading" class="loading-spinner">
+  <div class="spinner"></div>
+  <p>Loading buddies...</p>
+</div>
+
+<!-- Error Message -->
+<div *ngIf="errorMessage" class="error-message">
+  <p>{{ errorMessage }}</p>
+</div>
+
+<!-- No More Profiles Message -->
+<div *ngIf="noMoreProfiles && !isLoading" class="no-more-profiles">
+  <h3>No more {{ buddyType }} buddies available</h3>
+  <p>Check back later or try different filters.</p>
+</div>
+
 <!-- Main content area showing buddy profiles -->
-<div class="main-contents">
+<div class="main-contents" *ngIf="currentProfile && !isLoading && !noMoreProfiles">
   <!-- Accept/reject swipe-style buttons -->
   <div class="selection-buttons">
     <div class="select-button accept">
-      <button>Accept</button>
+      <button (click)="acceptProfile()">Accept</button>
     </div>
     <div class="select-button reject">
-      <button>Reject</button>
+      <button (click)="rejectProfile()">Reject</button>
     </div>
   </div>
 
   <!-- Profile card for a potential buddy -->
   <div class="card">
     <!-- Profile image -->
-    <img src="content/images/5imrkq.jpg" alt="Profile" class="image" />
+    <img [src]="currentProfile.imageUrl || 'content/images/default-profile.jpg'" alt="Profile" class="image" />
 
     <!-- Profile content/information -->
     <div class="card-content">
-      <div class="name">Nawfal</div>
+      <div class="name">{{ currentProfile.name }}</div>
       <div class="card-details">
-        <p>My Bio</p>
-        <p>Computer Science</p>
-        <p>Year 2</p>
+        <p>{{ currentProfile.bio }}</p>
+        <p>{{ currentProfile.course }}</p>
+        <p>Year {{ currentProfile.year }}</p>
 
         <!-- Dynamic information section that changes based on buddy type -->
         <div class="other-details">
           <div [class]="buddyType + '-info'">
             <!-- Gym-specific info that only appears when buddyType is 'gym' -->
             <ng-container *ngIf="buddyType === 'gym'">
-              <p>The Gym Group Selly Oak</p>
-              <p>Evening</p>
-              <p>Intermediate</p>
+              <p>{{ currentProfile.gymLocation }}</p>
+              <p>{{ currentProfile.preferredTime }}</p>
+              <p>{{ currentProfile.skillLevel }}</p>
             </ng-container>
 
             <!-- Study-specific info that only appears when buddyType is 'study' -->
             <ng-container *ngIf="buddyType === 'study'">
-              <p>Year 2</p>
-              <p>Afternoon</p>
+              <p>Year {{ currentProfile.year }}</p>
+              <p>{{ currentProfile.preferredTime }}</p>
             </ng-container>
 
             <!-- Sports-specific info that only appears when buddyType is 'sports' -->
             <ng-container *ngIf="buddyType === 'sports'">
-              <p>Football</p>
-              <p>Morning</p>
-              <p>Intermediate</p>
+              <p>{{ currentProfile.sportType }}</p>
+              <p>{{ currentProfile.preferredTime }}</p>
+              <p>{{ currentProfile.skillLevel }}</p>
             </ng-container>
 
             <!-- Events-specific info that only appears when buddyType is 'events' -->
             <ng-container *ngIf="buddyType === 'events'">
-              <p>Computer Science Society</p>
-              <p>Night</p>
-              <p>Any Event Type</p>
+              <p>{{ currentProfile.society }}</p>
+              <p>{{ currentProfile.preferredTime }}</p>
+              <p>{{ currentProfile.eventType }}</p>
             </ng-container>
           </div>
         </div>
@@ -188,23 +113,21 @@
 
   <!-- Buttons to view profile or follow this buddy -->
   <div class="profile-buttons">
-    <a href="#" class="button view-profile">View Profile</a>
-    <a href="#" class="button follow">Follow</a>
+    <a (click)="navigateToProfile()" class="button view-profile">View Profile</a>
+    <a (click)="followProfile(currentProfile.id)" class="button follow">Follow</a>
   </div>
 
   <!-- Ratings section showing current rating and link to detailed ratings -->
   <div class="rating-section">
-    <!-- Star rating display (4 out of 5 stars) -->
+    <!-- Star rating display (dynamic based on rating) -->
     <div class="star-rating">
-      <span class="star-filled">★</span>
-      <span class="star-filled">★</span>
-      <span class="star-filled">★</span>
-      <span class="star-filled">★</span>
-      <span class="star-empty">★</span>
+      <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
+        <span [class]="star <= currentProfile.rating ? 'star-filled' : 'star-empty'">★</span>
+      </ng-container>
     </div>
     <!-- Link to view detailed ratings -->
     <div class="rating-details">
-      <a href="#" id="view-ratings">View detailed ratings</a>
+      <a [routerLink]="['/ratings', currentProfile.id]" id="view-ratings">View detailed ratings</a>
     </div>
   </div>
 </div>
