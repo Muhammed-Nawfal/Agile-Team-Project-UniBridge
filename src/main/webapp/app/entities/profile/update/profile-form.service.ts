@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { IProfile, NewProfile } from '../profile.model';
+import { IUser } from 'app/entities/user/user.model';
 
 /**
  * A partial Type with required key is used as form input.
@@ -29,7 +30,7 @@ type ProfileFormGroupContent = {
   studyTime: FormControl<IProfile['studyTime']>;
   sports: FormControl<IProfile['sports']>;
   sportsSkill: FormControl<IProfile['sportsSkill']>;
-  user: FormControl<IProfile['user']>;
+  user: FormControl<IUser | null | undefined>;
 };
 
 export type ProfileFormGroup = FormGroup<ProfileFormGroupContent>;
@@ -64,7 +65,7 @@ export class ProfileFormService {
       studyTime: new FormControl(profileRawValue.studyTime),
       sports: new FormControl(profileRawValue.sports),
       sportsSkill: new FormControl(profileRawValue.sportsSkill),
-      user: new FormControl(profileRawValue.user),
+      user: new FormControl<IUser | undefined>(profileRawValue.user),
     });
   }
 

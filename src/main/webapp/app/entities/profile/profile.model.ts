@@ -18,7 +18,7 @@ export interface IProfile {
   studyTime?: keyof typeof PreferredTime | null;
   sports?: keyof typeof Sports | null;
   sportsSkill?: keyof typeof Skill | null;
-  user?: Pick<IUser, 'id'> | null;
+  user?: IUser;
 }
 
 export type NewProfile = Omit<IProfile, 'id'> & { id: null };
