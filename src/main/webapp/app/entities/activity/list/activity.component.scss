@@ -115,6 +115,22 @@ input {
   }
 }
 
+.activity {
+  &-type {
+    // Existing styles remain...
+
+    &.SOCIAL {
+      background-color: #e1bee7;
+      color: #4a148c;
+    }
+
+    &.OUTDOORS {
+      background-color: #c8e6c9;
+      color: #1b5e20;
+    }
+  }
+}
+
 // responsive design adjustments
 @media (max-width: 992px) {
   .card-container .card {
