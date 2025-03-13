@@ -1,4 +1,5 @@
 /* Header Styles */
+
 header {
   background-color: #fff; /* Set background color to white */
   text-align: center; /* Center align text */
@@ -155,6 +156,9 @@ button:hover {
 }
 
 .card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background: black;
   color: white;
   padding: 10px; /* Add padding */
@@ -181,7 +185,6 @@ button:hover {
     opacity: 0;
   }
 }
-
 
 .image {
   width: 200px; /* Set width */
@@ -230,15 +233,24 @@ button:hover {
 }
 
 /* Rating Stars */
+//.rating-section {
+//  display: flex; /* Use flexbox layout */
+//  flex-direction: column;
+//  align-items: center;
+//  flex-wrap: wrap;
+//  position: absolute;
+//  top: 80%;
+//  right: 90%;
+//  gap: 5px;
+//}
+
 .rating-section {
-  display: flex; /* Use flexbox layout */
+  display: flex;
   flex-direction: column;
   align-items: center;
-  flex-wrap: wrap;
-  position: absolute;
-  top: 80%;
-  right: 90%;
-  gap: 5px;
+  margin: 15px 0;
+  width: 100%;
+  position: relative; /* Change from absolute to relative */
 }
 
 .star-filled {
@@ -251,16 +263,26 @@ button:hover {
   font-size: 30px;
 }
 
+//.profile-buttons {
+//  display: flex; /* Use flexbox layout */
+//  flex-direction: row; /* Arrange items in a row */
+//  position: absolute; /* Set position to absolute */
+//  left: 85%; /* Position 400px from the right */
+//  top: 90%; /* Position at 90% from the top */
+//  transform: translateY(-50%); /* Center element vertically */
+//  gap: 10px; /* Add space between items */
+//  height: 50px;
+//  width: 300px;
+//}
+
 .profile-buttons {
-  display: flex; /* Use flexbox layout */
-  flex-direction: row; /* Arrange items in a row */
-  position: absolute; /* Set position to absolute */
-  left: 85%; /* Position 400px from the right */
-  top: 90%; /* Position at 90% from the top */
-  transform: translateY(-50%); /* Center element vertically */
-  gap: 10px; /* Add space between items */
-  height: 50px;
-  width: 300px;
+  display: flex;
+  flex-direction: row;
+  margin-top: 20px;
+  gap: 10px;
+  width: 100%;
+  justify-content: center; /* Center the buttons */
+  position: relative; /* Change from absolute to relative */
 }
 
 .button {
@@ -343,6 +365,30 @@ button:hover {
   border-radius: 3px;
 }
 
+.popup {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4caf50;
+  color: white;
+  padding: 16px;
+  border-radius: 4px;
+  text-align: center;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s,
+    visibility 0.3s;
+}
+
+.popup.show {
+  opacity: 1;
+  visibility: visible;
+}
+
 @media (max-width: 768px) {
   .filter-group-container {
     flex-direction: column; /* Arrange items in a column */
@@ -375,5 +421,63 @@ button:hover {
   .gym-info p {
     min-width: 120px;
     margin: 5px 0; /* Add vertical margin */
+  }
+  .select-button {
+    width: 80px;
+    height: 80px;
+  }
+
+  .select-button button::after {
+    font-size: 30px;
+  }
+
+  .image {
+    width: 150px;
+    height: 150px;
+  }
+
+  .name {
+    font-size: 30px;
+  }
+
+  .other-details p {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+  @media (max-width: 480px) {
+    .selection-buttons {
+      position: relative;
+      width: 100%;
+      justify-content: space-around;
+      top: auto;
+      transform: none;
+      margin: 20px 0;
+    }
+
+    .select-button {
+      width: 60px;
+      height: 60px;
+    }
+
+    .select-button button::after {
+      font-size: 24px;
+    }
+
+    .image {
+      width: 120px;
+      height: 120px;
+    }
+
+    .name {
+      font-size: 24px;
+    }
+
+    .card {
+      padding: 15px 10px;
+    }
+
+    .other-details {
+      flex-direction: column;
+    }
   }
 }
