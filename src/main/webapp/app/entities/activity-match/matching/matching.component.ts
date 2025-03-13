@@ -94,81 +94,81 @@ export class MatchingComponent implements OnInit, OnDestroy {
     // Set up location and skill level options based on buddy type
     this.filter3Options = [
       { value: '', label: 'Any Time' },
-      { value: 'early-morning', label: 'Early Morning' },
-      { value: 'morning', label: 'Morning' },
-      { value: 'afternoon', label: 'Afternoon' },
-      { value: 'evening', label: 'Evening' },
-      { value: 'night', label: 'Night' },
+      { value: 'Early Morning', label: 'Early Morning' },
+      { value: 'Morning', label: 'Morning' },
+      { value: 'Afternoon', label: 'Afternoon' },
+      { value: 'Evening', label: 'Evening' },
+      { value: 'Night', label: 'Night' },
     ];
 
     switch (this.buddyType) {
       case 'gym':
         this.filter1Options = [
           { value: '', label: 'All Locations' },
-          { value: 'sports-and-fitness', label: 'Sports and Fitness Gym' },
-          { value: 'tiverton', label: 'Tiverton Center' },
-          { value: 'gym-group-selly-oak', label: 'The Gym Group Selly Oak' },
-          { value: 'puregym-five-ways', label: 'PureGym Five Ways' },
+          { value: 'Sports And Fitness', label: 'Sports and Fitness Gym' },
+          { value: 'Tiverton Center', label: 'Tiverton Center' },
+          { value: 'Gym Group Selly Oak', label: 'The Gym Group Selly Oak' },
+          { value: 'PureGym Five Ways', label: 'PureGym Five Ways' },
         ];
         this.filter2Options = [
           { value: '', label: 'Any Skill Level' },
-          { value: 'novice', label: 'Novice' },
-          { value: 'intermediate', label: 'Intermediate' },
-          { value: 'confident', label: 'Confident' },
-          { value: 'professional', label: 'Professional' },
+          { value: 'Novice', label: 'Novice' },
+          { value: 'Intermediate', label: 'Intermediate' },
+          { value: 'Confident', label: 'Confident' },
+          { value: 'Professional', label: 'Professional' },
         ];
         break;
 
       case 'study':
         this.filter1Options = [
           { value: '', label: 'Any Courses' },
-          { value: 'computer-science', label: 'Computer Science' },
-          { value: 'mechanical-engineering', label: 'Mechanical Engineering' },
-          { value: 'law', label: 'Law' },
-          { value: 'sports-science', label: 'Sports Science' },
+          { value: 'Computer Science', label: 'Computer Science' },
+          { value: 'Mechanical Engineering', label: 'Mechanical Engineering' },
+          { value: 'Law', label: 'Law' },
+          { value: 'Sports Science', label: 'Sports Science' },
         ];
         this.filter2Options = [
           { value: '', label: 'Any University' },
-          { value: 'university-of-birmingham', label: 'University of Birmingham' },
-          { value: 'aston-university', label: 'Aston University' },
-          { value: 'birmingham-city-university', label: 'Birmingham City University' },
-          { value: 'university-of-nottingham', label: 'University of Nottingham' },
+          { value: 'University of Birmingham', label: 'University of Birmingham' },
+          { value: 'Aston University', label: 'Aston University' },
+          { value: 'Birmingham City University', label: 'Birmingham City University' },
+          { value: 'University of Nottingham', label: 'University of Nottingham' },
         ];
         break;
 
       case 'sports':
         this.filter1Options = [
           { value: '', label: 'Any Sports' },
-          { value: 'football', label: 'Football' },
-          { value: 'basketball', label: 'Basket Ball' },
-          { value: 'tennis', label: 'Tennis' },
-          { value: 'swimming', label: 'Swimming' },
+          { value: 'Football', label: 'Football' },
+          { value: 'Basket Ball', label: 'Basket Ball' },
+          { value: 'Tennis', label: 'Tennis' },
+          { value: 'Swimming', label: 'Swimming' },
         ];
         this.filter2Options = [
           { value: '', label: 'Any Skill Level' },
-          { value: 'beginner', label: 'Beginner' },
-          { value: 'intermediate', label: 'Intermediate' },
-          { value: 'advanced', label: 'Advanced' },
-          { value: 'competitive', label: 'Competitive' },
+          { value: 'Beginner', label: 'Beginner' },
+          { value: 'Intermediate', label: 'Intermediate' },
+          { value: 'Advanced', label: 'Advanced' },
+          { value: 'Competitive', label: 'Competitive' },
         ];
         break;
 
       case 'events':
         this.filter1Options = [
           { value: '', label: 'All Societies' },
-          { value: 'computer-science-society', label: 'Computer Science Society' },
-          { value: 'tea-society', label: 'Tea Society' },
-          { value: 'tamil-society', label: 'Tamil Society' },
-          { value: 'arab-society', label: 'Arab Society' },
-          { value: 'korean-society', label: 'Korean Society' },
+          { value: 'Computer Science Society', label: 'Computer Science Society' },
+          { value: 'Tea Society', label: 'Tea Society' },
+          { value: 'Tamil Society', label: 'Tamil Society' },
+          { value: 'Arab Society', label: 'Arab Society' },
+          { value: 'Korean Society', label: 'Korean Society' },
         ];
         this.filter2Options = [
           { value: '', label: 'Any Event Type' },
-          { value: 'meet-&-greet', label: 'Meet & Greet' },
-          { value: 'games-night', label: 'Games Night' },
-          { value: 'religious', label: 'Religious' },
-          { value: 'movie-night', label: 'Movie Night' },
-          { value: 'dinner-&-dance', label: 'Dinner & Dance' },
+          { value: 'Meet & Greet', label: 'Meet & Greet' },
+          { value: 'Games Night', label: 'Games Night' },
+          { value: 'Religious', label: 'Religious' },
+          { value: 'Movie Night', label: 'Movie Night' },
+          { value: 'Dinner & Dance', label: 'Dinner & Dance' },
         ];
         break;
     }
@@ -192,64 +192,87 @@ export class MatchingComponent implements OnInit, OnDestroy {
   }
 
   // Method to load matches by buddy type
+  // loadMatchesByType(): void {
+  //   this.isLoading = true;
+  //   this.errorMessage = undefined;
+  //
+  //   // Replace with actual API call to fetch matches
+  //   // For demo/development, using a mock service with timeout
+  //   setTimeout(() => {
+  //     // Mock data - replace with real API call
+  //     this.profiles = [
+  //
+  //
+  //     // Set the first profile as current
+  //     if (this.profiles.length > 0) {
+  //       this.currentProfile = this.profiles[this.currentProfileIndex];
+  //       this.noMoreProfiles = false;
+  //     } else {
+  //       this.currentProfile = null;
+  //       this.noMoreProfiles = true;
+  //     }
+  //
+  //     this.isLoading = false;
+  //   }, 1000);
+  //
+  //   // When implementing the real service, use something like:
+  //   /*
+  //   this.activityMatchService.findByType(this.buddyType).subscribe({
+  //     next: res => {
+  //       this.profiles = res.body || [];
+  //       if (this.profiles.length > 0) {
+  //         this.currentProfile = this.profiles[this.currentProfileIndex];
+  //         this.noMoreProfiles = false;
+  //       } else {
+  //         this.currentProfile = null;
+  //         this.noMoreProfiles = true;
+  //       }
+  //       this.isLoading = false;
+  //     },
+  //     error: error => {
+  //       this.isLoading = false;
+  //       this.errorMessage = `Failed to load ${this.buddyType} buddies. Please try again.`;
+  //       console.error(`Error loading ${this.buddyType} buddies:`, error);
+  //     },
+  //   });
+  //   */
+  // }
+
   loadMatchesByType(): void {
     this.isLoading = true;
     this.errorMessage = undefined;
 
-    // Replace with actual API call to fetch matches
+    // In a real implementation, you would send these filter values to your API
+    const filters = {
+      filter1: this.filter1Value, // Location/Course/Sport/Society
+      filter2: this.filter2Value, // Skill/University/Event Type
+      filter3: this.filter3Value, // Timing
+    };
+
     // For demo/development, using a mock service with timeout
     setTimeout(() => {
-      // Mock data - replace with real API call
-      this.profiles = [
-        {
-          id: 1,
-          name: 'Nawfal',
-          bio: 'My Bio',
-          course: 'Computer Science',
-          year: 2,
-          imageUrl: 'content/images/5imrkq.jpg',
-          gymLocation: 'The Gym Group Selly Oak',
-          sportType: 'Football',
-          society: 'Computer Science Society',
-          preferredTime: 'Afternoon',
-          skillLevel: 'Intermediate',
-          eventType: 'Games Night',
-          rating: 4,
-        },
-        {
-          id: 2,
-          name: 'Alex',
-          bio: 'Student athlete',
-          course: 'Sports Science',
-          year: 3,
-          imageUrl: 'content/images/default-profile.jpg',
-          gymLocation: 'Sports and Fitness Gym',
-          sportType: 'Basketball',
-          society: 'Sports Society',
-          preferredTime: 'Evening',
-          skillLevel: 'Advanced',
-          eventType: 'Meet & Greet',
-          rating: 5,
-        },
-        {
-          id: 3,
-          name: 'Sam',
-          bio: 'Looking for study partners',
-          course: 'Law',
-          year: 1,
-          imageUrl: 'content/images/default-profile.jpg',
-          gymLocation: 'PureGym Five Ways',
-          sportType: 'Swimming',
-          society: 'Law Society',
-          preferredTime: 'Morning',
-          skillLevel: 'Novice',
-          eventType: 'Dinner & Dance',
-          rating: 3,
-        },
-      ];
+      // Start with all profiles
+      let filteredProfiles = [...this.getAllProfiles()];
+
+      // Apply filters
+      if (this.filter1Value) {
+        filteredProfiles = this.applyFilter1(filteredProfiles, this.filter1Value);
+      }
+
+      if (this.filter2Value) {
+        filteredProfiles = this.applyFilter2(filteredProfiles, this.filter2Value);
+      }
+
+      if (this.filter3Value) {
+        filteredProfiles = this.applyFilter3(filteredProfiles, this.filter3Value);
+      }
+
+      // Set the filtered profiles
+      this.profiles = filteredProfiles;
 
       // Set the first profile as current
       if (this.profiles.length > 0) {
+        this.currentProfileIndex = 0;
         this.currentProfile = this.profiles[this.currentProfileIndex];
         this.noMoreProfiles = false;
       } else {
@@ -262,10 +285,14 @@ export class MatchingComponent implements OnInit, OnDestroy {
 
     // When implementing the real service, use something like:
     /*
-    this.activityMatchService.findByType(this.buddyType).subscribe({
+    this.activityMatchService.findByTypeWithFilters(
+      this.buddyType,
+      filters
+    ).subscribe({
       next: res => {
         this.profiles = res.body || [];
         if (this.profiles.length > 0) {
+          this.currentProfileIndex = 0;
           this.currentProfile = this.profiles[this.currentProfileIndex];
           this.noMoreProfiles = false;
         } else {
@@ -281,6 +308,242 @@ export class MatchingComponent implements OnInit, OnDestroy {
       },
     });
     */
+  }
+
+  // Get all mock profiles (in real app, this would be a database call)
+  getAllProfiles(): any[] {
+    return [
+      {
+        id: 1,
+        name: 'Alice',
+        bio: 'Looking for a gym buddy',
+        course: 'Sports Science',
+        year: 2,
+        imageUrl: 'content/images/alice.jpg',
+        gymLocation: 'Sports and Fitness Gym',
+        sportType: '',
+        society: '',
+        preferredTime: 'Evening',
+        skillLevel: 'Intermediate',
+        eventType: '',
+        rating: 4,
+      },
+      {
+        id: 2,
+        name: 'Bob',
+        bio: 'Need a study partner for Law',
+        course: 'Law',
+        year: 3,
+        imageUrl: 'content/images/bob.jpg',
+        gymLocation: '',
+        sportType: '',
+        society: '',
+        preferredTime: 'Afternoon',
+        skillLevel: '',
+        eventType: '',
+        rating: 5,
+      },
+      {
+        id: 3,
+        name: 'Charlie',
+        bio: 'Looking for football teammates',
+        course: '',
+        year: 1,
+        imageUrl: 'content/images/charlie.jpg',
+        gymLocation: '',
+        sportType: 'Football',
+        society: '',
+        preferredTime: 'Morning',
+        skillLevel: 'Intermediate',
+        eventType: '',
+        rating: 3,
+      },
+      {
+        id: 4,
+        name: 'David',
+        bio: 'Basketball enthusiast',
+        course: '',
+        year: 2,
+        imageUrl: 'content/images/david.jpg',
+        gymLocation: '',
+        sportType: 'Basketball',
+        society: '',
+        preferredTime: 'Evening',
+        skillLevel: 'Intermediate',
+        eventType: '',
+        rating: 4,
+      },
+      {
+        id: 5,
+        name: 'Emma',
+        bio: 'Yoga and mindfulness',
+        course: '',
+        year: 1,
+        imageUrl: 'content/images/emma.jpg',
+        gymLocation: 'Tiverton Center',
+        sportType: '',
+        society: '',
+        preferredTime: 'Morning',
+        skillLevel: 'Beginner',
+        eventType: '',
+        rating: 5,
+      },
+      {
+        id: 6,
+        name: 'Frank',
+        bio: 'Training for triathlon',
+        course: '',
+        year: 3,
+        imageUrl: 'content/images/frank.jpg',
+        gymLocation: '',
+        sportType: 'Swimming',
+        society: '',
+        preferredTime: 'Afternoon',
+        skillLevel: 'Advanced',
+        eventType: '',
+        rating: 5,
+      },
+      {
+        id: 7,
+        name: 'Grace',
+        bio: 'Looking for a study group',
+        course: 'Computer Science',
+        year: 2,
+        imageUrl: 'content/images/grace.jpg',
+        gymLocation: '',
+        sportType: '',
+        society: '',
+        preferredTime: 'Evening',
+        skillLevel: '',
+        eventType: '',
+        rating: 4,
+      },
+      {
+        id: 8,
+        name: 'Henry',
+        bio: 'Football fanatic',
+        course: '',
+        year: 1,
+        imageUrl: 'content/images/henry.jpg',
+        gymLocation: '',
+        sportType: 'Football',
+        society: '',
+        preferredTime: 'Afternoon',
+        skillLevel: 'Advanced',
+        eventType: '',
+        rating: 5,
+      },
+      {
+        id: 9,
+        name: 'Ivy',
+        bio: 'Excited for meet & greet events',
+        course: '',
+        year: 2,
+        imageUrl: 'content/images/ivy.jpg',
+        gymLocation: '',
+        sportType: '',
+        society: 'Computer Science Society',
+        preferredTime: '',
+        skillLevel: '',
+        eventType: 'Meet & Greet',
+        rating: 4,
+      },
+      {
+        id: 10,
+        name: 'Jack',
+        bio: 'Member of the Arab Society',
+        course: '',
+        year: 3,
+        imageUrl: 'content/images/jack.jpg',
+        gymLocation: '',
+        sportType: '',
+        society: 'Arab Society',
+        preferredTime: '',
+        skillLevel: '',
+        eventType: 'Dinner & Dance',
+        rating: 5,
+      },
+      {
+        id: 11,
+        name: 'Nawfal',
+        bio: 'GymRat',
+        course: 'Computer Science',
+        year: 2,
+        imageUrl: 'content/images/5imrkq.jpg',
+        gymLocation: 'The Gym Group Selly Oak',
+        sportType: 'Football',
+        society: 'Computer Science Society',
+        preferredTime: 'Evening',
+        skillLevel: 'Intermediate',
+        eventType: 'Games Night',
+        rating: 4,
+      },
+      {
+        id: 12,
+        name: 'Alex',
+        bio: 'Student athlete',
+        course: 'Sports Science',
+        year: 3,
+        imageUrl: 'content/images/default-profile.jpg',
+        gymLocation: 'Sports and Fitness Gym',
+        sportType: 'Basketball',
+        society: 'Sports Society',
+        preferredTime: 'Evening',
+        skillLevel: 'Advanced',
+        eventType: 'Meet & Greet',
+        rating: 5,
+      },
+      {
+        id: 13,
+        name: 'Sam',
+        bio: 'Looking for study partners',
+        course: 'Law',
+        year: 1,
+        imageUrl: 'content/images/default-profile.jpg',
+        gymLocation: 'PureGym Five Ways',
+        sportType: 'Swimming',
+        society: 'Law Society',
+        preferredTime: 'Morning',
+        skillLevel: 'Novice',
+        eventType: 'Dinner & Dance',
+        rating: 3,
+      },
+    ];
+  }
+
+  // Filter methods based on buddy type
+  applyFilter1(profiles: any[], value: string): any[] {
+    switch (this.buddyType) {
+      case 'gym':
+        return profiles.filter(p => !value || p.gymLocation.toLowerCase().includes(value.toLowerCase()));
+      case 'study':
+        return profiles.filter(p => !value || p.course.toLowerCase().includes(value.toLowerCase()));
+      case 'sports':
+        return profiles.filter(p => !value || p.sportType.toLowerCase().includes(value.toLowerCase()));
+      case 'events':
+        return profiles.filter(p => !value || p.society.toLowerCase().includes(value.toLowerCase()));
+      default:
+        return profiles;
+    }
+  }
+
+  applyFilter2(profiles: any[], value: string): any[] {
+    switch (this.buddyType) {
+      case 'gym':
+      case 'sports':
+        return profiles.filter(p => !value || p.skillLevel.toLowerCase().includes(value.toLowerCase()));
+      case 'study':
+        return profiles.filter(p => !value || p.university?.toLowerCase().includes(value.toLowerCase()));
+      case 'events':
+        return profiles.filter(p => !value || p.eventType.toLowerCase().includes(value.toLowerCase()));
+      default:
+        return profiles;
+    }
+  }
+
+  applyFilter3(profiles: any[], value: string): any[] {
+    // Timing filter works the same for all buddy types
+    return profiles.filter(p => !value || p.preferredTime.toLowerCase().includes(value.toLowerCase()));
   }
 
   previousState(): void {
