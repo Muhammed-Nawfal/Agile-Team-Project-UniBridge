@@ -11,7 +11,7 @@ const challengeRoute: Routes = [
     data: {
       defaultSort: `id,${ASC}`,
     },
-    canActivate: [UserRouteAccessService],
+    canActivate: [],
   },
   {
     path: ':id/view',

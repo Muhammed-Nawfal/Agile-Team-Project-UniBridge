@@ -1,231 +1,293 @@
+<!--<div>-->
+<!--  <h2 id="page-heading" data-cy="ActivityHeading">-->
+<!--    <span>Some activities near you ...</span>-->
+
+<!--    <div class="search-bar">-->
+<!--      &lt;!&ndash; Created search-bar component&ndash;&gt;-->
+<!--      <input type="text" placeholder="Find Activities" />-->
+<!--    </div>-->
+<!--  </h2>-->
+
+<!--  <jhi-alert-error></jhi-alert-error>-->
+
+<!--  <jhi-alert></jhi-alert>-->
+
+<!--  @if (activities?.length === 0) {-->
+<!--    <div class="alert alert-warning" id="no-result">-->
+<!--      <span>No Activities found</span>-->
+<!--    </div>-->
+<!--  }-->
+
+<!--  @if (activities && activities.length > 0) {-->
+<!--    <div class="card-container">-->
+<!--      @for (activity of activities; track trackId(activity)) {-->
+<!--        <div class="card">-->
+<!--          <div class="card-content">-->
+<!--            <div class="card-header">-->
+<!--              <h3>-->
+<!--                <strong>{{ activity.activityName }}</strong>-->
+<!--              </h3>-->
+<!--              <span class="activity-type {{ activity.activityType }}">{{ activity.activityType }}</span>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; conditional to add cover image if it exists  &ndash;&gt;-->
+<!--            @if (activity.coverImage) {-->
+<!--              <div class="image-container">-->
+<!--                <a (click)="openFile(activity.coverImage, activity.coverImageContentType)">-->
+<!--                  <img [src]="'data:' + activity.coverImageContentType + ';base64,' + activity.coverImage" alt="Image of the activity" />-->
+<!--                </a>-->
+<!--              </div>-->
+<!--            }-->
+
+<!--            <div class="card-content">-->
+<!--              <p><strong>Location:</strong> {{ activity.location }}</p>-->
+<!--              <p><strong>Date:</strong> {{ activity.activityDate | formatMediumDatetime }}</p>-->
+<!--              <p><strong>Participants:</strong> {{ activity.numberOfParticipants }} / {{ activity.maxNumberOfParticipants }}</p>-->
+<!--              <p><strong>Cost:</strong> {{ activity.costOfactivity }}</p>-->
+<!--            </div>-->
+
+<!--            <span class="activity-status-label {{ activity.status }}">-->
+<!--              {{-->
+<!--                {-->
+<!--                  null: '',-->
+<!--                  ANNOUNCED: 'ANNOUNCED',-->
+<!--                  CURRENTLY_HAPPENING: 'CURRENTLY HAPPENING',-->
+<!--                  FINISHED: 'FINISHED',-->
+<!--                  CANCELED: 'CANCELED',-->
+<!--                }[activity.status ?? 'null']-->
+<!--              }}-->
+<!--            </span>-->
+
+<!--            <div class="card-view">-->
+<!--              <a [routerLink]="['/activity', activity.id, 'view']" class="btn btn-info btn-sm"> <fa-icon icon="eye"></fa-icon> View </a>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      }-->
+<!--    </div>-->
+<!--  }-->
+<!--</div>-->
+
 <div>
   <h2 id="page-heading" data-cy="ActivityHeading">
-    <span>Activities</span>
+    <span>Some activities near you ...</span>
 
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span>Refresh list</span>
-      </button>
-
-      <button
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-activity"
-        [routerLink]="['/activity/new']"
-      >
-        <fa-icon icon="plus"></fa-icon>
-        <span>Create a new Activity</span>
-      </button>
+    <div class="search-bar">
+      <!-- Search bar component-->
+      <input type="text" placeholder="Find Activities" />
     </div>
+
+    <button
+      id="jh-create-entity"
+      data-cy="entityCreateButton"
+      class="btn btn-primary jh-create-entity create-activity"
+      [routerLink]="['/activity/new']"
+    >
+      <fa-icon icon="plus"></fa-icon>
+      <span>Create a new Activity</span>
+    </button>
   </h2>
 
   <jhi-alert-error></jhi-alert-error>
 
   <jhi-alert></jhi-alert>
 
-  @if (activities?.length === 0) {
-    <div class="alert alert-warning" id="no-result">
-      <span>No Activities found</span>
+  <div class="card-container">
+    <!-- Activity 1 -->
+    <div class="card">
+      <div class="card-content">
+        <div class="card-header">
+          <h3>
+            <strong>Morning Yoga in the Park</strong>
+          </h3>
+          <span class="activity-type FITNESS">FITNESS</span>
+        </div>
+
+        <div class="card-content">
+          <p><strong>Location:</strong> Hyde Park, London</p>
+          <p><strong>Date:</strong> April 1, 2025 7:00 AM</p>
+          <p><strong>Participants:</strong> 10 / 20</p>
+          <p><strong>Cost:</strong> Free</p>
+          <p>
+            <strong>Description:</strong> Start your day with an energizing yoga session led by an experienced instructor. Suitable for all
+            levels.
+          </p>
+        </div>
+
+        <span class="activity-status-label ANNOUNCED">ANNOUNCED</span>
+
+        <div class="card-view">
+          <!--          <a [routerLink]="['/activity', 1, 'new']" class="btn btn-info btn-sm"> <fa-icon icon="eye"></fa-icon> View </a>-->
+        </div>
+      </div>
     </div>
-  }
 
-  @if (activities && activities.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
-        <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
+    <!-- Activity 2 -->
+    <div class="card">
+      <div class="card-content">
+        <div class="card-header">
+          <h3>
+            <strong>Data Science Workshop</strong>
+          </h3>
+          <span class="activity-type EDUCATION">EDUCATION</span>
+        </div>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="activityName">
-              <div class="d-flex">
-                <span>Activity Name</span>
+        <div class="card-content">
+          <p><strong>Location:</strong> Tech Hub, Manchester</p>
+          <p><strong>Date:</strong> May 10, 2025 9:00 AM</p>
+          <p><strong>Participants:</strong> 25 / 30</p>
+          <p><strong>Cost:</strong> £149.99</p>
+          <p>
+            <strong>Description:</strong> A full-day hands-on workshop on machine learning and data science with Python. Includes lunch and
+            refreshments.
+          </p>
+        </div>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="activityType">
-              <div class="d-flex">
-                <span>Activity Type</span>
+        <span class="activity-status-label ANNOUNCED">ANNOUNCED</span>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="activityDate">
-              <div class="d-flex">
-                <span>Activity Date</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="numberOfParticipants">
-              <div class="d-flex">
-                <span>Number Of Participants</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="maxNumberOfParticipants">
-              <div class="d-flex">
-                <span>Max Number Of Participants</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="location">
-              <div class="d-flex">
-                <span>Location</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="description">
-              <div class="d-flex">
-                <span>Description</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="createdOn">
-              <div class="d-flex">
-                <span>Created On</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="updatedOn">
-              <div class="d-flex">
-                <span>Updated On</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="status">
-              <div class="d-flex">
-                <span>Status</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="coverImage">
-              <div class="d-flex">
-                <span>Cover Image</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="paid">
-              <div class="d-flex">
-                <span>Paid</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="costOfactivity">
-              <div class="d-flex">
-                <span>Cost Ofactivity</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="userName.id">
-              <div class="d-flex">
-                <span>User Name</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="requesteduser.id">
-              <div class="d-flex">
-                <span>Requesteduser</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (activity of activities; track trackId(activity)) {
-            <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/activity', activity.id, 'view']">{{ activity.id }}</a>
-              </td>
-              <td>{{ activity.activityName }}</td>
-              <td>
-                {{
-                  { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[
-                    activity.activityType ?? 'null'
-                  ]
-                }}
-              </td>
-              <td>{{ activity.activityDate | formatMediumDatetime }}</td>
-              <td>{{ activity.numberOfParticipants }}</td>
-              <td>{{ activity.maxNumberOfParticipants }}</td>
-              <td>{{ activity.location }}</td>
-              <td>{{ activity.description }}</td>
-              <td>{{ activity.createdOn | formatMediumDatetime }}</td>
-              <td>{{ activity.updatedOn | formatMediumDatetime }}</td>
-              <td>
-                {{
-                  {
-                    null: '',
-                    ANNOUNCED: 'ANNOUNCED',
-                    CURRENTLY_HAPPENING: 'CURRENTLY_HAPPENING',
-                    FINISHED: 'FINISHED',
-                    CANCELED: 'CANCELED',
-                  }[activity.status ?? 'null']
-                }}
-              </td>
-              <td>
-                @if (activity.coverImage) {
-                  <a (click)="openFile(activity.coverImage, activity.coverImageContentType)">
-                    <img
-                      [src]="'data:' + activity.coverImageContentType + ';base64,' + activity.coverImage"
-                      style="max-height: 30px"
-                      alt="activity"
-                    />
-                  </a>
-                  <span>{{ activity.coverImageContentType }}, {{ byteSize(activity.coverImage) }}</span>
-                }
-              </td>
-              <td>{{ { null: '', PAID: 'PAID', NOTPAID: 'NOTPAID' }[activity.paid ?? 'null'] }}</td>
-              <td>{{ activity.costOfactivity }}</td>
-              <td>
-                @if (activity.userName) {
-                  <div>
-                    <a [routerLink]="['/profile', activity.userName.id, 'view']">{{ activity.userName.id }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                {{ activity.requesteduser?.id }}
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
-                  <a [routerLink]="['/activity', activity.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                    <fa-icon icon="eye"></fa-icon>
-                    <span class="d-none d-md-inline">View</span>
-                  </a>
-
-                  <a [routerLink]="['/activity', activity.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline">Edit</span>
-                  </a>
-
-                  <button type="submit" (click)="delete(activity)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline">Delete</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+        <div class="card-view">
+          <!--          <a [routerLink]="['/activity', 2, 'new']" class="btn btn-info btn-sm"> <fa-icon icon="eye"></fa-icon> View </a>-->
+        </div>
+      </div>
     </div>
-  }
+
+    <!-- Activity 3 -->
+    <div class="card">
+      <div class="card-content">
+        <div class="card-header">
+          <h3>
+            <strong>Cancer Research UK 10K Run</strong>
+          </h3>
+          <span class="activity-type SPORTS">SPORTS</span>
+        </div>
+
+        <div class="card-content">
+          <p><strong>Location:</strong> Victoria Park, Glasgow</p>
+          <p><strong>Date:</strong> June 15, 2025 10:00 AM</p>
+          <p><strong>Participants:</strong> 150 / 300</p>
+          <p><strong>Cost:</strong> £25.00</p>
+          <p><strong>Description:</strong> A charity 10K run to raise funds for cancer research. Suitable for runners of all abilities.</p>
+        </div>
+
+        <span class="activity-status-label ANNOUNCED">ANNOUNCED</span>
+
+        <div class="card-view">
+          <!--          <a [routerLink]="['/activity', 3, 'new']" class="btn btn-info btn-sm"> <fa-icon icon="eye"></fa-icon> View </a>-->
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity 4 -->
+    <div class="card">
+      <div class="card-content">
+        <div class="card-header">
+          <h3>
+            <strong>Street Photography Workshop</strong>
+          </h3>
+          <span class="activity-type ART">ART</span>
+        </div>
+
+        <div class="card-content">
+          <p><strong>Location:</strong> Baltic Centre for Contemporary Art, Newcastle</p>
+          <p><strong>Date:</strong> July 22, 2025 2:00 PM</p>
+          <p><strong>Participants:</strong> 12 / 15</p>
+          <p><strong>Cost:</strong> £45.00</p>
+          <p>
+            <strong>Description:</strong> Learn the art of street photography while exploring Newcastle's vibrant urban landscape. Bring
+            your own camera.
+          </p>
+        </div>
+
+        <span class="activity-status-label CURRENTLY_HAPPENING">CURRENTLY HAPPENING</span>
+
+        <div class="card-view">
+          <!--          <a [routerLink]="['/activity', 4, 'new']" class="btn btn-info btn-sm"> <fa-icon icon="eye"></fa-icon> View </a>-->
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity 5 -->
+    <div class="card">
+      <div class="card-content">
+        <div class="card-header">
+          <h3>
+            <strong>Weekend Hackathon</strong>
+          </h3>
+          <span class="activity-type TECH">TECH</span>
+        </div>
+
+        <div class="card-content">
+          <p><strong>Location:</strong> Innovation Centre, Edinburgh</p>
+          <p><strong>Date:</strong> September 5, 2025 10:00 AM</p>
+          <p><strong>Participants:</strong> 50 / 100</p>
+          <p><strong>Cost:</strong> Free</p>
+          <p>
+            <strong>Description:</strong> A 48-hour coding challenge to build innovative solutions for local community problems. Prizes for
+            winning teams.
+          </p>
+        </div>
+
+        <span class="activity-status-label ANNOUNCED">ANNOUNCED</span>
+
+        <div class="card-view">
+          <!--          <a [routerLink]="['/activity', 5, 'new']" class="btn btn-info btn-sm"> <fa-icon icon="eye"></fa-icon> View </a>-->
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity 6 -->
+    <div class="card">
+      <div class="card-content">
+        <div class="card-header">
+          <h3>
+            <strong>Pub Quiz Night</strong>
+          </h3>
+          <span class="activity-type SOCIAL">SOCIAL</span>
+        </div>
+
+        <div class="card-content">
+          <p><strong>Location:</strong> The Red Lion, Birmingham</p>
+          <p><strong>Date:</strong> April 8, 2025 7:30 PM</p>
+          <p><strong>Participants:</strong> 35 / 50</p>
+          <p><strong>Cost:</strong> £2.00</p>
+          <p>
+            <strong>Description:</strong> Join our weekly pub quiz with prizes, beer, and good company. Teams of up to 6 people welcome.
+          </p>
+        </div>
+
+        <span class="activity-status-label ANNOUNCED">ANNOUNCED</span>
+
+        <div class="card-view">
+          <!--          <a [routerLink]="['/activity', 6, 'new']" class="btn btn-info btn-sm"> <fa-icon icon="eye"></fa-icon> View </a>-->
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity 7 -->
+    <div class="card">
+      <div class="card-content">
+        <div class="card-header">
+          <h3>
+            <strong>Countryside Ramble</strong>
+          </h3>
+          <span class="activity-type OUTDOORS">OUTDOORS</span>
+        </div>
+
+        <div class="card-content">
+          <p><strong>Location:</strong> Peak District National Park</p>
+          <p><strong>Date:</strong> May 15, 2025 9:00 AM</p>
+          <p><strong>Participants:</strong> 18 / 25</p>
+          <p><strong>Cost:</strong> £5.00</p>
+          <p>
+            <strong>Description:</strong> A guided 8-mile ramble through the beautiful Peak District. Suitable for regular walkers with
+            proper footwear.
+          </p>
+        </div>
+
+        <span class="activity-status-label ANNOUNCED">ANNOUNCED</span>
+
+        <div class="card-view"></div>
+      </div>
+    </div>
+  </div>
 </div>

@@ -126,7 +126,7 @@ jobs:
                CI_REGISTRY_IMAGE=${{ env.CI_REGISTRY_IMAGE }} \
                CI_COMMIT_TAG=${{ github.sha }} \
                CI_REGISTRY=${{ env.CI_REGISTRY }} \
-               ACME=${{ env.ACME_STAGING }} \
+               ACME=${{ env.ACME }} \
                DEVURL=${{ env.DEVURL }} \
                URL=${{ env.URL }} \
                DEPLOY_IP=${{ secrets.DEPLOY_IP }} \

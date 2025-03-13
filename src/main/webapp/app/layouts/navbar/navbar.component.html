@@ -94,16 +94,17 @@
             </span>
           </a>
         </li>
-      </ul>
 
-      <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-        <a class="nav-link" routerLink="/challenge" (click)="collapseNavbar()">
-          <span>
-            <!--              <fa-icon icon="user"></fa-icon>-->
-            <span>Challenges</span>
-          </span>
-        </a>
-      </li>
+        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a class="nav-link" routerLink="/challenge" (click)="collapseNavbar()">
+            <span>
+              <fa-icon icon="trophy"></fa-icon>
+              <!-- Added an icon -->
+              <span>Challenges</span>
+            </span>
+          </a>
+        </li>
+      </ul>
 
       <!-- Single combined dropdown for all right-aligned items -->
       <ul class="navbar-nav ms-auto">
