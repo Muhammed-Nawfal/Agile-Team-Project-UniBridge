@@ -1,4 +1,6 @@
+// entity.routes.ts
 import { Routes } from '@angular/router';
+import profileResolve from './profile/route/profile-routing-resolve.service';
 
 const routes: Routes = [
   {
@@ -8,7 +10,25 @@ const routes: Routes = [
   },
   {
     path: 'profile',
-    loadComponent: () => import('./profile/list/profile.component').then(m => m.ProfileComponent),
+    data: { pageTitle: 'Profiles' },
+    children: [
+      // list
+      {
+        path: '',
+        loadComponent: () => import('./profile/list/profile.component').then(m => m.ProfileComponent),
+      },
+      // detail
+      {
+        path: ':id/view',
+        loadComponent: () => import('./profile/detail/profile-detail.component').then(m => m.ProfileDetailComponent),
+      },
+      // update
+      {
+        path: ':id/edit', // Fixed: removed the redundant 'profile/' prefix
+        resolve: { profile: profileResolve },
+        loadComponent: () => import('./profile/update/profile-update.component').then(m => m.ProfileUpdateComponent),
+      },
+    ],
   },
   {
     path: 'activity',
