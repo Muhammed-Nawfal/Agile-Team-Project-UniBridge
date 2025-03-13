@@ -1,378 +1,378 @@
-/* Header Styles */
-header {
-  background-color: #fff; /* Set background color to white */
-  text-align: center; /* Center align text */
-  border-bottom: 2px solid #eee; /* Add a light gray bottom border */
-}
-
-h1 {
-  font-family: 'Times New Roman', Times, serif;
-  font-size: 50px; /* Set font size */
-  font-weight: bold; /* Make text bold */
-  text-transform: uppercase; /* Transform text to uppercase */
-  color: black;
-}
-
-.filter-group-container {
-  display: flex; /* Use flexbox layout */
-  flex-wrap: wrap; /* Allow wrapping of flex items */
-  align-items: center; /* Align items vertically */
-  justify-content: space-between; /* Distribute items with space between */
-}
-
-h2 {
-  font-size: 16px; /* Set font size */
-  margin-right: 20px; /* Add right margin */
-  font-weight: bold;
-  color: black;
-}
-
-.filter-group {
-  margin: 10px; /* Add margin */
-  flex-grow: 1; /* Allow flex item to grow */
-  color: #000;
-}
-
-label {
-  display: block; /* Make label a block element */
-  margin-bottom: 5px; /* Add bottom margin */
-  font-size: 14px; /* Set font size */
-  font-weight: bold;
-  color: black;
-}
-
-select {
-  width: 100%; /* Set width to 100% */
-  padding: 8px 12px; /* Add padding */
-  border: 1px solid #ccc; /* Add a light gray border */
-  border-radius: 4px; /* Round the corners */
-  background-color: white; /* Set background color to white */
-  cursor: pointer; /* Change cursor to pointer */
-  color: black;
-}
-
-.filter-actions {
-  display: flex; /* Use flexbox layout */
-  gap: 10px; /* Add space between items */
-  margin: 10px; /* Add margin */
-}
-
-button {
-  padding: 8px 15px; /* Add padding */
-  border: none; /* Remove border */
-  border-radius: 4px; /* Round the corners */
-  cursor: pointer; /* Change cursor to pointer */
-  font-weight: bold; /* Make text bold */
-  transition: background-color 0.2s; /* Add transition for background color */
-}
-
-button[type='submit'] {
-  background-color: #4caf50; /* Set background color to green */
-  color: white; /* Set text color to white */
-}
-
-button[type='reset'] {
-  background-color: #f44336; /* Set background color to red */
-  color: white; /* Set text color to white */
-}
-
-button:hover {
-  background: white;
-  color: black;
-}
-
-/* Main Content Area */
-.main-contents {
-  width: 100%;
-  margin: 0 auto; /* Center element with auto margins */
-  padding: 20px; /* Add padding */
-  position: relative;
-}
-
-/* Selection Buttons */
-.selection-buttons {
-  display: flex; /* Use flexbox layout */
-  justify-content: space-between; /* Distribute items with space between */
-  width: 100%; /* Set width to 100% */
-  position: absolute; /* Set position to absolute */
-  top: 50%; /* Position element at 50% from top */
-  transform: translateY(-50%); /* Center element vertically */
-  z-index: 10; /* Set z-index */
-}
-
-.select-button {
-  padding: 10px;
-  width: 120px; /* Set width */
-  height: 120px; /* Set height */
-  border-radius: 60%; /* Make element circular */
-  display: flex; /* Use flexbox layout */
-  align-items: center; /* Center align items vertically */
-  justify-content: center; /* Center align items horizontally */
-  cursor: pointer; /* Change cursor to pointer */
-}
-
-.select-button:hover {
-  transform: scale(1.05);
-  background: black;
-}
-
-.select-button button {
-  border: none; /* Remove border */
-  background: transparent; /* Set background to transparent */
-  width: 100%; /* Set width to 100% */
-  height: 100%; /* Set height to 100% */
-  border-radius: 50%; /* Make button circular */
-  font-size: 0; /* Hide text */
-  position: relative; /* Set position to relative */
-}
-
-.accept {
-  background-color: darkgreen; /* Set background color to green */
-}
-
-.accept button::after {
-  content: '✓'; /* Add checkmark content */
-  position: absolute; /* Set position to absolute */
-  top: 50%; /* Position at 50% from top */
-  left: 50%; /* Position at 50% from left */
-  transform: translate(-50%, -50%); /* Center content */
-  font-size: 50px; /* Set font size */
-  color: white; /* Set text color to white */
-}
-
-.reject {
-  background-color: darkred; /* Set background color to red */
-}
-
-.reject button::after {
-  content: '✕'; /* Add cross content */
-  position: absolute; /* Set position to absolute */
-  top: 50%; /* Position at 50% from top */
-  left: 50%; /* Position at 50% from left */
-  transform: translate(-50%, -50%); /* Center content */
-  font-size: 50px; /* Set font size */
-  color: white; /* Set text color to white */
-}
-
-.card {
-  background: black;
-  color: white;
-  padding: 10px; /* Add padding */
-  text-align: center; /* Center align text */
-  height: 100%;
-  border-radius: 10px; /* Round the corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
-  overflow: hidden; /* Hide overflow */
-  margin: 0 auto; /* Center element with auto margins */
-  max-width: 500px; /* Set maximum width */
-  z-index: 5; /* Set z-index */
-  position: relative; /* Set position to relative */
-  transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
-
-  &.accepting {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-
-  &.rejecting {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-}
-
-.image {
-  width: 200px; /* Set width */
-  height: 200px; /* Set height */
-  border-radius: 50%; /* Make image circular */
-  object-fit: cover; /* Cover the area without distorting */
-  margin: 0 auto 15px; /* Center image and add bottom margin */
-  border: 3px solid #eee; /* Add a light gray border */
-}
-
-.name {
-  font-family: 'Times New Roman', serif; /* Set font family */
-  font-size: 45px; /* Set font size */
-  font-weight: bold; /* Make text bold */
-  margin-bottom: 10px; /* Add bottom margin */
-}
-
-.card-details {
-  font-family: 'Georgia', serif; /* Set font family */
-  text-align: left; /* Align text to the left */
-  padding: 0 5px; /* Add horizontal padding */
-  font-size: 20px; /* Set font size */
-}
-
-.other-details {
-  display: flex; /* Use flexbox layout */
-  margin-top: 15px; /* Add top margin */
-  justify-content: center; /* Center align items horizontally */
-  gap: 5px;
-  flex-wrap: wrap;
-}
-
-.other-details p {
-  color: black;
-  background-color: white;
-  padding: 8px 12px;
-  border-radius: 5px;
-  font-size: 18px;
-  text-align: center;
-  flex: 0 1 auto;
-  margin: 0 0 5px 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  min-width: fit-content;
-  max-width: 100%;
-  display: inline-block;
-}
-
-/* Rating Stars */
-.rating-section {
-  display: flex; /* Use flexbox layout */
-  flex-direction: column;
-  align-items: center;
-  flex-wrap: wrap;
-  position: absolute;
-  top: 80%;
-  right: 70%;
-  gap: 5px;
-}
-
-.star-filled {
-  font-size: 30px;
-  color: gold;
-}
-
-.star-empty {
-  color: #ccc;
-  font-size: 30px;
-}
-
-.profile-buttons {
-  display: flex; /* Use flexbox layout */
-  flex-direction: row; /* Arrange items in a row */
-  position: absolute; /* Set position to absolute */
-  right: 250px; /* Position 400px from the right */
-  top: 90%; /* Position at 90% from the top */
-  transform: translateY(-50%); /* Center element vertically */
-  gap: 100px; /* Add space between items */
-  height: 50px;
-  width: 300px;
-}
-
-.button {
-  display: inline-block; /* Display as inline-block */
-  padding: 8px 15px; /* Add padding */
-  text-decoration: none; /* Remove text decoration */
-  border-radius: 5px; /* Round the corners */
-  font-weight: bold; /* Make text bold */
-  font-size: 20px; /* Set font size */
-  transition: background-color 0.2s; /* Add transition for background color */
-  text-align: center; /* Center align text */
-  white-space: nowrap; /* Prevent text wrapping */
-  justify-content: center;
-}
-
-.view-profile {
-  background-color: #2196f3; /* Set background color to blue */
-  color: white; /* Set text color to white */
-}
-
-.follow {
-  background-color: #fff; /* Set background color to white */
-  color: #333; /* Set text color to dark gray */
-  border: 1px solid #ccc; /* Add a light gray border */
-}
-
-.button:hover {
-  background: black;
-  color: white;
-}
-
-.loading-spinner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 300px;
-
-  .spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border-left-color: #09f;
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-}
-
-// No more profiles message
-.no-more-profiles {
-  text-align: center;
-  padding: 40px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  margin: 20px 0;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-
-  h3 {
-    margin-bottom: 10px;
-    color: #555;
-  }
-}
-
-// Error message
-.error-message {
-  padding: 15px;
-  margin: 20px 0;
-  background-color: #ffebee;
-  border-left: 5px solid #f44336;
-  color: #d32f2f;
-  border-radius: 3px;
-}
-
-@media (max-width: 768px) {
-  .filter-group-container {
-    flex-direction: column; /* Arrange items in a column */
-    align-items: stretch; /* Stretch items to fill container */
-  }
-
-  .filter-group {
-    width: 100%; /* Set width to 100% */
-  }
-
-  .selection-buttons {
-    width: 90%; /* Set width to 90% */
-    left: 5%; /* Position 5% from the left */
-  }
-
-  .buttons {
-    position: static; /* Set position to static */
-    flex-direction: row; /* Arrange items in a row */
-    transform: none; /* Remove transform */
-    justify-content: flex-end; /* Align items to the right */
-    margin-top: 15px; /* Add top margin */
-  }
-
-  .gym-info {
-    flex-wrap: wrap;
-    flex-direction: column; /* Arrange items in a column */
-    gap: 5px; /* Add space between items */
-  }
-
-  .gym-info p {
-    min-width: 120px;
-    margin: 5px 0; /* Add vertical margin */
-  }
-}
+///* Header Styles */
+//header {
+//  background-color: #fff; /* Set background color to white */
+//  text-align: center; /* Center align text */
+//  border-bottom: 2px solid #eee; /* Add a light gray bottom border */
+//}
+//
+//h1 {
+//  font-family: 'Times New Roman', Times, serif;
+//  font-size: 50px; /* Set font size */
+//  font-weight: bold; /* Make text bold */
+//  text-transform: uppercase; /* Transform text to uppercase */
+//  color: black;
+//}
+//
+//.filter-group-container {
+//  display: flex; /* Use flexbox layout */
+//  flex-wrap: wrap; /* Allow wrapping of flex items */
+//  align-items: center; /* Align items vertically */
+//  justify-content: space-between; /* Distribute items with space between */
+//}
+//
+//h2 {
+//  font-size: 16px; /* Set font size */
+//  margin-right: 20px; /* Add right margin */
+//  font-weight: bold;
+//  color: black;
+//}
+//
+//.filter-group {
+//  margin: 10px; /* Add margin */
+//  flex-grow: 1; /* Allow flex item to grow */
+//  color: #000;
+//}
+//
+//label {
+//  display: block; /* Make label a block element */
+//  margin-bottom: 5px; /* Add bottom margin */
+//  font-size: 14px; /* Set font size */
+//  font-weight: bold;
+//  color: black;
+//}
+//
+//select {
+//  width: 100%; /* Set width to 100% */
+//  padding: 8px 12px; /* Add padding */
+//  border: 1px solid #ccc; /* Add a light gray border */
+//  border-radius: 4px; /* Round the corners */
+//  background-color: white; /* Set background color to white */
+//  cursor: pointer; /* Change cursor to pointer */
+//  color: black;
+//}
+//
+//.filter-actions {
+//  display: flex; /* Use flexbox layout */
+//  gap: 10px; /* Add space between items */
+//  margin: 10px; /* Add margin */
+//}
+//
+//button {
+//  padding: 8px 15px; /* Add padding */
+//  border: none; /* Remove border */
+//  border-radius: 4px; /* Round the corners */
+//  cursor: pointer; /* Change cursor to pointer */
+//  font-weight: bold; /* Make text bold */
+//  transition: background-color 0.2s; /* Add transition for background color */
+//}
+//
+//button[type='submit'] {
+//  background-color: #4caf50; /* Set background color to green */
+//  color: white; /* Set text color to white */
+//}
+//
+//button[type='reset'] {
+//  background-color: #f44336; /* Set background color to red */
+//  color: white; /* Set text color to white */
+//}
+//
+//button:hover {
+//  background: white;
+//  color: black;
+//}
+//
+///* Main Content Area */
+//.main-contents {
+//  width: 100%;
+//  margin: 0 auto; /* Center element with auto margins */
+//  padding: 20px; /* Add padding */
+//  position: relative;
+//}
+//
+///* Selection Buttons */
+//.selection-buttons {
+//  display: flex; /* Use flexbox layout */
+//  justify-content: space-between; /* Distribute items with space between */
+//  width: 100%; /* Set width to 100% */
+//  position: absolute; /* Set position to absolute */
+//  top: 50%; /* Position element at 50% from top */
+//  transform: translateY(-50%); /* Center element vertically */
+//  z-index: 10; /* Set z-index */
+//}
+//
+//.select-button {
+//  padding: 10px;
+//  width: 120px; /* Set width */
+//  height: 120px; /* Set height */
+//  border-radius: 60%; /* Make element circular */
+//  display: flex; /* Use flexbox layout */
+//  align-items: center; /* Center align items vertically */
+//  justify-content: center; /* Center align items horizontally */
+//  cursor: pointer; /* Change cursor to pointer */
+//}
+//
+//.select-button:hover {
+//  transform: scale(1.05);
+//  background: black;
+//}
+//
+//.select-button button {
+//  border: none; /* Remove border */
+//  background: transparent; /* Set background to transparent */
+//  width: 100%; /* Set width to 100% */
+//  height: 100%; /* Set height to 100% */
+//  border-radius: 50%; /* Make button circular */
+//  font-size: 0; /* Hide text */
+//  position: relative; /* Set position to relative */
+//}
+//
+//.accept {
+//  background-color: darkgreen; /* Set background color to green */
+//}
+//
+//.accept button::after {
+//  content: '✓'; /* Add checkmark content */
+//  position: absolute; /* Set position to absolute */
+//  top: 50%; /* Position at 50% from top */
+//  left: 50%; /* Position at 50% from left */
+//  transform: translate(-50%, -50%); /* Center content */
+//  font-size: 50px; /* Set font size */
+//  color: white; /* Set text color to white */
+//}
+//
+//.reject {
+//  background-color: darkred; /* Set background color to red */
+//}
+//
+//.reject button::after {
+//  content: '✕'; /* Add cross content */
+//  position: absolute; /* Set position to absolute */
+//  top: 50%; /* Position at 50% from top */
+//  left: 50%; /* Position at 50% from left */
+//  transform: translate(-50%, -50%); /* Center content */
+//  font-size: 50px; /* Set font size */
+//  color: white; /* Set text color to white */
+//}
+//
+//.card {
+//  background: black;
+//  color: white;
+//  padding: 10px; /* Add padding */
+//  text-align: center; /* Center align text */
+//  height: 100%;
+//  border-radius: 10px; /* Round the corners */
+//  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+//  overflow: hidden; /* Hide overflow */
+//  margin: 0 auto; /* Center element with auto margins */
+//  max-width: 500px; /* Set maximum width */
+//  z-index: 5; /* Set z-index */
+//  position: relative; /* Set position to relative */
+//  transition:
+//    transform 0.3s ease,
+//    opacity 0.3s ease;
+//
+//  &.accepting {
+//    transform: translateX(100%);
+//    opacity: 0;
+//  }
+//
+//  &.rejecting {
+//    transform: translateX(-100%);
+//    opacity: 0;
+//  }
+//}
+//
+//.image {
+//  width: 200px; /* Set width */
+//  height: 200px; /* Set height */
+//  border-radius: 50%; /* Make image circular */
+//  object-fit: cover; /* Cover the area without distorting */
+//  margin: 0 auto 15px; /* Center image and add bottom margin */
+//  border: 3px solid #eee; /* Add a light gray border */
+//}
+//
+//.name {
+//  font-family: 'Times New Roman', serif; /* Set font family */
+//  font-size: 45px; /* Set font size */
+//  font-weight: bold; /* Make text bold */
+//  margin-bottom: 10px; /* Add bottom margin */
+//}
+//
+//.card-details {
+//  font-family: 'Georgia', serif; /* Set font family */
+//  text-align: left; /* Align text to the left */
+//  padding: 0 5px; /* Add horizontal padding */
+//  font-size: 20px; /* Set font size */
+//}
+//
+//.other-details {
+//  display: flex; /* Use flexbox layout */
+//  margin-top: 15px; /* Add top margin */
+//  justify-content: center; /* Center align items horizontally */
+//  gap: 5px;
+//  flex-wrap: wrap;
+//}
+//
+//.other-details p {
+//  color: black;
+//  background-color: white;
+//  padding: 8px 12px;
+//  border-radius: 5px;
+//  font-size: 18px;
+//  text-align: center;
+//  flex: 0 1 auto;
+//  margin: 0 0 5px 0;
+//  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+//  min-width: fit-content;
+//  max-width: 100%;
+//  display: inline-block;
+//}
+//
+///* Rating Stars */
+//.rating-section {
+//  display: flex; /* Use flexbox layout */
+//  flex-direction: column;
+//  align-items: center;
+//  flex-wrap: wrap;
+//  position: absolute;
+//  top: 80%;
+//  right: 70%;
+//  gap: 5px;
+//}
+//
+//.star-filled {
+//  font-size: 30px;
+//  color: gold;
+//}
+//
+//.star-empty {
+//  color: #ccc;
+//  font-size: 30px;
+//}
+//
+//.profile-buttons {
+//  display: flex; /* Use flexbox layout */
+//  flex-direction: row; /* Arrange items in a row */
+//  position: absolute; /* Set position to absolute */
+//  right: 250px; /* Position 400px from the right */
+//  top: 90%; /* Position at 90% from the top */
+//  transform: translateY(-50%); /* Center element vertically */
+//  gap: 100px; /* Add space between items */
+//  height: 50px;
+//  width: 300px;
+//}
+//
+//.button {
+//  display: inline-block; /* Display as inline-block */
+//  padding: 8px 15px; /* Add padding */
+//  text-decoration: none; /* Remove text decoration */
+//  border-radius: 5px; /* Round the corners */
+//  font-weight: bold; /* Make text bold */
+//  font-size: 20px; /* Set font size */
+//  transition: background-color 0.2s; /* Add transition for background color */
+//  text-align: center; /* Center align text */
+//  white-space: nowrap; /* Prevent text wrapping */
+//  justify-content: center;
+//}
+//
+//.view-profile {
+//  background-color: #2196f3; /* Set background color to blue */
+//  color: white; /* Set text color to white */
+//}
+//
+//.follow {
+//  background-color: #fff; /* Set background color to white */
+//  color: #333; /* Set text color to dark gray */
+//  border: 1px solid #ccc; /* Add a light gray border */
+//}
+//
+//.button:hover {
+//  background: black;
+//  color: white;
+//}
+//
+//.loading-spinner {
+//  display: flex;
+//  flex-direction: column;
+//  align-items: center;
+//  justify-content: center;
+//  height: 300px;
+//
+//  .spinner {
+//    border: 4px solid rgba(0, 0, 0, 0.1);
+//    width: 36px;
+//    height: 36px;
+//    border-radius: 50%;
+//    border-left-color: #09f;
+//    animation: spin 1s linear infinite;
+//  }
+//
+//  @keyframes spin {
+//    0% {
+//      transform: rotate(0deg);
+//    }
+//    100% {
+//      transform: rotate(360deg);
+//    }
+//  }
+//}
+//
+//// No more profiles message
+//.no-more-profiles {
+//  text-align: center;
+//  padding: 40px;
+//  background: #f9f9f9;
+//  border-radius: 8px;
+//  margin: 20px 0;
+//  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+//
+//  h3 {
+//    margin-bottom: 10px;
+//    color: #555;
+//  }
+//}
+//
+//// Error message
+//.error-message {
+//  padding: 15px;
+//  margin: 20px 0;
+//  background-color: #ffebee;
+//  border-left: 5px solid #f44336;
+//  color: #d32f2f;
+//  border-radius: 3px;
+//}
+//
+//@media (max-width: 768px) {
+//  .filter-group-container {
+//    flex-direction: column; /* Arrange items in a column */
+//    align-items: stretch; /* Stretch items to fill container */
+//  }
+//
+//  .filter-group {
+//    width: 100%; /* Set width to 100% */
+//  }
+//
+//  .selection-buttons {
+//    width: 90%; /* Set width to 90% */
+//    left: 5%; /* Position 5% from the left */
+//  }
+//
+//  .buttons {
+//    position: static; /* Set position to static */
+//    flex-direction: row; /* Arrange items in a row */
+//    transform: none; /* Remove transform */
+//    justify-content: flex-end; /* Align items to the right */
+//    margin-top: 15px; /* Add top margin */
+//  }
+//
+//  .gym-info {
+//    flex-wrap: wrap;
+//    flex-direction: column; /* Arrange items in a column */
+//    gap: 5px; /* Add space between items */
+//  }
+//
+//  .gym-info p {
+//    min-width: 120px;
+//    margin: 5px 0; /* Add vertical margin */
+//  }
+//}
