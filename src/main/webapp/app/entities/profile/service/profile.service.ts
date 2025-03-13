@@ -1,12 +1,14 @@
+/* eslint-disable no-console */
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
-
+import { Observable, throwError, of } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
 import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IProfile, NewProfile } from '../profile.model';
 import { IUser } from 'app/entities/user/user.model';
+import { AccountService } from 'app/core/auth/account.service';
 
 export type PartialUpdateProfile = Partial<IProfile> & Pick<IProfile, 'id'>;
 export type EntityResponseType = HttpResponse<IProfile>;
@@ -14,11 +16,13 @@ export type EntityArrayResponseType = HttpResponse<IProfile[]>;
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
-  protected readonly http = inject(HttpClient);
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
-
-  // Points to /api/profiles
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/profiles');
+  constructor(
+    protected http: HttpClient,
+    protected applicationConfigService: ApplicationConfigService,
+    protected accountService: AccountService,
+  ) {}
+  // Points to /api/profiles
 
   create(profile: NewProfile): Observable<EntityResponseType> {
     return this.http.post<IProfile>(this.resourceUrl, profile, { observe: 'response' });
@@ -37,6 +41,37 @@ export class ProfileService {
   findUserByLogin(login: string): Observable<HttpResponse<IUser>> {
     // Call the user resource directly at /api/admin/users/{login}
     return this.http.get<IUser>(`api/admin/users/${login}`, { observe: 'response' });
+  }
+
+  findMyProfile(): Observable<EntityResponseType> {
+    return this.accountService.identity().pipe(
+      mergeMap(account => {
+        if (!account?.login) {
+          return throwError(() => new Error('No valid account login found.'));
+        }
+        const accountLogin = account.login;
+        console.log(`🔄 Fetching user with login=${accountLogin}`);
+        return this.findUserByLogin(accountLogin).pipe(
+          mergeMap(userResponse => {
+            if (!userResponse.body) {
+              return throwError(() => new Error(`No user found for login=${accountLogin}`));
+            }
+            const user = userResponse.body;
+            console.log('✅ Found user:', user);
+            // Now fetch the profile by user.id
+            return this.find(user.id).pipe(
+              mergeMap(profileResponse => {
+                if (!profileResponse.body) {
+                  return throwError(() => new Error(`No profile found for user id=${user.id}`));
+                }
+                console.log('✅ Profile Data Loaded:', profileResponse.body);
+                return of(profileResponse);
+              }),
+            );
+          }),
+        );
+      }),
+    );
   }
 
   find(id: number): Observable<EntityResponseType> {
