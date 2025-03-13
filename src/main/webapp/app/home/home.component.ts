@@ -30,6 +30,15 @@ export default class HomeComponent implements OnInit, OnDestroy {
       .subscribe(account => this.account.set(account));
   }
 
+  onButtonClick(): void {
+    if (!this.account()) {
+      // If the user is not authenticated, redirect them to the login page
+      this.router.navigate(['/login']);
+    } else {
+      // Otherwise, proceed with the button action (you can add logic here if needed)
+    }
+  }
+
   login(): void {
     this.router.navigate(['/login']);
   }

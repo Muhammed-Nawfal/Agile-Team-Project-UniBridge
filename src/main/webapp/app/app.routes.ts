@@ -4,11 +4,12 @@ import { Authority } from 'app/config/authority.constants';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { errorRoute } from './layouts/error/error.route';
+import { ActivityMatchComponent } from './entities/activity-match/list/activity-match.component';
 
 const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./home/home.component'),
+    component: ActivityMatchComponent,
     title: 'home.title',
   },
   {
