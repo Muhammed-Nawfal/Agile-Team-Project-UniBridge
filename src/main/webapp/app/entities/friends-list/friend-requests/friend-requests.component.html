@@ -1,43 +1,37 @@
-<div>
-  <h2 id="page-heading" data-cy="FriendRequestsHeading">
-    <span>FRIEND REQUESTS</span>
-  </h2>
+<div class="search-area">
+  <a [routerLink]="['/friends-list']" class="back-btn"> <fa-icon icon="arrow-left"></fa-icon> ALL FRIENDS </a>
+</div>
 
-  <div class="search-area">
-    <a [routerLink]="['/friends-list']" class="back-btn"> <fa-icon icon="arrow-left"></fa-icon> ALL FRIENDS </a>
+<h3 class="requests-heading">Pending Requests</h3>
+
+<div class="friends-grid">
+  <!-- Alice's Request -->
+  <div class="friend-card">
+    <div class="profile-pic">A</div>
+    <h4 class="friend-name">Alice</h4>
+    <div class="action-buttons">
+      <button class="accept-btn"><fa-icon icon="check"></fa-icon> ACCEPT</button>
+      <button class="decline-btn"><fa-icon icon="times"></fa-icon> DECLINE</button>
+    </div>
   </div>
 
-  <h3 class="requests-heading">Pending Requests</h3>
-
-  @if (friendRequests?.length === 0) {
-    <div class="alert alert-warning" id="no-result">
-      <span>No Friend Requests found</span>
+  <!-- Bob's Request -->
+  <div class="friend-card">
+    <div class="profile-pic">B</div>
+    <h4 class="friend-name">Bob</h4>
+    <div class="action-buttons">
+      <button class="accept-btn"><fa-icon icon="check"></fa-icon> ACCEPT</button>
+      <button class="decline-btn"><fa-icon icon="times"></fa-icon> DECLINE</button>
     </div>
-  }
+  </div>
 
-  @if (friendRequests && friendRequests.length > 0) {
-    <div class="friends-grid">
-      @for (request of friendRequests; track trackId(request)) {
-        <div class="friend-card">
-          <div class="request-status {{ request.friendRequest }}">
-            {{ { null: '', ACCEPT: 'ACCEPTED', DECLINED: 'DECLINED', PENDING: 'PENDING' }[request.friendRequest ?? 'null'] }}
-          </div>
-
-          <div class="profile-pic"></div>
-
-          <div class="friend-name">Friend #{{ request.friend?.id }}</div>
-
-          <div class="action-buttons">
-            <button type="button" (click)="acceptRequest(request)" class="accept-btn"><fa-icon icon="check"></fa-icon> ACCEPT</button>
-
-            <button type="button" (click)="declineRequest(request)" class="decline-btn"><fa-icon icon="times"></fa-icon> DECLINE</button>
-          </div>
-
-          <div class="view-profile-link">
-            <a [routerLink]="['/profile']">VIEW PROFILE</a>
-          </div>
-        </div>
-      }
+  <!-- Charlie's Request -->
+  <div class="friend-card">
+    <div class="profile-pic">C</div>
+    <h4 class="friend-name">Charlie</h4>
+    <div class="action-buttons">
+      <button class="accept-btn"><fa-icon icon="check"></fa-icon> ACCEPT</button>
+      <button class="decline-btn"><fa-icon icon="times"></fa-icon> DECLINE</button>
     </div>
-  }
+  </div>
 </div>
