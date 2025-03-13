@@ -112,24 +112,6 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="challenges.id">
-              <div class="d-flex">
-                <span>Challenges</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="challengedFriend.id">
-              <div class="d-flex">
-                <span>Challenged Friend</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="challengedActivity.id">
-              <div class="d-flex">
-                <span>Challenged Activity</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
             <th scope="col" jhiSortBy="creator.id">
               <div class="d-flex">
                 <span>Creator</span>
@@ -172,27 +154,6 @@
               <td>{{ challenge.isCompleted }}</td>
               <td>{{ challenge.completedDate | formatMediumDatetime }}</td>
               <td>{{ challenge.isDisplayed }}</td>
-              <td>
-                @if (challenge.challenges) {
-                  <div>
-                    <a [routerLink]="['/profile', challenge.challenges.id, 'view']">{{ challenge.challenges.id }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                @if (challenge.challengedFriend) {
-                  <div>
-                    <a [routerLink]="['/friends-list', challenge.challengedFriend.id, 'view']">{{ challenge.challengedFriend.id }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                @if (challenge.challengedActivity) {
-                  <div>
-                    <a [routerLink]="['/activity', challenge.challengedActivity.id, 'view']">{{ challenge.challengedActivity.id }}</a>
-                  </div>
-                }
-              </td>
               <td>
                 {{ challenge.creator?.id }}
               </td>

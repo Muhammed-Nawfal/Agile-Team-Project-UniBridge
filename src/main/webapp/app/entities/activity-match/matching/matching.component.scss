@@ -182,14 +182,15 @@ button:hover {
   }
 }
 
-//.image {
-//  width: 200px; /* Set width */
-//  height: 200px; /* Set height */
-//  border-radius: 50%; /* Make image circular */
-//  object-fit: cover; /* Cover the area without distorting */
-//  margin: 0 auto 15px; /* Center image and add bottom margin */
-//  border: 3px solid #eee; /* Add a light gray border */
-//}
+
+.image {
+  width: 200px; /* Set width */
+  height: 200px; /* Set height */
+  border-radius: 50%; /* Make image circular */
+  object-fit: cover; /* Cover the area without distorting */
+  margin: 0 auto 15px; /* Center image and add bottom margin */
+  border: 3px solid #eee; /* Add a light gray border */
+}
 
 .name {
   font-family: 'Times New Roman', serif; /* Set font family */
@@ -236,7 +237,7 @@ button:hover {
   flex-wrap: wrap;
   position: absolute;
   top: 80%;
-  right: 70%;
+  right: 90%;
   gap: 5px;
 }
 
@@ -254,10 +255,10 @@ button:hover {
   display: flex; /* Use flexbox layout */
   flex-direction: row; /* Arrange items in a row */
   position: absolute; /* Set position to absolute */
-  right: 250px; /* Position 400px from the right */
+  left: 85%; /* Position 400px from the right */
   top: 90%; /* Position at 90% from the top */
   transform: translateY(-50%); /* Center element vertically */
-  gap: 100px; /* Add space between items */
+  gap: 10px; /* Add space between items */
   height: 50px;
   width: 300px;
 }
