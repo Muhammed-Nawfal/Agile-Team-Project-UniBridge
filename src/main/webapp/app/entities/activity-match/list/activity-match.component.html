@@ -14,10 +14,10 @@
     <button (click)="navigateToBuddy('events')">Events Buddy</button>
   </div>
 
-  <h2>Book/Create</h2>
+  <h2>Create/Join</h2>
   <div class="activity-buttons">
-    <button (click)="navigateToBooking()">Book an activity</button>
-    <button (click)="navigateToActivity()">Post an activity</button>
+    <button [routerLink]="['/booking']">Create a Booking</button>
+    <button [routerLink]="['/activity']">Join an Activity</button>
   </div>
 
   <router-outlet></router-outlet>

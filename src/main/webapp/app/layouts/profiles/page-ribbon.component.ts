@@ -9,11 +9,7 @@ import { ProfileService } from './profile.service';
   standalone: true,
   selector: 'jhi-page-ribbon',
   template: `
-    @if (ribbonEnv$ | async; as ribbonEnv) {
-      <div class="ribbon">
-        <a href="">{{ { dev: 'Development' }[ribbonEnv ?? ''] }}</a>
-      </div>
-    }
+    @if (ribbonEnv$ | async; as ribbonEnv) {}
   `,
   styleUrl: './page-ribbon.component.scss',
   imports: [SharedModule],
