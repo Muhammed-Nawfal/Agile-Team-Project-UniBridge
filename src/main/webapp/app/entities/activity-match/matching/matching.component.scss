@@ -101,6 +101,7 @@ button:hover {
 }
 
 .select-button {
+  padding: 10px;
   width: 120px; /* Set width */
   height: 120px; /* Set height */
   border-radius: 60%; /* Make element circular */
@@ -111,6 +112,7 @@ button:hover {
 }
 
 .select-button:hover {
+  transform: scale(1.05);
   background: black;
 }
 
@@ -165,6 +167,19 @@ button:hover {
   max-width: 500px; /* Set maximum width */
   z-index: 5; /* Set z-index */
   position: relative; /* Set position to relative */
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+
+  &.accepting {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  &.rejecting {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
 }
 
 .image {
@@ -276,6 +291,57 @@ button:hover {
   color: white;
 }
 
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+
+  .spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border-left-color: #09f;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+// No more profiles message
+.no-more-profiles {
+  text-align: center;
+  padding: 40px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  margin: 20px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+  h3 {
+    margin-bottom: 10px;
+    color: #555;
+  }
+}
+
+// Error message
+.error-message {
+  padding: 15px;
+  margin: 20px 0;
+  background-color: #ffebee;
+  border-left: 5px solid #f44336;
+  color: #d32f2f;
+  border-radius: 3px;
+}
+
 @media (max-width: 768px) {
   .filter-group-container {
     flex-direction: column; /* Arrange items in a column */
@@ -310,185 +376,3 @@ button:hover {
     margin: 5px 0; /* Add vertical margin */
   }
 }
-
-//header {
-//  font-family: 'Times New Roman', Times, serif;
-//  text-align: center;
-//  padding: 10px 0;
-//}
-//
-//.filter-group-container {
-//  display: flex;
-//  justify-content: space-between;
-//  width: 100%;
-//  flex-wrap: wrap;
-//  gap: 20px;
-//  margin-top: 20px;
-//}
-//
-//h2 {
-//  display: flex;
-//  text-align: center;
-//  font-family: 'Times New Roman', Times, serif;
-//  font-size: 24px;
-//}
-//
-//.filter-group {
-//  display: flex;
-//  flex-direction: column;
-//  flex: 1;
-//  gap: 5px;
-//  min-width: 180px;
-//  max-width: 250px;
-//}
-//
-//#gym-buddy-filters {
-//  display: flex;
-//  flex-wrap: wrap;
-//  gap: 20px; /* Space between filters */
-//}
-//
-//.filter-actions {
-//  display: flex;
-//  flex-direction: column;
-//  gap: 5px;
-//  margin-top: 10px;
-//}
-//
-//.filter-actions button {
-//  background: black;
-//  color: white;
-//  padding: 8px 16px;
-//  border: none;
-//  border-radius: 5px;
-//  cursor: pointer;
-//  text-align: center;
-//  width: 100%;
-//}
-//
-//.filter-actions button:hover {
-//  background: #0056b3;
-//}
-//
-//.filter-group label {
-//  display: flex;
-//  font-weight: bold;
-//}
-//
-//.filter-group select {
-//  flex:1;
-//  min-width: 150px;
-//  padding: 5px;
-//  border: 1px solid #ccc;
-//  border-radius: 5px;
-//  width: 100%;
-//}
-//
-//.main-content {
-//  display: flex;
-//}
-//
-//.selection-buttons {
-//  display: flex;
-//  justify-content: space-between;
-//  margin-top: 20px;
-//}
-//
-//.select-button button {
-//  padding: 10px;
-//  border: none;
-//  cursor: pointer;
-//  border-radius: 100%;
-//  width: 60px;
-//  height: 60px;
-//  font-size: 18px;
-//}
-//
-//.select-button.accept button {
-//  background: #28a745;
-//  color: white;
-//}
-//
-//.select-button.reject button {
-//  background: #dc3545;
-//  color: white;
-//}
-//
-//.card {
-//  display: flex;
-//  width: 500px; /* Set the card's width */
-//  height: 600px; /* Set the card's height */
-//  background-color: white; /* Card background */
-//  border: 1px solid #ddd; /* Border for the card */
-//  border-radius: 8px; /* Rounded corners */
-//  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow */
-//  position: relative; /* Allow absolute positioning within the card */
-//}
-//
-//.card-container {
-//  display: flex; /* Use Flexbox */
-//  justify-content: center; /* Center horizontally */
-//  align-items: center; /* Center vertically */
-//  height: 100vh; /* Full viewport height */
-//}
-//
-//.card .image {
-//  width: 80%;  /* Make the image smaller */
-//  height: 150px; /* Set the height for the image */
-//  object-fit: cover; /* Ensure the image covers the area without distorting */
-//  border-radius: 4px; /* Optional: Rounded corners for the image */
-//  margin: 0 auto; /* Center the image horizontally */
-//}
-//
-//.card-content {
-//  flex: 1;
-//}
-//
-//.name {
-//  font-size: 20px;
-//  font-weight: bold;
-//}
-//
-//.gym-info p {
-//  margin: 5px 0;
-//}
-//
-//.buttons {
-//  display: flex; /* Use flexbox */
-//  justify-content: flex-end; /* Align items to the right */
-//  gap: 10px; /* Space between the buttons */
-//  position: absolute; /* Absolute positioning to place buttons inside card */
-//  bottom: 10px; /* Position at the bottom of the card */
-//  right: 15px; /* Align buttons to the right side */
-//}
-//
-//.button {
-//  text-decoration: none; /* Remove underline from links */
-//  color: white; /* White text color */
-//  border-radius: 5px; /* Rounded corners */
-//}
-//
-//.view-profile {
-//  background: #007bff;
-//}
-//
-//.follow {
-//  background: #28a745;
-//}
-
-//<script>
-//   // Star rating functionality
-// document.querySelectorAll('.star-rating span').forEach((star, index) => {
-//                                                                         star.addEventListener('click', () => {
-//                                                                         document.querySelectorAll('.star-rating span').forEach((s, i) => {
-//                                                                         if (i <= index) {
-//                                                                         s.classList.remove('star-empty');
-//                                                                         s.classList.add('star-filled');
-//                                                                       } else {
-//                                                                           s.classList.remove('star-filled');
-//                                                                           s.classList.add('star-empty');
-//                                                                         }
-//                                                                       });
-//                                                                       });
-//                                                                       });
-//</script>

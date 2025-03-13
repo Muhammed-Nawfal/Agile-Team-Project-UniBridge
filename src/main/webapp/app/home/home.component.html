@@ -1,35 +1,14 @@
 <div class="row">
-  <div class="col-md-3">
-    <span class="hipster img-fluid rounded"></span>
-  </div>
-
-  <div class="col-md-9">
-    <h1 class="display-4"><span>Welcome to UniBridge!</span></h1>
-
-    <p class="lead">This is your homepage</p>
-
-    <div>
-      @if (account() !== null) {
-        <div class="alert alert-success">
-          @if (account(); as accountRef) {
-            <span id="home-logged-message">You are logged in as user &quot;{{ accountRef.login }}&quot;.</span>
-          }
-        </div>
-      } @else {
-        <div class="alert alert-warning">
-          <span>If you want to </span>
-          <a class="alert-link" (click)="login()">sign in</a
-          ><span
-            >, you can try the default accounts:<br />- Administrator (login=&quot;admin&quot; and password=&quot;admin&quot;) <br />- User
-            (login=&quot;user&quot; and password=&quot;user&quot;).</span
-          >
-        </div>
-
-        <div class="alert alert-warning">
-          <span>You don&apos;t have an account yet?</span>&nbsp;
-          <a class="alert-link" routerLink="/account/register">Register a new account</a>
-        </div>
-      }
-    </div>
+  <div>
+    @if (account() !== null) {
+      <div class="alert alert-success">
+        @if (account(); as accountRef) {
+          <span id="home-logged-message">You are logged in as user &quot;{{ accountRef.login }}&quot;.</span>
+        }
+      </div>
+      <jhi-activity-match></jhi-activity-match>
+    } @else {
+      <jhi-activity-match></jhi-activity-match>
+    }
   </div>
 </div>

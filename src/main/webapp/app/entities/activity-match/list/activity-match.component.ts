@@ -11,11 +11,13 @@ import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigati
 import { IActivityMatch } from '../activity-match.model';
 import { ActivityMatchService, EntityArrayResponseType } from '../service/activity-match.service';
 import { ActivityMatchDeleteDialogComponent } from '../delete/activity-match-delete-dialog.component';
+import { MatchingComponent } from '../matching/matching.component';
 
 @Component({
   standalone: true,
   selector: 'jhi-activity-match',
   templateUrl: './activity-match.component.html',
+  styleUrl: 'activity-match.component.scss',
   imports: [
     RouterModule,
     FormsModule,
@@ -25,6 +27,7 @@ import { ActivityMatchDeleteDialogComponent } from '../delete/activity-match-del
     DurationPipe,
     FormatMediumDatetimePipe,
     FormatMediumDatePipe,
+    MatchingComponent,
   ],
 })
 export class ActivityMatchComponent implements OnInit {
@@ -42,6 +45,10 @@ export class ActivityMatchComponent implements OnInit {
   protected ngZone = inject(NgZone);
 
   trackId = (item: IActivityMatch): number => this.activityMatchService.getActivityMatchIdentifier(item);
+
+  goToEventsBuddy(): void {
+    this.router.navigate(['events-buddy']);
+  }
 
   ngOnInit(): void {
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
@@ -78,6 +85,12 @@ export class ActivityMatchComponent implements OnInit {
 
   navigateToWithComponentValues(event: SortState): void {
     this.handleNavigation(event);
+  }
+
+  // constructor(private router: Router) {}
+
+  navigateToBuddy(type: string): void {
+    this.router.navigate(['/activity-match/buddy', type]);
   }
 
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
