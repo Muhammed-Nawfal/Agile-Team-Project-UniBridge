@@ -6,9 +6,9 @@ import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IProfile, NewProfile } from '../profile.model';
+import { IUser } from 'app/entities/user/user.model';
 
 export type PartialUpdateProfile = Partial<IProfile> & Pick<IProfile, 'id'>;
-
 export type EntityResponseType = HttpResponse<IProfile>;
 export type EntityArrayResponseType = HttpResponse<IProfile[]>;
 
@@ -17,10 +17,31 @@ export class ProfileService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
+  // Points to /api/profiles
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/profiles');
 
   create(profile: NewProfile): Observable<EntityResponseType> {
     return this.http.post<IProfile>(this.resourceUrl, profile, { observe: 'response' });
+  }
+
+  // -- Remove or comment out the old findByUserLogin() method --
+  // findByUserLogin(login: string): Observable<EntityResponseType> {
+  //   return this.http.get<IProfile>(`${this.resourceUrl}/by-user-login/${login}`, { observe: 'response' });
+  // }
+
+  /**
+   * Use the User Resource route:
+   * GET /api/admin/users/{login}
+   * to retrieve user details (including ID).
+   */
+  findUserByLogin(login: string): Observable<HttpResponse<IUser>> {
+    // Call the user resource directly at /api/admin/users/{login}
+    return this.http.get<IUser>(`api/admin/users/${login}`, { observe: 'response' });
+  }
+
+  find(id: number): Observable<EntityResponseType> {
+    // GET /api/profiles/{id}
+    return this.http.get<IProfile>(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
   update(profile: IProfile): Observable<EntityResponseType> {
@@ -29,10 +50,6 @@ export class ProfileService {
 
   partialUpdate(profile: PartialUpdateProfile): Observable<EntityResponseType> {
     return this.http.patch<IProfile>(`${this.resourceUrl}/${this.getProfileIdentifier(profile)}`, profile, { observe: 'response' });
-  }
-
-  find(id: number): Observable<EntityResponseType> {
-    return this.http.get<IProfile>(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
