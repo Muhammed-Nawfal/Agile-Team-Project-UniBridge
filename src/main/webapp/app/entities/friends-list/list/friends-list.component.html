@@ -1,36 +1,40 @@
-<div>
-  <h2 id="page-heading" data-cy="FriendsListHeading">
-    <span>FRIENDS</span>
-  </h2>
+<div class="search-area">
+  <input type="text" placeholder="Search friends" class="search-input" />
+  <a [routerLink]="['/friends-list/friend-requests']" class="requests-btn">REQUESTS</a>
+</div>
 
-  <div class="search-area">
-    <input type="text" placeholder="search friends" class="search-input" />
-    <a [routerLink]="['/friends-list/friend-requests']" class="requests-btn">REQUESTS</a>
+<h3 class="all-friends-heading">All Friends</h3>
+
+<div class="friends-grid">
+  <!-- Kylie's Card -->
+  <div class="friend-card">
+    <div class="profile-pic">K</div>
+    <h4 class="friend-name">Kylie</h4>
+    <button class="message-btn" routerLink="/chat">Message</button>
+    <p class="friends-since">Friend since: March 15, 2023</p>
   </div>
 
-  <h3 class="all-friends-heading">All Friends</h3>
+  <!-- Nawfal's Card -->
+  <div class="friend-card">
+    <div class="profile-pic">N</div>
+    <h4 class="friend-name">Nawfal</h4>
+    <button class="message-btn" routerLink="/chat">Message</button>
+    <p class="friends-since">Friend since: January 8, 2024</p>
+  </div>
 
-  @if (friendsLists?.length === 0) {
-    <div class="alert alert-warning" id="no-result">
-      <span>No Friends Lists found</span>
-    </div>
-  }
+  <!-- Nicole's Card -->
+  <div class="friend-card">
+    <div class="profile-pic">N</div>
+    <h4 class="friend-name">Nicole</h4>
+    <button class="message-btn" routerLink="/chat">Message</button>
+    <p class="friends-since">Friend since: August 22, 2023</p>
+  </div>
 
-  @if (friendsLists && friendsLists.length > 0) {
-    <div class="friends-grid">
-      @for (friendsList of friendsLists; track trackId(friendsList)) {
-        <div class="friend-card">
-          @if (friendsList.friendRequest) {}
-
-          <div class="profile-pic"></div>
-
-          <div class="friend-name">Friend{{ friendsList.user?.id }}</div>
-
-          <button class="message-btn" [routerLink]="['/chat']">MESSAGE</button>
-
-          <div class="friends-since">Friends Since: {{ friendsList.friendSince | formatMediumDatetime }}</div>
-        </div>
-      }
-    </div>
-  }
+  <!-- Yinrui's Card -->
+  <div class="friend-card">
+    <div class="profile-pic">Y</div>
+    <h4 class="friend-name">Yinrui</h4>
+    <button class="message-btn" routerLink="/chat">Message</button>
+    <p class="friends-since">Friend since: October 5, 2023</p>
+  </div>
 </div>
