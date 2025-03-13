@@ -30,7 +30,32 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
     FaIconComponent,
   ],
 })
+
+// acceptRequest(friendRequest: IFriendsList): void {
+//   // Create a complete copy of the original object
+//   const updatedRequest: IFriendsList = {
+//     ...friendRequest,
+//     friendRequest: 'ACCEPT',
+//   };
+//
+//   this.friendsListService.update(updatedRequest).subscribe(() => {
+//     this.load();
+//   });
+// }
+//
+// declineRequest(friendRequest: IFriendsList): void {
+//   const updatedRequest: IFriendsList = {
+//     ...friendRequest,
+//     friendRequest: 'DECLINED',
+//   };
+//
+//   this.friendsListService.update(updatedRequest).subscribe(() => {
+//     this.load();
+//   });
+// }
 export class FriendRequestsComponent implements OnInit {
+  toastMessage = ''; // ✅ Moved above protected fields
+
   subscription: Subscription | null = null;
   friendRequests?: IFriendsList[];
   isLoading = false;
@@ -59,33 +84,22 @@ export class FriendRequestsComponent implements OnInit {
       .subscribe();
   }
 
-  acceptRequest(friendRequest: IFriendsList): void {
-    // Create a complete copy of the original object
-    const updatedRequest: IFriendsList = {
-      ...friendRequest,
-      friendRequest: 'ACCEPT',
-    };
-
-    this.friendsListService.update(updatedRequest).subscribe(() => {
-      this.load();
-    });
+  showToast(message: string): void {
+    this.toastMessage = message;
+    setTimeout(() => (this.toastMessage = ''), 3000); // Auto-hide after 3 seconds
   }
 
-  declineRequest(friendRequest: IFriendsList): void {
-    const updatedRequest: IFriendsList = {
-      ...friendRequest,
-      friendRequest: 'DECLINED',
-    };
+  acceptRequest(name: string): void {
+    this.showToast(`✅ You are now friends with ${name}!`);
+  }
 
-    this.friendsListService.update(updatedRequest).subscribe(() => {
-      this.load();
-    });
+  declineRequest(name: string): void {
+    this.showToast(`❌ You declined ${name}'s friend request.`);
   }
 
   delete(friendRequest: IFriendsList): void {
     const modalRef = this.modalService.open(FriendsListDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
     modalRef.componentInstance.friendsList = friendRequest;
-    // unsubscribe not needed because closed completes on modal close
     modalRef.closed
       .pipe(
         filter(reason => reason === ITEM_DELETED_EVENT),
@@ -112,7 +126,6 @@ export class FriendRequestsComponent implements OnInit {
 
   protected onResponseSuccess(response: EntityArrayResponseType): void {
     const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
-    // Filter to only show pending friend requests
     this.friendRequests = this.refineData(dataFromBody).filter(request => request.friendRequest === 'PENDING');
   }
 

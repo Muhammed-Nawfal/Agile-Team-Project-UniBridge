@@ -29,6 +29,10 @@ const routes: Routes = [
     loadChildren: () => import('./account/account.route'),
   },
   {
+    path: 'gdpr-policy',
+    loadComponent: () => import('./gdpr-policy/gdpr-policy.component'),
+  },
+  {
     path: 'login',
     loadComponent: () => import('./login/login.component'),
     title: 'login.title',
