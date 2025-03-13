@@ -460,10 +460,26 @@ export class MatchingComponent implements OnInit, OnDestroy {
   }
 
   navigateToProfile(): void {
-    this.router.navigate(['/profile', this.currentProfile.id]);
+    this.router.navigate(['/profile']);
+  }
+
+  navigateToFriendRequest(): void {
+    this.router.navigate(['/friend-request']);
   }
 
   hasMatchData(): boolean {
     return !!this.activityMatch;
+  }
+
+  followUser(): void {
+    const popup = document.getElementById('followPopup');
+    if (popup) {
+      popup.classList.add('show');
+
+      // Hide the popup after 3 seconds
+      setTimeout(() => {
+        popup.classList.remove('show');
+      }, 3000);
+    }
   }
 }
