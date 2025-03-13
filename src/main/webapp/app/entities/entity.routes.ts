@@ -8,8 +8,7 @@ const routes: Routes = [
   },
   {
     path: 'profile',
-    data: { pageTitle: 'Profiles' },
-    loadChildren: () => import('./profile/profile.routes'),
+    loadComponent: () => import('./profile/list/profile.component').then(m => m.ProfileComponent),
   },
   {
     path: 'activity',
