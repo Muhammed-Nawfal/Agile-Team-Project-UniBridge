@@ -55,7 +55,6 @@ const routes: Routes = [
     data: { pageTitle: 'Actions' },
     loadChildren: () => import('./action/action.routes'),
   },
-
   {
     path: 'challenge',
     data: { pageTitle: 'Challenge' },

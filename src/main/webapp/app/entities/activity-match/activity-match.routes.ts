@@ -3,6 +3,8 @@ import { Routes } from '@angular/router';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { ASC } from 'app/config/navigation.constants';
 import ActivityMatchResolve from './route/activity-match-routing-resolve.service';
+import { MatchingComponent } from './matching/matching.component';
+import { ActivityMatchComponent } from './list/activity-match.component';
 
 const activityMatchRoute: Routes = [
   {
@@ -11,7 +13,7 @@ const activityMatchRoute: Routes = [
     data: {
       defaultSort: `id,${ASC}`,
     },
-    canActivate: [UserRouteAccessService],
+    canActivate: [],
   },
   {
     path: ':id/view',
@@ -36,6 +38,14 @@ const activityMatchRoute: Routes = [
       activityMatch: ActivityMatchResolve,
     },
     canActivate: [UserRouteAccessService],
+  },
+  {
+    path: '',
+    component: ActivityMatchComponent,
+  },
+  {
+    path: 'buddy/:type',
+    component: MatchingComponent,
   },
 ];
 
