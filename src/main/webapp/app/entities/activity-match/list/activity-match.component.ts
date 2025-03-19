@@ -1,6 +1,6 @@
-import { Component, NgZone, OnInit, inject } from '@angular/core';
+import { Component, NgZone, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
-import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
+import { Observable, Subscription, Subject, combineLatest, filter, tap, takeUntil } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import SharedModule from 'app/shared/shared.module';
@@ -12,6 +12,9 @@ import { IActivityMatch } from '../activity-match.model';
 import { ActivityMatchService, EntityArrayResponseType } from '../service/activity-match.service';
 import { ActivityMatchDeleteDialogComponent } from '../delete/activity-match-delete-dialog.component';
 import { MatchingComponent } from '../matching/matching.component';
+
+import { AccountService } from 'app/core/auth/account.service';
+import { Account } from 'app/core/auth/account.model';
 
 @Component({
   standalone: true,
@@ -30,27 +33,53 @@ import { MatchingComponent } from '../matching/matching.component';
     MatchingComponent,
   ],
 })
-export class ActivityMatchComponent implements OnInit {
-  subscription: Subscription | null = null;
+export class ActivityMatchComponent implements OnInit, OnDestroy {
+  // Public properties first
+  account = signal<Account | null>(null);
   activityMatches?: IActivityMatch[];
   isLoading = false;
-
   sortState = sortStateSignal({});
 
+  // Public injected services
   public readonly router = inject(Router);
+
+  // Subscriptions
+  subscription: Subscription | null = null;
+
+  // Protected services
   protected readonly activityMatchService = inject(ActivityMatchService);
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
+  protected readonly accountService = inject(AccountService);
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
 
+  // Private properties
+  private readonly destroy$ = new Subject<void>();
+
+  // Class methods
   trackId = (item: IActivityMatch): number => this.activityMatchService.getActivityMatchIdentifier(item);
 
-  goToEventsBuddy(): void {
-    this.router.navigate(['events-buddy']);
-  }
-
   ngOnInit(): void {
+    // Subscribe to account identity
+    this.accountService
+      .identity()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(account => {
+        this.account.set(account);
+      });
+
+    // Listen for authentication state changes
+    this.accountService
+      .getAuthenticationState()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(account => {
+        if (account) {
+          this.account.set(account);
+          this.handleLoginRedirect();
+        }
+      });
+
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
       .pipe(
         tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
@@ -61,6 +90,14 @@ export class ActivityMatchComponent implements OnInit {
         }),
       )
       .subscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   delete(activityMatch: IActivityMatch): void {
@@ -83,18 +120,53 @@ export class ActivityMatchComponent implements OnInit {
     });
   }
 
+  onButtonClick(): void {
+    if (!this.account()) {
+      // If the user is not authenticated, redirect them to the login page
+      localStorage.setItem('redirectUrl', this.router.url);
+      this.router.navigate(['/login']);
+    }
+  }
+
   navigateToWithComponentValues(event: SortState): void {
     this.handleNavigation(event);
   }
 
-  // constructor(private router: Router) {}
+  goToEventsBuddy(): void {
+    if (this.account()) {
+      this.router.navigate(['/events-buddy']);
+    } else {
+      localStorage.setItem('redirectUrl', this.router.url);
+      this.router.navigate(['/login']);
+    }
+  }
 
   navigateToBuddy(type: string): void {
-    this.router.navigate(['/activity-match/buddy', type]);
+    if (this.account()) {
+      this.router.navigate(['/activity-match/buddy', type]);
+    } else {
+      // Store the current URL and redirect to the login page
+      localStorage.setItem('redirectUrl', this.router.url);
+      this.router.navigate(['/login']);
+    }
   }
 
   navigateToBooking(): void {
-    this.router.navigate(['/booking']);
+    if (this.account()) {
+      this.router.navigate(['/booking']);
+    } else {
+      // Store the current URL and redirect to the login page
+      localStorage.setItem('redirectUrl', this.router.url);
+      this.router.navigate(['/login']);
+    }
+  }
+
+  handleLoginRedirect(): void {
+    const redirectUrl = localStorage.getItem('redirectUrl');
+    if (redirectUrl) {
+      this.router.navigateByUrl(redirectUrl); // Navigate to the saved URL
+      localStorage.removeItem('redirectUrl'); // Remove the redirect URL after using it
+    }
   }
 
   navigateToActivity(): void {
