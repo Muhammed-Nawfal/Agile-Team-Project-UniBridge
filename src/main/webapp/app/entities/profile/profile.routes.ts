@@ -17,4 +17,8 @@ export const profileRoutes: Routes = [
     path: 'no-profile',
     loadComponent: () => import('./no-profile/no-profile.component').then(m => m.NoProfileComponent),
   },
+  {
+    path: ':id/deleteForm',
+    loadComponent: () => import('./delete/profile-delete-dialog.component').then(m => m.ProfileDeleteDialogComponent),
+  },
 ];

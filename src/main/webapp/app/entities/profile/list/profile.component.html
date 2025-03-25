@@ -54,6 +54,7 @@
           <!-- Edit Profile Button -->
           <div class="mt-4" *ngIf="profile?.id">
             <a class="btn btn-outline-primary" [routerLink]="['/profile', profile!.id, 'edit']"> Edit Profile </a>
+            <a class="btn btn-danger" [routerLink]="['/profile', profile!.id, 'deleteForm']"> Delete Profile </a>
           </div>
         </div>
       </div>
