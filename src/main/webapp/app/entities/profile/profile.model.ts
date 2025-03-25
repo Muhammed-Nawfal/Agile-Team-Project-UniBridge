@@ -21,4 +21,4 @@ export interface IProfile {
   user?: IUser;
 }
 
-export type NewProfile = Omit<IProfile, 'id'> & { id: null };
+export type NewProfile = Omit<IProfile, 'id'> & { id: any };

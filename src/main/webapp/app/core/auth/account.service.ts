@@ -60,6 +60,10 @@ export class AccountService {
     return this.accountCache$.pipe(catchError(() => of(null)));
   }
 
+  getAccountByLogin(login: string): Observable<Account> {
+    return this.http.get<Account>(`api/admin/users/${login}`);
+  }
+
   isAuthenticated(): boolean {
     return this.userIdentity() !== null;
   }

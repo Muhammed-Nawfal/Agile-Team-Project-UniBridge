@@ -93,6 +93,10 @@ public class UserService {
             });
     }
 
+    public Optional<UserDTO> getPublicUserInfoByLogin(String login) {
+        return userRepository.findOneByLogin(login).map(UserDTO::new);
+    }
+
     public User registerUser(AdminUserDTO userDTO, String password) {
         userRepository
             .findOneByLogin(userDTO.getLogin().toLowerCase())

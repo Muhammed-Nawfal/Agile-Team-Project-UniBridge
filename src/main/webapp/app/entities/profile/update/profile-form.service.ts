@@ -18,7 +18,7 @@ type ProfileFormGroupInput = IProfile | PartialWithRequiredKeyOf<NewProfile>;
 type ProfileFormDefaults = Pick<NewProfile, 'id'>;
 
 type ProfileFormGroupContent = {
-  id: FormControl<IProfile['id'] | NewProfile['id']>;
+  id: FormControl;
   bio: FormControl<IProfile['bio']>;
   profilePicture: FormControl<IProfile['profilePicture']>;
   profilePictureContentType: FormControl<IProfile['profilePictureContentType']>;

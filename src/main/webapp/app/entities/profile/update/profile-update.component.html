@@ -1,5 +1,10 @@
 <!-- profile-update.component.html -->
 <div class="container my-4">
+  <div *ngIf="showUpdateTip" class="alert alert-info alert-dismissible fade show" role="alert">
+    💡 <strong>Tip:</strong> Set your preferences to help others find you more easily!
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissUpdateTip()"></button>
+  </div>
+
   <h2 class="text-center mb-4">Edit Your Profile</h2>
 
   <!-- Form to update the Profile -->
