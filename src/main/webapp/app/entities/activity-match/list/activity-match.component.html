@@ -8,28 +8,28 @@
 
   <h2>Match With a Buddy</h2>
   <div class="buddy-buttons">
-    @if (account() !== null) {
-      <button (click)="navigateToBuddy('study')">STUDY BUDDY</button>
-      <button (click)="navigateToBuddy('gym')">GYM BUDDY</button>
-      <button (click)="navigateToBuddy('sports')">SPORTS BUDDY</button>
-      <button (click)="navigateToBuddy('events')">EVENTS BUDDY</button>
-    } @else {
-      <button (click)="onButtonClick()">STUDY BUDDY</button>
-      <button (click)="onButtonClick()">GYM BUDDY</button>
-      <button (click)="onButtonClick()">SPORTS BUDDY</button>
-      <button (click)="onButtonClick()">EVENTS BUDDY</button>
-    }
+    <!--    @if (account() !== null) {-->
+    <button (click)="navigateToBuddy('study')">STUDY BUDDY</button>
+    <button (click)="navigateToBuddy('gym')">GYM BUDDY</button>
+    <button (click)="navigateToBuddy('sports')">SPORTS BUDDY</button>
+    <button (click)="navigateToBuddy('events')">EVENTS BUDDY</button>
+    <!--    } @else {-->
+    <!--      <button (click)="onButtonClicktoLogin()">STUDY BUDDY</button>-->
+    <!--      <button (click)="onButtonClicktoLogin()">GYM BUDDY</button>-->
+    <!--      <button (click)="onButtonClicktoLogin()">SPORTS BUDDY</button>-->
+    <!--      <button (click)="onButtonClicktoLogin()">EVENTS BUDDY</button>-->
+    <!--    }-->
   </div>
 
   <h2>Create/Join</h2>
   <div class="activity-buttons">
-    @if (account() !== null) {
-      <button (click)="navigateToBooking()">CREATE A BOOKING</button>
-      <button (click)="navigateToActivity()">JOIN AN ACTIVITY</button>
-    } @else {
-      <button (click)="onButtonClick()">CREATE A BOOKING</button>
-      <button (click)="navigateToActivity()">JOIN AN ACTIVITY</button>
-    }
+    <!--    @if (account() !== null) {-->
+    <button (click)="navigateToBooking()">CREATE A BOOKING</button>
+    <button (click)="navigateToActivity()">JOIN AN ACTIVITY</button>
+    <!--    } @else {-->
+    <!--      <button (click)="onButtonClicktoLogin()">CREATE A BOOKING</button>-->
+    <!--      <button (click)="navigateToActivity()">JOIN AN ACTIVITY</button>-->
+    <!--    }-->
   </div>
 
   <router-outlet></router-outlet>

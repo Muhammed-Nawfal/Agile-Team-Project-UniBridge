@@ -3,12 +3,18 @@ entity Profile {
     profilePicture ImageBlob,
     course Course required,
     courseYear Long required min(1) max(6), //Course year range 1-6
+    university String required minlength(1) maxlength(50),
     gymSkill Skill,
     gymLocation GymLocation,
     gymTime PreferredTime,
     studyTime PreferredTime,
     sports Sports,
-    sportsSkill Skill
+    sportsSkill Skill,
+    sportsTime PreferredTime,
+    preferredSociety String,
+    preferredEvents String,
+    eventsTime PreferredTime,
+    preferredActivities ActivityType,
 }
 
 

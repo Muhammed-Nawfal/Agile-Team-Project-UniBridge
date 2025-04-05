@@ -15,6 +15,7 @@ import { MatchingComponent } from '../matching/matching.component';
 
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
+import { IProfile } from '../../profile/profile.model';
 
 @Component({
   standalone: true,
@@ -39,6 +40,9 @@ export class ActivityMatchComponent implements OnInit, OnDestroy {
   activityMatches?: IActivityMatch[];
   isLoading = false;
   sortState = sortStateSignal({});
+
+  profiles: IProfile[] = [];
+  selectedActivityType = 'GYM';
 
   // Public injected services
   public readonly router = inject(Router);
@@ -120,25 +124,16 @@ export class ActivityMatchComponent implements OnInit, OnDestroy {
     });
   }
 
-  onButtonClick(): void {
-    if (!this.account()) {
-      // If the user is not authenticated, redirect them to the login page
-      localStorage.setItem('redirectUrl', this.router.url);
-      this.router.navigate(['/login']);
-    }
-  }
+  // onButtonClick(): void {
+  //   if (!this.account()) {
+  //     // If the user is not authenticated, redirect them to the login page
+  //     localStorage.setItem('redirectUrl', this.router.url);
+  //     this.router.navigate(['/login']);
+  //   }
+  // }
 
   navigateToWithComponentValues(event: SortState): void {
     this.handleNavigation(event);
-  }
-
-  goToEventsBuddy(): void {
-    if (this.account()) {
-      this.router.navigate(['/events-buddy']);
-    } else {
-      localStorage.setItem('redirectUrl', this.router.url);
-      this.router.navigate(['/login']);
-    }
   }
 
   navigateToBuddy(type: string): void {
@@ -146,7 +141,7 @@ export class ActivityMatchComponent implements OnInit, OnDestroy {
       this.router.navigate(['/activity-match/buddy', type]);
     } else {
       // Store the current URL and redirect to the login page
-      localStorage.setItem('redirectUrl', this.router.url);
+      localStorage.setItem('redirectUrl', `/activity-match/buddy/${type}`);
       this.router.navigate(['/login']);
     }
   }

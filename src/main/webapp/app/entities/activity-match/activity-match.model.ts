@@ -15,3 +15,10 @@ export interface IActivityMatch {
 }
 
 export type NewActivityMatch = Omit<IActivityMatch, 'id'> & { id: null };
+
+export enum ActivityTypeMapping {
+  gym = 'SOCIAL',
+  study = 'ACADEMIC',
+  sports = 'SPORTS',
+  events = 'OTHER',
+}
