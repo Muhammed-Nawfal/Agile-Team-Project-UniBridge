@@ -52,6 +52,10 @@
           <dd>
             <span>{{ profileRef.courseYear }}</span>
           </dd>
+          <dt><span>University</span></dt>
+          <dd>
+            <span>{{ profileRef.university }}</span>
+          </dd>
           <dt><span>Gym Skill</span></dt>
           <dd>
             <span>{{
@@ -97,6 +101,38 @@
             <span>{{
               { null: '', NOVICE: 'NOVICE', INTERMEDIATE: 'INTERMEDIATE', CONFIDENT: 'CONFIDENT', PROFESSIONAL: 'PROFESSIONAL' }[
                 profileRef.sportsSkill ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span>Sports Time</span></dt>
+          <dd>
+            <span>{{
+              { null: '', EARLY: 'EARLY', MORNING: 'MORNING', AFTERNOON: 'AFTERNOON', EVENING: 'EVENING', NIGHT: 'NIGHT', LATE: 'LATE' }[
+                profileRef.sportsTime ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span>Preferred Society</span></dt>
+          <dd>
+            <span>{{ profileRef.preferredSociety }}</span>
+          </dd>
+          <dt><span>Preferred Events</span></dt>
+          <dd>
+            <span>{{ profileRef.preferredEvents }}</span>
+          </dd>
+          <dt><span>Events Time</span></dt>
+          <dd>
+            <span>{{
+              { null: '', EARLY: 'EARLY', MORNING: 'MORNING', AFTERNOON: 'AFTERNOON', EVENING: 'EVENING', NIGHT: 'NIGHT', LATE: 'LATE' }[
+                profileRef.eventsTime ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span>Preferred Activities</span></dt>
+          <dd>
+            <span>{{
+              { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[
+                profileRef.preferredActivities ?? 'null'
               ]
             }}</span>
           </dd>

@@ -5,7 +5,9 @@ import { Observable } from 'rxjs';
 import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { IActivityMatch, NewActivityMatch } from '../activity-match.model';
+import { ActivityTypeMapping, IActivityMatch, NewActivityMatch } from '../activity-match.model';
+import { IProfile } from 'app/entities/profile/profile.model';
+import { ActivityType } from '../../enumerations/activity-type.model';
 
 export type PartialUpdateActivityMatch = Partial<IActivityMatch> & Pick<IActivityMatch, 'id'>;
 
@@ -14,10 +16,13 @@ export type EntityArrayResponseType = HttpResponse<IActivityMatch[]>;
 
 @Injectable({ providedIn: 'root' })
 export class ActivityMatchService {
+  protected readonly apiUrl = inject(ApplicationConfigService).getEndpointFor('api');
+
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/activity-matches');
+  protected profileUrl = this.applicationConfigService.getEndpointFor('api/profiles');
 
   create(activityMatch: NewActivityMatch): Observable<EntityResponseType> {
     return this.http.post<IActivityMatch>(this.resourceUrl, activityMatch, { observe: 'response' });
@@ -77,4 +82,25 @@ export class ActivityMatchService {
     }
     return activityMatchCollection;
   }
+  /**
+   * Fetch profiles by preferred activity.
+   *
+   * @param activityType the activity type to filter by.
+   * @return an Observable of the list of profiles.
+   */
+
+  getProfilesByPreferredActivity(buddyType: string): Observable<HttpResponse<IProfile[]>> {
+    const activityType = ActivityTypeMapping[buddyType as keyof typeof ActivityTypeMapping];
+    return this.http.get<IProfile[]>(`${this.profileUrl}/preferred-activity`, {
+      params: { activityType },
+      observe: 'response',
+    });
+  }
+
+  // getProfilesByPreferredActivity(activityType: ActivityType): Observable<HttpResponse<IProfile[]>> {
+  //   return this.http.get<IProfile[]>(`${this.profileUrl}/preferred-activity`, {
+  //     params: { activityType },
+  //     observe: 'response',
+  //   });
+  // }
 }

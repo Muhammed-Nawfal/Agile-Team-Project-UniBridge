@@ -380,11 +380,7 @@ class NotificationResourceIT {
         Notification partialUpdatedNotification = new Notification();
         partialUpdatedNotification.setId(notification.getId());
 
-        partialUpdatedNotification
-            .notificationType(UPDATED_NOTIFICATION_TYPE)
-            .title(UPDATED_TITLE)
-            .message(UPDATED_MESSAGE)
-            .timestamp(UPDATED_TIMESTAMP);
+        partialUpdatedNotification.title(UPDATED_TITLE);
 
         restNotificationMockMvc
             .perform(
