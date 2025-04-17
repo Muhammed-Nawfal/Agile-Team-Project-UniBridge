@@ -49,10 +49,10 @@ describe('Notification Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call User query and add missing value', () => {
       const notification: INotification = { id: 456 };
-      const userID: IUser = { id: 9288 };
+      const userID: IUser = { id: 14926 };
       notification.userID = userID;
 
-      const userCollection: IUser[] = [{ id: 30647 }];
+      const userCollection: IUser[] = [{ id: 10849 }];
       jest.spyOn(userService, 'query').mockReturnValue(of(new HttpResponse({ body: userCollection })));
       const additionalUsers = [userID];
       const expectedCollection: IUser[] = [...additionalUsers, ...userCollection];
@@ -71,7 +71,7 @@ describe('Notification Management Update Component', () => {
 
     it('Should update editForm', () => {
       const notification: INotification = { id: 456 };
-      const userID: IUser = { id: 22722 };
+      const userID: IUser = { id: 5308 };
       notification.userID = userID;
 
       activatedRoute.data = of({ notification });

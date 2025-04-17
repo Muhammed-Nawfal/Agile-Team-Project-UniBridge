@@ -1,5 +1,6 @@
 package bham.team.domain;
 
+import bham.team.domain.enumeration.ActivityType;
 import bham.team.domain.enumeration.Course;
 import bham.team.domain.enumeration.GymLocation;
 import bham.team.domain.enumeration.PreferredTime;
@@ -49,6 +50,11 @@ public class Profile implements Serializable {
     @Column(name = "course_year", nullable = false)
     private Long courseYear;
 
+    @NotNull
+    @Size(min = 1, max = 50)
+    @Column(name = "university", length = 50, nullable = false)
+    private String university;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "gym_skill")
     private Skill gymSkill;
@@ -72,6 +78,24 @@ public class Profile implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "sports_skill")
     private Skill sportsSkill;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sports_time")
+    private PreferredTime sportsTime;
+
+    @Column(name = "preferred_society")
+    private String preferredSociety;
+
+    @Column(name = "preferred_events")
+    private String preferredEvents;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "events_time")
+    private PreferredTime eventsTime;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "preferred_activities")
+    private ActivityType preferredActivities;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
@@ -180,6 +204,19 @@ public class Profile implements Serializable {
         this.courseYear = courseYear;
     }
 
+    public String getUniversity() {
+        return this.university;
+    }
+
+    public Profile university(String university) {
+        this.setUniversity(university);
+        return this;
+    }
+
+    public void setUniversity(String university) {
+        this.university = university;
+    }
+
     public Skill getGymSkill() {
         return this.gymSkill;
     }
@@ -256,6 +293,71 @@ public class Profile implements Serializable {
 
     public void setSportsSkill(Skill sportsSkill) {
         this.sportsSkill = sportsSkill;
+    }
+
+    public PreferredTime getSportsTime() {
+        return this.sportsTime;
+    }
+
+    public Profile sportsTime(PreferredTime sportsTime) {
+        this.setSportsTime(sportsTime);
+        return this;
+    }
+
+    public void setSportsTime(PreferredTime sportsTime) {
+        this.sportsTime = sportsTime;
+    }
+
+    public String getPreferredSociety() {
+        return this.preferredSociety;
+    }
+
+    public Profile preferredSociety(String preferredSociety) {
+        this.setPreferredSociety(preferredSociety);
+        return this;
+    }
+
+    public void setPreferredSociety(String preferredSociety) {
+        this.preferredSociety = preferredSociety;
+    }
+
+    public String getPreferredEvents() {
+        return this.preferredEvents;
+    }
+
+    public Profile preferredEvents(String preferredEvents) {
+        this.setPreferredEvents(preferredEvents);
+        return this;
+    }
+
+    public void setPreferredEvents(String preferredEvents) {
+        this.preferredEvents = preferredEvents;
+    }
+
+    public PreferredTime getEventsTime() {
+        return this.eventsTime;
+    }
+
+    public Profile eventsTime(PreferredTime eventsTime) {
+        this.setEventsTime(eventsTime);
+        return this;
+    }
+
+    public void setEventsTime(PreferredTime eventsTime) {
+        this.eventsTime = eventsTime;
+    }
+
+    public ActivityType getPreferredActivities() {
+        return this.preferredActivities;
+    }
+
+    public Profile preferredActivities(ActivityType preferredActivities) {
+        this.setPreferredActivities(preferredActivities);
+        return this;
+    }
+
+    public void setPreferredActivities(ActivityType preferredActivities) {
+        this.preferredActivities = preferredActivities;
     }
 
     public User getUser() {
@@ -341,12 +443,18 @@ public class Profile implements Serializable {
             ", profilePictureContentType='" + getProfilePictureContentType() + "'" +
             ", course='" + getCourse() + "'" +
             ", courseYear=" + getCourseYear() +
+            ", university='" + getUniversity() + "'" +
             ", gymSkill='" + getGymSkill() + "'" +
             ", gymLocation='" + getGymLocation() + "'" +
             ", gymTime='" + getGymTime() + "'" +
             ", studyTime='" + getStudyTime() + "'" +
             ", sports='" + getSports() + "'" +
             ", sportsSkill='" + getSportsSkill() + "'" +
+            ", sportsTime='" + getSportsTime() + "'" +
+            ", preferredSociety='" + getPreferredSociety() + "'" +
+            ", preferredEvents='" + getPreferredEvents() + "'" +
+            ", eventsTime='" + getEventsTime() + "'" +
+            ", preferredActivities='" + getPreferredActivities() + "'" +
             "}";
     }
 }

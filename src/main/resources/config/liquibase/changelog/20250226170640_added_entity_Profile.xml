@@ -29,6 +29,9 @@
             <column name="course_year" type="bigint">
                 <constraints nullable="false" />
             </column>
+            <column name="university" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
             <column name="gym_skill" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
@@ -45,6 +48,21 @@
                 <constraints nullable="true" />
             </column>
             <column name="sports_skill" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="sports_time" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="preferred_society" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="preferred_events" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="events_time" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="preferred_activities" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
             <column name="user_id" type="bigint">
@@ -76,12 +94,18 @@
             <column name="profile_picture_content_type" type="string"/>
             <column name="course" type="string"/>
             <column name="course_year" type="numeric"/>
+            <column name="university" type="string"/>
             <column name="gym_skill" type="string"/>
             <column name="gym_location" type="string"/>
             <column name="gym_time" type="string"/>
             <column name="study_time" type="string"/>
             <column name="sports" type="string"/>
             <column name="sports_skill" type="string"/>
+            <column name="sports_time" type="string"/>
+            <column name="preferred_society" type="string"/>
+            <column name="preferred_events" type="string"/>
+            <column name="events_time" type="string"/>
+            <column name="preferred_activities" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

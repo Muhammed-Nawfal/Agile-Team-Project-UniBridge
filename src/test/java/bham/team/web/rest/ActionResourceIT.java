@@ -298,7 +298,7 @@ class ActionResourceIT {
         Action partialUpdatedAction = new Action();
         partialUpdatedAction.setId(action.getId());
 
-        partialUpdatedAction.type(UPDATED_TYPE);
+        partialUpdatedAction.type(UPDATED_TYPE).timestamp(UPDATED_TIMESTAMP);
 
         restActionMockMvc
             .perform(

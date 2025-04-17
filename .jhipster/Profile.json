@@ -26,6 +26,13 @@
       "fieldValidateRulesMin": "1"
     },
     {
+      "fieldName": "university",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "minlength", "maxlength"],
+      "fieldValidateRulesMaxlength": "50",
+      "fieldValidateRulesMinlength": "1"
+    },
+    {
       "fieldName": "gymSkill",
       "fieldType": "Skill",
       "fieldValues": "NOVICE,INTERMEDIATE,CONFIDENT,PROFESSIONAL"
@@ -54,6 +61,29 @@
       "fieldName": "sportsSkill",
       "fieldType": "Skill",
       "fieldValues": "NOVICE,INTERMEDIATE,CONFIDENT,PROFESSIONAL"
+    },
+    {
+      "fieldName": "sportsTime",
+      "fieldType": "PreferredTime",
+      "fieldValues": "EARLY,MORNING,AFTERNOON,EVENING,NIGHT,LATE"
+    },
+    {
+      "fieldName": "preferredSociety",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "preferredEvents",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "eventsTime",
+      "fieldType": "PreferredTime",
+      "fieldValues": "EARLY,MORNING,AFTERNOON,EVENING,NIGHT,LATE"
+    },
+    {
+      "fieldName": "preferredActivities",
+      "fieldType": "ActivityType",
+      "fieldValues": "SOCIAL,ACADEMIC,SPORTS,GYM,OTHER"
     }
   ],
   "name": "Profile",

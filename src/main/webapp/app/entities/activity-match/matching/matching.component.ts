@@ -9,6 +9,8 @@ import { FormsModule } from '@angular/forms';
 import { DEFAULT_SORT_DATA, SORT } from 'app/config/navigation.constants';
 import { IActivityMatch } from '../activity-match.model';
 import { ActivityMatchService } from '../service/activity-match.service';
+import { IProfile } from '../../profile/profile.model';
+import { IUser } from '../../user/user.model';
 
 @Component({
   standalone: true,
@@ -35,8 +37,8 @@ export class MatchingComponent implements OnInit, OnDestroy {
 
   // Properties for profile navigation
   currentProfileIndex = 0;
-  profiles: any[] = []; // This would store your list of potential matches
-  currentProfile: any = null;
+  profiles: IProfile[] = []; // This will store the list of potential matches
+  currentProfile: IProfile | null = null;
   noMoreProfiles = false;
 
   // Add buddy type property
@@ -68,6 +70,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
         if (type) {
           this.buddyType = type;
           this.setupFilterOptions();
+          this.loadBuddies();
         }
 
         // Get the activity match ID if available
@@ -75,19 +78,83 @@ export class MatchingComponent implements OnInit, OnDestroy {
         if (id) {
           this.activityMatchId = +id;
           this.loadActivityMatch(this.activityMatchId);
-        } else {
-          // If no specific ID, load general matches by buddy type
-          this.loadMatchesByType();
         }
       },
     );
   }
+
+  loadBuddies(): void {
+    this.isLoading = true;
+    this.activityMatchService.getProfilesByPreferredActivity(this.buddyType).subscribe({
+      next: res => {
+        this.isLoading = false;
+        this.profiles = res.body ?? [];
+        if (this.profiles.length > 0) {
+          this.currentProfile = this.profiles[this.currentProfileIndex];
+        } else {
+          this.noMoreProfiles = true;
+        }
+      },
+      error: error => {
+        this.isLoading = false;
+        this.errorMessage = 'Error loading profiles';
+      },
+    });
+  }
+  //
+  // getFirstsName(): string {
+  //   return this.currentProfile?.user?.firstName as string;
+  // }
+
+  // loadGymBuddies(): void {
+  //   this.isLoading = true;
+  //   this.activityMatchService.getProfilesByPreferredActivity(this.buddyType).subscribe({
+  //     next: res => {
+  //       this.isLoading = false;
+  //       this.profiles = res.body ?? [];
+  //       if (this.profiles.length > 0) {
+  //         this.currentProfile = this.profiles[this.currentProfileIndex];
+  //       } else {
+  //         this.noMoreProfiles = true;
+  //       }
+  //     },
+  //     error: () => {
+  //       this.isLoading = false;
+  //     },
+  //   });
+  // }
 
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
+
+  // Fetch profiles by activity type
+  // fetchProfilesByActivity(activityType: string): void {
+  //   this.isLoading = true;
+  //   this.errorMessage = undefined;
+  //
+  //   this.activityMatchService.getProfilesByPreferredActivity(activityType).subscribe({
+  //     next: (profiles: IProfile[]) => {
+  //       this.profiles = profiles; // Assign fetched profiles to the component property
+  //       if (this.profiles.length > 0) {
+  //         this.currentProfileIndex = 0;
+  //         this.currentProfile = this.profiles[this.currentProfileIndex];
+  //         this.noMoreProfiles = false;
+  //       } else {
+  //         this.currentProfile = null;
+  //         this.noMoreProfiles = true;
+  //       }
+  //       this.isLoading = false;
+  //     },
+  //     error: error => {
+  //       this.isLoading = false;
+  //       this.errorMessage = `Failed to load ${activityType} profiles. Please try again.`;
+  //       console.error(`Error loading ${activityType} profiles:`, error);
+  //     },
+  //   });
+  // }
 
   // Setup filter options based on buddy type
   setupFilterOptions(): void {
@@ -252,7 +319,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
     // For demo/development, using a mock service with timeout
     setTimeout(() => {
       // Start with all profiles
-      let filteredProfiles = [...this.getAllProfiles()];
+      let filteredProfiles = [...this.profiles];
 
       // Apply filters
       if (this.filter1Value) {
@@ -308,207 +375,6 @@ export class MatchingComponent implements OnInit, OnDestroy {
       },
     });
     */
-  }
-
-  // Get all mock profiles (in real app, this would be a database call)
-  getAllProfiles(): any[] {
-    return [
-      {
-        id: 1,
-        name: 'Alice',
-        bio: 'Looking for a gym buddy',
-        course: 'Sports Science',
-        year: 2,
-        imageUrl: 'content/images/alice.jpg',
-        gymLocation: 'Sports and Fitness Gym',
-        sportType: '',
-        society: '',
-        preferredTime: 'Evening',
-        skillLevel: 'Intermediate',
-        eventType: '',
-        rating: 4,
-      },
-      {
-        id: 2,
-        name: 'Bob',
-        bio: 'Need a study partner for Law',
-        course: 'Law',
-        year: 3,
-        imageUrl: 'content/images/bob.jpg',
-        gymLocation: '',
-        sportType: '',
-        society: '',
-        preferredTime: 'Afternoon',
-        skillLevel: '',
-        eventType: '',
-        rating: 5,
-      },
-      {
-        id: 3,
-        name: 'Charlie',
-        bio: 'Looking for football teammates',
-        course: '',
-        year: 1,
-        imageUrl: 'content/images/charlie.jpg',
-        gymLocation: '',
-        sportType: 'Football',
-        society: '',
-        preferredTime: 'Morning',
-        skillLevel: 'Intermediate',
-        eventType: '',
-        rating: 3,
-      },
-      {
-        id: 4,
-        name: 'David',
-        bio: 'Basketball enthusiast',
-        course: '',
-        year: 2,
-        imageUrl: 'content/images/david.jpg',
-        gymLocation: '',
-        sportType: 'Basketball',
-        society: '',
-        preferredTime: 'Evening',
-        skillLevel: 'Intermediate',
-        eventType: '',
-        rating: 4,
-      },
-      {
-        id: 5,
-        name: 'Emma',
-        bio: 'Yoga and mindfulness',
-        course: '',
-        year: 1,
-        imageUrl: 'content/images/emma.jpg',
-        gymLocation: 'Tiverton Center',
-        sportType: '',
-        society: '',
-        preferredTime: 'Morning',
-        skillLevel: 'Beginner',
-        eventType: '',
-        rating: 5,
-      },
-      {
-        id: 6,
-        name: 'Frank',
-        bio: 'Training for triathlon',
-        course: '',
-        year: 3,
-        imageUrl: 'content/images/frank.jpg',
-        gymLocation: '',
-        sportType: 'Swimming',
-        society: '',
-        preferredTime: 'Afternoon',
-        skillLevel: 'Advanced',
-        eventType: '',
-        rating: 5,
-      },
-      {
-        id: 7,
-        name: 'Grace',
-        bio: 'Looking for a study group',
-        course: 'Computer Science',
-        year: 2,
-        imageUrl: 'content/images/grace.jpg',
-        gymLocation: '',
-        sportType: '',
-        society: '',
-        preferredTime: 'Evening',
-        skillLevel: '',
-        eventType: '',
-        rating: 4,
-      },
-      {
-        id: 8,
-        name: 'Henry',
-        bio: 'Football fanatic',
-        course: '',
-        year: 1,
-        imageUrl: 'content/images/henry.jpg',
-        gymLocation: '',
-        sportType: 'Football',
-        society: '',
-        preferredTime: 'Afternoon',
-        skillLevel: 'Advanced',
-        eventType: '',
-        rating: 5,
-      },
-      {
-        id: 9,
-        name: 'Ivy',
-        bio: 'Excited for meet & greet events',
-        course: '',
-        year: 2,
-        imageUrl: 'content/images/ivy.jpg',
-        gymLocation: '',
-        sportType: '',
-        society: 'Computer Science Society',
-        preferredTime: '',
-        skillLevel: '',
-        eventType: 'Meet & Greet',
-        rating: 4,
-      },
-      {
-        id: 10,
-        name: 'Jack',
-        bio: 'Member of the Arab Society',
-        course: '',
-        year: 3,
-        imageUrl: 'content/images/jack.jpg',
-        gymLocation: '',
-        sportType: '',
-        society: 'Arab Society',
-        preferredTime: '',
-        skillLevel: '',
-        eventType: 'Dinner & Dance',
-        rating: 5,
-      },
-      {
-        id: 11,
-        name: 'Nawfal',
-        bio: 'GymRat',
-        course: 'Computer Science',
-        year: 2,
-        imageUrl: 'content/images/5imrkq.jpg',
-        gymLocation: 'The Gym Group Selly Oak',
-        sportType: 'Football',
-        society: 'Computer Science Society',
-        preferredTime: 'Evening',
-        skillLevel: 'Intermediate',
-        eventType: 'Games Night',
-        rating: 4,
-      },
-      {
-        id: 12,
-        name: 'Alex',
-        bio: 'Student athlete',
-        course: 'Sports Science',
-        year: 3,
-        imageUrl: 'content/images/default-profile.jpg',
-        gymLocation: 'Sports and Fitness Gym',
-        sportType: 'Basketball',
-        society: 'Sports Society',
-        preferredTime: 'Evening',
-        skillLevel: 'Advanced',
-        eventType: 'Meet & Greet',
-        rating: 5,
-      },
-      {
-        id: 13,
-        name: 'Sam',
-        bio: 'Looking for study partners',
-        course: 'Law',
-        year: 1,
-        imageUrl: 'content/images/default-profile.jpg',
-        gymLocation: 'PureGym Five Ways',
-        sportType: 'Swimming',
-        society: 'Law Society',
-        preferredTime: 'Morning',
-        skillLevel: 'Novice',
-        eventType: 'Dinner & Dance',
-        rating: 3,
-      },
-    ];
   }
 
   // Filter methods based on buddy type
@@ -744,5 +610,9 @@ export class MatchingComponent implements OnInit, OnDestroy {
         popup.classList.remove('show');
       }, 3000);
     }
+  }
+
+  getInitials(name: string): string {
+    return name ? name.charAt(0).toUpperCase() : '?';
   }
 }

@@ -27,7 +27,7 @@
 /* Clean, modern heading style */
 h1.title {
   text-align: center;
-  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Times New Roman', Times, serif;
   font-size: 3.5rem;
   font-weight: 800;
   margin: 40px 0 30px;
@@ -35,9 +35,8 @@ h1.title {
   letter-spacing: -0.02em;
 }
 
-/* Sleek section headings */
 h2 {
-  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Times New Roman', Times, serif;
   font-size: 2rem;
   font-weight: 700;
   margin-top: 40px;
@@ -84,56 +83,6 @@ button:hover {
 button:active {
   transform: translateY(0);
 }
-
-///* Navbar styling matching screenshot */
-//nav,
-//.navbar {
-//  display: flex;
-//  align-items: center;
-//  background: linear-gradient(to right, var(--primary), var(--primary-light));
-//  color: var(--white);
-//  padding: 12px 24px;
-//  box-shadow: var(--shadow);
-//}
-//
-//.navbar-brand {
-//  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
-//  font-size: 1.5rem;
-//  font-weight: 700;
-//  margin-right: 30px;
-//  color: var(--white);
-//  text-decoration: none;
-//}
-//
-//.navbar-nav {
-//  display: flex;
-//  list-style: none;
-//  margin: 0;
-//  padding: 0;
-//}
-//
-//.nav-item {
-//  margin: 0 5px;
-//}
-//
-//.nav-link {
-//  color: var(--white);
-//  text-decoration: none;
-//  font-size: 0.95rem;
-//  font-weight: 500;
-//  padding: 8px 16px;
-//  border-radius: 6px;
-//  transition: background-color 0.2s;
-//}
-//
-//.nav-link:hover {
-//  background-color: rgba(255, 255, 255, 0.15);
-//}
-//
-//.nav-link.active {
-//  font-weight: 600;
-//  background-color: rgba(255, 255, 255, 0.2);
-//}
 
 /* Responsive design */
 @media (max-width: 768px) {
