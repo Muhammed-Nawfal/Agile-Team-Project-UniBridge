@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProfileService } from '../service/profile.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { IProfile } from '../profile.model';
@@ -19,33 +19,46 @@ export class ProfileComponent implements OnInit {
   profile: IProfile | null = null;
   account: Account | null = null;
   user: { id: number; login: string } | null = null;
+  showEditTip = false;
 
   constructor(
     protected activatedRoute: ActivatedRoute,
     protected profileService: ProfileService,
     protected accountService: AccountService,
+    protected router: Router,
   ) {}
 
   ngOnInit(): void {
     this.loadAccountDetails();
+
+    // Show tip only if it hasn't been dismissed before
+    const tipDismissed = sessionStorage.getItem('editProfileTipDismissed');
+    if (!tipDismissed) {
+      this.showEditTip = true;
+    }
   }
 
-  // Load Account Details First
+  dismissTip(): void {
+    this.showEditTip = false;
+    sessionStorage.setItem('editProfileTipDismissed', 'true');
+  }
+
+  // Step 1: Get account info
   loadAccountDetails(): void {
     this.accountService.identity().subscribe(account => {
       if (account) {
         this.account = account;
         console.log('✅ Account Data Loaded:', this.account);
-
-        // Fetch user => then profile
         this.loadProfile();
       }
     });
   }
 
-  // Two-step fetch:
-  // 1) GET /api/admin/users/{login}  => gets the user
-  // 2) GET /api/profiles/{id}       => gets the profile
+  get hasBio(): boolean {
+    return !!this.profile?.bio && this.profile.bio.trim().length > 0;
+  }
+
+  // Step 2: Get user by login, then profile by user ID
   loadProfile(): void {
     if (!this.account?.login) {
       console.warn('⚠️ No valid account login found.');
@@ -61,25 +74,31 @@ export class ProfileComponent implements OnInit {
           console.warn(`⚠️ No user found for login=${accountLogin}`);
           return;
         }
+
         const user = userResponse.body;
         console.log('✅ Found user:', user);
         this.user = {
           id: user.id,
-          login: user.login ?? 'unknown', // Fallback to "unknown" if null or undefined
+          login: user.login ?? 'unknown',
         };
 
-        // Now fetch the profile by user.id
         this.profileService.find(user.id).subscribe({
           next: profileResponse => {
-            if (!profileResponse.body) {
-              console.warn(`⚠️ No profile found for user id=${user.id}`);
+            const profile = profileResponse.body;
+            if (!profile?.id) {
+              console.warn(`⚠️ Profile is missing or incomplete for user id=${user.id}`);
+              this.router.navigate(['/no-profile']);
               return;
             }
+
+            this.profile = profile;
+
             this.profile = profileResponse.body;
             console.log('✅ Profile Data Loaded:', this.profile);
           },
-          error(err) {
+          error: err => {
             console.error('❌ Error fetching profile:', err);
+            this.router.navigate(['/no-profile']);
           },
         });
       },

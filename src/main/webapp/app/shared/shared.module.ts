@@ -6,9 +6,9 @@ import { AlertErrorComponent } from './alert/alert-error.component';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCalendarCheck, faUserFriends } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarCheck, faUserFriends, faTrophy, faBullhorn, faAward } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faCalendarCheck, faUserFriends);
+library.add(faCalendarCheck, faUserFriends, faTrophy, faBullhorn, faAward);
 
 /**
  * Application wide Module

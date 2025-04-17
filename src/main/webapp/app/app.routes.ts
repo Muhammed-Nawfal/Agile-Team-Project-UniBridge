@@ -30,6 +30,11 @@ const routes: Routes = [
     loadChildren: () => import('./account/account.route'),
   },
   {
+    path: 'no-profile',
+    loadComponent: () => import('./entities/profile/no-profile/no-profile.component').then(m => m.NoProfileComponent),
+  },
+
+  {
     path: 'gdpr-policy',
     loadComponent: () => import('./gdpr-policy/gdpr-policy.component'),
   },

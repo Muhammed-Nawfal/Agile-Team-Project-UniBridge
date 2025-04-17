@@ -7,6 +7,7 @@ import bham.team.security.AuthoritiesConstants;
 import bham.team.service.MailService;
 import bham.team.service.UserService;
 import bham.team.service.dto.AdminUserDTO;
+import bham.team.service.dto.UserDTO;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import bham.team.web.rest.errors.EmailAlreadyUsedException;
 import bham.team.web.rest.errors.LoginAlreadyUsedException;
@@ -209,5 +210,12 @@ public class UserResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createAlert(applicationName, "A user is deleted with identifier " + login, login))
             .build();
+    }
+
+    @GetMapping("/users/public/{login}")
+    @PreAuthorize("hasAuthority('ROLE_USER') or hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<UserDTO> getPublicUser(@PathVariable String login) {
+        Optional<UserDTO> userDto = userService.getPublicUserInfoByLogin(login);
+        return userDto.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

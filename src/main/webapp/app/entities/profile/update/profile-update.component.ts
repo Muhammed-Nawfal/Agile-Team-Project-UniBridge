@@ -30,6 +30,7 @@ export class ProfileUpdateComponent implements OnInit {
 
   // Use the ProfileFormService to create the form
   editForm = this.profileFormService.createProfileFormGroup();
+  showUpdateTip = true;
 
   constructor(
     protected profileService: ProfileService,
@@ -40,16 +41,23 @@ export class ProfileUpdateComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Handle one-time tip for the current session
+    const tipDismissed = sessionStorage.getItem('updateProfileTipDismissed');
+    this.showUpdateTip = !tipDismissed;
+
     this.activatedRoute.data.subscribe(({ profile }) => {
       if (profile?.id) {
         this.profile = profile;
-        // Use resetForm from ProfileFormService instead of updateForm
         this.profileFormService.resetForm(this.editForm, profile);
       } else {
-        // Handle case where there's no valid profile
         this.previousState();
       }
     });
+  }
+
+  dismissUpdateTip(): void {
+    this.showUpdateTip = false;
+    sessionStorage.setItem('updateProfileTipDismissed', 'true');
   }
 
   byteSize(base64String: string): string {
