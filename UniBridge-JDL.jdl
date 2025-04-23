@@ -457,12 +457,12 @@ entity Location {
 
 relationship ManyToOne {
     TimeSlot{event} to Event
-    Booking{timeSlot} to TimeSlot
+    Booking{timeSlots} to TimeSlot
     Booking{bookedActivity} to Activity
     Booking{bookingLocation} to Location
     Booking{creator} to Profile
 }
 
 relationship OneToMany {
-    TimeSlot{bookings} to Booking
+    TimeSlot{bookingsList} to Booking
 }
