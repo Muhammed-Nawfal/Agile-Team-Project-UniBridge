@@ -28,6 +28,11 @@ const routes: Routes = [
         resolve: { profile: profileResolve },
         loadComponent: () => import('./profile/update/profile-update.component').then(m => m.ProfileUpdateComponent),
       },
+      {
+        path: ':id/deleteForm', // Fixed: removed the redundant 'profile/' prefix
+        resolve: { profile: profileResolve },
+        loadComponent: () => import('./profile/delete/profile-delete-dialog.component').then(m => m.ProfileDeleteDialogComponent),
+      },
     ],
   },
   {

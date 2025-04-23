@@ -36,7 +36,7 @@
         >
           <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="activities-menu" data-cy="activitiesMenu">
             <span>
-              <fa-icon icon="party-horn"></fa-icon>
+              <fa-icon icon="bullhorn"></fa-icon>
               <span>Activities</span>
             </span>
           </a>
@@ -49,7 +49,7 @@
                 [routerLinkActiveOptions]="{ exact: true }"
                 (click)="collapseNavbar()"
               >
-                <fa-icon icon="party-horn" [fixedWidth]="true"></fa-icon>
+                <fa-icon icon="bullhorn" [fixedWidth]="true"></fa-icon>
                 <span>Activities</span>
               </a>
             </li>
@@ -89,7 +89,7 @@
         <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
           <a class="nav-link" routerLink="/ranking" (click)="collapseNavbar()">
             <span>
-              <fa-icon icon="podium-star"></fa-icon>
+              <fa-icon icon="award"></fa-icon>
               <span>Ranking</span>
             </span>
           </a>

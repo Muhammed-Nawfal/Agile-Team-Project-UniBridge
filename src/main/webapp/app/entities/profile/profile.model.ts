@@ -29,4 +29,4 @@ export interface IProfile {
   userFirstName?: string;
 }
 
-export type NewProfile = Omit<IProfile, 'id'> & { id: null };
+export type NewProfile = Omit<IProfile, 'id'> & { id: any };

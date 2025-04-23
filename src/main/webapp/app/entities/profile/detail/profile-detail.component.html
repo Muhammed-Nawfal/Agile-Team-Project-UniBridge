@@ -1,155 +1,63 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
-    @if (profile(); as profileRef) {
-      <div>
-        <h2 data-cy="profileDetailsHeading"><span>Profile</span></h2>
+<div class="container mt-4" *ngIf="profile">
+  <!-- One-time Tip -->
+  <div *ngIf="showFollowTip" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+    💡 <strong>Tip:</strong> Follow this user to be able to send them messages.
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissTip()"></button>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body text-center">
+          <!-- Profile Picture -->
+          <img
+            *ngIf="profile?.profilePicture && profile?.profilePictureContentType"
+            [src]="'data:' + profile?.profilePictureContentType + ';base64,' + profile?.profilePicture"
+            class="rounded-circle mb-3"
+            alt="Profile Picture"
+            style="width: 120px; height: 120px; object-fit: cover"
+          />
 
-        <hr />
+          <!-- Full name or fallback to @username -->
+          <h3>{{ fullName || '@' + (profile?.user?.login || 'Unknown User') }}</h3>
 
-        <jhi-alert-error></jhi-alert-error>
+          <!-- Bio -->
+          <p *ngIf="profile?.bio?.trim()" class="fst-italic">{{ profile?.bio }}</p>
 
-        <jhi-alert></jhi-alert>
+          <!-- Course Info -->
+          <p><strong>Course:</strong> {{ profile?.course || 'Not specified' }} - Year {{ profile?.courseYear || 'N/A' }}</p>
 
-        <dl class="row-md jh-entity-details">
-          <dt><span>ID</span></dt>
-          <dd>
-            <span>{{ profileRef.id }}</span>
-          </dd>
-          <dt><span>Bio</span></dt>
-          <dd>
-            <span>{{ profileRef.bio }}</span>
-          </dd>
-          <dt><span>Profile Picture</span></dt>
-          <dd>
-            @if (profileRef.profilePicture) {
-              <div>
-                <a (click)="openFile(profileRef.profilePicture ?? '', profileRef.profilePictureContentType)">
-                  <img
-                    [src]="'data:' + profileRef.profilePictureContentType + ';base64,' + profileRef.profilePicture"
-                    style="max-width: 100%"
-                    alt="profile"
-                  />
-                </a>
-                {{ profileRef.profilePictureContentType }}, {{ byteSize(profileRef.profilePicture ?? '') }}
-              </div>
-            }
-          </dd>
-          <dt><span>Course</span></dt>
-          <dd>
-            <span>{{
-              {
-                null: '',
-                COMPUTER_SCIENCE: 'COMPUTER_SCIENCE',
-                ECONOMICS: 'ECONOMICS',
-                PSYCHOLOGY: 'PSYCHOLOGY',
-                MATHS: 'MATHS',
-                ENGLISH: 'ENGLISH',
-                ENGINEERING: 'ENGINEERING',
-              }[profileRef.course ?? 'null']
-            }}</span>
-          </dd>
-          <dt><span>Course Year</span></dt>
-          <dd>
-            <span>{{ profileRef.courseYear }}</span>
-          </dd>
-          <dt><span>University</span></dt>
-          <dd>
-            <span>{{ profileRef.university }}</span>
-          </dd>
-          <dt><span>Gym Skill</span></dt>
-          <dd>
-            <span>{{
-              { null: '', NOVICE: 'NOVICE', INTERMEDIATE: 'INTERMEDIATE', CONFIDENT: 'CONFIDENT', PROFESSIONAL: 'PROFESSIONAL' }[
-                profileRef.gymSkill ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>Gym Location</span></dt>
-          <dd>
-            <span>{{
-              { null: '', THE_GYM_SELLY_OAK: 'THE_GYM_SELLY_OAK', TIVERTON: 'TIVERTON', PUREGYM_FIVE_WAYS: 'PUREGYM_FIVE_WAYS' }[
-                profileRef.gymLocation ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>Gym Time</span></dt>
-          <dd>
-            <span>{{
-              { null: '', EARLY: 'EARLY', MORNING: 'MORNING', AFTERNOON: 'AFTERNOON', EVENING: 'EVENING', NIGHT: 'NIGHT', LATE: 'LATE' }[
-                profileRef.gymTime ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>Study Time</span></dt>
-          <dd>
-            <span>{{
-              { null: '', EARLY: 'EARLY', MORNING: 'MORNING', AFTERNOON: 'AFTERNOON', EVENING: 'EVENING', NIGHT: 'NIGHT', LATE: 'LATE' }[
-                profileRef.studyTime ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>Sports</span></dt>
-          <dd>
-            <span>{{
-              { null: '', FOOTBALL: 'FOOTBALL', CRICKET: 'CRICKET', BADMINTON: 'BADMINTON', TENNIS: 'TENNIS', NETBALL: 'NETBALL' }[
-                profileRef.sports ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>Sports Skill</span></dt>
-          <dd>
-            <span>{{
-              { null: '', NOVICE: 'NOVICE', INTERMEDIATE: 'INTERMEDIATE', CONFIDENT: 'CONFIDENT', PROFESSIONAL: 'PROFESSIONAL' }[
-                profileRef.sportsSkill ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>Sports Time</span></dt>
-          <dd>
-            <span>{{
-              { null: '', EARLY: 'EARLY', MORNING: 'MORNING', AFTERNOON: 'AFTERNOON', EVENING: 'EVENING', NIGHT: 'NIGHT', LATE: 'LATE' }[
-                profileRef.sportsTime ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>Preferred Society</span></dt>
-          <dd>
-            <span>{{ profileRef.preferredSociety }}</span>
-          </dd>
-          <dt><span>Preferred Events</span></dt>
-          <dd>
-            <span>{{ profileRef.preferredEvents }}</span>
-          </dd>
-          <dt><span>Events Time</span></dt>
-          <dd>
-            <span>{{
-              { null: '', EARLY: 'EARLY', MORNING: 'MORNING', AFTERNOON: 'AFTERNOON', EVENING: 'EVENING', NIGHT: 'NIGHT', LATE: 'LATE' }[
-                profileRef.eventsTime ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>Preferred Activities</span></dt>
-          <dd>
-            <span>{{
-              { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[
-                profileRef.preferredActivities ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>User</span></dt>
-          <dd>
-            <span>{{ profileRef.user?.id }}</span>
-          </dd>
-        </dl>
+          <!-- Detail Tiles -->
+          <div class="d-flex flex-wrap justify-content-center mt-3 gap-2">
+            <ng-container *ngIf="profile?.studyTime">
+              <span class="badge bg-success p-2">Study Time: {{ profile?.studyTime }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.gymSkill">
+              <span class="badge bg-primary p-2">Gym Skill: {{ profile?.gymSkill }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.gymTime">
+              <span class="badge bg-primary p-2">Gym Time: {{ profile?.gymTime }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.gymLocation">
+              <span class="badge bg-primary p-2">Gym Location: {{ profile?.gymLocation }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.sports">
+              <span class="badge bg-dark p-2">Sports: {{ profile?.sports }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.sportsSkill">
+              <span class="badge bg-dark p-2">Sports Skill: {{ profile?.sportsSkill }}</span>
+            </ng-container>
+          </div>
 
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
-          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
-        </button>
+          <!-- Follow/Message -->
+          <div class="mt-4">
+            <button class="btn me-2" [ngClass]="isFollowing ? 'btn-danger' : 'btn-outline-success'" (click)="toggleFollow()">
+              {{ isFollowing ? 'Unfollow' : 'Follow' }}
+            </button>
 
-        <button type="button" [routerLink]="['/profile', profileRef.id, 'edit']" class="btn btn-primary">
-          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
-        </button>
+            <button class="btn btn-primary" (click)="onMessage()">Message</button>
+          </div>
+        </div>
       </div>
-    }
+    </div>
   </div>
 </div>

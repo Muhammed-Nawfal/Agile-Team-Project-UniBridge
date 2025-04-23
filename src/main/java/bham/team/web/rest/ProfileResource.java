@@ -52,9 +52,10 @@ public class ProfileResource {
     @PostMapping("")
     public ResponseEntity<Profile> createProfile(@Valid @RequestBody Profile profile) throws URISyntaxException {
         LOG.debug("REST request to save Profile : {}", profile);
-        if (profile.getId() != null) {
-            throw new BadRequestAlertException("A new profile cannot already have an ID", ENTITY_NAME, "idexists");
+        if (profileRepository.existsById(profile.getId())) {
+            throw new BadRequestAlertException("A profile with this ID already exists", ENTITY_NAME, "idexists");
         }
+
         profile = profileRepository.save(profile);
         return ResponseEntity.created(new URI("/api/profiles/" + profile.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, profile.getId().toString()))

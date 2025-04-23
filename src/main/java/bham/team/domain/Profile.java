@@ -25,8 +25,6 @@ public class Profile implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
     private Long id;
 
@@ -110,6 +108,21 @@ public class Profile implements Serializable {
     @JsonIgnoreProperties(value = { "rankGiven", "user" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "rankGiven")
     private Ranking ranking;
+
+    @Transient
+    public String getUserFirstName() {
+        return this.user != null ? this.user.getFirstName() : null;
+    }
+
+    @Transient
+    public String getUserLastName() {
+        return this.user != null ? this.user.getLastName() : null;
+    }
+
+    @Transient
+    public String getUserLogin() {
+        return this.user != null ? this.user.getLogin() : null;
+    }
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -422,6 +435,9 @@ public class Profile implements Serializable {
     public String toString() {
         return "Profile{" +
             "id=" + getId() +
+            ", userLogin='" + getUserLogin() + "'" +
+            ", userFirstName='" + getUserFirstName() + "'" +
+            ", userLastName='" + getUserLastName() + "'" +
             ", bio='" + getBio() + "'" +
             ", profilePicture='" + getProfilePicture() + "'" +
             ", profilePictureContentType='" + getProfilePictureContentType() + "'" +
