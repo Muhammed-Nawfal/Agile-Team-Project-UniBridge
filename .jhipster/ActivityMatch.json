@@ -15,29 +15,57 @@
       "fieldType": "Decision",
       "fieldValidateRules": ["required"],
       "fieldValues": "ACCEPT,DECLINED,PENDING"
+    },
+    {
+      "fieldName": "matchDate",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "matchTime",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "location",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "100"
+    },
+    {
+      "fieldName": "notes",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "createdAt",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "responseAt",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
     }
   ],
   "name": "ActivityMatch",
   "relationships": [
     {
+      "otherEntityName": "ranking",
+      "relationshipName": "ratings",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
+    {
       "otherEntityName": "profile",
-      "relationshipName": "userName",
+      "relationshipName": "matchRequestor",
       "relationshipSide": "left",
       "relationshipType": "many-to-one"
     },
     {
-      "otherEntityName": "user",
-      "relationshipName": "requestUser",
+      "otherEntityName": "profile",
+      "relationshipName": "userDetails",
       "relationshipSide": "left",
-      "relationshipType": "many-to-one",
-      "relationshipWithBuiltInEntity": true
-    },
-    {
-      "otherEntityName": "user",
-      "relationshipName": "matchedUser",
-      "relationshipSide": "left",
-      "relationshipType": "many-to-one",
-      "relationshipWithBuiltInEntity": true
+      "relationshipType": "many-to-one"
     },
     {
       "otherEntityName": "activity",

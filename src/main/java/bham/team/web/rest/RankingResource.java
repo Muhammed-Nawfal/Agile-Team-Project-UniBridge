@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -149,10 +150,17 @@ public class RankingResource {
     /**
      * {@code GET  /rankings} : get all the rankings.
      *
+     * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of rankings in body.
      */
     @GetMapping("")
-    public List<Ranking> getAllRankings() {
+    public List<Ranking> getAllRankings(@RequestParam(name = "filter", required = false) String filter) {
+        if ("activitymatch-is-null".equals(filter)) {
+            LOG.debug("REST request to get all Rankings where activityMatch is null");
+            return StreamSupport.stream(rankingRepository.findAll().spliterator(), false)
+                .filter(ranking -> ranking.getActivityMatch() == null)
+                .toList();
+        }
         LOG.debug("REST request to get all Rankings");
         return rankingRepository.findAll();
     }

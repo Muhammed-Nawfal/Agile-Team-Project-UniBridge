@@ -5,7 +5,12 @@
   "applications": "*",
   "fields": [
     {
-      "fieldName": "friendRequest",
+      "fieldName": "requestTime",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "requestStatus",
       "fieldType": "Decision",
       "fieldValidateRules": ["required"],
       "fieldValues": "ACCEPT,DECLINED,PENDING"
@@ -14,29 +19,25 @@
       "fieldName": "friendSince",
       "fieldType": "Instant",
       "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "nickname",
+      "fieldType": "String"
     }
   ],
   "name": "FriendsList",
   "relationships": [
     {
       "otherEntityName": "profile",
-      "relationshipName": "friends",
+      "relationshipName": "requestedByProfile",
       "relationshipSide": "left",
       "relationshipType": "many-to-one"
     },
     {
-      "otherEntityName": "user",
-      "relationshipName": "user",
+      "otherEntityName": "profile",
+      "relationshipName": "requestedToProfile",
       "relationshipSide": "left",
-      "relationshipType": "many-to-one",
-      "relationshipWithBuiltInEntity": true
-    },
-    {
-      "otherEntityName": "user",
-      "relationshipName": "friend",
-      "relationshipSide": "left",
-      "relationshipType": "many-to-one",
-      "relationshipWithBuiltInEntity": true
+      "relationshipType": "many-to-one"
     }
   ],
   "searchEngine": "no"

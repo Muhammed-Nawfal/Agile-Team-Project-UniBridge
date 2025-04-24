@@ -10,32 +10,32 @@
     -->
     <changeSet id="20250226170648-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="friend_chat_id"
+        <addForeignKeyConstraint baseColumnNames="thread_id"
                                  baseTableName="chat"
-                                 constraintName="fk_chat__friend_chat_id"
+                                 constraintName="fk_chat__thread_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="friends_list"
-                                 />
-
-        <addForeignKeyConstraint baseColumnNames="chats_id"
-                                 baseTableName="chat"
-                                 constraintName="fk_chat__chats_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="profile"
+                                 referencedTableName="message_thread"
                                  />
 
         <addForeignKeyConstraint baseColumnNames="sender_id"
                                  baseTableName="chat"
                                  constraintName="fk_chat__sender_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="jhi_user"
+                                 referencedTableName="profile"
                                  />
 
         <addForeignKeyConstraint baseColumnNames="receiver_id"
                                  baseTableName="chat"
                                  constraintName="fk_chat__receiver_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="jhi_user"
+                                 referencedTableName="profile"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="message_thread_id"
+                                 baseTableName="chat"
+                                 constraintName="fk_chat__message_thread_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="message_thread"
                                  />
     </changeSet>
 </databaseChangeLog>

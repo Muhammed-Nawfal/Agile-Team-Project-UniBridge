@@ -6,8 +6,10 @@ import { Subject, from, of } from 'rxjs';
 
 import { IUser } from 'app/entities/user/user.model';
 import { UserService } from 'app/entities/user/service/user.service';
-import { ProfileService } from '../service/profile.service';
+import { IMessageThread } from 'app/entities/message-thread/message-thread.model';
+import { MessageThreadService } from 'app/entities/message-thread/service/message-thread.service';
 import { IProfile } from '../profile.model';
+import { ProfileService } from '../service/profile.service';
 import { ProfileFormService } from './profile-form.service';
 
 import { ProfileUpdateComponent } from './profile-update.component';
@@ -19,6 +21,7 @@ describe('Profile Management Update Component', () => {
   let profileFormService: ProfileFormService;
   let profileService: ProfileService;
   let userService: UserService;
+  let messageThreadService: MessageThreadService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -42,6 +45,7 @@ describe('Profile Management Update Component', () => {
     profileFormService = TestBed.inject(ProfileFormService);
     profileService = TestBed.inject(ProfileService);
     userService = TestBed.inject(UserService);
+    messageThreadService = TestBed.inject(MessageThreadService);
 
     comp = fixture.componentInstance;
   });
@@ -49,10 +53,10 @@ describe('Profile Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call User query and add missing value', () => {
       const profile: IProfile = { id: 456 };
-      const user: IUser = { id: 4532 };
+      const user: IUser = { id: 12870 };
       profile.user = user;
 
-      const userCollection: IUser[] = [{ id: 11917 }];
+      const userCollection: IUser[] = [{ id: 22644 }];
       jest.spyOn(userService, 'query').mockReturnValue(of(new HttpResponse({ body: userCollection })));
       const additionalUsers = [user];
       const expectedCollection: IUser[] = [...additionalUsers, ...userCollection];
@@ -69,15 +73,40 @@ describe('Profile Management Update Component', () => {
       expect(comp.usersSharedCollection).toEqual(expectedCollection);
     });
 
+    it('Should call MessageThread query and add missing value', () => {
+      const profile: IProfile = { id: 456 };
+      const messageThreads: IMessageThread[] = [{ id: 21237 }];
+      profile.messageThreads = messageThreads;
+
+      const messageThreadCollection: IMessageThread[] = [{ id: 15292 }];
+      jest.spyOn(messageThreadService, 'query').mockReturnValue(of(new HttpResponse({ body: messageThreadCollection })));
+      const additionalMessageThreads = [...messageThreads];
+      const expectedCollection: IMessageThread[] = [...additionalMessageThreads, ...messageThreadCollection];
+      jest.spyOn(messageThreadService, 'addMessageThreadToCollectionIfMissing').mockReturnValue(expectedCollection);
+
+      activatedRoute.data = of({ profile });
+      comp.ngOnInit();
+
+      expect(messageThreadService.query).toHaveBeenCalled();
+      expect(messageThreadService.addMessageThreadToCollectionIfMissing).toHaveBeenCalledWith(
+        messageThreadCollection,
+        ...additionalMessageThreads.map(expect.objectContaining),
+      );
+      expect(comp.messageThreadsSharedCollection).toEqual(expectedCollection);
+    });
+
     it('Should update editForm', () => {
       const profile: IProfile = { id: 456 };
-      const user: IUser = { id: 18910 };
+      const user: IUser = { id: 16942 };
       profile.user = user;
+      const messageThread: IMessageThread = { id: 15475 };
+      profile.messageThreads = [messageThread];
 
       activatedRoute.data = of({ profile });
       comp.ngOnInit();
 
       expect(comp.usersSharedCollection).toContain(user);
+      expect(comp.messageThreadsSharedCollection).toContain(messageThread);
       expect(comp.profile).toEqual(profile);
     });
   });
@@ -158,6 +187,16 @@ describe('Profile Management Update Component', () => {
         jest.spyOn(userService, 'compareUser');
         comp.compareUser(entity, entity2);
         expect(userService.compareUser).toHaveBeenCalledWith(entity, entity2);
+      });
+    });
+
+    describe('compareMessageThread', () => {
+      it('Should forward to messageThreadService', () => {
+        const entity = { id: 123 };
+        const entity2 = { id: 456 };
+        jest.spyOn(messageThreadService, 'compareMessageThread');
+        comp.compareMessageThread(entity, entity2);
+        expect(messageThreadService.compareMessageThread).toHaveBeenCalledWith(entity, entity2);
       });
     });
   });

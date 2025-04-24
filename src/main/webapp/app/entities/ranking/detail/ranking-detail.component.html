@@ -29,7 +29,7 @@
           </dd>
           <dt><span>Reliable</span></dt>
           <dd>
-            <span>{{ { null: '', UNRELIABLE: 'UNRELIABLE', RELIABLE: 'RELIABLE' }[rankingRef.reliable ?? 'null'] }}</span>
+            <span>{{ rankingRef.reliable }}</span>
           </dd>
           <dt><span>Rank Given</span></dt>
           <dd>
@@ -38,10 +38,6 @@
                 <a [routerLink]="['/profile', ranking()!.rankGiven?.id, 'view']">{{ rankingRef.rankGiven?.id }}</a>
               </div>
             }
-          </dd>
-          <dt><span>User</span></dt>
-          <dd>
-            <span>{{ rankingRef.user?.id }}</span>
           </dd>
         </dl>
 

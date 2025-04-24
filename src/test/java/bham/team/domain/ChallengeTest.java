@@ -2,11 +2,12 @@ package bham.team.domain;
 
 import static bham.team.domain.ActivityTestSamples.*;
 import static bham.team.domain.ChallengeTestSamples.*;
-import static bham.team.domain.FriendsListTestSamples.*;
 import static bham.team.domain.ProfileTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import bham.team.web.rest.TestUtil;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class ChallengeTest {
@@ -26,38 +27,48 @@ class ChallengeTest {
     }
 
     @Test
-    void challengesTest() {
-        Challenge challenge = getChallengeRandomSampleGenerator();
-        Profile profileBack = getProfileRandomSampleGenerator();
-
-        challenge.setChallenges(profileBack);
-        assertThat(challenge.getChallenges()).isEqualTo(profileBack);
-
-        challenge.challenges(null);
-        assertThat(challenge.getChallenges()).isNull();
-    }
-
-    @Test
-    void challengedFriendTest() {
-        Challenge challenge = getChallengeRandomSampleGenerator();
-        FriendsList friendsListBack = getFriendsListRandomSampleGenerator();
-
-        challenge.setChallengedFriend(friendsListBack);
-        assertThat(challenge.getChallengedFriend()).isEqualTo(friendsListBack);
-
-        challenge.challengedFriend(null);
-        assertThat(challenge.getChallengedFriend()).isNull();
-    }
-
-    @Test
-    void challengedActivityTest() {
+    void activitiesTest() {
         Challenge challenge = getChallengeRandomSampleGenerator();
         Activity activityBack = getActivityRandomSampleGenerator();
 
-        challenge.setChallengedActivity(activityBack);
-        assertThat(challenge.getChallengedActivity()).isEqualTo(activityBack);
+        challenge.addActivities(activityBack);
+        assertThat(challenge.getActivities()).containsOnly(activityBack);
+        assertThat(activityBack.getChallenge()).isEqualTo(challenge);
 
-        challenge.challengedActivity(null);
-        assertThat(challenge.getChallengedActivity()).isNull();
+        challenge.removeActivities(activityBack);
+        assertThat(challenge.getActivities()).doesNotContain(activityBack);
+        assertThat(activityBack.getChallenge()).isNull();
+
+        challenge.activities(new HashSet<>(Set.of(activityBack)));
+        assertThat(challenge.getActivities()).containsOnly(activityBack);
+        assertThat(activityBack.getChallenge()).isEqualTo(challenge);
+
+        challenge.setActivities(new HashSet<>());
+        assertThat(challenge.getActivities()).doesNotContain(activityBack);
+        assertThat(activityBack.getChallenge()).isNull();
+    }
+
+    @Test
+    void assignedToTest() {
+        Challenge challenge = getChallengeRandomSampleGenerator();
+        Profile profileBack = getProfileRandomSampleGenerator();
+
+        challenge.setAssignedTo(profileBack);
+        assertThat(challenge.getAssignedTo()).isEqualTo(profileBack);
+
+        challenge.assignedTo(null);
+        assertThat(challenge.getAssignedTo()).isNull();
+    }
+
+    @Test
+    void createdByTest() {
+        Challenge challenge = getChallengeRandomSampleGenerator();
+        Profile profileBack = getProfileRandomSampleGenerator();
+
+        challenge.setCreatedBy(profileBack);
+        assertThat(challenge.getCreatedBy()).isEqualTo(profileBack);
+
+        challenge.createdBy(null);
+        assertThat(challenge.getCreatedBy()).isNull();
     }
 }

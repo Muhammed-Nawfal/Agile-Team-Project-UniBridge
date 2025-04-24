@@ -12,13 +12,7 @@ import { EventManager, EventWithContent } from 'app/core/util/event-manager.serv
 import { DataUtils, FileLoadError } from 'app/core/util/data-util.service';
 import { IProfile } from 'app/entities/profile/profile.model';
 import { ProfileService } from 'app/entities/profile/service/profile.service';
-import { IFriendsList } from 'app/entities/friends-list/friends-list.model';
-import { FriendsListService } from 'app/entities/friends-list/service/friends-list.service';
-import { IActivity } from 'app/entities/activity/activity.model';
-import { ActivityService } from 'app/entities/activity/service/activity.service';
-import { IUser } from 'app/entities/user/user.model';
-import { UserService } from 'app/entities/user/service/user.service';
-import { AchievementCategory } from 'app/entities/enumerations/achievement-category.model';
+import { Category } from 'app/entities/enumerations/category.model';
 import { ChallengeService } from '../service/challenge.service';
 import { IChallenge } from '../challenge.model';
 import { ChallengeFormGroup, ChallengeFormService } from './challenge-form.service';
@@ -32,21 +26,15 @@ import { ChallengeFormGroup, ChallengeFormService } from './challenge-form.servi
 export class ChallengeUpdateComponent implements OnInit {
   isSaving = false;
   challenge: IChallenge | null = null;
-  achievementCategoryValues = Object.keys(AchievementCategory);
+  categoryValues = Object.keys(Category);
 
   profilesSharedCollection: IProfile[] = [];
-  friendsListsSharedCollection: IFriendsList[] = [];
-  activitiesSharedCollection: IActivity[] = [];
-  usersSharedCollection: IUser[] = [];
 
   protected dataUtils = inject(DataUtils);
   protected eventManager = inject(EventManager);
   protected challengeService = inject(ChallengeService);
   protected challengeFormService = inject(ChallengeFormService);
   protected profileService = inject(ProfileService);
-  protected friendsListService = inject(FriendsListService);
-  protected activityService = inject(ActivityService);
-  protected userService = inject(UserService);
   protected elementRef = inject(ElementRef);
   protected activatedRoute = inject(ActivatedRoute);
 
@@ -54,12 +42,6 @@ export class ChallengeUpdateComponent implements OnInit {
   editForm: ChallengeFormGroup = this.challengeFormService.createChallengeFormGroup();
 
   compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
-
-  compareFriendsList = (o1: IFriendsList | null, o2: IFriendsList | null): boolean => this.friendsListService.compareFriendsList(o1, o2);
-
-  compareActivity = (o1: IActivity | null, o2: IActivity | null): boolean => this.activityService.compareActivity(o1, o2);
-
-  compareUser = (o1: IUser | null, o2: IUser | null): boolean => this.userService.compareUser(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ challenge }) => {
@@ -136,20 +118,8 @@ export class ChallengeUpdateComponent implements OnInit {
 
     this.profilesSharedCollection = this.profileService.addProfileToCollectionIfMissing<IProfile>(
       this.profilesSharedCollection,
-      challenge.challenges,
-    );
-    this.friendsListsSharedCollection = this.friendsListService.addFriendsListToCollectionIfMissing<IFriendsList>(
-      this.friendsListsSharedCollection,
-      challenge.challengedFriend,
-    );
-    this.activitiesSharedCollection = this.activityService.addActivityToCollectionIfMissing<IActivity>(
-      this.activitiesSharedCollection,
-      challenge.challengedActivity,
-    );
-    this.usersSharedCollection = this.userService.addUserToCollectionIfMissing<IUser>(
-      this.usersSharedCollection,
-      challenge.creator,
-      challenge.recipient,
+      challenge.assignedTo,
+      challenge.createdBy,
     );
   }
 
@@ -158,38 +128,10 @@ export class ChallengeUpdateComponent implements OnInit {
       .query()
       .pipe(map((res: HttpResponse<IProfile[]>) => res.body ?? []))
       .pipe(
-        map((profiles: IProfile[]) => this.profileService.addProfileToCollectionIfMissing<IProfile>(profiles, this.challenge?.challenges)),
+        map((profiles: IProfile[]) =>
+          this.profileService.addProfileToCollectionIfMissing<IProfile>(profiles, this.challenge?.assignedTo, this.challenge?.createdBy),
+        ),
       )
       .subscribe((profiles: IProfile[]) => (this.profilesSharedCollection = profiles));
-
-    this.friendsListService
-      .query()
-      .pipe(map((res: HttpResponse<IFriendsList[]>) => res.body ?? []))
-      .pipe(
-        map((friendsLists: IFriendsList[]) =>
-          this.friendsListService.addFriendsListToCollectionIfMissing<IFriendsList>(friendsLists, this.challenge?.challengedFriend),
-        ),
-      )
-      .subscribe((friendsLists: IFriendsList[]) => (this.friendsListsSharedCollection = friendsLists));
-
-    this.activityService
-      .query()
-      .pipe(map((res: HttpResponse<IActivity[]>) => res.body ?? []))
-      .pipe(
-        map((activities: IActivity[]) =>
-          this.activityService.addActivityToCollectionIfMissing<IActivity>(activities, this.challenge?.challengedActivity),
-        ),
-      )
-      .subscribe((activities: IActivity[]) => (this.activitiesSharedCollection = activities));
-
-    this.userService
-      .query()
-      .pipe(map((res: HttpResponse<IUser[]>) => res.body ?? []))
-      .pipe(
-        map((users: IUser[]) =>
-          this.userService.addUserToCollectionIfMissing<IUser>(users, this.challenge?.creator, this.challenge?.recipient),
-        ),
-      )
-      .subscribe((users: IUser[]) => (this.usersSharedCollection = users));
   }
 }

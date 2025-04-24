@@ -50,16 +50,16 @@
             <column name="cover_image_content_type" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="paid" type="varchar(255)">
+            <column name="is_paid" type="boolean">
                 <constraints nullable="false" />
             </column>
-            <column name="cost_ofactivity" type="decimal(21,2)">
+            <column name="activity_cost" type="decimal(21,2)">
                 <constraints nullable="false" />
             </column>
-            <column name="user_name_id" type="bigint">
+            <column name="creator_id" type="bigint">
                 <constraints nullable="true" />
             </column>
-            <column name="requesteduser_id" type="bigint">
+            <column name="challenge_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
@@ -98,8 +98,8 @@
             <column name="status" type="string"/>
             <column name="cover_image" type="blob"/>
             <column name="cover_image_content_type" type="string"/>
-            <column name="paid" type="string"/>
-            <column name="cost_ofactivity" type="numeric"/>
+            <column name="is_paid" type="boolean"/>
+            <column name="activity_cost" type="numeric"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

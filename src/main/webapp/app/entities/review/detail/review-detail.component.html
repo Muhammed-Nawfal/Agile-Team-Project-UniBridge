@@ -27,21 +27,21 @@
           <dd>
             <span>{{ reviewRef.text }}</span>
           </dd>
-          <dt><span>Reviews Given</span></dt>
+          <dt><span>About User</span></dt>
           <dd>
-            @if (review()!.reviewsGiven) {
+            @if (review()!.aboutUser) {
               <div>
-                <a [routerLink]="['/profile', review()!.reviewsGiven?.id, 'view']">{{ reviewRef.reviewsGiven?.id }}</a>
+                <a [routerLink]="['/profile', review()!.aboutUser?.id, 'view']">{{ reviewRef.aboutUser?.id }}</a>
               </div>
             }
           </dd>
-          <dt><span>About User</span></dt>
-          <dd>
-            <span>{{ reviewRef.aboutUser?.id }}</span>
-          </dd>
           <dt><span>From User</span></dt>
           <dd>
-            <span>{{ reviewRef.fromUser?.id }}</span>
+            @if (review()!.fromUser) {
+              <div>
+                <a [routerLink]="['/profile', review()!.fromUser?.id, 'view']">{{ reviewRef.fromUser?.id }}</a>
+              </div>
+            }
           </dd>
         </dl>
 

@@ -9,6 +9,7 @@ import { FriendsListService, RestFriendsList } from './friends-list.service';
 
 const requireRestSample: RestFriendsList = {
   ...sampleWithRequiredData,
+  requestTime: sampleWithRequiredData.requestTime?.toJSON(),
   friendSince: sampleWithRequiredData.friendSince?.toJSON(),
 };
 

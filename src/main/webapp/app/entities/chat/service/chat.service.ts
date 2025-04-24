@@ -11,8 +11,10 @@ import { IChat, NewChat } from '../chat.model';
 
 export type PartialUpdateChat = Partial<IChat> & Pick<IChat, 'id'>;
 
-type RestOf<T extends IChat | NewChat> = Omit<T, 'timestamp'> & {
+type RestOf<T extends IChat | NewChat> = Omit<T, 'timestamp' | 'createdOn' | 'updatedOn'> & {
   timestamp?: string | null;
+  createdOn?: string | null;
+  updatedOn?: string | null;
 };
 
 export type RestChat = RestOf<IChat>;
@@ -99,6 +101,8 @@ export class ChatService {
     return {
       ...chat,
       timestamp: chat.timestamp?.toJSON() ?? null,
+      createdOn: chat.createdOn?.toJSON() ?? null,
+      updatedOn: chat.updatedOn?.toJSON() ?? null,
     };
   }
 
@@ -106,6 +110,8 @@ export class ChatService {
     return {
       ...restChat,
       timestamp: restChat.timestamp ? dayjs(restChat.timestamp) : undefined,
+      createdOn: restChat.createdOn ? dayjs(restChat.createdOn) : undefined,
+      updatedOn: restChat.updatedOn ? dayjs(restChat.updatedOn) : undefined,
     };
   }
 

@@ -1,0 +1,66 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (timeSlot(); as timeSlotRef) {
+      <div>
+        <h2 data-cy="timeSlotDetailsHeading"><span>Time Slot</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ timeSlotRef.id }}</span>
+          </dd>
+          <dt><span>Date</span></dt>
+          <dd>
+            <span>{{ timeSlotRef.date | formatMediumDate }}</span>
+          </dd>
+          <dt><span>Start Hour</span></dt>
+          <dd>
+            <span>{{ timeSlotRef.startHour }}</span>
+          </dd>
+          <dt><span>End Hour</span></dt>
+          <dd>
+            <span>{{ timeSlotRef.endHour }}</span>
+          </dd>
+          <dt><span>Capacity</span></dt>
+          <dd>
+            <span>{{ timeSlotRef.capacity }}</span>
+          </dd>
+          <dt><span>Remaining Capacity</span></dt>
+          <dd>
+            <span>{{ timeSlotRef.remainingCapacity }}</span>
+          </dd>
+          <dt><span>Status</span></dt>
+          <dd>
+            <span>{{
+              { null: '', AVAILABLE: 'AVAILABLE', FULL: 'FULL', OCCUPIED: 'OCCUPIED', BLOCKED: 'BLOCKED', MAINTENANCE: 'MAINTENANCE' }[
+                timeSlotRef.status ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span>Event</span></dt>
+          <dd>
+            @if (timeSlot()!.event) {
+              <div>
+                <a [routerLink]="['/event', timeSlot()!.event?.id, 'view']">{{ timeSlotRef.event?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/time-slot', timeSlotRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

@@ -23,7 +23,7 @@ export class NoProfileComponent {
           if (user?.id) {
             this.profileService
               .create({
-                id: user.id,
+                id: null,
                 course: 'COMPUTER_SCIENCE',
                 courseYear: 1,
                 bio: null,

@@ -6,8 +6,8 @@ import { Subject, from, of } from 'rxjs';
 
 import { IProfile } from 'app/entities/profile/profile.model';
 import { ProfileService } from 'app/entities/profile/service/profile.service';
-import { IUser } from 'app/entities/user/user.model';
-import { UserService } from 'app/entities/user/service/user.service';
+import { IChallenge } from 'app/entities/challenge/challenge.model';
+import { ChallengeService } from 'app/entities/challenge/service/challenge.service';
 import { IActivity } from '../activity.model';
 import { ActivityService } from '../service/activity.service';
 import { ActivityFormService } from './activity-form.service';
@@ -21,7 +21,7 @@ describe('Activity Management Update Component', () => {
   let activityFormService: ActivityFormService;
   let activityService: ActivityService;
   let profileService: ProfileService;
-  let userService: UserService;
+  let challengeService: ChallengeService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -45,7 +45,7 @@ describe('Activity Management Update Component', () => {
     activityFormService = TestBed.inject(ActivityFormService);
     activityService = TestBed.inject(ActivityService);
     profileService = TestBed.inject(ProfileService);
-    userService = TestBed.inject(UserService);
+    challengeService = TestBed.inject(ChallengeService);
 
     comp = fixture.componentInstance;
   });
@@ -53,12 +53,12 @@ describe('Activity Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call Profile query and add missing value', () => {
       const activity: IActivity = { id: 456 };
-      const userName: IProfile = { id: 12358 };
-      activity.userName = userName;
+      const creator: IProfile = { id: 28464 };
+      activity.creator = creator;
 
-      const profileCollection: IProfile[] = [{ id: 32596 }];
+      const profileCollection: IProfile[] = [{ id: 9126 }];
       jest.spyOn(profileService, 'query').mockReturnValue(of(new HttpResponse({ body: profileCollection })));
-      const additionalProfiles = [userName];
+      const additionalProfiles = [creator];
       const expectedCollection: IProfile[] = [...additionalProfiles, ...profileCollection];
       jest.spyOn(profileService, 'addProfileToCollectionIfMissing').mockReturnValue(expectedCollection);
 
@@ -73,40 +73,40 @@ describe('Activity Management Update Component', () => {
       expect(comp.profilesSharedCollection).toEqual(expectedCollection);
     });
 
-    it('Should call User query and add missing value', () => {
+    it('Should call Challenge query and add missing value', () => {
       const activity: IActivity = { id: 456 };
-      const requesteduser: IUser = { id: 9078 };
-      activity.requesteduser = requesteduser;
+      const challenge: IChallenge = { id: 13616 };
+      activity.challenge = challenge;
 
-      const userCollection: IUser[] = [{ id: 7642 }];
-      jest.spyOn(userService, 'query').mockReturnValue(of(new HttpResponse({ body: userCollection })));
-      const additionalUsers = [requesteduser];
-      const expectedCollection: IUser[] = [...additionalUsers, ...userCollection];
-      jest.spyOn(userService, 'addUserToCollectionIfMissing').mockReturnValue(expectedCollection);
+      const challengeCollection: IChallenge[] = [{ id: 17610 }];
+      jest.spyOn(challengeService, 'query').mockReturnValue(of(new HttpResponse({ body: challengeCollection })));
+      const additionalChallenges = [challenge];
+      const expectedCollection: IChallenge[] = [...additionalChallenges, ...challengeCollection];
+      jest.spyOn(challengeService, 'addChallengeToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ activity });
       comp.ngOnInit();
 
-      expect(userService.query).toHaveBeenCalled();
-      expect(userService.addUserToCollectionIfMissing).toHaveBeenCalledWith(
-        userCollection,
-        ...additionalUsers.map(expect.objectContaining),
+      expect(challengeService.query).toHaveBeenCalled();
+      expect(challengeService.addChallengeToCollectionIfMissing).toHaveBeenCalledWith(
+        challengeCollection,
+        ...additionalChallenges.map(expect.objectContaining),
       );
-      expect(comp.usersSharedCollection).toEqual(expectedCollection);
+      expect(comp.challengesSharedCollection).toEqual(expectedCollection);
     });
 
     it('Should update editForm', () => {
       const activity: IActivity = { id: 456 };
-      const userName: IProfile = { id: 18388 };
-      activity.userName = userName;
-      const requesteduser: IUser = { id: 11658 };
-      activity.requesteduser = requesteduser;
+      const creator: IProfile = { id: 22404 };
+      activity.creator = creator;
+      const challenge: IChallenge = { id: 5002 };
+      activity.challenge = challenge;
 
       activatedRoute.data = of({ activity });
       comp.ngOnInit();
 
-      expect(comp.profilesSharedCollection).toContain(userName);
-      expect(comp.usersSharedCollection).toContain(requesteduser);
+      expect(comp.profilesSharedCollection).toContain(creator);
+      expect(comp.challengesSharedCollection).toContain(challenge);
       expect(comp.activity).toEqual(activity);
     });
   });
@@ -190,13 +190,13 @@ describe('Activity Management Update Component', () => {
       });
     });
 
-    describe('compareUser', () => {
-      it('Should forward to userService', () => {
+    describe('compareChallenge', () => {
+      it('Should forward to challengeService', () => {
         const entity = { id: 123 };
         const entity2 = { id: 456 };
-        jest.spyOn(userService, 'compareUser');
-        comp.compareUser(entity, entity2);
-        expect(userService.compareUser).toHaveBeenCalledWith(entity, entity2);
+        jest.spyOn(challengeService, 'compareChallenge');
+        comp.compareChallenge(entity, entity2);
+        expect(challengeService.compareChallenge).toHaveBeenCalledWith(entity, entity2);
       });
     });
   });

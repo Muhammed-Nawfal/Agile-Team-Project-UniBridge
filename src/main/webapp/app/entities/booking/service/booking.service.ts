@@ -5,17 +5,17 @@ import { Observable, map } from 'rxjs';
 import dayjs from 'dayjs/esm';
 
 import { isPresent } from 'app/core/util/operators';
+import { DATE_FORMAT } from 'app/config/input.constants';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IBooking, NewBooking } from '../booking.model';
 
 export type PartialUpdateBooking = Partial<IBooking> & Pick<IBooking, 'id'>;
 
-type RestOf<T extends IBooking | NewBooking> = Omit<T, 'bookingTime' | 'bookingDate' | 'bookStartTime' | 'bookEndTime'> & {
-  bookingTime?: string | null;
+type RestOf<T extends IBooking | NewBooking> = Omit<T, 'bookingDate' | 'createdAt' | 'assignedAt'> & {
   bookingDate?: string | null;
-  bookStartTime?: string | null;
-  bookEndTime?: string | null;
+  createdAt?: string | null;
+  assignedAt?: string | null;
 };
 
 export type RestBooking = RestOf<IBooking>;
@@ -103,20 +103,18 @@ export class BookingService {
   protected convertDateFromClient<T extends IBooking | NewBooking | PartialUpdateBooking>(booking: T): RestOf<T> {
     return {
       ...booking,
-      bookingTime: booking.bookingTime?.toJSON() ?? null,
-      bookingDate: booking.bookingDate?.toJSON() ?? null,
-      bookStartTime: booking.bookStartTime?.toJSON() ?? null,
-      bookEndTime: booking.bookEndTime?.toJSON() ?? null,
+      bookingDate: booking.bookingDate?.format(DATE_FORMAT) ?? null,
+      createdAt: booking.createdAt?.toJSON() ?? null,
+      assignedAt: booking.assignedAt?.toJSON() ?? null,
     };
   }
 
   protected convertDateFromServer(restBooking: RestBooking): IBooking {
     return {
       ...restBooking,
-      bookingTime: restBooking.bookingTime ? dayjs(restBooking.bookingTime) : undefined,
       bookingDate: restBooking.bookingDate ? dayjs(restBooking.bookingDate) : undefined,
-      bookStartTime: restBooking.bookStartTime ? dayjs(restBooking.bookStartTime) : undefined,
-      bookEndTime: restBooking.bookEndTime ? dayjs(restBooking.bookEndTime) : undefined,
+      createdAt: restBooking.createdAt ? dayjs(restBooking.createdAt) : undefined,
+      assignedAt: restBooking.assignedAt ? dayjs(restBooking.assignedAt) : undefined,
     };
   }
 

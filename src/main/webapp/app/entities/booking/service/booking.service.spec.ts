@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 
+import { DATE_FORMAT } from 'app/config/input.constants';
 import { IBooking } from '../booking.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../booking.test-samples';
 
@@ -9,10 +10,9 @@ import { BookingService, RestBooking } from './booking.service';
 
 const requireRestSample: RestBooking = {
   ...sampleWithRequiredData,
-  bookingTime: sampleWithRequiredData.bookingTime?.toJSON(),
-  bookingDate: sampleWithRequiredData.bookingDate?.toJSON(),
-  bookStartTime: sampleWithRequiredData.bookStartTime?.toJSON(),
-  bookEndTime: sampleWithRequiredData.bookEndTime?.toJSON(),
+  bookingDate: sampleWithRequiredData.bookingDate?.format(DATE_FORMAT),
+  createdAt: sampleWithRequiredData.createdAt?.toJSON(),
+  assignedAt: sampleWithRequiredData.assignedAt?.toJSON(),
 };
 
 describe('Booking Service', () => {

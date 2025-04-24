@@ -289,41 +289,39 @@
           />
         </div>
 
-        @let paidRef = editForm.get('paid')!;
+        @let isPaidRef = editForm.get('isPaid')!;
         <div class="mb-3">
-          <label class="form-label" for="field_paid">Paid</label>
-          <select class="form-control" name="paid" formControlName="paid" id="field_paid" data-cy="paid">
-            <option [ngValue]="null"></option>
-            @for (isPaid of isPaidValues; track $index) {
-              <option [value]="isPaid">{{ { null: '', PAID: 'PAID', NOTPAID: 'NOTPAID' }[isPaid] }}</option>
-            }
-          </select>
-          @if (paidRef.invalid && (paidRef.dirty || paidRef.touched)) {
+          <label class="form-label" for="field_isPaid">Is Paid</label>
+          <input type="checkbox" class="form-check" name="isPaid" id="field_isPaid" data-cy="isPaid" formControlName="isPaid" />
+          @if (isPaidRef.invalid && (isPaidRef.dirty || isPaidRef.touched)) {
             <div>
-              @if (editForm.get('paid')?.errors?.required) {
+              @if (editForm.get('isPaid')?.errors?.required) {
                 <small class="form-text text-danger">This field is required.</small>
               }
             </div>
           }
         </div>
 
-        @let costOfactivityRef = editForm.get('costOfactivity')!;
+        @let activityCostRef = editForm.get('activityCost')!;
         <div class="mb-3">
-          <label class="form-label" for="field_costOfactivity">Cost Ofactivity</label>
+          <label class="form-label" for="field_activityCost">Activity Cost</label>
           <input
             type="number"
             class="form-control"
-            name="costOfactivity"
-            id="field_costOfactivity"
-            data-cy="costOfactivity"
-            formControlName="costOfactivity"
+            name="activityCost"
+            id="field_activityCost"
+            data-cy="activityCost"
+            formControlName="activityCost"
           />
-          @if (costOfactivityRef.invalid && (costOfactivityRef.dirty || costOfactivityRef.touched)) {
+          @if (activityCostRef.invalid && (activityCostRef.dirty || activityCostRef.touched)) {
             <div>
-              @if (editForm.get('costOfactivity')?.errors?.required) {
+              @if (editForm.get('activityCost')?.errors?.required) {
                 <small class="form-text text-danger">This field is required.</small>
               }
-              <small class="form-text text-danger" [hidden]="!editForm.get('costOfactivity')?.errors?.number"
+              @if (editForm.get('activityCost')?.errors?.min) {
+                <small class="form-text text-danger">This field should be at least 0.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('activityCost')?.errors?.number"
                 >This field should be a number.</small
               >
             </div>
@@ -331,13 +329,13 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_userName">User Name</label>
+          <label class="form-label" for="field_creator">Creator</label>
           <select
             class="form-control"
-            id="field_userName"
-            data-cy="userName"
-            name="userName"
-            formControlName="userName"
+            id="field_creator"
+            data-cy="creator"
+            name="creator"
+            formControlName="creator"
             [compareWith]="compareProfile"
           >
             <option [ngValue]="null"></option>
@@ -348,18 +346,18 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_requesteduser">Requesteduser</label>
+          <label class="form-label" for="field_challenge">Challenge</label>
           <select
             class="form-control"
-            id="field_requesteduser"
-            data-cy="requesteduser"
-            name="requesteduser"
-            formControlName="requesteduser"
-            [compareWith]="compareUser"
+            id="field_challenge"
+            data-cy="challenge"
+            name="challenge"
+            formControlName="challenge"
+            [compareWith]="compareChallenge"
           >
             <option [ngValue]="null"></option>
-            @for (userOption of usersSharedCollection; track $index) {
-              <option [ngValue]="userOption">{{ userOption.id }}</option>
+            @for (challengeOption of challengesSharedCollection; track $index) {
+              <option [ngValue]="challengeOption">{{ challengeOption.id }}</option>
             }
           </select>
         </div>

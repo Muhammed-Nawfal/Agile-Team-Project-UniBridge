@@ -14,51 +14,49 @@
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="booking_name" type="varchar(255)">
+            <column name="activity_type" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="event_type" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="booking_date" type="date">
+                <constraints nullable="false" />
+            </column>
+            <column name="party_size" type="integer">
                 <constraints nullable="false" />
             </column>
             <column name="booking_status" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="booking_time" type="${datetimeType}">
-                <constraints nullable="false" />
+            <column name="created_at" type="${datetimeType}">
+                <constraints nullable="true" />
             </column>
-            <column name="booking_date" type="${datetimeType}">
-                <constraints nullable="false" />
+            <column name="assigned_at" type="${datetimeType}">
+                <constraints nullable="true" />
             </column>
-            <column name="phone_num" type="varchar(11)">
-                <constraints nullable="false" />
-            </column>
-            <column name="booking_type" type="varchar(255)">
-                <constraints nullable="false" />
-            </column>
-            <column name="num_of_participants" type="integer">
-                <constraints nullable="false" />
-            </column>
-            <column name="book_start_time" type="${datetimeType}">
-                <constraints nullable="false" />
-            </column>
-            <column name="book_end_time" type="${datetimeType}">
-                <constraints nullable="false" />
-            </column>
-            <column name="booking_done_by_id" type="bigint">
-                <constraints nullable="true" unique="true" uniqueConstraintName="ux_booking__booking_done_by_id" />
-            </column>
-            <column name="requested_user_id" type="bigint">
+            <column name="time_slots_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <column name="booked_activity_id" type="bigint">
                 <constraints nullable="true" />
             </column>
+            <column name="booking_location_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="creator_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
             <column name="activity_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="time_slot_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="booking" columnName="booking_time" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="booking" columnName="booking_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="booking" columnName="book_start_time" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="booking" columnName="book_end_time" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="booking" columnName="created_at" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="booking" columnName="assigned_at" columnDataType="${datetimeType}"/>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
@@ -78,15 +76,13 @@
                   tableName="booking"
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
-            <column name="booking_name" type="string"/>
-            <column name="booking_status" type="string"/>
-            <column name="booking_time" type="date"/>
+            <column name="activity_type" type="string"/>
+            <column name="event_type" type="string"/>
             <column name="booking_date" type="date"/>
-            <column name="phone_num" type="string"/>
-            <column name="booking_type" type="string"/>
-            <column name="num_of_participants" type="numeric"/>
-            <column name="book_start_time" type="date"/>
-            <column name="book_end_time" type="date"/>
+            <column name="party_size" type="numeric"/>
+            <column name="booking_status" type="string"/>
+            <column name="created_at" type="date"/>
+            <column name="assigned_at" type="date"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

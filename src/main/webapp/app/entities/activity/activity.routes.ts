@@ -11,7 +11,7 @@ const activityRoute: Routes = [
     data: {
       defaultSort: `id,${ASC}`,
     },
-    canActivate: [],
+    canActivate: [UserRouteAccessService],
   },
   {
     path: ':id/view',

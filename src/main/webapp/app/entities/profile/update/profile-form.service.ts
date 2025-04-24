@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { IProfile, NewProfile } from '../profile.model';
-import { IUser } from '../../user/user.model';
 
 /**
  * A partial Type with required key is used as form input.
@@ -15,10 +14,13 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type ProfileFormGroupInput = IProfile | PartialWithRequiredKeyOf<NewProfile>;
 
-type ProfileFormDefaults = Pick<NewProfile, 'id'>;
+type ProfileFormDefaults = Pick<NewProfile, 'id' | 'messageThreads'>;
 
 type ProfileFormGroupContent = {
-  id: FormControl;
+  id: FormControl<IProfile['id'] | NewProfile['id']>;
+  login: FormControl<IProfile['login']>;
+  firstName: FormControl<IProfile['firstName']>;
+  lastName: FormControl<IProfile['lastName']>;
   bio: FormControl<IProfile['bio']>;
   profilePicture: FormControl<IProfile['profilePicture']>;
   profilePictureContentType: FormControl<IProfile['profilePictureContentType']>;
@@ -36,7 +38,8 @@ type ProfileFormGroupContent = {
   preferredEvents: FormControl<IProfile['preferredEvents']>;
   eventsTime: FormControl<IProfile['eventsTime']>;
   preferredActivities: FormControl<IProfile['preferredActivities']>;
-  user: FormControl<IUser | null | undefined>;
+  user: FormControl<IProfile['user']>;
+  messageThreads: FormControl<IProfile['messageThreads']>;
 };
 
 export type ProfileFormGroup = FormGroup<ProfileFormGroupContent>;
@@ -48,7 +51,6 @@ export class ProfileFormService {
       ...this.getFormDefaults(),
       ...profile,
     };
-
     return new FormGroup<ProfileFormGroupContent>({
       id: new FormControl(
         { value: profileRawValue.id, disabled: true },
@@ -57,6 +59,15 @@ export class ProfileFormService {
           validators: [Validators.required],
         },
       ),
+      login: new FormControl(profileRawValue.login, {
+        validators: [Validators.required],
+      }),
+      firstName: new FormControl(profileRawValue.firstName, {
+        validators: [Validators.required],
+      }),
+      lastName: new FormControl(profileRawValue.lastName, {
+        validators: [Validators.required],
+      }),
       bio: new FormControl(profileRawValue.bio),
       profilePicture: new FormControl(profileRawValue.profilePicture),
       profilePictureContentType: new FormControl(profileRawValue.profilePictureContentType),
@@ -66,9 +77,7 @@ export class ProfileFormService {
       courseYear: new FormControl(profileRawValue.courseYear, {
         validators: [Validators.required, Validators.min(1), Validators.max(6)],
       }),
-      university: new FormControl(profileRawValue.university, {
-        validators: [Validators.required, Validators.minLength(1), Validators.maxLength(50)],
-      }),
+      university: new FormControl(profileRawValue.university),
       gymSkill: new FormControl(profileRawValue.gymSkill),
       gymLocation: new FormControl(profileRawValue.gymLocation),
       gymTime: new FormControl(profileRawValue.gymTime),
@@ -81,6 +90,7 @@ export class ProfileFormService {
       eventsTime: new FormControl(profileRawValue.eventsTime),
       preferredActivities: new FormControl(profileRawValue.preferredActivities),
       user: new FormControl(profileRawValue.user),
+      messageThreads: new FormControl(profileRawValue.messageThreads ?? []),
     });
   }
 
@@ -101,6 +111,7 @@ export class ProfileFormService {
   private getFormDefaults(): ProfileFormDefaults {
     return {
       id: null,
+      messageThreads: [],
     };
   }
 }

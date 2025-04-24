@@ -19,34 +19,32 @@ type BookingFormGroupInput = IBooking | PartialWithRequiredKeyOf<NewBooking>;
 /**
  * Type that converts some properties for forms.
  */
-type FormValueOf<T extends IBooking | NewBooking> = Omit<T, 'bookingTime' | 'bookingDate' | 'bookStartTime' | 'bookEndTime'> & {
-  bookingTime?: string | null;
-  bookingDate?: string | null;
-  bookStartTime?: string | null;
-  bookEndTime?: string | null;
+type FormValueOf<T extends IBooking | NewBooking> = Omit<T, 'createdAt' | 'assignedAt'> & {
+  createdAt?: string | null;
+  assignedAt?: string | null;
 };
 
 type BookingFormRawValue = FormValueOf<IBooking>;
 
 type NewBookingFormRawValue = FormValueOf<NewBooking>;
 
-type BookingFormDefaults = Pick<NewBooking, 'id' | 'bookingTime' | 'bookingDate' | 'bookStartTime' | 'bookEndTime'>;
+type BookingFormDefaults = Pick<NewBooking, 'id' | 'createdAt' | 'assignedAt'>;
 
 type BookingFormGroupContent = {
   id: FormControl<BookingFormRawValue['id'] | NewBooking['id']>;
-  bookingName: FormControl<BookingFormRawValue['bookingName']>;
-  bookingStatus: FormControl<BookingFormRawValue['bookingStatus']>;
-  bookingTime: FormControl<BookingFormRawValue['bookingTime']>;
+  activityType: FormControl<BookingFormRawValue['activityType']>;
+  eventType: FormControl<BookingFormRawValue['eventType']>;
   bookingDate: FormControl<BookingFormRawValue['bookingDate']>;
-  phoneNum: FormControl<BookingFormRawValue['phoneNum']>;
-  bookingType: FormControl<BookingFormRawValue['bookingType']>;
-  numOfParticipants: FormControl<BookingFormRawValue['numOfParticipants']>;
-  bookStartTime: FormControl<BookingFormRawValue['bookStartTime']>;
-  bookEndTime: FormControl<BookingFormRawValue['bookEndTime']>;
-  bookingDoneBy: FormControl<BookingFormRawValue['bookingDoneBy']>;
-  requestedUser: FormControl<BookingFormRawValue['requestedUser']>;
+  partySize: FormControl<BookingFormRawValue['partySize']>;
+  bookingStatus: FormControl<BookingFormRawValue['bookingStatus']>;
+  createdAt: FormControl<BookingFormRawValue['createdAt']>;
+  assignedAt: FormControl<BookingFormRawValue['assignedAt']>;
+  timeSlots: FormControl<BookingFormRawValue['timeSlots']>;
   bookedActivity: FormControl<BookingFormRawValue['bookedActivity']>;
+  bookingLocation: FormControl<BookingFormRawValue['bookingLocation']>;
+  creator: FormControl<BookingFormRawValue['creator']>;
   activity: FormControl<BookingFormRawValue['activity']>;
+  timeSlot: FormControl<BookingFormRawValue['timeSlot']>;
 };
 
 export type BookingFormGroup = FormGroup<BookingFormGroupContent>;
@@ -66,37 +64,29 @@ export class BookingFormService {
           validators: [Validators.required],
         },
       ),
-      bookingName: new FormControl(bookingRawValue.bookingName, {
+      activityType: new FormControl(bookingRawValue.activityType, {
         validators: [Validators.required],
       }),
-      bookingStatus: new FormControl(bookingRawValue.bookingStatus, {
-        validators: [Validators.required],
-      }),
-      bookingTime: new FormControl(bookingRawValue.bookingTime, {
+      eventType: new FormControl(bookingRawValue.eventType, {
         validators: [Validators.required],
       }),
       bookingDate: new FormControl(bookingRawValue.bookingDate, {
         validators: [Validators.required],
       }),
-      phoneNum: new FormControl(bookingRawValue.phoneNum, {
-        validators: [Validators.required, Validators.minLength(11), Validators.maxLength(11)],
-      }),
-      bookingType: new FormControl(bookingRawValue.bookingType, {
+      partySize: new FormControl(bookingRawValue.partySize, {
         validators: [Validators.required],
       }),
-      numOfParticipants: new FormControl(bookingRawValue.numOfParticipants, {
-        validators: [Validators.required, Validators.min(1)],
-      }),
-      bookStartTime: new FormControl(bookingRawValue.bookStartTime, {
+      bookingStatus: new FormControl(bookingRawValue.bookingStatus, {
         validators: [Validators.required],
       }),
-      bookEndTime: new FormControl(bookingRawValue.bookEndTime, {
-        validators: [Validators.required],
-      }),
-      bookingDoneBy: new FormControl(bookingRawValue.bookingDoneBy),
-      requestedUser: new FormControl(bookingRawValue.requestedUser),
+      createdAt: new FormControl(bookingRawValue.createdAt),
+      assignedAt: new FormControl(bookingRawValue.assignedAt),
+      timeSlots: new FormControl(bookingRawValue.timeSlots),
       bookedActivity: new FormControl(bookingRawValue.bookedActivity),
+      bookingLocation: new FormControl(bookingRawValue.bookingLocation),
+      creator: new FormControl(bookingRawValue.creator),
       activity: new FormControl(bookingRawValue.activity),
+      timeSlot: new FormControl(bookingRawValue.timeSlot),
     });
   }
 
@@ -119,20 +109,16 @@ export class BookingFormService {
 
     return {
       id: null,
-      bookingTime: currentTime,
-      bookingDate: currentTime,
-      bookStartTime: currentTime,
-      bookEndTime: currentTime,
+      createdAt: currentTime,
+      assignedAt: currentTime,
     };
   }
 
   private convertBookingRawValueToBooking(rawBooking: BookingFormRawValue | NewBookingFormRawValue): IBooking | NewBooking {
     return {
       ...rawBooking,
-      bookingTime: dayjs(rawBooking.bookingTime, DATE_TIME_FORMAT),
-      bookingDate: dayjs(rawBooking.bookingDate, DATE_TIME_FORMAT),
-      bookStartTime: dayjs(rawBooking.bookStartTime, DATE_TIME_FORMAT),
-      bookEndTime: dayjs(rawBooking.bookEndTime, DATE_TIME_FORMAT),
+      createdAt: dayjs(rawBooking.createdAt, DATE_TIME_FORMAT),
+      assignedAt: dayjs(rawBooking.assignedAt, DATE_TIME_FORMAT),
     };
   }
 
@@ -141,10 +127,8 @@ export class BookingFormService {
   ): BookingFormRawValue | PartialWithRequiredKeyOf<NewBookingFormRawValue> {
     return {
       ...booking,
-      bookingTime: booking.bookingTime ? booking.bookingTime.format(DATE_TIME_FORMAT) : undefined,
-      bookingDate: booking.bookingDate ? booking.bookingDate.format(DATE_TIME_FORMAT) : undefined,
-      bookStartTime: booking.bookStartTime ? booking.bookStartTime.format(DATE_TIME_FORMAT) : undefined,
-      bookEndTime: booking.bookEndTime ? booking.bookEndTime.format(DATE_TIME_FORMAT) : undefined,
+      createdAt: booking.createdAt ? booking.createdAt.format(DATE_TIME_FORMAT) : undefined,
+      assignedAt: booking.assignedAt ? booking.assignedAt.format(DATE_TIME_FORMAT) : undefined,
     };
   }
 }

@@ -1,170 +1,562 @@
-<!-- profile-update.component.html -->
-<div class="container my-4">
-  <div *ngIf="showUpdateTip" class="alert alert-info alert-dismissible fade show" role="alert">
-    💡 <strong>Tip:</strong> Set your preferences to help others find you more easily!
-    <button type="button" class="btn-close" aria-label="Close" (click)="dismissUpdateTip()"></button>
-  </div>
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-profile-heading" data-cy="ProfileCreateUpdateHeading">Create or edit a Profile</h2>
 
-  <h2 class="text-center mb-4">Edit Your Profile</h2>
+      <div>
+        <jhi-alert-error></jhi-alert-error>
 
-  <!-- Form to update the Profile -->
-  <form [formGroup]="editForm" (ngSubmit)="save()" novalidate>
-    <div class="row">
-      <!-- COLUMN 1: User Details -->
-      <div class="col-md-4 mb-3">
-        <h4>User Details</h4>
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
 
-        <!-- Bio Field -->
+        @let loginRef = editForm.get('login')!;
         <div class="mb-3">
-          <label for="field_bio" class="form-label">Bio</label>
-          <textarea id="field_bio" class="form-control" formControlName="bio" rows="4" placeholder="Enter your bio..."></textarea>
+          <label class="form-label" for="field_login">Login</label>
+          <input type="text" class="form-control" name="login" id="field_login" data-cy="login" formControlName="login" />
+          @if (loginRef.invalid && (loginRef.dirty || loginRef.touched)) {
+            <div>
+              @if (editForm.get('login')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
         </div>
 
-        <!-- Profile Picture -->
+        @let firstNameRef = editForm.get('firstName')!;
         <div class="mb-3">
-          <label class="form-label" for="file_profilePicture">Profile Picture</label>
-          <div>
-            <!-- Preview if picture is set -->
-            <img
-              *ngIf="editForm.get('profilePicture')?.value"
-              class="profile-picture-preview"
-              [src]="'data:' + editForm.get('profilePictureContentType')?.value + ';base64,' + editForm.get('profilePicture')?.value"
-              alt="Profile Picture"
-            />
-
-            <!-- Remove/clear button for the image -->
-            <div *ngIf="editForm.get('profilePicture')?.value" class="text-danger mb-2">
-              <button
-                type="button"
-                (click)="clearInputImage('profilePicture', 'profilePictureContentType', 'file_profilePicture')"
-                class="btn btn-sm btn-secondary"
-              >
-                Remove
-              </button>
+          <label class="form-label" for="field_firstName">First Name</label>
+          <input type="text" class="form-control" name="firstName" id="field_firstName" data-cy="firstName" formControlName="firstName" />
+          @if (firstNameRef.invalid && (firstNameRef.dirty || firstNameRef.touched)) {
+            <div>
+              @if (editForm.get('firstName')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
             </div>
+          }
+        </div>
 
-            <!-- File input -->
+        @let lastNameRef = editForm.get('lastName')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_lastName">Last Name</label>
+          <input type="text" class="form-control" name="lastName" id="field_lastName" data-cy="lastName" formControlName="lastName" />
+          @if (lastNameRef.invalid && (lastNameRef.dirty || lastNameRef.touched)) {
+            <div>
+              @if (editForm.get('lastName')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_bio">Bio</label>
+          <textarea class="form-control" name="bio" id="field_bio" data-cy="bio" formControlName="bio"></textarea>
+        </div>
+
+        @let profilePictureRef = editForm.get('profilePicture')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_profilePicture">Profile Picture</label>
+          <div>
+            @if (profilePictureRef.value) {
+              <img
+                [src]="'data:' + editForm.get('profilePictureContentType')!.value + ';base64,' + profilePictureRef.value"
+                style="max-height: 100px"
+                alt="profile"
+              />
+            }
+            @if (profilePictureRef.value) {
+              <div class="form-text text-danger clearfix">
+                <span class="pull-start"
+                  >{{ editForm.get('profilePictureContentType')!.value }}, {{ byteSize(profilePictureRef.value!) }}</span
+                >
+                <button
+                  type="button"
+                  (click)="clearInputImage('profilePicture', 'profilePictureContentType', 'file_profilePicture')"
+                  class="btn btn-secondary btn-xs pull-end"
+                >
+                  <fa-icon icon="times"></fa-icon>
+                </button>
+              </div>
+            }
             <input
               type="file"
               id="file_profilePicture"
+              data-cy="profilePicture"
               (change)="setFileData($event, 'profilePicture', true)"
               accept="image/*"
-              class="form-control"
             />
           </div>
-
-          <!-- Hidden fields to store base64 and content type -->
-          <input type="hidden" formControlName="profilePicture" />
-          <input type="hidden" formControlName="profilePictureContentType" />
+          <input
+            type="hidden"
+            class="form-control"
+            name="profilePicture"
+            id="field_profilePicture"
+            data-cy="profilePicture"
+            formControlName="profilePicture"
+          />
+          <input
+            type="hidden"
+            class="form-control"
+            name="profilePictureContentType"
+            id="field_profilePictureContentType"
+            formControlName="profilePictureContentType"
+          />
         </div>
-      </div>
 
-      <!-- COLUMN 2: Study Details -->
-      <div class="col-md-4 mb-3">
-        <h4>Study Details</h4>
-
-        <!-- Course -->
+        @let courseRef = editForm.get('course')!;
         <div class="mb-3">
           <label class="form-label" for="field_course">Course</label>
-          <select id="field_course" class="form-control" formControlName="course">
+          <select class="form-control" name="course" formControlName="course" id="field_course" data-cy="course">
             <option [ngValue]="null"></option>
-            <option *ngFor="let course of courseValues" [value]="course">
-              {{ course }}
-            </option>
+            @for (course of courseValues; track $index) {
+              <option [value]="course">
+                {{
+                  {
+                    null: '',
+                    COMPUTER_SCIENCE: 'COMPUTER_SCIENCE',
+                    ECONOMICS: 'ECONOMICS',
+                    PSYCHOLOGY: 'PSYCHOLOGY',
+                    MATHS: 'MATHS',
+                    ENGLISH: 'ENGLISH',
+                    ENGINEERING: 'ENGINEERING',
+                    PHYSICS: 'PHYSICS',
+                    CHEMISTRY: 'CHEMISTRY',
+                    BIOLOGY: 'BIOLOGY',
+                    MEDICINE: 'MEDICINE',
+                    LAW: 'LAW',
+                    BUSINESS: 'BUSINESS',
+                    ART: 'ART',
+                    MUSIC: 'MUSIC',
+                    HISTORY: 'HISTORY',
+                    GEOGRAPHY: 'GEOGRAPHY',
+                    PHILOSOPHY: 'PHILOSOPHY',
+                    LINGUISTICS: 'LINGUISTICS',
+                    SOCIOLOGY: 'SOCIOLOGY',
+                    POLITICAL_SCIENCE: 'POLITICAL_SCIENCE',
+                    ARCHITECTURE: 'ARCHITECTURE',
+                    EDUCATION: 'EDUCATION',
+                  }[course]
+                }}
+              </option>
+            }
+          </select>
+          @if (courseRef.invalid && (courseRef.dirty || courseRef.touched)) {
+            <div>
+              @if (editForm.get('course')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let courseYearRef = editForm.get('courseYear')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_courseYear">Course Year</label>
+          <input
+            type="number"
+            class="form-control"
+            name="courseYear"
+            id="field_courseYear"
+            data-cy="courseYear"
+            formControlName="courseYear"
+          />
+          @if (courseYearRef.invalid && (courseYearRef.dirty || courseYearRef.touched)) {
+            <div>
+              @if (editForm.get('courseYear')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              @if (editForm.get('courseYear')?.errors?.min) {
+                <small class="form-text text-danger">This field should be at least 1.</small>
+              }
+              @if (editForm.get('courseYear')?.errors?.max) {
+                <small class="form-text text-danger">This field cannot be more than 6.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('courseYear')?.errors?.number"
+                >This field should be a number.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_university">University</label>
+          <select class="form-control" name="university" formControlName="university" id="field_university" data-cy="university">
+            <option [ngValue]="null"></option>
+            @for (university of universityValues; track $index) {
+              <option [value]="university">
+                {{
+                  {
+                    null: '',
+                    UNIVERSITY_OF_BIRMINGHAM: 'UNIVERSITY_OF_BIRMINGHAM',
+                    ASTON_UNIVERSITY: 'ASTON_UNIVERSITY',
+                    BIRMINGHAM_CITY_UNIVERSITY: 'BIRMINGHAM_CITY_UNIVERSITY',
+                    UNIVERSITY_OF_NOTTINGHAM: 'UNIVERSITY_OF_NOTTINGHAM',
+                  }[university]
+                }}
+              </option>
+            }
           </select>
         </div>
 
-        <!-- Course Year -->
         <div class="mb-3">
-          <label class="form-label" for="field_courseYear">Year</label>
-          <input type="number" class="form-control" id="field_courseYear" formControlName="courseYear" placeholder="1, 2, 3..." />
-        </div>
-
-        <!-- Study Time -->
-        <div class="mb-3">
-          <label class="form-label" for="field_studyTime">Preferred Study Time</label>
-          <select id="field_studyTime" class="form-control" formControlName="studyTime">
+          <label class="form-label" for="field_gymSkill">Gym Skill</label>
+          <select class="form-control" name="gymSkill" formControlName="gymSkill" id="field_gymSkill" data-cy="gymSkill">
             <option [ngValue]="null"></option>
-            <option *ngFor="let time of preferredTimeValues" [value]="time">
-              {{ time }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <!-- COLUMN 3: Gym & Sports Details -->
-      <div class="col-md-4 mb-3">
-        <h4>Gym & Sports Details</h4>
-
-        <!-- Gym Skill -->
-        <div class="mb-3">
-          <label class="form-label" for="field_gymSkill">Skill Level</label>
-          <select id="field_gymSkill" class="form-control" formControlName="gymSkill">
-            <option [ngValue]="null"></option>
-            <option *ngFor="let skill of skillValues" [value]="skill">
-              {{ skill }}
-            </option>
+            @for (skill of skillValues; track $index) {
+              <option [value]="skill">
+                {{
+                  { null: '', NOVICE: 'NOVICE', INTERMEDIATE: 'INTERMEDIATE', CONFIDENT: 'CONFIDENT', PROFESSIONAL: 'PROFESSIONAL' }[skill]
+                }}
+              </option>
+            }
           </select>
         </div>
 
-        <!-- Gym Time -->
-        <div class="mb-3">
-          <label class="form-label" for="field_gymTime">Preferred Workout Time</label>
-          <select id="field_gymTime" class="form-control" formControlName="gymTime">
-            <option [ngValue]="null"></option>
-            <option *ngFor="let time of preferredTimeValues" [value]="time">
-              {{ time }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Gym Location -->
         <div class="mb-3">
           <label class="form-label" for="field_gymLocation">Gym Location</label>
-          <select id="field_gymLocation" class="form-control" formControlName="gymLocation">
+          <select class="form-control" name="gymLocation" formControlName="gymLocation" id="field_gymLocation" data-cy="gymLocation">
             <option [ngValue]="null"></option>
-            <option *ngFor="let location of gymLocationValues" [value]="location">
-              {{ location }}
-            </option>
+            @for (gymLocation of gymLocationValues; track $index) {
+              <option [value]="gymLocation">
+                {{
+                  { null: '', THE_GYM_SELLY_OAK: 'THE_GYM_SELLY_OAK', TIVERTON: 'TIVERTON', PUREGYM_FIVE_WAYS: 'PUREGYM_FIVE_WAYS' }[
+                    gymLocation
+                  ]
+                }}
+              </option>
+            }
           </select>
         </div>
 
-        <!-- Sports -->
+        <div class="mb-3">
+          <label class="form-label" for="field_gymTime">Gym Time</label>
+          <select class="form-control" name="gymTime" formControlName="gymTime" id="field_gymTime" data-cy="gymTime">
+            <option [ngValue]="null"></option>
+            @for (preferredTime of preferredTimeValues; track $index) {
+              <option [value]="preferredTime">
+                {{
+                  {
+                    null: '',
+                    EARLY_MORNING: 'EARLY_MORNING',
+                    MORNING: 'MORNING',
+                    AFTERNOON: 'AFTERNOON',
+                    EVENING: 'EVENING',
+                    NIGHT: 'NIGHT',
+                    LATE_NIGHT: 'LATE_NIGHT',
+                  }[preferredTime]
+                }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_studyTime">Study Time</label>
+          <select class="form-control" name="studyTime" formControlName="studyTime" id="field_studyTime" data-cy="studyTime">
+            <option [ngValue]="null"></option>
+            @for (preferredTime of preferredTimeValues; track $index) {
+              <option [value]="preferredTime">
+                {{
+                  {
+                    null: '',
+                    EARLY_MORNING: 'EARLY_MORNING',
+                    MORNING: 'MORNING',
+                    AFTERNOON: 'AFTERNOON',
+                    EVENING: 'EVENING',
+                    NIGHT: 'NIGHT',
+                    LATE_NIGHT: 'LATE_NIGHT',
+                  }[preferredTime]
+                }}
+              </option>
+            }
+          </select>
+        </div>
+
         <div class="mb-3">
           <label class="form-label" for="field_sports">Sports</label>
-          <select id="field_sports" class="form-control" formControlName="sports">
+          <select class="form-control" name="sports" formControlName="sports" id="field_sports" data-cy="sports">
             <option [ngValue]="null"></option>
-            <option *ngFor="let sport of sportsValues" [value]="sport">
-              {{ sport }}
-            </option>
+            @for (sports of sportsValues; track $index) {
+              <option [value]="sports">
+                {{
+                  {
+                    null: '',
+                    FOOTBALL: 'FOOTBALL',
+                    CRICKET: 'CRICKET',
+                    BADMINTON: 'BADMINTON',
+                    TENNIS: 'TENNIS',
+                    NETBALL: 'NETBALL',
+                    BASKETBALL: 'BASKETBALL',
+                    VOLLEYBALL: 'VOLLEYBALL',
+                    TABLE_TENNIS: 'TABLE_TENNIS',
+                    BASEBALL: 'BASEBALL',
+                    RUGBY: 'RUGBY',
+                    HOCKEY: 'HOCKEY',
+                    SWIMMING: 'SWIMMING',
+                    ATHLETICS: 'ATHLETICS',
+                    GOLF: 'GOLF',
+                    BOXING: 'BOXING',
+                    MARTIAL_ARTS: 'MARTIAL_ARTS',
+                    CYCLING: 'CYCLING',
+                    SKIING: 'SKIING',
+                    SKATEBOARDING: 'SKATEBOARDING',
+                    ESPORTS: 'ESPORTS',
+                  }[sports]
+                }}
+              </option>
+            }
           </select>
         </div>
 
-        <!-- Sports Skill -->
         <div class="mb-3">
           <label class="form-label" for="field_sportsSkill">Sports Skill</label>
-          <select id="field_sportsSkill" class="form-control" formControlName="sportsSkill">
+          <select class="form-control" name="sportsSkill" formControlName="sportsSkill" id="field_sportsSkill" data-cy="sportsSkill">
             <option [ngValue]="null"></option>
-            <option *ngFor="let skill of skillValues" [value]="skill">
-              {{ skill }}
-            </option>
+            @for (skill of skillValues; track $index) {
+              <option [value]="skill">
+                {{
+                  { null: '', NOVICE: 'NOVICE', INTERMEDIATE: 'INTERMEDIATE', CONFIDENT: 'CONFIDENT', PROFESSIONAL: 'PROFESSIONAL' }[skill]
+                }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_sportsTime">Sports Time</label>
+          <select class="form-control" name="sportsTime" formControlName="sportsTime" id="field_sportsTime" data-cy="sportsTime">
+            <option [ngValue]="null"></option>
+            @for (preferredTime of preferredTimeValues; track $index) {
+              <option [value]="preferredTime">
+                {{
+                  {
+                    null: '',
+                    EARLY_MORNING: 'EARLY_MORNING',
+                    MORNING: 'MORNING',
+                    AFTERNOON: 'AFTERNOON',
+                    EVENING: 'EVENING',
+                    NIGHT: 'NIGHT',
+                    LATE_NIGHT: 'LATE_NIGHT',
+                  }[preferredTime]
+                }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_preferredSociety">Preferred Society</label>
+          <select
+            class="form-control"
+            name="preferredSociety"
+            formControlName="preferredSociety"
+            id="field_preferredSociety"
+            data-cy="preferredSociety"
+          >
+            <option [ngValue]="null"></option>
+            @for (society of societyValues; track $index) {
+              <option [value]="society">
+                {{
+                  {
+                    null: '',
+                    ABACUS: 'ABACUS',
+                    ACCOUNTING_AND_FINANCE: 'ACCOUNTING_AND_FINANCE',
+                    AFRICAN_AND_CARIBBEAN: 'AFRICAN_AND_CARIBBEAN',
+                    ALGOSOC: 'ALGOSOC',
+                    ARAB: 'ARAB',
+                    AZERBAIJANI: 'AZERBAIJANI',
+                    BAKING: 'BAKING',
+                    BALADS: 'BALADS',
+                    BENGALI: 'BENGALI',
+                    BIOSOC: 'BIOSOC',
+                    BIRMINGHAM_BLACK_AND_ETHNIC_MINORITY_SCIENTISTS: 'BIRMINGHAM_BLACK_AND_ETHNIC_MINORITY_SCIENTISTS',
+                    BLACK_LAW_STUDENTS_SOCIETY: 'BLACK_LAW_STUDENTS_SOCIETY',
+                    CANADIAN_SOCIETY: 'CANADIAN_SOCIETY',
+                    CARIBBEAN_UNION: 'CARIBBEAN_UNION',
+                    CATHOLIC: 'CATHOLIC',
+                    CHESS: 'CHESS',
+                    CIVIL_ENGINEERING: 'CIVIL_ENGINEERING',
+                    COMPUTER_SCIENCE_SOCIETY: 'COMPUTER_SCIENCE_SOCIETY',
+                    CRAFT: 'CRAFT',
+                    CRIMINOLOGY: 'CRIMINOLOGY',
+                    CULTURAL_ARTS: 'CULTURAL_ARTS',
+                    DARTS_SOCIETY: 'DARTS_SOCIETY',
+                    DEBATING: 'DEBATING',
+                    DENTAL_SOCIETY: 'DENTAL_SOCIETY',
+                    EAST_AFRICAN: 'EAST_AFRICAN',
+                    EGYPTIAN: 'EGYPTIAN',
+                    ELECTRONIC_AND_ELECTRICAL_ENGINEERING: 'ELECTRONIC_AND_ELECTRICAL_ENGINEERING',
+                    ESPORTS: 'ESPORTS',
+                    FILIPINO: 'FILIPINO',
+                    FILMSOC: 'FILMSOC',
+                    FINTECH: 'FINTECH',
+                    FRIENDS_OF_PALESTINE: 'FRIENDS_OF_PALESTINE',
+                    GAMES_DEVELOPMENT: 'GAMES_DEVELOPMENT',
+                    GERMAN: 'GERMAN',
+                    HENNA_SOCIETY: 'HENNA_SOCIETY',
+                    HIDE_AND_SEEK_SOCIETY: 'HIDE_AND_SEEK_SOCIETY',
+                    HINDU: 'HINDU',
+                    ICE_SKATING_SOCIETY: 'ICE_SKATING_SOCIETY',
+                    INDIAN: 'INDIAN',
+                    IRAQI: 'IRAQI',
+                    ISLAMIC: 'ISLAMIC',
+                    ITALIAN: 'ITALIAN',
+                    JAIN_SOCIETY: 'JAIN_SOCIETY',
+                    JAPAN_SOCIETY: 'JAPAN_SOCIETY',
+                    KICKBOXING: 'KICKBOXING',
+                    KOREA: 'KOREA',
+                    MALAYALEE: 'MALAYALEE',
+                    MALAYSIAN: 'MALAYSIAN',
+                    MATHSOC: 'MATHSOC',
+                    MEDTEC: 'MEDTEC',
+                    MIXED_MARTIAL_ARTS: 'MIXED_MARTIAL_ARTS',
+                    MUAY_THAI_BOXING: 'MUAY_THAI_BOXING',
+                    NEPALESE: 'NEPALESE',
+                    NERDSOC: 'NERDSOC',
+                    NORTH_AFRICAN: 'NORTH_AFRICAN',
+                    OMANI_SOCIETY: 'OMANI_SOCIETY',
+                    PAKISTAN: 'PAKISTAN',
+                    POWERLIFTING: 'POWERLIFTING',
+                    PSYCHOLOGY: 'PSYCHOLOGY',
+                    PUNJABI: 'PUNJABI',
+                    SAUDI: 'SAUDI',
+                    SHOOTING: 'SHOOTING',
+                    SIKH: 'SIKH',
+                    SINGAPORE_SOCIETY: 'SINGAPORE_SOCIETY',
+                    SRI_LANKAN_SOCIETY: 'SRI_LANKAN_SOCIETY',
+                    SUDANESE_SOCIETY: 'SUDANESE_SOCIETY',
+                    TAMIL: 'TAMIL',
+                    TURKISH: 'TURKISH',
+                    UKRAINIAN_SOCIETY: 'UKRAINIAN_SOCIETY',
+                    VIDEO_GAMES_SOCIETY: 'VIDEO_GAMES_SOCIETY',
+                    VIETNAMESE: 'VIETNAMESE',
+                    WAYFARERS_HIKING_SOCIETY: 'WAYFARERS_HIKING_SOCIETY',
+                    WELSH: 'WELSH',
+                    WOMEN_IN_LAW: 'WOMEN_IN_LAW',
+                    WOMEN_IN_MEDICINE: 'WOMEN_IN_MEDICINE',
+                    OTHER: 'OTHER',
+                  }[society]
+                }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_preferredEvents">Preferred Events</label>
+          <select
+            class="form-control"
+            name="preferredEvents"
+            formControlName="preferredEvents"
+            id="field_preferredEvents"
+            data-cy="preferredEvents"
+          >
+            <option [ngValue]="null"></option>
+            @for (preferredEvents of preferredEventsValues; track $index) {
+              <option [value]="preferredEvents">
+                {{
+                  {
+                    null: '',
+                    GAMES_NIGHT: 'GAMES_NIGHT',
+                    MEET_AND_GREET: 'MEET_AND_GREET',
+                    SPORTS_NIGHT: 'SPORTS_NIGHT',
+                    CLUBBING: 'CLUBBING',
+                    RELIGIOUS: 'RELIGIOUS',
+                    ACADEMIC: 'ACADEMIC',
+                  }[preferredEvents]
+                }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_eventsTime">Events Time</label>
+          <select class="form-control" name="eventsTime" formControlName="eventsTime" id="field_eventsTime" data-cy="eventsTime">
+            <option [ngValue]="null"></option>
+            @for (preferredTime of preferredTimeValues; track $index) {
+              <option [value]="preferredTime">
+                {{
+                  {
+                    null: '',
+                    EARLY_MORNING: 'EARLY_MORNING',
+                    MORNING: 'MORNING',
+                    AFTERNOON: 'AFTERNOON',
+                    EVENING: 'EVENING',
+                    NIGHT: 'NIGHT',
+                    LATE_NIGHT: 'LATE_NIGHT',
+                  }[preferredTime]
+                }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_preferredActivities">Preferred Activities</label>
+          <select
+            class="form-control"
+            name="preferredActivities"
+            formControlName="preferredActivities"
+            id="field_preferredActivities"
+            data-cy="preferredActivities"
+          >
+            <option [ngValue]="null"></option>
+            @for (activityType of activityTypeValues; track $index) {
+              <option [value]="activityType">
+                {{ { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[activityType] }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_user">User</label>
+          <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUser">
+            <option [ngValue]="null"></option>
+            @for (userOption of usersSharedCollection; track $index) {
+              <option [ngValue]="userOption">{{ userOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="field_messageThreads">Message Thread</label>
+          <select
+            class="form-control"
+            id="field_messageThreads"
+            data-cy="messageThread"
+            multiple
+            name="messageThreads"
+            formControlName="messageThreads"
+            [compareWith]="compareMessageThread"
+          >
+            @for (messageThreadOption of messageThreadsSharedCollection; track $index) {
+              <option [ngValue]="messageThreadOption">{{ messageThreadOption.id }}</option>
+            }
           </select>
         </div>
       </div>
-    </div>
 
-    <!-- Hidden/readonly ID field -->
-    <input type="hidden" formControlName="id" />
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+        </button>
 
-    <!-- Action Buttons -->
-    <div class="row mt-3">
-      <div class="col text-center">
-        <!-- Cancel (go back) -->
-        <button type="button" class="btn btn-secondary me-2" (click)="previousState()">Cancel</button>
-
-        <!-- Save -->
-        <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid || isSaving">Save</button>
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+        </button>
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
 </div>

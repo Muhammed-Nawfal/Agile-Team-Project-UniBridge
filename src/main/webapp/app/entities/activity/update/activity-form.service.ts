@@ -29,7 +29,7 @@ type ActivityFormRawValue = FormValueOf<IActivity>;
 
 type NewActivityFormRawValue = FormValueOf<NewActivity>;
 
-type ActivityFormDefaults = Pick<NewActivity, 'id' | 'activityDate' | 'createdOn' | 'updatedOn'>;
+type ActivityFormDefaults = Pick<NewActivity, 'id' | 'activityDate' | 'createdOn' | 'updatedOn' | 'isPaid'>;
 
 type ActivityFormGroupContent = {
   id: FormControl<ActivityFormRawValue['id'] | NewActivity['id']>;
@@ -45,10 +45,10 @@ type ActivityFormGroupContent = {
   status: FormControl<ActivityFormRawValue['status']>;
   coverImage: FormControl<ActivityFormRawValue['coverImage']>;
   coverImageContentType: FormControl<ActivityFormRawValue['coverImageContentType']>;
-  paid: FormControl<ActivityFormRawValue['paid']>;
-  costOfactivity: FormControl<ActivityFormRawValue['costOfactivity']>;
-  userName: FormControl<ActivityFormRawValue['userName']>;
-  requesteduser: FormControl<ActivityFormRawValue['requesteduser']>;
+  isPaid: FormControl<ActivityFormRawValue['isPaid']>;
+  activityCost: FormControl<ActivityFormRawValue['activityCost']>;
+  creator: FormControl<ActivityFormRawValue['creator']>;
+  challenge: FormControl<ActivityFormRawValue['challenge']>;
 };
 
 export type ActivityFormGroup = FormGroup<ActivityFormGroupContent>;
@@ -98,14 +98,14 @@ export class ActivityFormService {
       }),
       coverImage: new FormControl(activityRawValue.coverImage),
       coverImageContentType: new FormControl(activityRawValue.coverImageContentType),
-      paid: new FormControl(activityRawValue.paid, {
+      isPaid: new FormControl(activityRawValue.isPaid, {
         validators: [Validators.required],
       }),
-      costOfactivity: new FormControl(activityRawValue.costOfactivity, {
-        validators: [Validators.required],
+      activityCost: new FormControl(activityRawValue.activityCost, {
+        validators: [Validators.required, Validators.min(0)],
       }),
-      userName: new FormControl(activityRawValue.userName),
-      requesteduser: new FormControl(activityRawValue.requesteduser),
+      creator: new FormControl(activityRawValue.creator),
+      challenge: new FormControl(activityRawValue.challenge),
     });
   }
 
@@ -131,6 +131,7 @@ export class ActivityFormService {
       activityDate: currentTime,
       createdOn: currentTime,
       updatedOn: currentTime,
+      isPaid: false,
     };
   }
 

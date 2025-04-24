@@ -124,11 +124,17 @@ public class FriendsListResource {
         Optional<FriendsList> result = friendsListRepository
             .findById(friendsList.getId())
             .map(existingFriendsList -> {
-                if (friendsList.getFriendRequest() != null) {
-                    existingFriendsList.setFriendRequest(friendsList.getFriendRequest());
+                if (friendsList.getRequestTime() != null) {
+                    existingFriendsList.setRequestTime(friendsList.getRequestTime());
+                }
+                if (friendsList.getRequestStatus() != null) {
+                    existingFriendsList.setRequestStatus(friendsList.getRequestStatus());
                 }
                 if (friendsList.getFriendSince() != null) {
                     existingFriendsList.setFriendSince(friendsList.getFriendSince());
+                }
+                if (friendsList.getNickname() != null) {
+                    existingFriendsList.setNickname(friendsList.getNickname());
                 }
 
                 return existingFriendsList;
@@ -149,10 +155,10 @@ public class FriendsListResource {
      */
     @GetMapping("")
     public List<FriendsList> getAllFriendsLists(@RequestParam(name = "filter", required = false) String filter) {
-        if ("chat-is-null".equals(filter)) {
-            LOG.debug("REST request to get all FriendsLists where chat is null");
+        if ("messagethread-is-null".equals(filter)) {
+            LOG.debug("REST request to get all FriendsLists where messageThread is null");
             return StreamSupport.stream(friendsListRepository.findAll().spliterator(), false)
-                .filter(friendsList -> friendsList.getChat() == null)
+                .filter(friendsList -> friendsList.getMessageThread() == null)
                 .toList();
         }
         LOG.debug("REST request to get all FriendsLists");

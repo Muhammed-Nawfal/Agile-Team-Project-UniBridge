@@ -20,13 +20,31 @@
             <column name="status" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="user_name_id" type="bigint">
+            <column name="match_date" type="date">
+                <constraints nullable="false" />
+            </column>
+            <column name="match_time" type="${datetimeType}">
+                <constraints nullable="false" />
+            </column>
+            <column name="location" type="varchar(100)">
                 <constraints nullable="true" />
             </column>
-            <column name="request_user_id" type="bigint">
+            <column name="notes" type="${clobType}">
                 <constraints nullable="true" />
             </column>
-            <column name="matched_user_id" type="bigint">
+            <column name="created_at" type="${datetimeType}">
+                <constraints nullable="false" />
+            </column>
+            <column name="response_at" type="${datetimeType}">
+                <constraints nullable="false" />
+            </column>
+            <column name="ratings_id" type="bigint">
+                <constraints nullable="true" unique="true" uniqueConstraintName="ux_activity_match__ratings_id" />
+            </column>
+            <column name="match_requestor_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="user_details_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <column name="matched_activity_id" type="bigint">
@@ -34,6 +52,9 @@
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
+        <dropDefaultValue tableName="activity_match" columnName="match_time" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="activity_match" columnName="created_at" columnDataType="${datetimeType}"/>
+        <dropDefaultValue tableName="activity_match" columnName="response_at" columnDataType="${datetimeType}"/>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
@@ -55,6 +76,12 @@
             <column name="id" type="numeric"/>
             <column name="activity_type" type="string"/>
             <column name="status" type="string"/>
+            <column name="match_date" type="date"/>
+            <column name="match_time" type="date"/>
+            <column name="location" type="string"/>
+            <column name="notes" type="clob"/>
+            <column name="created_at" type="date"/>
+            <column name="response_at" type="date"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

@@ -16,12 +16,5 @@
                                  referencedColumnNames="id"
                                  referencedTableName="profile"
                                  />
-
-        <addForeignKeyConstraint baseColumnNames="user_id"
-                                 baseTableName="ranking"
-                                 constraintName="fk_ranking__user_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="jhi_user"
-                                 />
     </changeSet>
 </databaseChangeLog>

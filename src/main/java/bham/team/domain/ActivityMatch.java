@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDate;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -36,19 +38,50 @@ public class ActivityMatch implements Serializable {
     @Column(name = "status", nullable = false)
     private Decision status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "user", "booking", "ranking" }, allowSetters = true)
-    private Profile userName;
+    @NotNull
+    @Column(name = "match_date", nullable = false)
+    private LocalDate matchDate;
+
+    @NotNull
+    @Column(name = "match_time", nullable = false)
+    private Instant matchTime;
+
+    @Size(max = 100)
+    @Column(name = "location", length = 100)
+    private String location;
+
+    @Lob
+    @Column(name = "notes")
+    private String notes;
+
+    @NotNull
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
+
+    @NotNull
+    @Column(name = "response_at", nullable = false)
+    private Instant responseAt;
+
+    @JsonIgnoreProperties(value = { "rankGiven", "activityMatch" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(unique = true)
+    private Ranking ratings;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User requestUser;
+    @JsonIgnoreProperties(value = { "user", "ranking", "messageThreads" }, allowSetters = true)
+    private Profile matchRequestor;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User matchedUser;
+    @JsonIgnoreProperties(value = { "user", "ranking", "messageThreads" }, allowSetters = true)
+    private Profile userDetails;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "bookings", "userName", "requesteduser" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "bookings", "creator", "challenge" }, allowSetters = true)
     private Activity matchedActivity;
+
+    @JsonIgnoreProperties(value = { "friendChat", "matchChat", "messages", "participants" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "matchChat")
+    private MessageThread messageThread;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -91,42 +124,120 @@ public class ActivityMatch implements Serializable {
         this.status = status;
     }
 
-    public Profile getUserName() {
-        return this.userName;
+    public LocalDate getMatchDate() {
+        return this.matchDate;
     }
 
-    public void setUserName(Profile profile) {
-        this.userName = profile;
-    }
-
-    public ActivityMatch userName(Profile profile) {
-        this.setUserName(profile);
+    public ActivityMatch matchDate(LocalDate matchDate) {
+        this.setMatchDate(matchDate);
         return this;
     }
 
-    public User getRequestUser() {
-        return this.requestUser;
+    public void setMatchDate(LocalDate matchDate) {
+        this.matchDate = matchDate;
     }
 
-    public void setRequestUser(User user) {
-        this.requestUser = user;
+    public Instant getMatchTime() {
+        return this.matchTime;
     }
 
-    public ActivityMatch requestUser(User user) {
-        this.setRequestUser(user);
+    public ActivityMatch matchTime(Instant matchTime) {
+        this.setMatchTime(matchTime);
         return this;
     }
 
-    public User getMatchedUser() {
-        return this.matchedUser;
+    public void setMatchTime(Instant matchTime) {
+        this.matchTime = matchTime;
     }
 
-    public void setMatchedUser(User user) {
-        this.matchedUser = user;
+    public String getLocation() {
+        return this.location;
     }
 
-    public ActivityMatch matchedUser(User user) {
-        this.setMatchedUser(user);
+    public ActivityMatch location(String location) {
+        this.setLocation(location);
+        return this;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getNotes() {
+        return this.notes;
+    }
+
+    public ActivityMatch notes(String notes) {
+        this.setNotes(notes);
+        return this;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public Instant getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public ActivityMatch createdAt(Instant createdAt) {
+        this.setCreatedAt(createdAt);
+        return this;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getResponseAt() {
+        return this.responseAt;
+    }
+
+    public ActivityMatch responseAt(Instant responseAt) {
+        this.setResponseAt(responseAt);
+        return this;
+    }
+
+    public void setResponseAt(Instant responseAt) {
+        this.responseAt = responseAt;
+    }
+
+    public Ranking getRatings() {
+        return this.ratings;
+    }
+
+    public void setRatings(Ranking ranking) {
+        this.ratings = ranking;
+    }
+
+    public ActivityMatch ratings(Ranking ranking) {
+        this.setRatings(ranking);
+        return this;
+    }
+
+    public Profile getMatchRequestor() {
+        return this.matchRequestor;
+    }
+
+    public void setMatchRequestor(Profile profile) {
+        this.matchRequestor = profile;
+    }
+
+    public ActivityMatch matchRequestor(Profile profile) {
+        this.setMatchRequestor(profile);
+        return this;
+    }
+
+    public Profile getUserDetails() {
+        return this.userDetails;
+    }
+
+    public void setUserDetails(Profile profile) {
+        this.userDetails = profile;
+    }
+
+    public ActivityMatch userDetails(Profile profile) {
+        this.setUserDetails(profile);
         return this;
     }
 
@@ -140,6 +251,25 @@ public class ActivityMatch implements Serializable {
 
     public ActivityMatch matchedActivity(Activity activity) {
         this.setMatchedActivity(activity);
+        return this;
+    }
+
+    public MessageThread getMessageThread() {
+        return this.messageThread;
+    }
+
+    public void setMessageThread(MessageThread messageThread) {
+        if (this.messageThread != null) {
+            this.messageThread.setMatchChat(null);
+        }
+        if (messageThread != null) {
+            messageThread.setMatchChat(this);
+        }
+        this.messageThread = messageThread;
+    }
+
+    public ActivityMatch messageThread(MessageThread messageThread) {
+        this.setMessageThread(messageThread);
         return this;
     }
 
@@ -169,6 +299,12 @@ public class ActivityMatch implements Serializable {
             "id=" + getId() +
             ", activityType='" + getActivityType() + "'" +
             ", status='" + getStatus() + "'" +
+            ", matchDate='" + getMatchDate() + "'" +
+            ", matchTime='" + getMatchTime() + "'" +
+            ", location='" + getLocation() + "'" +
+            ", notes='" + getNotes() + "'" +
+            ", createdAt='" + getCreatedAt() + "'" +
+            ", responseAt='" + getResponseAt() + "'" +
             "}";
     }
 }

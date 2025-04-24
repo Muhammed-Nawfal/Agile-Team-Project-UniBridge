@@ -1,7 +1,7 @@
 package bham.team.domain;
 
 import static bham.team.domain.ChatTestSamples.*;
-import static bham.team.domain.FriendsListTestSamples.*;
+import static bham.team.domain.MessageThreadTestSamples.*;
 import static bham.team.domain.ProfileTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,26 +25,50 @@ class ChatTest {
     }
 
     @Test
-    void friendChatTest() {
+    void threadTest() {
         Chat chat = getChatRandomSampleGenerator();
-        FriendsList friendsListBack = getFriendsListRandomSampleGenerator();
+        MessageThread messageThreadBack = getMessageThreadRandomSampleGenerator();
 
-        chat.setFriendChat(friendsListBack);
-        assertThat(chat.getFriendChat()).isEqualTo(friendsListBack);
+        chat.setThread(messageThreadBack);
+        assertThat(chat.getThread()).isEqualTo(messageThreadBack);
 
-        chat.friendChat(null);
-        assertThat(chat.getFriendChat()).isNull();
+        chat.thread(null);
+        assertThat(chat.getThread()).isNull();
     }
 
     @Test
-    void chatsTest() {
+    void senderTest() {
         Chat chat = getChatRandomSampleGenerator();
         Profile profileBack = getProfileRandomSampleGenerator();
 
-        chat.setChats(profileBack);
-        assertThat(chat.getChats()).isEqualTo(profileBack);
+        chat.setSender(profileBack);
+        assertThat(chat.getSender()).isEqualTo(profileBack);
 
-        chat.chats(null);
-        assertThat(chat.getChats()).isNull();
+        chat.sender(null);
+        assertThat(chat.getSender()).isNull();
+    }
+
+    @Test
+    void receiverTest() {
+        Chat chat = getChatRandomSampleGenerator();
+        Profile profileBack = getProfileRandomSampleGenerator();
+
+        chat.setReceiver(profileBack);
+        assertThat(chat.getReceiver()).isEqualTo(profileBack);
+
+        chat.receiver(null);
+        assertThat(chat.getReceiver()).isNull();
+    }
+
+    @Test
+    void messageThreadTest() {
+        Chat chat = getChatRandomSampleGenerator();
+        MessageThread messageThreadBack = getMessageThreadRandomSampleGenerator();
+
+        chat.setMessageThread(messageThreadBack);
+        assertThat(chat.getMessageThread()).isEqualTo(messageThreadBack);
+
+        chat.messageThread(null);
+        assertThat(chat.getMessageThread()).isNull();
     }
 }

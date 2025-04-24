@@ -19,25 +19,33 @@ type ChatFormGroupInput = IChat | PartialWithRequiredKeyOf<NewChat>;
 /**
  * Type that converts some properties for forms.
  */
-type FormValueOf<T extends IChat | NewChat> = Omit<T, 'timestamp'> & {
+type FormValueOf<T extends IChat | NewChat> = Omit<T, 'timestamp' | 'createdOn' | 'updatedOn'> & {
   timestamp?: string | null;
+  createdOn?: string | null;
+  updatedOn?: string | null;
 };
 
 type ChatFormRawValue = FormValueOf<IChat>;
 
 type NewChatFormRawValue = FormValueOf<NewChat>;
 
-type ChatFormDefaults = Pick<NewChat, 'id' | 'timestamp'>;
+type ChatFormDefaults = Pick<NewChat, 'id' | 'timestamp' | 'isDeleted' | 'createdOn' | 'updatedOn'>;
 
 type ChatFormGroupContent = {
   id: FormControl<ChatFormRawValue['id'] | NewChat['id']>;
   message: FormControl<ChatFormRawValue['message']>;
   timestamp: FormControl<ChatFormRawValue['timestamp']>;
+  status: FormControl<ChatFormRawValue['status']>;
   type: FormControl<ChatFormRawValue['type']>;
-  friendChat: FormControl<ChatFormRawValue['friendChat']>;
-  chats: FormControl<ChatFormRawValue['chats']>;
+  media: FormControl<ChatFormRawValue['media']>;
+  mediaContentType: FormControl<ChatFormRawValue['mediaContentType']>;
+  isDeleted: FormControl<ChatFormRawValue['isDeleted']>;
+  createdOn: FormControl<ChatFormRawValue['createdOn']>;
+  updatedOn: FormControl<ChatFormRawValue['updatedOn']>;
+  thread: FormControl<ChatFormRawValue['thread']>;
   sender: FormControl<ChatFormRawValue['sender']>;
   receiver: FormControl<ChatFormRawValue['receiver']>;
+  messageThread: FormControl<ChatFormRawValue['messageThread']>;
 };
 
 export type ChatFormGroup = FormGroup<ChatFormGroupContent>;
@@ -57,19 +65,29 @@ export class ChatFormService {
           validators: [Validators.required],
         },
       ),
-      message: new FormControl(chatRawValue.message, {
+      message: new FormControl(chatRawValue.message),
+      timestamp: new FormControl(chatRawValue.timestamp, {
         validators: [Validators.required],
       }),
-      timestamp: new FormControl(chatRawValue.timestamp, {
+      status: new FormControl(chatRawValue.status, {
         validators: [Validators.required],
       }),
       type: new FormControl(chatRawValue.type, {
         validators: [Validators.required],
       }),
-      friendChat: new FormControl(chatRawValue.friendChat),
-      chats: new FormControl(chatRawValue.chats),
+      media: new FormControl(chatRawValue.media),
+      mediaContentType: new FormControl(chatRawValue.mediaContentType),
+      isDeleted: new FormControl(chatRawValue.isDeleted, {
+        validators: [Validators.required],
+      }),
+      createdOn: new FormControl(chatRawValue.createdOn, {
+        validators: [Validators.required],
+      }),
+      updatedOn: new FormControl(chatRawValue.updatedOn),
+      thread: new FormControl(chatRawValue.thread),
       sender: new FormControl(chatRawValue.sender),
       receiver: new FormControl(chatRawValue.receiver),
+      messageThread: new FormControl(chatRawValue.messageThread),
     });
   }
 
@@ -93,6 +111,9 @@ export class ChatFormService {
     return {
       id: null,
       timestamp: currentTime,
+      isDeleted: false,
+      createdOn: currentTime,
+      updatedOn: currentTime,
     };
   }
 
@@ -100,6 +121,8 @@ export class ChatFormService {
     return {
       ...rawChat,
       timestamp: dayjs(rawChat.timestamp, DATE_TIME_FORMAT),
+      createdOn: dayjs(rawChat.createdOn, DATE_TIME_FORMAT),
+      updatedOn: dayjs(rawChat.updatedOn, DATE_TIME_FORMAT),
     };
   }
 
@@ -109,6 +132,8 @@ export class ChatFormService {
     return {
       ...chat,
       timestamp: chat.timestamp ? chat.timestamp.format(DATE_TIME_FORMAT) : undefined,
+      createdOn: chat.createdOn ? chat.createdOn.format(DATE_TIME_FORMAT) : undefined,
+      updatedOn: chat.updatedOn ? chat.updatedOn.format(DATE_TIME_FORMAT) : undefined,
     };
   }
 }

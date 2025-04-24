@@ -24,14 +24,26 @@ class ReviewTest {
     }
 
     @Test
-    void reviewsGivenTest() {
+    void aboutUserTest() {
         Review review = getReviewRandomSampleGenerator();
         Profile profileBack = getProfileRandomSampleGenerator();
 
-        review.setReviewsGiven(profileBack);
-        assertThat(review.getReviewsGiven()).isEqualTo(profileBack);
+        review.setAboutUser(profileBack);
+        assertThat(review.getAboutUser()).isEqualTo(profileBack);
 
-        review.reviewsGiven(null);
-        assertThat(review.getReviewsGiven()).isNull();
+        review.aboutUser(null);
+        assertThat(review.getAboutUser()).isNull();
+    }
+
+    @Test
+    void fromUserTest() {
+        Review review = getReviewRandomSampleGenerator();
+        Profile profileBack = getProfileRandomSampleGenerator();
+
+        review.setFromUser(profileBack);
+        assertThat(review.getFromUser()).isEqualTo(profileBack);
+
+        review.fromUser(null);
+        assertThat(review.getFromUser()).isNull();
     }
 }

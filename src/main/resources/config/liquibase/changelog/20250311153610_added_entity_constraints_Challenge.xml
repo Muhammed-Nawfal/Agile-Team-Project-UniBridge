@@ -10,39 +10,18 @@
     -->
     <changeSet id="20250311153610-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="challenges_id"
+        <addForeignKeyConstraint baseColumnNames="assigned_to_id"
                                  baseTableName="challenge"
-                                 constraintName="fk_challenge__challenges_id"
+                                 constraintName="fk_challenge__assigned_to_id"
                                  referencedColumnNames="id"
                                  referencedTableName="profile"
                                  />
 
-        <addForeignKeyConstraint baseColumnNames="challenged_friend_id"
+        <addForeignKeyConstraint baseColumnNames="created_by_id"
                                  baseTableName="challenge"
-                                 constraintName="fk_challenge__challenged_friend_id"
+                                 constraintName="fk_challenge__created_by_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="friends_list"
-                                 />
-
-        <addForeignKeyConstraint baseColumnNames="challenged_activity_id"
-                                 baseTableName="challenge"
-                                 constraintName="fk_challenge__challenged_activity_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="activity"
-                                 />
-
-        <addForeignKeyConstraint baseColumnNames="creator_id"
-                                 baseTableName="challenge"
-                                 constraintName="fk_challenge__creator_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="jhi_user"
-                                 />
-
-        <addForeignKeyConstraint baseColumnNames="recipient_id"
-                                 baseTableName="challenge"
-                                 constraintName="fk_challenge__recipient_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="jhi_user"
+                                 referencedTableName="profile"
                                  />
     </changeSet>
 </databaseChangeLog>

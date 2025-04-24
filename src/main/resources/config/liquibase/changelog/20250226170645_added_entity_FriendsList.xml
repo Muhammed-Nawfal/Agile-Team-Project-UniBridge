@@ -14,23 +14,27 @@
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="friend_request" type="varchar(255)">
+            <column name="request_time" type="${datetimeType}">
+                <constraints nullable="false" />
+            </column>
+            <column name="request_status" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
             <column name="friend_since" type="${datetimeType}">
                 <constraints nullable="false" />
             </column>
-            <column name="friends_id" type="bigint">
+            <column name="nickname" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="user_id" type="bigint">
+            <column name="requested_by_profile_id" type="bigint">
                 <constraints nullable="true" />
             </column>
-            <column name="friend_id" type="bigint">
+            <column name="requested_to_profile_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
+        <dropDefaultValue tableName="friends_list" columnName="request_time" columnDataType="${datetimeType}"/>
         <dropDefaultValue tableName="friends_list" columnName="friend_since" columnDataType="${datetimeType}"/>
     </changeSet>
 
@@ -51,8 +55,10 @@
                   tableName="friends_list"
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
-            <column name="friend_request" type="string"/>
+            <column name="request_time" type="date"/>
+            <column name="request_status" type="string"/>
             <column name="friend_since" type="date"/>
+            <column name="nickname" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

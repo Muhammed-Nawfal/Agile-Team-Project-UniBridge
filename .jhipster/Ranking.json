@@ -23,9 +23,8 @@
     },
     {
       "fieldName": "reliable",
-      "fieldType": "Reliability",
-      "fieldValidateRules": ["required"],
-      "fieldValues": "UNRELIABLE,RELIABLE"
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
     }
   ],
   "name": "Ranking",
@@ -35,13 +34,6 @@
       "relationshipName": "rankGiven",
       "relationshipSide": "left",
       "relationshipType": "one-to-one"
-    },
-    {
-      "otherEntityName": "user",
-      "relationshipName": "user",
-      "relationshipSide": "left",
-      "relationshipType": "one-to-one",
-      "relationshipWithBuiltInEntity": true
     }
   ],
   "searchEngine": "no"

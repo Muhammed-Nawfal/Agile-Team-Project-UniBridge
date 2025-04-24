@@ -19,7 +19,8 @@ type FriendsListFormGroupInput = IFriendsList | PartialWithRequiredKeyOf<NewFrie
 /**
  * Type that converts some properties for forms.
  */
-type FormValueOf<T extends IFriendsList | NewFriendsList> = Omit<T, 'friendSince'> & {
+type FormValueOf<T extends IFriendsList | NewFriendsList> = Omit<T, 'requestTime' | 'friendSince'> & {
+  requestTime?: string | null;
   friendSince?: string | null;
 };
 
@@ -27,15 +28,16 @@ type FriendsListFormRawValue = FormValueOf<IFriendsList>;
 
 type NewFriendsListFormRawValue = FormValueOf<NewFriendsList>;
 
-type FriendsListFormDefaults = Pick<NewFriendsList, 'id' | 'friendSince'>;
+type FriendsListFormDefaults = Pick<NewFriendsList, 'id' | 'requestTime' | 'friendSince'>;
 
 type FriendsListFormGroupContent = {
   id: FormControl<FriendsListFormRawValue['id'] | NewFriendsList['id']>;
-  friendRequest: FormControl<FriendsListFormRawValue['friendRequest']>;
+  requestTime: FormControl<FriendsListFormRawValue['requestTime']>;
+  requestStatus: FormControl<FriendsListFormRawValue['requestStatus']>;
   friendSince: FormControl<FriendsListFormRawValue['friendSince']>;
-  friends: FormControl<FriendsListFormRawValue['friends']>;
-  user: FormControl<FriendsListFormRawValue['user']>;
-  friend: FormControl<FriendsListFormRawValue['friend']>;
+  nickname: FormControl<FriendsListFormRawValue['nickname']>;
+  requestedByProfile: FormControl<FriendsListFormRawValue['requestedByProfile']>;
+  requestedToProfile: FormControl<FriendsListFormRawValue['requestedToProfile']>;
 };
 
 export type FriendsListFormGroup = FormGroup<FriendsListFormGroupContent>;
@@ -55,15 +57,18 @@ export class FriendsListFormService {
           validators: [Validators.required],
         },
       ),
-      friendRequest: new FormControl(friendsListRawValue.friendRequest, {
+      requestTime: new FormControl(friendsListRawValue.requestTime, {
+        validators: [Validators.required],
+      }),
+      requestStatus: new FormControl(friendsListRawValue.requestStatus, {
         validators: [Validators.required],
       }),
       friendSince: new FormControl(friendsListRawValue.friendSince, {
         validators: [Validators.required],
       }),
-      friends: new FormControl(friendsListRawValue.friends),
-      user: new FormControl(friendsListRawValue.user),
-      friend: new FormControl(friendsListRawValue.friend),
+      nickname: new FormControl(friendsListRawValue.nickname),
+      requestedByProfile: new FormControl(friendsListRawValue.requestedByProfile),
+      requestedToProfile: new FormControl(friendsListRawValue.requestedToProfile),
     });
   }
 
@@ -86,6 +91,7 @@ export class FriendsListFormService {
 
     return {
       id: null,
+      requestTime: currentTime,
       friendSince: currentTime,
     };
   }
@@ -95,6 +101,7 @@ export class FriendsListFormService {
   ): IFriendsList | NewFriendsList {
     return {
       ...rawFriendsList,
+      requestTime: dayjs(rawFriendsList.requestTime, DATE_TIME_FORMAT),
       friendSince: dayjs(rawFriendsList.friendSince, DATE_TIME_FORMAT),
     };
   }
@@ -104,6 +111,7 @@ export class FriendsListFormService {
   ): FriendsListFormRawValue | PartialWithRequiredKeyOf<NewFriendsListFormRawValue> {
     return {
       ...friendsList,
+      requestTime: friendsList.requestTime ? friendsList.requestTime.format(DATE_TIME_FORMAT) : undefined,
       friendSince: friendsList.friendSince ? friendsList.friendSince.format(DATE_TIME_FORMAT) : undefined,
     };
   }

@@ -1,37 +1,23 @@
-<style>
-  table,
-  th,
-  td {
-    border: 1px solid black;
-    border-collapse: collapse;
-  }
-  table {
-    width: 35%;
-  }
-  .mybutton {
-    display: block;
-    background-color: #3e8acc;
-    color: white;
-    font-size: 30px;
-    padding: 10px;
-    border: 3px ridge #0054bc;
-    text-decoration: none;
-    font-family: Georgia, sans-serif;
-  }
-  .mybutton:hover {
-    border: 3px groove #7bc0ff;
-  }
-  .btn-group-vertical {
-    margin-top: 50px;
-    margin-bottom: 40px;
-    margin-left: 70px;
-    gap: 50px;
-  }
-</style>
-
 <div>
   <h2 id="page-heading" data-cy="RankingHeading">
-    <span>User Rankings</span>
+    <span>Rankings</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span>Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-ranking"
+        [routerLink]="['/ranking/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span>Create a new Ranking</span>
+      </button>
+    </div>
   </h2>
 
   <jhi-alert-error></jhi-alert-error>
@@ -45,64 +31,88 @@
   }
 
   @if (rankings && rankings.length > 0) {
-    <div class="table-responsive table-entities" id="tables">
-      <table class="table table-striped" aria-describedby="page-heading" style="float: left">
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
         <thead>
           <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span>ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="reviewNumber">
+              <div class="d-flex">
+                <span>Review Number</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="activityNumber">
+              <div class="d-flex">
+                <span>Activity Number</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
             <th scope="col" jhiSortBy="starAverage">
               <div class="d-flex">
-                <span>User</span>
+                <span>Star Average</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="user.id">
+            <th scope="col" jhiSortBy="reliable">
               <div class="d-flex">
-                <span>Stars</span>
+                <span>Reliable</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
+            <th scope="col" jhiSortBy="rankGiven.id">
+              <div class="d-flex">
+                <span>Rank Given</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
           @for (ranking of rankings; track trackId(ranking)) {
             <tr data-cy="entityTable">
-              <td>{{ ranking.user?.id }}</td>
               <td>
-                {{ ranking.starAverage }}
+                <a [routerLink]="['/ranking', ranking.id, 'view']">{{ ranking.id }}</a>
               </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-      <div class="btn-group-vertical">
-        <a class="mybutton" role="button" href="../review" style="float: left">Submit a review</a>
-        <button class="mybutton" style="float: left">Find my ranking</button>
-        <p style="float: left">
-          Rankings are based on user reviews. <br />
-          Star rating and number of reviews both <br />
-          impact rank, so sign up to as many events <br />
-          as you like, but make sure to attend them!
-        </p>
-      </div>
-      <table class="table table-striped" aria-describedby="page-heading" style="float: right">
-        <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="starAverage">
-              <div class="d-flex">
-                <span>User</span>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="user.id">
-              <div class="d-flex">
-                <span>Stars</span>
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (ranking of rankings; track trackId(ranking)) {
-            <tr data-cy="entityTable">
-              <td>{{ ranking.user?.id }}</td>
+              <td>{{ ranking.reviewNumber }}</td>
+              <td>{{ ranking.activityNumber }}</td>
+              <td>{{ ranking.starAverage }}</td>
+              <td>{{ ranking.reliable }}</td>
               <td>
-                {{ ranking.starAverage }}
+                @if (ranking.rankGiven) {
+                  <div>
+                    <a [routerLink]="['/profile', ranking.rankGiven.id, 'view']">{{ ranking.rankGiven.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/ranking', ranking.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline">View</span>
+                  </a>
+
+                  <a [routerLink]="['/ranking', ranking.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(ranking)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">Delete</span>
+                  </button>
+                </div>
               </td>
             </tr>
           }

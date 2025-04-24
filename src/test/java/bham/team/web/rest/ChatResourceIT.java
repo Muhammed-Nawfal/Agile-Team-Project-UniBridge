@@ -9,13 +9,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import bham.team.IntegrationTest;
 import bham.team.domain.Chat;
-import bham.team.domain.enumeration.ActionType;
+import bham.team.domain.enumeration.MessageStatus;
+import bham.team.domain.enumeration.MessageType;
 import bham.team.repository.ChatRepository;
-import bham.team.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Base64;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.AfterEach;
@@ -42,8 +43,25 @@ class ChatResourceIT {
     private static final Instant DEFAULT_TIMESTAMP = Instant.ofEpochMilli(0L);
     private static final Instant UPDATED_TIMESTAMP = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-    private static final ActionType DEFAULT_TYPE = ActionType.UNMATCH;
-    private static final ActionType UPDATED_TYPE = ActionType.REPORT;
+    private static final MessageStatus DEFAULT_STATUS = MessageStatus.SENT;
+    private static final MessageStatus UPDATED_STATUS = MessageStatus.DELIVERED;
+
+    private static final MessageType DEFAULT_TYPE = MessageType.TEXT;
+    private static final MessageType UPDATED_TYPE = MessageType.IMAGE;
+
+    private static final byte[] DEFAULT_MEDIA = TestUtil.createByteArray(1, "0");
+    private static final byte[] UPDATED_MEDIA = TestUtil.createByteArray(1, "1");
+    private static final String DEFAULT_MEDIA_CONTENT_TYPE = "image/jpg";
+    private static final String UPDATED_MEDIA_CONTENT_TYPE = "image/png";
+
+    private static final Boolean DEFAULT_IS_DELETED = false;
+    private static final Boolean UPDATED_IS_DELETED = true;
+
+    private static final Instant DEFAULT_CREATED_ON = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_CREATED_ON = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+    private static final Instant DEFAULT_UPDATED_ON = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_UPDATED_ON = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
     private static final String ENTITY_API_URL = "/api/chats";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -56,9 +74,6 @@ class ChatResourceIT {
 
     @Autowired
     private ChatRepository chatRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private EntityManager em;
@@ -77,7 +92,16 @@ class ChatResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Chat createEntity() {
-        return new Chat().message(DEFAULT_MESSAGE).timestamp(DEFAULT_TIMESTAMP).type(DEFAULT_TYPE);
+        return new Chat()
+            .message(DEFAULT_MESSAGE)
+            .timestamp(DEFAULT_TIMESTAMP)
+            .status(DEFAULT_STATUS)
+            .type(DEFAULT_TYPE)
+            .media(DEFAULT_MEDIA)
+            .mediaContentType(DEFAULT_MEDIA_CONTENT_TYPE)
+            .isDeleted(DEFAULT_IS_DELETED)
+            .createdOn(DEFAULT_CREATED_ON)
+            .updatedOn(DEFAULT_UPDATED_ON);
     }
 
     /**
@@ -87,7 +111,16 @@ class ChatResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Chat createUpdatedEntity() {
-        return new Chat().message(UPDATED_MESSAGE).timestamp(UPDATED_TIMESTAMP).type(UPDATED_TYPE);
+        return new Chat()
+            .message(UPDATED_MESSAGE)
+            .timestamp(UPDATED_TIMESTAMP)
+            .status(UPDATED_STATUS)
+            .type(UPDATED_TYPE)
+            .media(UPDATED_MEDIA)
+            .mediaContentType(UPDATED_MEDIA_CONTENT_TYPE)
+            .isDeleted(UPDATED_IS_DELETED)
+            .createdOn(UPDATED_CREATED_ON)
+            .updatedOn(UPDATED_UPDATED_ON);
     }
 
     @BeforeEach
@@ -160,10 +193,58 @@ class ChatResourceIT {
 
     @Test
     @Transactional
+    void checkStatusIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        chat.setStatus(null);
+
+        // Create the Chat, which fails.
+
+        restChatMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(chat)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void checkTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
         chat.setType(null);
+
+        // Create the Chat, which fails.
+
+        restChatMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(chat)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkIsDeletedIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        chat.setIsDeleted(null);
+
+        // Create the Chat, which fails.
+
+        restChatMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(chat)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkCreatedOnIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        chat.setCreatedOn(null);
 
         // Create the Chat, which fails.
 
@@ -188,7 +269,13 @@ class ChatResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(chat.getId().intValue())))
             .andExpect(jsonPath("$.[*].message").value(hasItem(DEFAULT_MESSAGE.toString())))
             .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())))
-            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())));
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
+            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
+            .andExpect(jsonPath("$.[*].mediaContentType").value(hasItem(DEFAULT_MEDIA_CONTENT_TYPE)))
+            .andExpect(jsonPath("$.[*].media").value(hasItem(Base64.getEncoder().encodeToString(DEFAULT_MEDIA))))
+            .andExpect(jsonPath("$.[*].isDeleted").value(hasItem(DEFAULT_IS_DELETED.booleanValue())))
+            .andExpect(jsonPath("$.[*].createdOn").value(hasItem(DEFAULT_CREATED_ON.toString())))
+            .andExpect(jsonPath("$.[*].updatedOn").value(hasItem(DEFAULT_UPDATED_ON.toString())));
     }
 
     @Test
@@ -205,7 +292,13 @@ class ChatResourceIT {
             .andExpect(jsonPath("$.id").value(chat.getId().intValue()))
             .andExpect(jsonPath("$.message").value(DEFAULT_MESSAGE.toString()))
             .andExpect(jsonPath("$.timestamp").value(DEFAULT_TIMESTAMP.toString()))
-            .andExpect(jsonPath("$.type").value(DEFAULT_TYPE.toString()));
+            .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()))
+            .andExpect(jsonPath("$.type").value(DEFAULT_TYPE.toString()))
+            .andExpect(jsonPath("$.mediaContentType").value(DEFAULT_MEDIA_CONTENT_TYPE))
+            .andExpect(jsonPath("$.media").value(Base64.getEncoder().encodeToString(DEFAULT_MEDIA)))
+            .andExpect(jsonPath("$.isDeleted").value(DEFAULT_IS_DELETED.booleanValue()))
+            .andExpect(jsonPath("$.createdOn").value(DEFAULT_CREATED_ON.toString()))
+            .andExpect(jsonPath("$.updatedOn").value(DEFAULT_UPDATED_ON.toString()));
     }
 
     @Test
@@ -227,7 +320,16 @@ class ChatResourceIT {
         Chat updatedChat = chatRepository.findById(chat.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedChat are not directly saved in db
         em.detach(updatedChat);
-        updatedChat.message(UPDATED_MESSAGE).timestamp(UPDATED_TIMESTAMP).type(UPDATED_TYPE);
+        updatedChat
+            .message(UPDATED_MESSAGE)
+            .timestamp(UPDATED_TIMESTAMP)
+            .status(UPDATED_STATUS)
+            .type(UPDATED_TYPE)
+            .media(UPDATED_MEDIA)
+            .mediaContentType(UPDATED_MEDIA_CONTENT_TYPE)
+            .isDeleted(UPDATED_IS_DELETED)
+            .createdOn(UPDATED_CREATED_ON)
+            .updatedOn(UPDATED_UPDATED_ON);
 
         restChatMockMvc
             .perform(
@@ -303,6 +405,15 @@ class ChatResourceIT {
         Chat partialUpdatedChat = new Chat();
         partialUpdatedChat.setId(chat.getId());
 
+        partialUpdatedChat
+            .message(UPDATED_MESSAGE)
+            .timestamp(UPDATED_TIMESTAMP)
+            .status(UPDATED_STATUS)
+            .type(UPDATED_TYPE)
+            .media(UPDATED_MEDIA)
+            .mediaContentType(UPDATED_MEDIA_CONTENT_TYPE)
+            .updatedOn(UPDATED_UPDATED_ON);
+
         restChatMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedChat.getId())
@@ -329,7 +440,16 @@ class ChatResourceIT {
         Chat partialUpdatedChat = new Chat();
         partialUpdatedChat.setId(chat.getId());
 
-        partialUpdatedChat.message(UPDATED_MESSAGE).timestamp(UPDATED_TIMESTAMP).type(UPDATED_TYPE);
+        partialUpdatedChat
+            .message(UPDATED_MESSAGE)
+            .timestamp(UPDATED_TIMESTAMP)
+            .status(UPDATED_STATUS)
+            .type(UPDATED_TYPE)
+            .media(UPDATED_MEDIA)
+            .mediaContentType(UPDATED_MEDIA_CONTENT_TYPE)
+            .isDeleted(UPDATED_IS_DELETED)
+            .createdOn(UPDATED_CREATED_ON)
+            .updatedOn(UPDATED_UPDATED_ON);
 
         restChatMockMvc
             .perform(

@@ -127,8 +127,26 @@ public class ChatResource {
                 if (chat.getTimestamp() != null) {
                     existingChat.setTimestamp(chat.getTimestamp());
                 }
+                if (chat.getStatus() != null) {
+                    existingChat.setStatus(chat.getStatus());
+                }
                 if (chat.getType() != null) {
                     existingChat.setType(chat.getType());
+                }
+                if (chat.getMedia() != null) {
+                    existingChat.setMedia(chat.getMedia());
+                }
+                if (chat.getMediaContentType() != null) {
+                    existingChat.setMediaContentType(chat.getMediaContentType());
+                }
+                if (chat.getIsDeleted() != null) {
+                    existingChat.setIsDeleted(chat.getIsDeleted());
+                }
+                if (chat.getCreatedOn() != null) {
+                    existingChat.setCreatedOn(chat.getCreatedOn());
+                }
+                if (chat.getUpdatedOn() != null) {
+                    existingChat.setUpdatedOn(chat.getUpdatedOn());
                 }
 
                 return existingChat;

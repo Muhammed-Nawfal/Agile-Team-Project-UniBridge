@@ -15,31 +15,43 @@
           <dd>
             <span>{{ friendsListRef.id }}</span>
           </dd>
-          <dt><span>Friend Request</span></dt>
+          <dt><span>Request Time</span></dt>
+          <dd>
+            <span>{{ friendsListRef.requestTime | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Request Status</span></dt>
           <dd>
             <span>{{
-              { null: '', ACCEPT: 'ACCEPT', DECLINED: 'DECLINED', PENDING: 'PENDING' }[friendsListRef.friendRequest ?? 'null']
+              { null: '', ACCEPT: 'ACCEPT', DECLINED: 'DECLINED', PENDING: 'PENDING' }[friendsListRef.requestStatus ?? 'null']
             }}</span>
           </dd>
           <dt><span>Friend Since</span></dt>
           <dd>
             <span>{{ friendsListRef.friendSince | formatMediumDatetime }}</span>
           </dd>
-          <dt><span>Friends</span></dt>
+          <dt><span>Nickname</span></dt>
           <dd>
-            @if (friendsList()!.friends) {
+            <span>{{ friendsListRef.nickname }}</span>
+          </dd>
+          <dt><span>Requested By Profile</span></dt>
+          <dd>
+            @if (friendsList()!.requestedByProfile) {
               <div>
-                <a [routerLink]="['/profile', friendsList()!.friends?.id, 'view']">{{ friendsListRef.friends?.id }}</a>
+                <a [routerLink]="['/profile', friendsList()!.requestedByProfile?.id, 'view']">{{
+                  friendsListRef.requestedByProfile?.id
+                }}</a>
               </div>
             }
           </dd>
-          <dt><span>User</span></dt>
+          <dt><span>Requested To Profile</span></dt>
           <dd>
-            <span>{{ friendsListRef.user?.id }}</span>
-          </dd>
-          <dt><span>Friend</span></dt>
-          <dd>
-            <span>{{ friendsListRef.friend?.id }}</span>
+            @if (friendsList()!.requestedToProfile) {
+              <div>
+                <a [routerLink]="['/profile', friendsList()!.requestedToProfile?.id, 'view']">{{
+                  friendsListRef.requestedToProfile?.id
+                }}</a>
+              </div>
+            }
           </dd>
         </dl>
 

@@ -1,7 +1,7 @@
 package bham.team.domain;
 
-import static bham.team.domain.ChatTestSamples.*;
 import static bham.team.domain.FriendsListTestSamples.*;
+import static bham.team.domain.MessageThreadTestSamples.*;
 import static bham.team.domain.ProfileTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,28 +25,40 @@ class FriendsListTest {
     }
 
     @Test
-    void friendsTest() {
+    void requestedByProfileTest() {
         FriendsList friendsList = getFriendsListRandomSampleGenerator();
         Profile profileBack = getProfileRandomSampleGenerator();
 
-        friendsList.setFriends(profileBack);
-        assertThat(friendsList.getFriends()).isEqualTo(profileBack);
+        friendsList.setRequestedByProfile(profileBack);
+        assertThat(friendsList.getRequestedByProfile()).isEqualTo(profileBack);
 
-        friendsList.friends(null);
-        assertThat(friendsList.getFriends()).isNull();
+        friendsList.requestedByProfile(null);
+        assertThat(friendsList.getRequestedByProfile()).isNull();
     }
 
     @Test
-    void chatTest() {
+    void requestedToProfileTest() {
         FriendsList friendsList = getFriendsListRandomSampleGenerator();
-        Chat chatBack = getChatRandomSampleGenerator();
+        Profile profileBack = getProfileRandomSampleGenerator();
 
-        friendsList.setChat(chatBack);
-        assertThat(friendsList.getChat()).isEqualTo(chatBack);
-        assertThat(chatBack.getFriendChat()).isEqualTo(friendsList);
+        friendsList.setRequestedToProfile(profileBack);
+        assertThat(friendsList.getRequestedToProfile()).isEqualTo(profileBack);
 
-        friendsList.chat(null);
-        assertThat(friendsList.getChat()).isNull();
-        assertThat(chatBack.getFriendChat()).isNull();
+        friendsList.requestedToProfile(null);
+        assertThat(friendsList.getRequestedToProfile()).isNull();
+    }
+
+    @Test
+    void messageThreadTest() {
+        FriendsList friendsList = getFriendsListRandomSampleGenerator();
+        MessageThread messageThreadBack = getMessageThreadRandomSampleGenerator();
+
+        friendsList.setMessageThread(messageThreadBack);
+        assertThat(friendsList.getMessageThread()).isEqualTo(messageThreadBack);
+        assertThat(messageThreadBack.getFriendChat()).isEqualTo(friendsList);
+
+        friendsList.messageThread(null);
+        assertThat(friendsList.getMessageThread()).isNull();
+        assertThat(messageThreadBack.getFriendChat()).isNull();
     }
 }

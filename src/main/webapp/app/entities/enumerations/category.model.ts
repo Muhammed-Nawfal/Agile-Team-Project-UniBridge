@@ -1,0 +1,11 @@
+export enum Category {
+  STUDY = 'STUDY',
+
+  SPORTS = 'SPORTS',
+
+  COMMUNITY = 'COMMUNITY',
+
+  PERSONAL_GROWTH = 'PERSONAL_GROWTH',
+
+  SOCIAL = 'SOCIAL',
+}

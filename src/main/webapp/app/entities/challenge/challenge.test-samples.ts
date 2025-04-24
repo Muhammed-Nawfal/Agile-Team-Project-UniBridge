@@ -3,55 +3,50 @@ import dayjs from 'dayjs/esm';
 import { IChallenge, NewChallenge } from './challenge.model';
 
 export const sampleWithRequiredData: IChallenge = {
-  id: 30567,
-  title: 'whoever',
+  id: 17094,
+  title: 'rigid possible unused',
   description: '../fake-data/blob/hipster.txt',
-  category: 'SPORTS',
-  points: 21,
+  category: 'SOCIAL',
+  date: dayjs('2025-03-11'),
+  points: 18,
   badge: '../fake-data/blob/hipster.png',
   badgeContentType: 'unknown',
-  createdDate: dayjs('2025-03-11T08:49'),
-  isCompleted: true,
+  completed: false,
 };
 
 export const sampleWithPartialData: IChallenge = {
-  id: 17916,
-  title: 'thunderbolt ugh',
+  id: 7876,
+  title: 'unhappy',
   description: '../fake-data/blob/hipster.txt',
-  category: 'SOCIAL',
-  points: 63,
+  category: 'STUDY',
+  date: dayjs('2025-03-11'),
+  points: 72,
   badge: '../fake-data/blob/hipster.png',
   badgeContentType: 'unknown',
-  createdDate: dayjs('2025-03-10T22:37'),
-  expiryDate: dayjs('2025-03-10T15:51'),
-  isCompleted: true,
-  completedDate: dayjs('2025-03-10T22:01'),
+  completed: false,
 };
 
 export const sampleWithFullData: IChallenge = {
-  id: 16629,
-  title: 'why modulo fast',
+  id: 9936,
+  title: 'dimly buck enormously',
   description: '../fake-data/blob/hipster.txt',
-  category: 'SOCIAL',
-  points: 76,
+  category: 'PERSONAL_GROWTH',
+  date: dayjs('2025-03-11'),
+  points: 37,
   badge: '../fake-data/blob/hipster.png',
   badgeContentType: 'unknown',
-  createdDate: dayjs('2025-03-11T06:31'),
-  expiryDate: dayjs('2025-03-11T03:31'),
-  isCompleted: false,
-  completedDate: dayjs('2025-03-11T01:18'),
-  isDisplayed: false,
+  completed: true,
 };
 
 export const sampleWithNewData: NewChallenge = {
-  title: 'halt',
+  title: 'aboard',
   description: '../fake-data/blob/hipster.txt',
-  category: 'SPORTS',
-  points: 34,
+  category: 'PERSONAL_GROWTH',
+  date: dayjs('2025-03-11'),
+  points: 33,
   badge: '../fake-data/blob/hipster.png',
   badgeContentType: 'unknown',
-  createdDate: dayjs('2025-03-10T22:44'),
-  isCompleted: false,
+  completed: true,
   id: null,
 };
 

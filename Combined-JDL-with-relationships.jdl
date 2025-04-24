@@ -1,114 +1,202 @@
 entity Profile {
-    Bio TextBlob, //max bio length set to 50 characters
-    profilePicture ImageBlob,
-    course Course required,
-    courseYear Long required min(1) max(6), //Course year range 1-6
-    university String required minlength(1) maxlength(50),
-    gymSkill Skill,
-    gymLocation GymLocation,
-    gymTime PreferredTime,
-    studyTime PreferredTime,
-    sports Sports,
-    sportsSkill Skill,
-    sportsTime PreferredTime,
-    preferredSociety String,
-    preferredEvents String,
-    eventsTime PreferredTime,
-    preferredActivities ActivityType,
+  login String required unique,
+  firstName String required,
+  lastName String required,
+  Bio TextBlob, //max bio length set to 50 characters
+  profilePicture ImageBlob,
+  course Course required,
+  courseYear Long required min(1) max(6), //Course year range 1-6
+  university University,
+  gymSkill Skill,
+  gymLocation GymLocation,
+  gymTime PreferredTime,
+  studyTime PreferredTime,
+  sports Sports,
+  sportsSkill Skill,
+  sportsTime PreferredTime,
+  preferredSociety Society,
+  preferredEvents PreferredEvents,
+  eventsTime PreferredTime,
+  preferredActivities ActivityType,
 }
 
-
 relationship OneToOne {
-	Profile{user} to User with builtInEntity
+  Profile{user} to User with builtInEntity
+}
+
+enum PreferredEvents{
+  GAMES_NIGHT,
+  MEET_AND_GREET,
+  SPORTS_NIGHT,
+  CLUBBING,
+  RELIGIOUS,
+  ACADEMIC
+}
+
+enum University {
+  UNIVERSITY_OF_BIRMINGHAM,
+  ASTON_UNIVERSITY,
+  BIRMINGHAM_CITY_UNIVERSITY,
+  UNIVERSITY_OF_NOTTINGHAM
 }
 
 enum Course {
-	COMPUTER_SCIENCE,
-	ECONOMICS,
-    PSYCHOLOGY,
-    MATHS,
-    ENGLISH,
-    ENGINEERING
+  COMPUTER_SCIENCE,
+  ECONOMICS,
+  PSYCHOLOGY,
+  MATHS,
+  ENGLISH,
+  ENGINEERING,
+  PHYSICS,
+  CHEMISTRY,
+  BIOLOGY,
+  MEDICINE,
+  LAW,
+  BUSINESS,
+  ART,
+  MUSIC,
+  HISTORY,
+  GEOGRAPHY,
+  PHILOSOPHY,
+  LINGUISTICS,
+  SOCIOLOGY,
+  POLITICAL_SCIENCE,
+  ARCHITECTURE,
+  EDUCATION
 }
+
 enum Skill {
-    NOVICE,
-    INTERMEDIATE,
-    CONFIDENT,
-    PROFESSIONAL
+  NOVICE,
+  INTERMEDIATE,
+  CONFIDENT,
+  PROFESSIONAL
 }
 enum PreferredTime {
-    EARLY MORNING,
-    MORNING,
-    AFTERNOON,
-    EVENING,
-    NIGHT,
-    LATE NIGHT
+  EARLY_MORNING,
+  MORNING,
+  AFTERNOON,
+  EVENING,
+  NIGHT,
+  LATE_NIGHT
 }
+
 enum GymLocation {
-    THE_GYM_SELLY_OAK,
-    TIVERTON,
-    PUREGYM_FIVE_WAYS
-}
-enum Sports{
-	FOOTBALL,
-    CRICKET,
-    BADMINTON,
-    TENNIS,
-    NETBALL
+  THE_GYM_SELLY_OAK,
+  TIVERTON,
+  PUREGYM_FIVE_WAYS
 }
 
-
-entity Activity {
-    activityName String required minlength(1) maxlength(120),
-    activityType ActivityType required,
-    activityDate Instant required,
-    numberOfParticipants Integer required, //There can be some logic that incremenets the number of participants of an event
-    maxNumberOfParticipants Integer required min(2),
-    location String required maxlength(95),
-    description TextBlob,
-    createdOn Instant required,
-    updatedOn Instant required,
-    status Status required,
-    coverImage ImageBlob,
-    //New fields added
-    paid IsPaid required,
-    costOfactivity BigDecimal required //We can add a conditional statement that if the paid field evaluates to notPaid then the cost of the activity is 0
-}
-enum IsPaid {
-	PAID,
-    NOTPAID
-}
-enum Status {
-    ANNOUNCED,
-    CURRENTLY_HAPPENING,
-    FINISHED,
-    CANCELED
+enum Sports {
+  FOOTBALL,
+  CRICKET,
+  BADMINTON,
+  TENNIS,
+  NETBALL,
+  BASKETBALL,
+  VOLLEYBALL,
+  TABLE_TENNIS,
+  BASEBALL,
+  RUGBY,
+  HOCKEY,
+  SWIMMING,
+  ATHLETICS,
+  GOLF,
+  BOXING,
+  MARTIAL_ARTS,
+  CYCLING,
+  SKIING,
+  SKATEBOARDING,
+  ESPORTS
 }
 
-enum ActivityType {
-	SOCIAL,
-    ACADEMIC,
-    SPORTS,
-    GYM,
-    OTHER
+enum Society {
+  ABACUS,
+  ACCOUNTING_AND_FINANCE,
+  AFRICAN_AND_CARIBBEAN,
+  ALGOSOC,
+  ARAB,
+  AZERBAIJANI,
+  BAKING,
+  BALADS,
+  BENGALI,
+  BIOSOC,
+  BIRMINGHAM_BLACK_AND_ETHNIC_MINORITY_SCIENTISTS,
+  BLACK_LAW_STUDENTS_SOCIETY,
+  CANADIAN_SOCIETY,
+  CARIBBEAN_UNION,
+  CATHOLIC,
+  CHESS,
+  CIVIL_ENGINEERING,
+  COMPUTER_SCIENCE_SOCIETY,
+  CRAFT,
+  CRIMINOLOGY,
+  CULTURAL_ARTS,
+  DARTS_SOCIETY,
+  DEBATING,
+  DENTAL_SOCIETY,
+  EAST_AFRICAN,
+  EGYPTIAN,
+  ELECTRONIC_AND_ELECTRICAL_ENGINEERING,
+  ESPORTS,
+  FILIPINO,
+  FILMSOC,
+  FINTECH,
+  FRIENDS_OF_PALESTINE,
+  GAMES_DEVELOPMENT,
+  GERMAN,
+  HENNA_SOCIETY,
+  HIDE_AND_SEEK_SOCIETY,
+  HINDU,
+  ICE_SKATING_SOCIETY,
+  INDIAN,
+  IRAQI,
+  ISLAMIC,
+  ITALIAN,
+  JAIN_SOCIETY,
+  JAPAN_SOCIETY,
+  KICKBOXING,
+  KOREA,
+  MALAYALEE,
+  MALAYSIAN,
+  MATHSOC,
+  MEDTEC,
+  MIXED_MARTIAL_ARTS,
+  MUAY_THAI_BOXING,
+  NEPALESE,
+  NERDSOC,
+  NORTH_AFRICAN,
+  OMANI_SOCIETY,
+  PAKISTAN,
+  POWERLIFTING,
+  PSYCHOLOGY,
+  PUNJABI,
+  SAUDI,
+  SHOOTING,
+  SIKH,
+  SINGAPORE_SOCIETY,
+  SRI_LANKAN_SOCIETY,
+  SUDANESE_SOCIETY,
+  TAMIL,
+  TURKISH,
+  UKRAINIAN_SOCIETY,
+  VIDEO_GAMES_SOCIETY,
+  VIETNAMESE,
+  WAYFARERS_HIKING_SOCIETY,
+  WELSH,
+  WOMEN_IN_LAW,
+  WOMEN_IN_MEDICINE,
+  OTHER
 }
-
-relationship ManyToOne {
-  Activity{UserName} to Profile
-}
-
-relationship ManyToOne {
-	Activity{requesteduser} to User with builtInEntity // Many activities can be linked to multiple Profiles
-}
-
-relationship OneToMany {
-	Activity{booking} to Booking //One activity can have several bookings
-}
-
 
 entity ActivityMatch {
-    activityType ActivityType required,
-    status Decision required,
+  activityType ActivityType required,
+  status Decision required,
+  matchDate LocalDate required, // Just the date component
+  matchTime Instant required, // Just the time component
+  location String maxlength(100),
+  notes TextBlob,
+  createdAt Instant required,
+  responseAt Instant required,
 }
 
 enum Decision {
@@ -118,157 +206,263 @@ enum Decision {
 }
 
 relationship ManyToOne {
-	ActivityMatch{UserName} to Profile
+  ActivityMatch{matchRequestor} to Profile // Track who created the activity
 }
 
 relationship ManyToOne {
-    ActivityMatch{requestUser} to User with builtInEntity
-}
-relationship ManyToOne {
-    ActivityMatch{matchedUser} to User with builtInEntity
+  ActivityMatch{userDetails} to Profile
 }
 
 relationship ManyToOne {
-	ActivityMatch{matchedActivity} to Activity
-}
-
-entity Booking {
-    bookingName String required,
-    bookingStatus Status required,
-    bookingTime Instant required,
-    bookingDate Instant required,
-    phoneNum String required minlength(11) maxlength(11),
-    bookingType BookingType required,
-    numOfParticipants Integer required min(1),
-    bookStartTime Instant required,
-    bookEndTime Instant required
-}
-enum BookingType{
-	FOOTBALL_PITCH,
-	TENNIS_COURT,
-	BASKETBALL_COURT,
-	STUDY_SPACES,
-	EVENT_ROOMS,
-	DOJO,
-	SWIMMING_POOL,
-	SQUASH_COURT
+  ActivityMatch{matchedActivity} to Activity
 }
 
 relationship OneToOne {
-	Booking{bookingDoneBy} to Profile
+  ActivityMatch{ratings} to Ranking
 }
 
-relationship ManyToOne {
-	Booking{requestedUser} to User with builtInEntity
+// Activity entity with all fields
+entity Activity {
+  activityName String required minlength(1) maxlength(120),
+  activityType ActivityType required,
+  activityDate Instant required,
+  numberOfParticipants Integer required, // There can be logic that increments the number of participants of an event
+  maxNumberOfParticipants Integer required min(2),
+  location String required maxlength(95),
+  description TextBlob,
+  createdOn Instant required,
+  updatedOn Instant required,
+  status Status required,
+  coverImage ImageBlob,
+  isPaid Boolean required,
+  activityCost BigDecimal required min(0)
 }
 
+// Entity to track activity participation
+entity ActivityParticipant {
+  joinedDate Instant required,
+  status ParticipationStatus required
+}
+
+// Activity relationships
 relationship ManyToOne {
-	Booking{bookedActivity} to Activity
+  Activity{creator} to Profile // Track who created the activity
+}
+
+relationship OneToMany {
+  Activity{bookings} to Booking // One activity can have several bookings
+}
+
+// ActivityParticipant relationships for tracking users joining activities
+relationship ManyToOne {
+  ActivityParticipant{participant} to Profile, // The user who joined
+  ActivityParticipant{activity} to Activity // The activity they joined
+}
+
+// Activity-related enums
+enum ActivityType {
+  SOCIAL,
+  ACADEMIC,
+  SPORTS,
+  GYM,
+  OTHER
+}
+
+enum Status {
+  ANNOUNCED,
+  CURRENTLY_HAPPENING,
+  FINISHED,
+  CANCELED
+}
+
+enum ParticipationStatus {
+  PENDING,
+  CONFIRMED,
+  CANCELED
 }
 
 entity FriendsList {
-    friendRequest Decision required,
-    friendSince Instant required
+  requestTime Instant required,
+  requestStatus Decision required,
+  friendSince Instant required,
+  nickname String
 }
 
 relationship ManyToOne {
-	FriendsList{friends} to Profile
+  FriendsList{requestedByProfile} to Profile,
+  FriendsList{requestedToProfile} to Profile
 }
 
+entity Chat {
+  message TextBlob,
+  timestamp Instant required,
+  status MessageStatus required,
+  type MessageType required,
+  media ImageBlob,
+  isDeleted Boolean required,
+  createdOn Instant required,
+  updatedOn Instant
+}
+
+entity MessageThread {
+  isGroup Boolean required,
+  name String maxlength(100), // Only used for group chats
+  createdOn Instant required,
+  updatedOn Instant
+}
+
+enum MessageStatus {
+  SENT,
+  DELIVERED,
+  READ
+}
+
+enum MessageType {
+  TEXT,
+  IMAGE,
+  VIDEO,
+  FILE
+}
 
 relationship ManyToOne {
-    FriendsList{user} to User with builtInEntity,
-    FriendsList{friend} to User with builtInEntity
+  Chat{thread} to MessageThread,
+  Chat{sender} to Profile,
+  Chat{receiver} to Profile
 }
 
+relationship ManyToMany {
+  MessageThread{participants} to Profile
+}
+
+relationship OneToMany {
+  MessageThread{messages} to Chat
+}
+
+relationship OneToOne {
+  MessageThread{friendChat} to FriendsList
+}
+
+relationship OneToOne {
+  MessageThread{matchChat} to ActivityMatch
+}
 
 entity Ranking {
   reviewNumber Integer required,
   activityNumber Integer required,
   starAverage BigDecimal required min(0) max(5),
-  reliable Reliability required
+  reliable Boolean required
 }
-
-enum Reliability {
-  UNRELIABLE,
-  RELIABLE
-}
-
 entity Review {
   datePublished Instant required,
   star BigDecimal required min(0) max(5),
   text String minlength(0) maxlength(300)
 }
 relationship OneToOne {
-	Ranking{rankGiven} to Profile
-}
-
-relationship ManyToOne {
-	Review{reviewsGiven} to Profile
-}
-
-relationship ManyToOne {
-  Review{aboutUser} to User with builtInEntity,
-  Review{fromUser} to User with builtInEntity
-}
-relationship OneToOne {
-  Ranking{user} to User with builtInEntity
-}
-entity Chat {
-    message TextBlob required,
-    timestamp Instant required,
-    type ActionType required
-}
-
-enum ActionType{
-    UNMATCH,
-    REPORT
+  Ranking{rankGiven} to Profile
 }
 relationship ManyToOne {
-	Chat{chats} to Profile
-}
-
-relationship OneToOne {
-	Chat{friendChat} to FriendsList
-}
-
-relationship ManyToOne {
-    Chat{sender} to User with builtInEntity,
-    Chat{receiver} to User with builtInEntity,
+  Review{aboutUser} to Profile,
+  Review{fromUser} to Profile
 }
 
 entity Challenge {
   title String required minlength(3) maxlength(100),
   description TextBlob required,
-  category AchievementCategory required,
+  category Category required,
+  date LocalDate required,
   points Integer required min(1) max(100),
   badge ImageBlob required minbytes(10) maxbytes(1000000),
-  createdDate Instant required,
-  expiryDate Instant,
-  isCompleted Boolean required,
-  completedDate Instant,
-  isDisplayed Boolean,
+  completed Boolean required
 }
 
-enum AchievementCategory {
+enum Category {
   STUDY,
   SPORTS,
+  COMMUNITY,
+  PERSONAL_GROWTH,
   SOCIAL
 }
 
 relationship ManyToOne {
-	Challenge{challenges} to Profile
+  Challenge{assignedTo} to Profile,
+  Challenge{createdBy} to Profile
+}
+
+relationship OneToMany{
+  Challenge{activities} to Activity
+}
+
+enum EventType {
+  STUDY_SPACES,
+  EVENT_ROOMS,
+  FOOTBALL_PITCH,
+  TENNIS_COURT,
+  BASKETBALL_COURT,
+  DOJO,
+  SWIMMING_POOL,
+  SQUASH_COURT // ADD MORE IF NEEDED. IM NOT SURE IF THERES MORE.
+}
+
+enum BookingStatus {
+  CONFIRMED,
+  CANCELLED
+}
+
+enum AvailabilityStatus {
+  AVAILABLE,
+  FULL,
+  OCCUPIED,
+  BLOCKED,
+  MAINTENANCE
+}
+
+entity Event {
+  name String required,
+  value String required,
+  activityType ActivityType required,
+  minSize Integer required,
+  maxSize Integer required,
+  startTime Integer,
+  endTime Integer,
+  capacity Integer
+}
+
+entity TimeSlot {
+  date LocalDate required,
+  startHour Integer required,
+  endHour Integer required,
+  capacity Integer required,
+  remainingCapacity Integer,
+  status AvailabilityStatus required
+}
+
+
+entity Booking {
+  activityType ActivityType required,
+  eventType EventType required,
+  bookingDate LocalDate required,
+  partySize Integer required,
+  bookingStatus BookingStatus required,
+  createdAt Instant,
+  assignedAt Instant
+}
+
+entity Location {
+  name String required,
+  status AvailabilityStatus required,
+  capacity Integer required,
+  remainingCapacity Integer,
+  isCapacityBased Boolean required
 }
 
 relationship ManyToOne {
-	Challenge{challengedFriend} to FriendsList
+  TimeSlot{event} to Event
+  Booking{timeSlots} to TimeSlot
+  Booking{bookedActivity} to Activity
+  Booking{bookingLocation} to Location
+  Booking{creator} to Profile
 }
 
-relationship ManyToOne {
-	Challenge{challengedActivity} to Activity
-}
-
-relationship ManyToOne {
-	Challenge{creator} to User with builtInEntity
-	Challenge{recipient} to User with builtInEntity
+relationship OneToMany {
+  TimeSlot{bookingsList} to Booking
 }

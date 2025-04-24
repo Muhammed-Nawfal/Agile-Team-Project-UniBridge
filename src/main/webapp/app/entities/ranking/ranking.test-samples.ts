@@ -1,34 +1,34 @@
 import { IRanking, NewRanking } from './ranking.model';
 
 export const sampleWithRequiredData: IRanking = {
-  id: 7288,
-  reviewNumber: 19049,
-  activityNumber: 20128,
-  starAverage: 3.72,
-  reliable: 'RELIABLE',
+  id: 18939,
+  reviewNumber: 31576,
+  activityNumber: 4313,
+  starAverage: 2.97,
+  reliable: false,
 };
 
 export const sampleWithPartialData: IRanking = {
-  id: 21680,
-  reviewNumber: 16973,
-  activityNumber: 2387,
-  starAverage: 0.54,
-  reliable: 'RELIABLE',
+  id: 5288,
+  reviewNumber: 9151,
+  activityNumber: 8053,
+  starAverage: 2.37,
+  reliable: false,
 };
 
 export const sampleWithFullData: IRanking = {
-  id: 1628,
-  reviewNumber: 9814,
-  activityNumber: 6145,
-  starAverage: 4.09,
-  reliable: 'RELIABLE',
+  id: 16555,
+  reviewNumber: 17882,
+  activityNumber: 21142,
+  starAverage: 1.04,
+  reliable: false,
 };
 
 export const sampleWithNewData: NewRanking = {
-  reviewNumber: 31804,
-  activityNumber: 7079,
-  starAverage: 3.31,
-  reliable: 'RELIABLE',
+  reviewNumber: 3531,
+  activityNumber: 2946,
+  starAverage: 3.63,
+  reliable: false,
   id: null,
 };
 

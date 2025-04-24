@@ -11,7 +11,6 @@ import bham.team.IntegrationTest;
 import bham.team.domain.FriendsList;
 import bham.team.domain.enumeration.Decision;
 import bham.team.repository.FriendsListRepository;
-import bham.team.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
@@ -36,11 +35,17 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class FriendsListResourceIT {
 
-    private static final Decision DEFAULT_FRIEND_REQUEST = Decision.ACCEPT;
-    private static final Decision UPDATED_FRIEND_REQUEST = Decision.DECLINED;
+    private static final Instant DEFAULT_REQUEST_TIME = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_REQUEST_TIME = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+    private static final Decision DEFAULT_REQUEST_STATUS = Decision.ACCEPT;
+    private static final Decision UPDATED_REQUEST_STATUS = Decision.DECLINED;
 
     private static final Instant DEFAULT_FRIEND_SINCE = Instant.ofEpochMilli(0L);
     private static final Instant UPDATED_FRIEND_SINCE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+    private static final String DEFAULT_NICKNAME = "AAAAAAAAAA";
+    private static final String UPDATED_NICKNAME = "BBBBBBBBBB";
 
     private static final String ENTITY_API_URL = "/api/friends-lists";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -53,9 +58,6 @@ class FriendsListResourceIT {
 
     @Autowired
     private FriendsListRepository friendsListRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private EntityManager em;
@@ -74,7 +76,11 @@ class FriendsListResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static FriendsList createEntity() {
-        return new FriendsList().friendRequest(DEFAULT_FRIEND_REQUEST).friendSince(DEFAULT_FRIEND_SINCE);
+        return new FriendsList()
+            .requestTime(DEFAULT_REQUEST_TIME)
+            .requestStatus(DEFAULT_REQUEST_STATUS)
+            .friendSince(DEFAULT_FRIEND_SINCE)
+            .nickname(DEFAULT_NICKNAME);
     }
 
     /**
@@ -84,7 +90,11 @@ class FriendsListResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static FriendsList createUpdatedEntity() {
-        return new FriendsList().friendRequest(UPDATED_FRIEND_REQUEST).friendSince(UPDATED_FRIEND_SINCE);
+        return new FriendsList()
+            .requestTime(UPDATED_REQUEST_TIME)
+            .requestStatus(UPDATED_REQUEST_STATUS)
+            .friendSince(UPDATED_FRIEND_SINCE)
+            .nickname(UPDATED_NICKNAME);
     }
 
     @BeforeEach
@@ -141,10 +151,26 @@ class FriendsListResourceIT {
 
     @Test
     @Transactional
-    void checkFriendRequestIsRequired() throws Exception {
+    void checkRequestTimeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        friendsList.setFriendRequest(null);
+        friendsList.setRequestTime(null);
+
+        // Create the FriendsList, which fails.
+
+        restFriendsListMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(friendsList)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkRequestStatusIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        friendsList.setRequestStatus(null);
 
         // Create the FriendsList, which fails.
 
@@ -183,8 +209,10 @@ class FriendsListResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(friendsList.getId().intValue())))
-            .andExpect(jsonPath("$.[*].friendRequest").value(hasItem(DEFAULT_FRIEND_REQUEST.toString())))
-            .andExpect(jsonPath("$.[*].friendSince").value(hasItem(DEFAULT_FRIEND_SINCE.toString())));
+            .andExpect(jsonPath("$.[*].requestTime").value(hasItem(DEFAULT_REQUEST_TIME.toString())))
+            .andExpect(jsonPath("$.[*].requestStatus").value(hasItem(DEFAULT_REQUEST_STATUS.toString())))
+            .andExpect(jsonPath("$.[*].friendSince").value(hasItem(DEFAULT_FRIEND_SINCE.toString())))
+            .andExpect(jsonPath("$.[*].nickname").value(hasItem(DEFAULT_NICKNAME)));
     }
 
     @Test
@@ -199,8 +227,10 @@ class FriendsListResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(friendsList.getId().intValue()))
-            .andExpect(jsonPath("$.friendRequest").value(DEFAULT_FRIEND_REQUEST.toString()))
-            .andExpect(jsonPath("$.friendSince").value(DEFAULT_FRIEND_SINCE.toString()));
+            .andExpect(jsonPath("$.requestTime").value(DEFAULT_REQUEST_TIME.toString()))
+            .andExpect(jsonPath("$.requestStatus").value(DEFAULT_REQUEST_STATUS.toString()))
+            .andExpect(jsonPath("$.friendSince").value(DEFAULT_FRIEND_SINCE.toString()))
+            .andExpect(jsonPath("$.nickname").value(DEFAULT_NICKNAME));
     }
 
     @Test
@@ -222,7 +252,11 @@ class FriendsListResourceIT {
         FriendsList updatedFriendsList = friendsListRepository.findById(friendsList.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedFriendsList are not directly saved in db
         em.detach(updatedFriendsList);
-        updatedFriendsList.friendRequest(UPDATED_FRIEND_REQUEST).friendSince(UPDATED_FRIEND_SINCE);
+        updatedFriendsList
+            .requestTime(UPDATED_REQUEST_TIME)
+            .requestStatus(UPDATED_REQUEST_STATUS)
+            .friendSince(UPDATED_FRIEND_SINCE)
+            .nickname(UPDATED_NICKNAME);
 
         restFriendsListMockMvc
             .perform(
@@ -302,6 +336,8 @@ class FriendsListResourceIT {
         FriendsList partialUpdatedFriendsList = new FriendsList();
         partialUpdatedFriendsList.setId(friendsList.getId());
 
+        partialUpdatedFriendsList.requestTime(UPDATED_REQUEST_TIME).nickname(UPDATED_NICKNAME);
+
         restFriendsListMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedFriendsList.getId())
@@ -331,7 +367,11 @@ class FriendsListResourceIT {
         FriendsList partialUpdatedFriendsList = new FriendsList();
         partialUpdatedFriendsList.setId(friendsList.getId());
 
-        partialUpdatedFriendsList.friendRequest(UPDATED_FRIEND_REQUEST).friendSince(UPDATED_FRIEND_SINCE);
+        partialUpdatedFriendsList
+            .requestTime(UPDATED_REQUEST_TIME)
+            .requestStatus(UPDATED_REQUEST_STATUS)
+            .friendSince(UPDATED_FRIEND_SINCE)
+            .nickname(UPDATED_NICKNAME);
 
         restFriendsListMockMvc
             .perform(

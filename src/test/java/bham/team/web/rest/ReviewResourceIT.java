@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import bham.team.IntegrationTest;
 import bham.team.domain.Review;
 import bham.team.repository.ReviewRepository;
-import bham.team.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
@@ -57,9 +56,6 @@ class ReviewResourceIT {
 
     @Autowired
     private ReviewRepository reviewRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private EntityManager em;

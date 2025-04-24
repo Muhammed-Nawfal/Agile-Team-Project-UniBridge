@@ -5,6 +5,7 @@ import bham.team.domain.Authority;
 import bham.team.domain.Profile;
 import bham.team.domain.User;
 import bham.team.domain.enumeration.Course;
+import bham.team.domain.enumeration.University;
 import bham.team.repository.AuthorityRepository;
 import bham.team.repository.ProfileRepository;
 import bham.team.repository.UserRepository;
@@ -127,7 +128,7 @@ public class UserService {
         profile.setUser(newUser);
         profile.setCourse(Course.COMPUTER_SCIENCE); // Default value
         profile.setCourseYear(1L); // Default value
-        profile.setUniversity("University of Birmingham"); // Default value
+        profile.setUniversity(University.UNIVERSITY_OF_BIRMINGHAM); // Default value
         profileRepository.save(profile);
 
         String encryptedPassword = passwordEncoder.encode(password);

@@ -1,117 +1,121 @@
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, NgZone, OnInit, inject } from '@angular/core';
+import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
+import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
+import SharedModule from 'app/shared/shared.module';
+import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
+import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
+import { IBooking } from '../booking.model';
+import { BookingService, EntityArrayResponseType } from '../service/booking.service';
+import { BookingDeleteDialogComponent } from '../delete/booking-delete-dialog.component';
 
 @Component({
   standalone: true,
   selector: 'jhi-booking',
   templateUrl: './booking.component.html',
-  styleUrls: ['./booking.component.scss'],
-  imports: [RouterModule, FormsModule, CommonModule],
+  imports: [
+    RouterModule,
+    FormsModule,
+    SharedModule,
+    SortDirective,
+    SortByDirective,
+    DurationPipe,
+    FormatMediumDatetimePipe,
+    FormatMediumDatePipe,
+  ],
 })
-export class BookingComponent {
-  activities = [
-    {
-      name: 'Social',
-      value: 'Social',
-      events: [
-        { name: 'Study Spaces', value: 'Study_Spaces', min: 2, max: 8, startTime: 9, endTime: 22 },
-        { name: 'Event Rooms', value: 'Event_Rooms', min: 10, max: 20, startTime: 9, endTime: 22 },
-      ],
-    },
-    {
-      name: 'Sports',
-      value: 'Sports',
-      events: [
-        { name: 'Football Pitch', value: 'Football_Pitch', min: 1, max: 22, startTime: 8, endTime: 24 },
-        { name: 'Tennis Court', value: 'Tennis_Court', min: 2, max: 4, startTime: 8, endTime: 22 },
-        { name: 'Basketball Court', value: 'Basketball_Court', min: 1, max: 10, startTime: 8, endTime: 24 },
-        { name: 'DOJO', value: 'DOJO', min: 1, max: 20, startTime: 8, endTime: 22 },
-        { name: 'Swimming Pool', value: 'Swimming_Pool', min: 1, max: 20, startTime: 8, endTime: 24 },
-        { name: 'Squash Court', value: 'Squash_Court', min: 2, max: 4, startTime: 8, endTime: 24 },
-      ],
-    },
-    { name: 'Academic', value: 'Academic', events: [] },
-    { name: 'Gym', value: 'Gym', events: [] },
-    { name: 'Other', value: 'Other', events: [] },
-  ];
+export class BookingComponent implements OnInit {
+  subscription: Subscription | null = null;
+  bookings?: IBooking[];
+  isLoading = false;
 
-  events: any[] = [];
-  partySizes: number[] = [];
-  timeSlots: string[] = [];
-  selectedTimeSlots: string[] = [];
-  showConfirmation = false;
+  sortState = sortStateSignal({});
 
-  // Hardcoded upcoming activities
-  upcomingActivities = [
-    { name: 'Basketball', icon: '🏀', time: '18:00 - 19:00' },
-    { name: 'Swimming', icon: '🏊‍♂️', time: '17:00 - 18:00' },
-    { name: 'Tennis', icon: '🎾', time: '16:00 - 17:00' },
-  ];
+  public readonly router = inject(Router);
+  protected readonly bookingService = inject(BookingService);
+  protected readonly activatedRoute = inject(ActivatedRoute);
+  protected readonly sortService = inject(SortService);
+  protected modalService = inject(NgbModal);
+  protected ngZone = inject(NgZone);
 
-  onActivityChange(event: any): void {
-    const activityValue = event.target.value;
-    const selectedActivity = this.activities.find(act => act.value === activityValue);
+  trackId = (item: IBooking): number => this.bookingService.getBookingIdentifier(item);
 
-    this.events = selectedActivity ? selectedActivity.events : [];
-    this.partySizes = [];
-    this.timeSlots = [];
-    this.selectedTimeSlots = [];
+  ngOnInit(): void {
+    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
+      .pipe(
+        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
+        tap(() => {
+          if (!this.bookings || this.bookings.length === 0) {
+            this.load();
+          }
+        }),
+      )
+      .subscribe();
   }
 
-  onEventChange(event: any): void {
-    const eventValue = event.target.value;
-    let selectedEvent = null;
-
-    for (const activity of this.activities) {
-      const foundEvent = activity.events.find(e => e.value === eventValue);
-      if (foundEvent) {
-        selectedEvent = foundEvent;
-        break;
-      }
-    }
-
-    if (selectedEvent) {
-      this.partySizes = [];
-      for (let i = selectedEvent.min; i <= selectedEvent.max; i++) {
-        this.partySizes.push(i);
-      }
-
-      this.generateTimeSlots(selectedEvent.startTime, selectedEvent.endTime);
-    } else {
-      this.partySizes = [];
-      this.timeSlots = [];
-    }
+  delete(booking: IBooking): void {
+    const modalRef = this.modalService.open(BookingDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.booking = booking;
+    // unsubscribe not needed because closed completes on modal close
+    modalRef.closed
+      .pipe(
+        filter(reason => reason === ITEM_DELETED_EVENT),
+        tap(() => this.load()),
+      )
+      .subscribe();
   }
 
-  generateTimeSlots(startTime: number, endTime: number): void {
-    this.timeSlots = [];
-    const actualEndTime = endTime === 24 ? 24 : endTime;
-
-    for (let hour = startTime; hour < actualEndTime; hour++) {
-      const startHour = hour.toString().padStart(2, '0');
-      const endHour = hour + 1 > 23 ? '00' : (hour + 1).toString().padStart(2, '0');
-      const timeSlot = `${startHour}:00 - ${endHour}:00`;
-      this.timeSlots.push(timeSlot);
-    }
+  load(): void {
+    this.queryBackend().subscribe({
+      next: (res: EntityArrayResponseType) => {
+        this.onResponseSuccess(res);
+      },
+    });
   }
 
-  onTimeSlotChange(event: any): void {
-    const value = event.target.value;
-    const checked = event.target.checked;
-
-    if (checked) {
-      if (!this.selectedTimeSlots.includes(value)) {
-        this.selectedTimeSlots.push(value);
-      }
-    } else {
-      this.selectedTimeSlots = this.selectedTimeSlots.filter(slot => slot !== value);
-    }
+  navigateToWithComponentValues(event: SortState): void {
+    this.handleNavigation(event);
   }
 
-  onSubmit(): void {
-    alert('Booking submitted!');
-    window.location.reload();
+  protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
+    this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
+  }
+
+  protected onResponseSuccess(response: EntityArrayResponseType): void {
+    const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
+    this.bookings = this.refineData(dataFromBody);
+  }
+
+  protected refineData(data: IBooking[]): IBooking[] {
+    const { predicate, order } = this.sortState();
+    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
+  }
+
+  protected fillComponentAttributesFromResponseBody(data: IBooking[] | null): IBooking[] {
+    return data ?? [];
+  }
+
+  protected queryBackend(): Observable<EntityArrayResponseType> {
+    this.isLoading = true;
+    const queryObject: any = {
+      sort: this.sortService.buildSortParam(this.sortState()),
+    };
+    return this.bookingService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
+  }
+
+  protected handleNavigation(sortState: SortState): void {
+    const queryParamsObj = {
+      sort: this.sortService.buildSortParam(sortState),
+    };
+
+    this.ngZone.run(() => {
+      this.router.navigate(['./'], {
+        relativeTo: this.activatedRoute,
+        queryParams: queryParamsObj,
+      });
+    });
   }
 }

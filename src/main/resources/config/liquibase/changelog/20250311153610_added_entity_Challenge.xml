@@ -23,6 +23,9 @@
             <column name="category" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
+            <column name="date" type="date">
+                <constraints nullable="false" />
+            </column>
             <column name="points" type="integer">
                 <constraints nullable="false" />
             </column>
@@ -32,41 +35,17 @@
             <column name="badge_content_type" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="created_date" type="${datetimeType}">
+            <column name="completed" type="boolean">
                 <constraints nullable="false" />
             </column>
-            <column name="expiry_date" type="${datetimeType}">
+            <column name="assigned_to_id" type="bigint">
                 <constraints nullable="true" />
             </column>
-            <column name="is_completed" type="boolean">
-                <constraints nullable="false" />
-            </column>
-            <column name="completed_date" type="${datetimeType}">
-                <constraints nullable="true" />
-            </column>
-            <column name="is_displayed" type="boolean">
-                <constraints nullable="true" />
-            </column>
-            <column name="challenges_id" type="bigint">
-                <constraints nullable="true" />
-            </column>
-            <column name="challenged_friend_id" type="bigint">
-                <constraints nullable="true" />
-            </column>
-            <column name="challenged_activity_id" type="bigint">
-                <constraints nullable="true" />
-            </column>
-            <column name="creator_id" type="bigint">
-                <constraints nullable="true" />
-            </column>
-            <column name="recipient_id" type="bigint">
+            <column name="created_by_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="challenge" columnName="created_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="challenge" columnName="expiry_date" columnDataType="${datetimeType}"/>
-        <dropDefaultValue tableName="challenge" columnName="completed_date" columnDataType="${datetimeType}"/>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
@@ -89,14 +68,11 @@
             <column name="title" type="string"/>
             <column name="description" type="clob"/>
             <column name="category" type="string"/>
+            <column name="date" type="date"/>
             <column name="points" type="numeric"/>
             <column name="badge" type="blob"/>
             <column name="badge_content_type" type="string"/>
-            <column name="created_date" type="date"/>
-            <column name="expiry_date" type="date"/>
-            <column name="is_completed" type="boolean"/>
-            <column name="completed_date" type="date"/>
-            <column name="is_displayed" type="boolean"/>
+            <column name="completed" type="boolean"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

@@ -18,9 +18,14 @@
     },
     {
       "fieldName": "category",
-      "fieldType": "AchievementCategory",
+      "fieldType": "Category",
       "fieldValidateRules": ["required"],
-      "fieldValues": "STUDY,SPORTS,SOCIAL"
+      "fieldValues": "STUDY,SPORTS,COMMUNITY,PERSONAL_GROWTH,SOCIAL"
+    },
+    {
+      "fieldName": "date",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
     },
     {
       "fieldName": "points",
@@ -37,61 +42,30 @@
       "fieldValidateRulesMinbytes": "10"
     },
     {
-      "fieldName": "createdDate",
-      "fieldType": "Instant",
-      "fieldValidateRules": ["required"]
-    },
-    {
-      "fieldName": "expiryDate",
-      "fieldType": "Instant"
-    },
-    {
-      "fieldName": "isCompleted",
+      "fieldName": "completed",
       "fieldType": "Boolean",
       "fieldValidateRules": ["required"]
-    },
-    {
-      "fieldName": "completedDate",
-      "fieldType": "Instant"
-    },
-    {
-      "fieldName": "isDisplayed",
-      "fieldType": "Boolean"
     }
   ],
   "name": "Challenge",
   "relationships": [
     {
-      "otherEntityName": "profile",
-      "relationshipName": "challenges",
-      "relationshipSide": "left",
-      "relationshipType": "many-to-one"
-    },
-    {
-      "otherEntityName": "friendsList",
-      "relationshipName": "challengedFriend",
-      "relationshipSide": "left",
-      "relationshipType": "many-to-one"
-    },
-    {
       "otherEntityName": "activity",
-      "relationshipName": "challengedActivity",
+      "relationshipName": "activities",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "profile",
+      "relationshipName": "assignedTo",
       "relationshipSide": "left",
       "relationshipType": "many-to-one"
     },
     {
-      "otherEntityName": "user",
-      "relationshipName": "creator",
+      "otherEntityName": "profile",
+      "relationshipName": "createdBy",
       "relationshipSide": "left",
-      "relationshipType": "many-to-one",
-      "relationshipWithBuiltInEntity": true
-    },
-    {
-      "otherEntityName": "user",
-      "relationshipName": "recipient",
-      "relationshipSide": "left",
-      "relationshipType": "many-to-one",
-      "relationshipWithBuiltInEntity": true
+      "relationshipType": "many-to-one"
     }
   ],
   "searchEngine": "no"

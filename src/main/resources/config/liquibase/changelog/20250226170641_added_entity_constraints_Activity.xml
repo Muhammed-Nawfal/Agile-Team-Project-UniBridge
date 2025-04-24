@@ -10,18 +10,18 @@
     -->
     <changeSet id="20250226170641-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="user_name_id"
+        <addForeignKeyConstraint baseColumnNames="creator_id"
                                  baseTableName="activity"
-                                 constraintName="fk_activity__user_name_id"
+                                 constraintName="fk_activity__creator_id"
                                  referencedColumnNames="id"
                                  referencedTableName="profile"
                                  />
 
-        <addForeignKeyConstraint baseColumnNames="requesteduser_id"
+        <addForeignKeyConstraint baseColumnNames="challenge_id"
                                  baseTableName="activity"
-                                 constraintName="fk_activity__requesteduser_id"
+                                 constraintName="fk_activity__challenge_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="jhi_user"
+                                 referencedTableName="challenge"
                                  />
     </changeSet>
 </databaseChangeLog>

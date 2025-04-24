@@ -2,7 +2,9 @@ package bham.team.domain;
 
 import static bham.team.domain.ActivityTestSamples.*;
 import static bham.team.domain.BookingTestSamples.*;
+import static bham.team.domain.LocationTestSamples.*;
 import static bham.team.domain.ProfileTestSamples.*;
+import static bham.team.domain.TimeSlotTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import bham.team.web.rest.TestUtil;
@@ -25,15 +27,15 @@ class BookingTest {
     }
 
     @Test
-    void bookingDoneByTest() {
+    void timeSlotsTest() {
         Booking booking = getBookingRandomSampleGenerator();
-        Profile profileBack = getProfileRandomSampleGenerator();
+        TimeSlot timeSlotBack = getTimeSlotRandomSampleGenerator();
 
-        booking.setBookingDoneBy(profileBack);
-        assertThat(booking.getBookingDoneBy()).isEqualTo(profileBack);
+        booking.setTimeSlots(timeSlotBack);
+        assertThat(booking.getTimeSlots()).isEqualTo(timeSlotBack);
 
-        booking.bookingDoneBy(null);
-        assertThat(booking.getBookingDoneBy()).isNull();
+        booking.timeSlots(null);
+        assertThat(booking.getTimeSlots()).isNull();
     }
 
     @Test
@@ -49,6 +51,30 @@ class BookingTest {
     }
 
     @Test
+    void bookingLocationTest() {
+        Booking booking = getBookingRandomSampleGenerator();
+        Location locationBack = getLocationRandomSampleGenerator();
+
+        booking.setBookingLocation(locationBack);
+        assertThat(booking.getBookingLocation()).isEqualTo(locationBack);
+
+        booking.bookingLocation(null);
+        assertThat(booking.getBookingLocation()).isNull();
+    }
+
+    @Test
+    void creatorTest() {
+        Booking booking = getBookingRandomSampleGenerator();
+        Profile profileBack = getProfileRandomSampleGenerator();
+
+        booking.setCreator(profileBack);
+        assertThat(booking.getCreator()).isEqualTo(profileBack);
+
+        booking.creator(null);
+        assertThat(booking.getCreator()).isNull();
+    }
+
+    @Test
     void activityTest() {
         Booking booking = getBookingRandomSampleGenerator();
         Activity activityBack = getActivityRandomSampleGenerator();
@@ -58,5 +84,17 @@ class BookingTest {
 
         booking.activity(null);
         assertThat(booking.getActivity()).isNull();
+    }
+
+    @Test
+    void timeSlotTest() {
+        Booking booking = getBookingRandomSampleGenerator();
+        TimeSlot timeSlotBack = getTimeSlotRandomSampleGenerator();
+
+        booking.setTimeSlot(timeSlotBack);
+        assertThat(booking.getTimeSlot()).isEqualTo(timeSlotBack);
+
+        booking.timeSlot(null);
+        assertThat(booking.getTimeSlot()).isNull();
     }
 }
