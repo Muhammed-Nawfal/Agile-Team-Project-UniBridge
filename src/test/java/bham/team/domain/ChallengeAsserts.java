@@ -50,14 +50,11 @@ public class ChallengeAsserts {
             .satisfies(e -> assertThat(e.getTitle()).as("check title").isEqualTo(actual.getTitle()))
             .satisfies(e -> assertThat(e.getDescription()).as("check description").isEqualTo(actual.getDescription()))
             .satisfies(e -> assertThat(e.getCategory()).as("check category").isEqualTo(actual.getCategory()))
+            .satisfies(e -> assertThat(e.getDate()).as("check date").isEqualTo(actual.getDate()))
             .satisfies(e -> assertThat(e.getPoints()).as("check points").isEqualTo(actual.getPoints()))
             .satisfies(e -> assertThat(e.getBadge()).as("check badge").isEqualTo(actual.getBadge()))
             .satisfies(e -> assertThat(e.getBadgeContentType()).as("check badge contenty type").isEqualTo(actual.getBadgeContentType()))
-            .satisfies(e -> assertThat(e.getCreatedDate()).as("check createdDate").isEqualTo(actual.getCreatedDate()))
-            .satisfies(e -> assertThat(e.getExpiryDate()).as("check expiryDate").isEqualTo(actual.getExpiryDate()))
-            .satisfies(e -> assertThat(e.getIsCompleted()).as("check isCompleted").isEqualTo(actual.getIsCompleted()))
-            .satisfies(e -> assertThat(e.getCompletedDate()).as("check completedDate").isEqualTo(actual.getCompletedDate()))
-            .satisfies(e -> assertThat(e.getIsDisplayed()).as("check isDisplayed").isEqualTo(actual.getIsDisplayed()));
+            .satisfies(e -> assertThat(e.getCompleted()).as("check completed").isEqualTo(actual.getCompleted()));
     }
 
     /**
@@ -69,8 +66,7 @@ public class ChallengeAsserts {
     public static void assertChallengeUpdatableRelationshipsEquals(Challenge expected, Challenge actual) {
         assertThat(expected)
             .as("Verify Challenge relationships")
-            .satisfies(e -> assertThat(e.getChallenges()).as("check challenges").isEqualTo(actual.getChallenges()))
-            .satisfies(e -> assertThat(e.getChallengedFriend()).as("check challengedFriend").isEqualTo(actual.getChallengedFriend()))
-            .satisfies(e -> assertThat(e.getChallengedActivity()).as("check challengedActivity").isEqualTo(actual.getChallengedActivity()));
+            .satisfies(e -> assertThat(e.getAssignedTo()).as("check assignedTo").isEqualTo(actual.getAssignedTo()))
+            .satisfies(e -> assertThat(e.getCreatedBy()).as("check createdBy").isEqualTo(actual.getCreatedBy()));
     }
 }

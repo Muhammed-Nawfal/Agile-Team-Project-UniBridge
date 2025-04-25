@@ -11,7 +11,8 @@ import { IFriendsList, NewFriendsList } from '../friends-list.model';
 
 export type PartialUpdateFriendsList = Partial<IFriendsList> & Pick<IFriendsList, 'id'>;
 
-type RestOf<T extends IFriendsList | NewFriendsList> = Omit<T, 'friendSince'> & {
+type RestOf<T extends IFriendsList | NewFriendsList> = Omit<T, 'requestTime' | 'friendSince'> & {
+  requestTime?: string | null;
   friendSince?: string | null;
 };
 
@@ -100,6 +101,7 @@ export class FriendsListService {
   protected convertDateFromClient<T extends IFriendsList | NewFriendsList | PartialUpdateFriendsList>(friendsList: T): RestOf<T> {
     return {
       ...friendsList,
+      requestTime: friendsList.requestTime?.toJSON() ?? null,
       friendSince: friendsList.friendSince?.toJSON() ?? null,
     };
   }
@@ -107,6 +109,7 @@ export class FriendsListService {
   protected convertDateFromServer(restFriendsList: RestFriendsList): IFriendsList {
     return {
       ...restFriendsList,
+      requestTime: restFriendsList.requestTime ? dayjs(restFriendsList.requestTime) : undefined,
       friendSince: restFriendsList.friendSince ? dayjs(restFriendsList.friendSince) : undefined,
     };
   }

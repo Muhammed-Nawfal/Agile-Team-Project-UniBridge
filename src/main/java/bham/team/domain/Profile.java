@@ -3,13 +3,18 @@ package bham.team.domain;
 import bham.team.domain.enumeration.ActivityType;
 import bham.team.domain.enumeration.Course;
 import bham.team.domain.enumeration.GymLocation;
+import bham.team.domain.enumeration.PreferredEvents;
 import bham.team.domain.enumeration.PreferredTime;
 import bham.team.domain.enumeration.Skill;
+import bham.team.domain.enumeration.Society;
 import bham.team.domain.enumeration.Sports;
+import bham.team.domain.enumeration.University;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -25,8 +30,22 @@ public class Profile implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
     private Long id;
+
+    @NotNull
+    @Column(name = "login", nullable = false, unique = true)
+    private String login;
+
+    @NotNull
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @NotNull
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
 
     @Lob
     @Column(name = "bio")
@@ -50,10 +69,9 @@ public class Profile implements Serializable {
     @Column(name = "course_year", nullable = false)
     private Long courseYear;
 
-    @NotNull
-    @Size(min = 1, max = 50)
-    @Column(name = "university", length = 50, nullable = false)
-    private String university;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "university")
+    private University university;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gym_skill")
@@ -83,11 +101,13 @@ public class Profile implements Serializable {
     @Column(name = "sports_time")
     private PreferredTime sportsTime;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "preferred_society")
-    private String preferredSociety;
+    private Society preferredSociety;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "preferred_events")
-    private String preferredEvents;
+    private PreferredEvents preferredEvents;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "events_time")
@@ -101,28 +121,14 @@ public class Profile implements Serializable {
     @JoinColumn(unique = true)
     private User user;
 
-    @JsonIgnoreProperties(value = { "bookingDoneBy", "requestedUser", "bookedActivity", "activity" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "bookingDoneBy")
-    private Booking booking;
-
-    @JsonIgnoreProperties(value = { "rankGiven", "user" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "rankGiven", "activityMatch" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "rankGiven")
     private Ranking ranking;
 
-    @Transient
-    public String getUserFirstName() {
-        return this.user != null ? this.user.getFirstName() : null;
-    }
-
-    @Transient
-    public String getUserLastName() {
-        return this.user != null ? this.user.getLastName() : null;
-    }
-
-    @Transient
-    public String getUserLogin() {
-        return this.user != null ? this.user.getLogin() : null;
-    }
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "participants")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "friendChat", "matchChat", "messages", "participants" }, allowSetters = true)
+    private Set<MessageThread> messageThreads = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -137,6 +143,45 @@ public class Profile implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getLogin() {
+        return this.login;
+    }
+
+    public Profile login(String login) {
+        this.setLogin(login);
+        return this;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getFirstName() {
+        return this.firstName;
+    }
+
+    public Profile firstName(String firstName) {
+        this.setFirstName(firstName);
+        return this;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return this.lastName;
+    }
+
+    public Profile lastName(String lastName) {
+        this.setLastName(lastName);
+        return this;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getBio() {
@@ -204,16 +249,16 @@ public class Profile implements Serializable {
         this.courseYear = courseYear;
     }
 
-    public String getUniversity() {
+    public University getUniversity() {
         return this.university;
     }
 
-    public Profile university(String university) {
+    public Profile university(University university) {
         this.setUniversity(university);
         return this;
     }
 
-    public void setUniversity(String university) {
+    public void setUniversity(University university) {
         this.university = university;
     }
 
@@ -308,29 +353,29 @@ public class Profile implements Serializable {
         this.sportsTime = sportsTime;
     }
 
-    public String getPreferredSociety() {
+    public Society getPreferredSociety() {
         return this.preferredSociety;
     }
 
-    public Profile preferredSociety(String preferredSociety) {
+    public Profile preferredSociety(Society preferredSociety) {
         this.setPreferredSociety(preferredSociety);
         return this;
     }
 
-    public void setPreferredSociety(String preferredSociety) {
+    public void setPreferredSociety(Society preferredSociety) {
         this.preferredSociety = preferredSociety;
     }
 
-    public String getPreferredEvents() {
+    public PreferredEvents getPreferredEvents() {
         return this.preferredEvents;
     }
 
-    public Profile preferredEvents(String preferredEvents) {
+    public Profile preferredEvents(PreferredEvents preferredEvents) {
         this.setPreferredEvents(preferredEvents);
         return this;
     }
 
-    public void setPreferredEvents(String preferredEvents) {
+    public void setPreferredEvents(PreferredEvents preferredEvents) {
         this.preferredEvents = preferredEvents;
     }
 
@@ -373,25 +418,6 @@ public class Profile implements Serializable {
         return this;
     }
 
-    public Booking getBooking() {
-        return this.booking;
-    }
-
-    public void setBooking(Booking booking) {
-        if (this.booking != null) {
-            this.booking.setBookingDoneBy(null);
-        }
-        if (booking != null) {
-            booking.setBookingDoneBy(this);
-        }
-        this.booking = booking;
-    }
-
-    public Profile booking(Booking booking) {
-        this.setBooking(booking);
-        return this;
-    }
-
     public Ranking getRanking() {
         return this.ranking;
     }
@@ -408,6 +434,37 @@ public class Profile implements Serializable {
 
     public Profile ranking(Ranking ranking) {
         this.setRanking(ranking);
+        return this;
+    }
+
+    public Set<MessageThread> getMessageThreads() {
+        return this.messageThreads;
+    }
+
+    public void setMessageThreads(Set<MessageThread> messageThreads) {
+        if (this.messageThreads != null) {
+            this.messageThreads.forEach(i -> i.removeParticipants(this));
+        }
+        if (messageThreads != null) {
+            messageThreads.forEach(i -> i.addParticipants(this));
+        }
+        this.messageThreads = messageThreads;
+    }
+
+    public Profile messageThreads(Set<MessageThread> messageThreads) {
+        this.setMessageThreads(messageThreads);
+        return this;
+    }
+
+    public Profile addMessageThread(MessageThread messageThread) {
+        this.messageThreads.add(messageThread);
+        messageThread.getParticipants().add(this);
+        return this;
+    }
+
+    public Profile removeMessageThread(MessageThread messageThread) {
+        this.messageThreads.remove(messageThread);
+        messageThread.getParticipants().remove(this);
         return this;
     }
 
@@ -435,9 +492,9 @@ public class Profile implements Serializable {
     public String toString() {
         return "Profile{" +
             "id=" + getId() +
-            ", userLogin='" + getUserLogin() + "'" +
-            ", userFirstName='" + getUserFirstName() + "'" +
-            ", userLastName='" + getUserLastName() + "'" +
+            ", login='" + getLogin() + "'" +
+            ", firstName='" + getFirstName() + "'" +
+            ", lastName='" + getLastName() + "'" +
             ", bio='" + getBio() + "'" +
             ", profilePicture='" + getProfilePicture() + "'" +
             ", profilePictureContentType='" + getProfilePictureContentType() + "'" +

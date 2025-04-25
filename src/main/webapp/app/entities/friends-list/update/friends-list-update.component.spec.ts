@@ -6,10 +6,8 @@ import { Subject, from, of } from 'rxjs';
 
 import { IProfile } from 'app/entities/profile/profile.model';
 import { ProfileService } from 'app/entities/profile/service/profile.service';
-import { IUser } from 'app/entities/user/user.model';
-import { UserService } from 'app/entities/user/service/user.service';
-import { IFriendsList } from '../friends-list.model';
 import { FriendsListService } from '../service/friends-list.service';
+import { IFriendsList } from '../friends-list.model';
 import { FriendsListFormService } from './friends-list-form.service';
 
 import { FriendsListUpdateComponent } from './friends-list-update.component';
@@ -21,7 +19,6 @@ describe('FriendsList Management Update Component', () => {
   let friendsListFormService: FriendsListFormService;
   let friendsListService: FriendsListService;
   let profileService: ProfileService;
-  let userService: UserService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -45,7 +42,6 @@ describe('FriendsList Management Update Component', () => {
     friendsListFormService = TestBed.inject(FriendsListFormService);
     friendsListService = TestBed.inject(FriendsListService);
     profileService = TestBed.inject(ProfileService);
-    userService = TestBed.inject(UserService);
 
     comp = fixture.componentInstance;
   });
@@ -53,12 +49,14 @@ describe('FriendsList Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call Profile query and add missing value', () => {
       const friendsList: IFriendsList = { id: 456 };
-      const friends: IProfile = { id: 14334 };
-      friendsList.friends = friends;
+      const requestedByProfile: IProfile = { id: 3679 };
+      friendsList.requestedByProfile = requestedByProfile;
+      const requestedToProfile: IProfile = { id: 20110 };
+      friendsList.requestedToProfile = requestedToProfile;
 
-      const profileCollection: IProfile[] = [{ id: 7866 }];
+      const profileCollection: IProfile[] = [{ id: 27972 }];
       jest.spyOn(profileService, 'query').mockReturnValue(of(new HttpResponse({ body: profileCollection })));
-      const additionalProfiles = [friends];
+      const additionalProfiles = [requestedByProfile, requestedToProfile];
       const expectedCollection: IProfile[] = [...additionalProfiles, ...profileCollection];
       jest.spyOn(profileService, 'addProfileToCollectionIfMissing').mockReturnValue(expectedCollection);
 
@@ -73,45 +71,18 @@ describe('FriendsList Management Update Component', () => {
       expect(comp.profilesSharedCollection).toEqual(expectedCollection);
     });
 
-    it('Should call User query and add missing value', () => {
-      const friendsList: IFriendsList = { id: 456 };
-      const user: IUser = { id: 14926 };
-      friendsList.user = user;
-      const friend: IUser = { id: 10849 };
-      friendsList.friend = friend;
-
-      const userCollection: IUser[] = [{ id: 5308 }];
-      jest.spyOn(userService, 'query').mockReturnValue(of(new HttpResponse({ body: userCollection })));
-      const additionalUsers = [user, friend];
-      const expectedCollection: IUser[] = [...additionalUsers, ...userCollection];
-      jest.spyOn(userService, 'addUserToCollectionIfMissing').mockReturnValue(expectedCollection);
-
-      activatedRoute.data = of({ friendsList });
-      comp.ngOnInit();
-
-      expect(userService.query).toHaveBeenCalled();
-      expect(userService.addUserToCollectionIfMissing).toHaveBeenCalledWith(
-        userCollection,
-        ...additionalUsers.map(expect.objectContaining),
-      );
-      expect(comp.usersSharedCollection).toEqual(expectedCollection);
-    });
-
     it('Should update editForm', () => {
       const friendsList: IFriendsList = { id: 456 };
-      const friends: IProfile = { id: 23162 };
-      friendsList.friends = friends;
-      const user: IUser = { id: 26553 };
-      friendsList.user = user;
-      const friend: IUser = { id: 19377 };
-      friendsList.friend = friend;
+      const requestedByProfile: IProfile = { id: 25871 };
+      friendsList.requestedByProfile = requestedByProfile;
+      const requestedToProfile: IProfile = { id: 21640 };
+      friendsList.requestedToProfile = requestedToProfile;
 
       activatedRoute.data = of({ friendsList });
       comp.ngOnInit();
 
-      expect(comp.profilesSharedCollection).toContain(friends);
-      expect(comp.usersSharedCollection).toContain(user);
-      expect(comp.usersSharedCollection).toContain(friend);
+      expect(comp.profilesSharedCollection).toContain(requestedByProfile);
+      expect(comp.profilesSharedCollection).toContain(requestedToProfile);
       expect(comp.friendsList).toEqual(friendsList);
     });
   });
@@ -192,16 +163,6 @@ describe('FriendsList Management Update Component', () => {
         jest.spyOn(profileService, 'compareProfile');
         comp.compareProfile(entity, entity2);
         expect(profileService.compareProfile).toHaveBeenCalledWith(entity, entity2);
-      });
-    });
-
-    describe('compareUser', () => {
-      it('Should forward to userService', () => {
-        const entity = { id: 123 };
-        const entity2 = { id: 456 };
-        jest.spyOn(userService, 'compareUser');
-        comp.compareUser(entity, entity2);
-        expect(userService.compareUser).toHaveBeenCalledWith(entity, entity2);
       });
     });
   });

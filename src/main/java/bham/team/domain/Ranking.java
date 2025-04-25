@@ -1,6 +1,5 @@
 package bham.team.domain;
 
-import bham.team.domain.enumeration.Reliability;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -41,18 +40,17 @@ public class Ranking implements Serializable {
     private BigDecimal starAverage;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
     @Column(name = "reliable", nullable = false)
-    private Reliability reliable;
+    private Boolean reliable;
 
-    @JsonIgnoreProperties(value = { "user", "booking", "ranking" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "user", "ranking", "messageThreads" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Profile rankGiven;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(unique = true)
-    private User user;
+    @JsonIgnoreProperties(value = { "ratings", "matchRequestor", "userDetails", "matchedActivity", "messageThread" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "ratings")
+    private ActivityMatch activityMatch;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -108,16 +106,16 @@ public class Ranking implements Serializable {
         this.starAverage = starAverage;
     }
 
-    public Reliability getReliable() {
+    public Boolean getReliable() {
         return this.reliable;
     }
 
-    public Ranking reliable(Reliability reliable) {
+    public Ranking reliable(Boolean reliable) {
         this.setReliable(reliable);
         return this;
     }
 
-    public void setReliable(Reliability reliable) {
+    public void setReliable(Boolean reliable) {
         this.reliable = reliable;
     }
 
@@ -134,16 +132,22 @@ public class Ranking implements Serializable {
         return this;
     }
 
-    public User getUser() {
-        return this.user;
+    public ActivityMatch getActivityMatch() {
+        return this.activityMatch;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setActivityMatch(ActivityMatch activityMatch) {
+        if (this.activityMatch != null) {
+            this.activityMatch.setRatings(null);
+        }
+        if (activityMatch != null) {
+            activityMatch.setRatings(this);
+        }
+        this.activityMatch = activityMatch;
     }
 
-    public Ranking user(User user) {
-        this.setUser(user);
+    public Ranking activityMatch(ActivityMatch activityMatch) {
+        this.setActivityMatch(activityMatch);
         return this;
     }
 

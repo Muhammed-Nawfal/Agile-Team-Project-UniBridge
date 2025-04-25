@@ -63,14 +63,14 @@ public class UserDTO implements Serializable {
         this.login = login;
     }
 
-    // Add getter and setter for firstName
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+    //    // Add getter and setter for firstName
+    //    public String getFirstName() {
+    //        return firstName;
+    //    }
+    //
+    //    public void setFirstName(String firstName) {
+    //        this.firstName = firstName;
+    //    }
 
     @Override
     public boolean equals(Object o) {

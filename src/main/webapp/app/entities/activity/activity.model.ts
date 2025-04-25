@@ -1,9 +1,8 @@
 import dayjs from 'dayjs/esm';
 import { IProfile } from 'app/entities/profile/profile.model';
-import { IUser } from 'app/entities/user/user.model';
+import { IChallenge } from 'app/entities/challenge/challenge.model';
 import { ActivityType } from 'app/entities/enumerations/activity-type.model';
 import { Status } from 'app/entities/enumerations/status.model';
-import { IsPaid } from 'app/entities/enumerations/is-paid.model';
 
 export interface IActivity {
   id: number;
@@ -19,10 +18,10 @@ export interface IActivity {
   status?: keyof typeof Status | null;
   coverImage?: string | null;
   coverImageContentType?: string | null;
-  paid?: keyof typeof IsPaid | null;
-  costOfactivity?: number | null;
-  userName?: IProfile | null;
-  requesteduser?: Pick<IUser, 'id'> | null;
+  isPaid?: boolean | null;
+  activityCost?: number | null;
+  creator?: IProfile | null;
+  challenge?: IChallenge | null;
 }
 
 export type NewActivity = Omit<IActivity, 'id'> & { id: null };

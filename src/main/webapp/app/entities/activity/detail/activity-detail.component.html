@@ -78,25 +78,29 @@
               </div>
             }
           </dd>
-          <dt><span>Paid</span></dt>
+          <dt><span>Is Paid</span></dt>
           <dd>
-            <span>{{ { null: '', PAID: 'PAID', NOTPAID: 'NOTPAID' }[activityRef.paid ?? 'null'] }}</span>
+            <span>{{ activityRef.isPaid }}</span>
           </dd>
-          <dt><span>Cost Ofactivity</span></dt>
+          <dt><span>Activity Cost</span></dt>
           <dd>
-            <span>{{ activityRef.costOfactivity }}</span>
+            <span>{{ activityRef.activityCost }}</span>
           </dd>
-          <dt><span>User Name</span></dt>
+          <dt><span>Creator</span></dt>
           <dd>
-            @if (activity()!.userName) {
+            @if (activity()!.creator) {
               <div>
-                <a [routerLink]="['/profile', activity()!.userName?.id, 'view']">{{ activityRef.userName?.id }}</a>
+                <a [routerLink]="['/profile', activity()!.creator?.id, 'view']">{{ activityRef.creator?.id }}</a>
               </div>
             }
           </dd>
-          <dt><span>Requesteduser</span></dt>
+          <dt><span>Challenge</span></dt>
           <dd>
-            <span>{{ activityRef.requesteduser?.id }}</span>
+            @if (activity()!.challenge) {
+              <div>
+                <a [routerLink]="['/challenge', activity()!.challenge?.id, 'view']">{{ activityRef.challenge?.id }}</a>
+              </div>
+            }
           </dd>
         </dl>
 

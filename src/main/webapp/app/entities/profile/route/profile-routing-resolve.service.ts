@@ -6,21 +6,23 @@ import { mergeMap } from 'rxjs/operators';
 
 import { IProfile } from '../profile.model';
 import { ProfileService } from '../service/profile.service';
-import { AccountService } from 'app/core/auth/account.service';
 
-// Example: if you add a method that returns the current user's profile
-const profileResolve = (route: ActivatedRouteSnapshot): Observable<IProfile> => {
-  return inject(ProfileService)
-    .findMyProfile()
-    .pipe(
-      mergeMap((profileResponse: HttpResponse<IProfile>) => {
-        if (profileResponse.body) {
-          return of(profileResponse.body);
-        }
-        inject(Router).navigate(['404']);
-        return EMPTY;
-      }),
-    );
+const profileResolve = (route: ActivatedRouteSnapshot): Observable<null | IProfile> => {
+  const id = route.params.id;
+  if (id) {
+    return inject(ProfileService)
+      .find(id)
+      .pipe(
+        mergeMap((profile: HttpResponse<IProfile>) => {
+          if (profile.body) {
+            return of(profile.body);
+          }
+          inject(Router).navigate(['404']);
+          return EMPTY;
+        }),
+      );
+  }
+  return of(null);
 };
 
 export default profileResolve;

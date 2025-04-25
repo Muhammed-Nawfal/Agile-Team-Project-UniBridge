@@ -1,6 +1,7 @@
 package bham.team.domain;
 
-import bham.team.domain.enumeration.ActionType;
+import bham.team.domain.enumeration.MessageStatus;
+import bham.team.domain.enumeration.MessageType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -27,7 +28,7 @@ public class Chat implements Serializable {
     private Long id;
 
     @Lob
-    @Column(name = "message", nullable = false)
+    @Column(name = "message")
     private String message;
 
     @NotNull
@@ -36,23 +37,47 @@ public class Chat implements Serializable {
 
     @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private MessageStatus status;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    private ActionType type;
+    private MessageType type;
 
-    @JsonIgnoreProperties(value = { "friends", "user", "friend", "chat" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(unique = true)
-    private FriendsList friendChat;
+    @Lob
+    @Column(name = "media")
+    private byte[] media;
+
+    @Column(name = "media_content_type")
+    private String mediaContentType;
+
+    @NotNull
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted;
+
+    @NotNull
+    @Column(name = "created_on", nullable = false)
+    private Instant createdOn;
+
+    @Column(name = "updated_on")
+    private Instant updatedOn;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "user", "booking", "ranking" }, allowSetters = true)
-    private Profile chats;
+    @JsonIgnoreProperties(value = { "friendChat", "matchChat", "messages", "participants" }, allowSetters = true)
+    private MessageThread thread;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User sender;
+    @JsonIgnoreProperties(value = { "user", "ranking", "messageThreads" }, allowSetters = true)
+    private Profile sender;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User receiver;
+    @JsonIgnoreProperties(value = { "user", "ranking", "messageThreads" }, allowSetters = true)
+    private Profile receiver;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "friendChat", "matchChat", "messages", "participants" }, allowSetters = true)
+    private MessageThread messageThread;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -95,68 +120,146 @@ public class Chat implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public ActionType getType() {
+    public MessageStatus getStatus() {
+        return this.status;
+    }
+
+    public Chat status(MessageStatus status) {
+        this.setStatus(status);
+        return this;
+    }
+
+    public void setStatus(MessageStatus status) {
+        this.status = status;
+    }
+
+    public MessageType getType() {
         return this.type;
     }
 
-    public Chat type(ActionType type) {
+    public Chat type(MessageType type) {
         this.setType(type);
         return this;
     }
 
-    public void setType(ActionType type) {
+    public void setType(MessageType type) {
         this.type = type;
     }
 
-    public FriendsList getFriendChat() {
-        return this.friendChat;
+    public byte[] getMedia() {
+        return this.media;
     }
 
-    public void setFriendChat(FriendsList friendsList) {
-        this.friendChat = friendsList;
-    }
-
-    public Chat friendChat(FriendsList friendsList) {
-        this.setFriendChat(friendsList);
+    public Chat media(byte[] media) {
+        this.setMedia(media);
         return this;
     }
 
-    public Profile getChats() {
-        return this.chats;
+    public void setMedia(byte[] media) {
+        this.media = media;
     }
 
-    public void setChats(Profile profile) {
-        this.chats = profile;
+    public String getMediaContentType() {
+        return this.mediaContentType;
     }
 
-    public Chat chats(Profile profile) {
-        this.setChats(profile);
+    public Chat mediaContentType(String mediaContentType) {
+        this.mediaContentType = mediaContentType;
         return this;
     }
 
-    public User getSender() {
+    public void setMediaContentType(String mediaContentType) {
+        this.mediaContentType = mediaContentType;
+    }
+
+    public Boolean getIsDeleted() {
+        return this.isDeleted;
+    }
+
+    public Chat isDeleted(Boolean isDeleted) {
+        this.setIsDeleted(isDeleted);
+        return this;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    public Instant getCreatedOn() {
+        return this.createdOn;
+    }
+
+    public Chat createdOn(Instant createdOn) {
+        this.setCreatedOn(createdOn);
+        return this;
+    }
+
+    public void setCreatedOn(Instant createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public Instant getUpdatedOn() {
+        return this.updatedOn;
+    }
+
+    public Chat updatedOn(Instant updatedOn) {
+        this.setUpdatedOn(updatedOn);
+        return this;
+    }
+
+    public void setUpdatedOn(Instant updatedOn) {
+        this.updatedOn = updatedOn;
+    }
+
+    public MessageThread getThread() {
+        return this.thread;
+    }
+
+    public void setThread(MessageThread messageThread) {
+        this.thread = messageThread;
+    }
+
+    public Chat thread(MessageThread messageThread) {
+        this.setThread(messageThread);
+        return this;
+    }
+
+    public Profile getSender() {
         return this.sender;
     }
 
-    public void setSender(User user) {
-        this.sender = user;
+    public void setSender(Profile profile) {
+        this.sender = profile;
     }
 
-    public Chat sender(User user) {
-        this.setSender(user);
+    public Chat sender(Profile profile) {
+        this.setSender(profile);
         return this;
     }
 
-    public User getReceiver() {
+    public Profile getReceiver() {
         return this.receiver;
     }
 
-    public void setReceiver(User user) {
-        this.receiver = user;
+    public void setReceiver(Profile profile) {
+        this.receiver = profile;
     }
 
-    public Chat receiver(User user) {
-        this.setReceiver(user);
+    public Chat receiver(Profile profile) {
+        this.setReceiver(profile);
+        return this;
+    }
+
+    public MessageThread getMessageThread() {
+        return this.messageThread;
+    }
+
+    public void setMessageThread(MessageThread messageThread) {
+        this.messageThread = messageThread;
+    }
+
+    public Chat messageThread(MessageThread messageThread) {
+        this.setMessageThread(messageThread);
         return this;
     }
 
@@ -186,7 +289,13 @@ public class Chat implements Serializable {
             "id=" + getId() +
             ", message='" + getMessage() + "'" +
             ", timestamp='" + getTimestamp() + "'" +
+            ", status='" + getStatus() + "'" +
             ", type='" + getType() + "'" +
+            ", media='" + getMedia() + "'" +
+            ", mediaContentType='" + getMediaContentType() + "'" +
+            ", isDeleted='" + getIsDeleted() + "'" +
+            ", createdOn='" + getCreatedOn() + "'" +
+            ", updatedOn='" + getUpdatedOn() + "'" +
             "}";
     }
 }

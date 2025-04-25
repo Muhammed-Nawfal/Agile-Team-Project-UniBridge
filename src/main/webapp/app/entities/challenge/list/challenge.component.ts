@@ -2,12 +2,11 @@ import { Component, NgZone, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
 import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormsModule, NgForm } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 
 import SharedModule from 'app/shared/shared.module';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
 import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
+import { FormsModule } from '@angular/forms';
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
 import { DataUtils } from 'app/core/util/data-util.service';
 import { IChallenge } from '../challenge.model';
@@ -18,11 +17,9 @@ import { ChallengeDeleteDialogComponent } from '../delete/challenge-delete-dialo
   standalone: true,
   selector: 'jhi-challenge',
   templateUrl: './challenge.component.html',
-  styleUrls: ['./challenge.component.scss'],
   imports: [
     RouterModule,
     FormsModule,
-    CommonModule, // Added for *ngFor
     SharedModule,
     SortDirective,
     SortByDirective,
@@ -34,7 +31,6 @@ import { ChallengeDeleteDialogComponent } from '../delete/challenge-delete-dialo
 export class ChallengeComponent implements OnInit {
   subscription: Subscription | null = null;
   challenges?: IChallenge[];
-  localChallenges: any[] = []; // Local array to store challenges created via the form
   isLoading = false;
 
   sortState = sortStateSignal({});
@@ -60,43 +56,6 @@ export class ChallengeComponent implements OnInit {
         }),
       )
       .subscribe();
-
-    // Initialize with some dummy data for local challenges (optional)
-    this.localChallenges = [
-      {
-        title: 'Sample Challenge 1',
-        description: 'This is a sample challenge.',
-        category: 'fitness',
-        date: '2023-10-01',
-        points: 50,
-      },
-      {
-        title: 'Sample Challenge 2',
-        description: 'Another sample challenge.',
-        category: 'education',
-        date: '2023-10-15',
-        points: 75,
-      },
-    ];
-  }
-
-  // Handle form submission for local challenges
-  onSubmit(form: NgForm): void {
-    if (form.valid) {
-      const newChallenge = {
-        title: form.value.title,
-        description: form.value.description,
-        category: form.value.category,
-        date: form.value.date,
-        points: form.value.points,
-      };
-
-      // Add the new challenge to the local array
-      this.localChallenges.push(newChallenge);
-
-      // Reset the form
-      form.reset();
-    }
   }
 
   byteSize(base64String: string): string {

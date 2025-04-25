@@ -48,7 +48,13 @@ public class ActivityMatchAsserts {
         assertThat(expected)
             .as("Verify ActivityMatch relevant properties")
             .satisfies(e -> assertThat(e.getActivityType()).as("check activityType").isEqualTo(actual.getActivityType()))
-            .satisfies(e -> assertThat(e.getStatus()).as("check status").isEqualTo(actual.getStatus()));
+            .satisfies(e -> assertThat(e.getStatus()).as("check status").isEqualTo(actual.getStatus()))
+            .satisfies(e -> assertThat(e.getMatchDate()).as("check matchDate").isEqualTo(actual.getMatchDate()))
+            .satisfies(e -> assertThat(e.getMatchTime()).as("check matchTime").isEqualTo(actual.getMatchTime()))
+            .satisfies(e -> assertThat(e.getLocation()).as("check location").isEqualTo(actual.getLocation()))
+            .satisfies(e -> assertThat(e.getNotes()).as("check notes").isEqualTo(actual.getNotes()))
+            .satisfies(e -> assertThat(e.getCreatedAt()).as("check createdAt").isEqualTo(actual.getCreatedAt()))
+            .satisfies(e -> assertThat(e.getResponseAt()).as("check responseAt").isEqualTo(actual.getResponseAt()));
     }
 
     /**
@@ -60,7 +66,9 @@ public class ActivityMatchAsserts {
     public static void assertActivityMatchUpdatableRelationshipsEquals(ActivityMatch expected, ActivityMatch actual) {
         assertThat(expected)
             .as("Verify ActivityMatch relationships")
-            .satisfies(e -> assertThat(e.getUserName()).as("check userName").isEqualTo(actual.getUserName()))
+            .satisfies(e -> assertThat(e.getRatings()).as("check ratings").isEqualTo(actual.getRatings()))
+            .satisfies(e -> assertThat(e.getMatchRequestor()).as("check matchRequestor").isEqualTo(actual.getMatchRequestor()))
+            .satisfies(e -> assertThat(e.getUserDetails()).as("check userDetails").isEqualTo(actual.getUserDetails()))
             .satisfies(e -> assertThat(e.getMatchedActivity()).as("check matchedActivity").isEqualTo(actual.getMatchedActivity()));
     }
 }

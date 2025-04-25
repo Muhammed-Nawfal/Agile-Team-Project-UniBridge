@@ -1,12 +1,7 @@
 package bham.team.web.rest;
 
 import bham.team.domain.ActivityMatch;
-import bham.team.domain.Profile;
-import bham.team.domain.User;
-import bham.team.domain.enumeration.ActivityType;
 import bham.team.repository.ActivityMatchRepository;
-import bham.team.service.ActivityMatchService;
-import bham.team.service.dto.ProfileDTO;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -15,9 +10,9 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +30,6 @@ public class ActivityMatchResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(ActivityMatchResource.class);
 
-    private final ActivityMatchService activityMatchService;
-
     private static final String ENTITY_NAME = "activityMatch";
 
     @Value("${jhipster.clientApp.name}")
@@ -44,8 +37,7 @@ public class ActivityMatchResource {
 
     private final ActivityMatchRepository activityMatchRepository;
 
-    public ActivityMatchResource(ActivityMatchService activityMatchService, ActivityMatchRepository activityMatchRepository) {
-        this.activityMatchService = activityMatchService;
+    public ActivityMatchResource(ActivityMatchRepository activityMatchRepository) {
         this.activityMatchRepository = activityMatchRepository;
     }
 
@@ -138,6 +130,24 @@ public class ActivityMatchResource {
                 if (activityMatch.getStatus() != null) {
                     existingActivityMatch.setStatus(activityMatch.getStatus());
                 }
+                if (activityMatch.getMatchDate() != null) {
+                    existingActivityMatch.setMatchDate(activityMatch.getMatchDate());
+                }
+                if (activityMatch.getMatchTime() != null) {
+                    existingActivityMatch.setMatchTime(activityMatch.getMatchTime());
+                }
+                if (activityMatch.getLocation() != null) {
+                    existingActivityMatch.setLocation(activityMatch.getLocation());
+                }
+                if (activityMatch.getNotes() != null) {
+                    existingActivityMatch.setNotes(activityMatch.getNotes());
+                }
+                if (activityMatch.getCreatedAt() != null) {
+                    existingActivityMatch.setCreatedAt(activityMatch.getCreatedAt());
+                }
+                if (activityMatch.getResponseAt() != null) {
+                    existingActivityMatch.setResponseAt(activityMatch.getResponseAt());
+                }
 
                 return existingActivityMatch;
             })
@@ -152,10 +162,17 @@ public class ActivityMatchResource {
     /**
      * {@code GET  /activity-matches} : get all the activityMatches.
      *
+     * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of activityMatches in body.
      */
     @GetMapping("")
-    public List<ActivityMatch> getAllActivityMatches() {
+    public List<ActivityMatch> getAllActivityMatches(@RequestParam(name = "filter", required = false) String filter) {
+        if ("messagethread-is-null".equals(filter)) {
+            LOG.debug("REST request to get all ActivityMatchs where messageThread is null");
+            return StreamSupport.stream(activityMatchRepository.findAll().spliterator(), false)
+                .filter(activityMatch -> activityMatch.getMessageThread() == null)
+                .toList();
+        }
         LOG.debug("REST request to get all ActivityMatches");
         return activityMatchRepository.findAll();
     }
@@ -186,19 +203,5 @@ public class ActivityMatchResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
-    }
-
-    /**
-     * Get profiles by preferred activity.
-     *
-     * @param activityType the activity type to filter by.
-     * @return the list of profiles matching the activity type.
-     */
-    @GetMapping("/profiles/preferred-activity")
-    public ResponseEntity<List<Profile>> getProfilesByPreferredActivity(@RequestParam ActivityType activityType) {
-        LOG.debug("REST request to get profiles by preferred activity: {}", activityType);
-        List<Profile> profiles = activityMatchService.getProfilesByPreferredActivity(activityType);
-        LOG.debug("Found {} profiles for activity type {}", profiles.size(), activityType);
-        return ResponseEntity.ok(profiles);
     }
 }

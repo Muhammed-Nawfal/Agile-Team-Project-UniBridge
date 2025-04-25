@@ -6,10 +6,8 @@ import { Subject, from, of } from 'rxjs';
 
 import { IProfile } from 'app/entities/profile/profile.model';
 import { ProfileService } from 'app/entities/profile/service/profile.service';
-import { IUser } from 'app/entities/user/user.model';
-import { UserService } from 'app/entities/user/service/user.service';
-import { IRanking } from '../ranking.model';
 import { RankingService } from '../service/ranking.service';
+import { IRanking } from '../ranking.model';
 import { RankingFormService } from './ranking-form.service';
 
 import { RankingUpdateComponent } from './ranking-update.component';
@@ -21,7 +19,6 @@ describe('Ranking Management Update Component', () => {
   let rankingFormService: RankingFormService;
   let rankingService: RankingService;
   let profileService: ProfileService;
-  let userService: UserService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -45,7 +42,6 @@ describe('Ranking Management Update Component', () => {
     rankingFormService = TestBed.inject(RankingFormService);
     rankingService = TestBed.inject(RankingService);
     profileService = TestBed.inject(ProfileService);
-    userService = TestBed.inject(UserService);
 
     comp = fixture.componentInstance;
   });
@@ -53,10 +49,10 @@ describe('Ranking Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call rankGiven query and add missing value', () => {
       const ranking: IRanking = { id: 456 };
-      const rankGiven: IProfile = { id: 9011 };
+      const rankGiven: IProfile = { id: 8588 };
       ranking.rankGiven = rankGiven;
 
-      const rankGivenCollection: IProfile[] = [{ id: 15935 }];
+      const rankGivenCollection: IProfile[] = [{ id: 29911 }];
       jest.spyOn(profileService, 'query').mockReturnValue(of(new HttpResponse({ body: rankGivenCollection })));
       const expectedCollection: IProfile[] = [rankGiven, ...rankGivenCollection];
       jest.spyOn(profileService, 'addProfileToCollectionIfMissing').mockReturnValue(expectedCollection);
@@ -69,40 +65,15 @@ describe('Ranking Management Update Component', () => {
       expect(comp.rankGivensCollection).toEqual(expectedCollection);
     });
 
-    it('Should call User query and add missing value', () => {
-      const ranking: IRanking = { id: 456 };
-      const user: IUser = { id: 1726 };
-      ranking.user = user;
-
-      const userCollection: IUser[] = [{ id: 2302 }];
-      jest.spyOn(userService, 'query').mockReturnValue(of(new HttpResponse({ body: userCollection })));
-      const additionalUsers = [user];
-      const expectedCollection: IUser[] = [...additionalUsers, ...userCollection];
-      jest.spyOn(userService, 'addUserToCollectionIfMissing').mockReturnValue(expectedCollection);
-
-      activatedRoute.data = of({ ranking });
-      comp.ngOnInit();
-
-      expect(userService.query).toHaveBeenCalled();
-      expect(userService.addUserToCollectionIfMissing).toHaveBeenCalledWith(
-        userCollection,
-        ...additionalUsers.map(expect.objectContaining),
-      );
-      expect(comp.usersSharedCollection).toEqual(expectedCollection);
-    });
-
     it('Should update editForm', () => {
       const ranking: IRanking = { id: 456 };
-      const rankGiven: IProfile = { id: 19202 };
+      const rankGiven: IProfile = { id: 18796 };
       ranking.rankGiven = rankGiven;
-      const user: IUser = { id: 1770 };
-      ranking.user = user;
 
       activatedRoute.data = of({ ranking });
       comp.ngOnInit();
 
       expect(comp.rankGivensCollection).toContain(rankGiven);
-      expect(comp.usersSharedCollection).toContain(user);
       expect(comp.ranking).toEqual(ranking);
     });
   });
@@ -183,16 +154,6 @@ describe('Ranking Management Update Component', () => {
         jest.spyOn(profileService, 'compareProfile');
         comp.compareProfile(entity, entity2);
         expect(profileService.compareProfile).toHaveBeenCalledWith(entity, entity2);
-      });
-    });
-
-    describe('compareUser', () => {
-      it('Should forward to userService', () => {
-        const entity = { id: 123 };
-        const entity2 = { id: 456 };
-        jest.spyOn(userService, 'compareUser');
-        comp.compareUser(entity, entity2);
-        expect(userService.compareUser).toHaveBeenCalledWith(entity, entity2);
       });
     });
   });

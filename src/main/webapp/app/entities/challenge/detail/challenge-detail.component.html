@@ -25,7 +25,15 @@
           </dd>
           <dt><span>Category</span></dt>
           <dd>
-            <span>{{ { null: '', STUDY: 'STUDY', SPORTS: 'SPORTS', SOCIAL: 'SOCIAL' }[challengeRef.category ?? 'null'] }}</span>
+            <span>{{
+              { null: '', STUDY: 'STUDY', SPORTS: 'SPORTS', COMMUNITY: 'COMMUNITY', PERSONAL_GROWTH: 'PERSONAL_GROWTH', SOCIAL: 'SOCIAL' }[
+                challengeRef.category ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span>Date</span></dt>
+          <dd>
+            <span>{{ challengeRef.date | formatMediumDate }}</span>
           </dd>
           <dt><span>Points</span></dt>
           <dd>
@@ -46,57 +54,25 @@
               </div>
             }
           </dd>
-          <dt><span>Created Date</span></dt>
+          <dt><span>Completed</span></dt>
           <dd>
-            <span>{{ challengeRef.createdDate | formatMediumDatetime }}</span>
+            <span>{{ challengeRef.completed }}</span>
           </dd>
-          <dt><span>Expiry Date</span></dt>
+          <dt><span>Assigned To</span></dt>
           <dd>
-            <span>{{ challengeRef.expiryDate | formatMediumDatetime }}</span>
-          </dd>
-          <dt><span>Is Completed</span></dt>
-          <dd>
-            <span>{{ challengeRef.isCompleted }}</span>
-          </dd>
-          <dt><span>Completed Date</span></dt>
-          <dd>
-            <span>{{ challengeRef.completedDate | formatMediumDatetime }}</span>
-          </dd>
-          <dt><span>Is Displayed</span></dt>
-          <dd>
-            <span>{{ challengeRef.isDisplayed }}</span>
-          </dd>
-          <dt><span>Challenges</span></dt>
-          <dd>
-            @if (challenge()!.challenges) {
+            @if (challenge()!.assignedTo) {
               <div>
-                <a [routerLink]="['/profile', challenge()!.challenges?.id, 'view']">{{ challengeRef.challenges?.id }}</a>
+                <a [routerLink]="['/profile', challenge()!.assignedTo?.id, 'view']">{{ challengeRef.assignedTo?.id }}</a>
               </div>
             }
           </dd>
-          <dt><span>Challenged Friend</span></dt>
+          <dt><span>Created By</span></dt>
           <dd>
-            @if (challenge()!.challengedFriend) {
+            @if (challenge()!.createdBy) {
               <div>
-                <a [routerLink]="['/friends-list', challenge()!.challengedFriend?.id, 'view']">{{ challengeRef.challengedFriend?.id }}</a>
+                <a [routerLink]="['/profile', challenge()!.createdBy?.id, 'view']">{{ challengeRef.createdBy?.id }}</a>
               </div>
             }
-          </dd>
-          <dt><span>Challenged Activity</span></dt>
-          <dd>
-            @if (challenge()!.challengedActivity) {
-              <div>
-                <a [routerLink]="['/activity', challenge()!.challengedActivity?.id, 'view']">{{ challengeRef.challengedActivity?.id }}</a>
-              </div>
-            }
-          </dd>
-          <dt><span>Creator</span></dt>
-          <dd>
-            <span>{{ challengeRef.creator?.id }}</span>
-          </dd>
-          <dt><span>Recipient</span></dt>
-          <dd>
-            <span>{{ challengeRef.recipient?.id }}</span>
           </dd>
         </dl>
 

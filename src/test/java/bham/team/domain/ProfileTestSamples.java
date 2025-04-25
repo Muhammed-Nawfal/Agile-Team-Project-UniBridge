@@ -10,29 +10,19 @@ public class ProfileTestSamples {
     private static final AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     public static Profile getProfileSample1() {
-        return new Profile()
-            .id(1L)
-            .courseYear(1L)
-            .university("university1")
-            .preferredSociety("preferredSociety1")
-            .preferredEvents("preferredEvents1");
+        return new Profile().id(1L).login("login1").firstName("firstName1").lastName("lastName1").courseYear(1L);
     }
 
     public static Profile getProfileSample2() {
-        return new Profile()
-            .id(2L)
-            .courseYear(2L)
-            .university("university2")
-            .preferredSociety("preferredSociety2")
-            .preferredEvents("preferredEvents2");
+        return new Profile().id(2L).login("login2").firstName("firstName2").lastName("lastName2").courseYear(2L);
     }
 
     public static Profile getProfileRandomSampleGenerator() {
         return new Profile()
             .id(longCount.incrementAndGet())
-            .courseYear(longCount.incrementAndGet())
-            .university(UUID.randomUUID().toString())
-            .preferredSociety(UUID.randomUUID().toString())
-            .preferredEvents(UUID.randomUUID().toString());
+            .login(UUID.randomUUID().toString())
+            .firstName(UUID.randomUUID().toString())
+            .lastName(UUID.randomUUID().toString())
+            .courseYear(longCount.incrementAndGet());
     }
 }

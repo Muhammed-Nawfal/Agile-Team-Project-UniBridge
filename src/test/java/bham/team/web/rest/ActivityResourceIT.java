@@ -11,10 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import bham.team.IntegrationTest;
 import bham.team.domain.Activity;
 import bham.team.domain.enumeration.ActivityType;
-import bham.team.domain.enumeration.IsPaid;
 import bham.team.domain.enumeration.Status;
 import bham.team.repository.ActivityRepository;
-import bham.team.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
@@ -76,11 +74,11 @@ class ActivityResourceIT {
     private static final String DEFAULT_COVER_IMAGE_CONTENT_TYPE = "image/jpg";
     private static final String UPDATED_COVER_IMAGE_CONTENT_TYPE = "image/png";
 
-    private static final IsPaid DEFAULT_PAID = IsPaid.PAID;
-    private static final IsPaid UPDATED_PAID = IsPaid.NOTPAID;
+    private static final Boolean DEFAULT_IS_PAID = false;
+    private static final Boolean UPDATED_IS_PAID = true;
 
-    private static final BigDecimal DEFAULT_COST_OFACTIVITY = new BigDecimal(1);
-    private static final BigDecimal UPDATED_COST_OFACTIVITY = new BigDecimal(2);
+    private static final BigDecimal DEFAULT_ACTIVITY_COST = new BigDecimal(0);
+    private static final BigDecimal UPDATED_ACTIVITY_COST = new BigDecimal(1);
 
     private static final String ENTITY_API_URL = "/api/activities";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -93,9 +91,6 @@ class ActivityResourceIT {
 
     @Autowired
     private ActivityRepository activityRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private EntityManager em;
@@ -127,8 +122,8 @@ class ActivityResourceIT {
             .status(DEFAULT_STATUS)
             .coverImage(DEFAULT_COVER_IMAGE)
             .coverImageContentType(DEFAULT_COVER_IMAGE_CONTENT_TYPE)
-            .paid(DEFAULT_PAID)
-            .costOfactivity(DEFAULT_COST_OFACTIVITY);
+            .isPaid(DEFAULT_IS_PAID)
+            .activityCost(DEFAULT_ACTIVITY_COST);
     }
 
     /**
@@ -151,8 +146,8 @@ class ActivityResourceIT {
             .status(UPDATED_STATUS)
             .coverImage(UPDATED_COVER_IMAGE)
             .coverImageContentType(UPDATED_COVER_IMAGE_CONTENT_TYPE)
-            .paid(UPDATED_PAID)
-            .costOfactivity(UPDATED_COST_OFACTIVITY);
+            .isPaid(UPDATED_IS_PAID)
+            .activityCost(UPDATED_ACTIVITY_COST);
     }
 
     @BeforeEach
@@ -353,10 +348,10 @@ class ActivityResourceIT {
 
     @Test
     @Transactional
-    void checkPaidIsRequired() throws Exception {
+    void checkIsPaidIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        activity.setPaid(null);
+        activity.setIsPaid(null);
 
         // Create the Activity, which fails.
 
@@ -369,10 +364,10 @@ class ActivityResourceIT {
 
     @Test
     @Transactional
-    void checkCostOfactivityIsRequired() throws Exception {
+    void checkActivityCostIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        activity.setCostOfactivity(null);
+        activity.setActivityCost(null);
 
         // Create the Activity, which fails.
 
@@ -407,8 +402,8 @@ class ActivityResourceIT {
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
             .andExpect(jsonPath("$.[*].coverImageContentType").value(hasItem(DEFAULT_COVER_IMAGE_CONTENT_TYPE)))
             .andExpect(jsonPath("$.[*].coverImage").value(hasItem(Base64.getEncoder().encodeToString(DEFAULT_COVER_IMAGE))))
-            .andExpect(jsonPath("$.[*].paid").value(hasItem(DEFAULT_PAID.toString())))
-            .andExpect(jsonPath("$.[*].costOfactivity").value(hasItem(sameNumber(DEFAULT_COST_OFACTIVITY))));
+            .andExpect(jsonPath("$.[*].isPaid").value(hasItem(DEFAULT_IS_PAID.booleanValue())))
+            .andExpect(jsonPath("$.[*].activityCost").value(hasItem(sameNumber(DEFAULT_ACTIVITY_COST))));
     }
 
     @Test
@@ -435,8 +430,8 @@ class ActivityResourceIT {
             .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()))
             .andExpect(jsonPath("$.coverImageContentType").value(DEFAULT_COVER_IMAGE_CONTENT_TYPE))
             .andExpect(jsonPath("$.coverImage").value(Base64.getEncoder().encodeToString(DEFAULT_COVER_IMAGE)))
-            .andExpect(jsonPath("$.paid").value(DEFAULT_PAID.toString()))
-            .andExpect(jsonPath("$.costOfactivity").value(sameNumber(DEFAULT_COST_OFACTIVITY)));
+            .andExpect(jsonPath("$.isPaid").value(DEFAULT_IS_PAID.booleanValue()))
+            .andExpect(jsonPath("$.activityCost").value(sameNumber(DEFAULT_ACTIVITY_COST)));
     }
 
     @Test
@@ -471,8 +466,8 @@ class ActivityResourceIT {
             .status(UPDATED_STATUS)
             .coverImage(UPDATED_COVER_IMAGE)
             .coverImageContentType(UPDATED_COVER_IMAGE_CONTENT_TYPE)
-            .paid(UPDATED_PAID)
-            .costOfactivity(UPDATED_COST_OFACTIVITY);
+            .isPaid(UPDATED_IS_PAID)
+            .activityCost(UPDATED_ACTIVITY_COST);
 
         restActivityMockMvc
             .perform(
@@ -552,11 +547,8 @@ class ActivityResourceIT {
 
         partialUpdatedActivity
             .activityName(UPDATED_ACTIVITY_NAME)
-            .activityType(UPDATED_ACTIVITY_TYPE)
             .activityDate(UPDATED_ACTIVITY_DATE)
-            .maxNumberOfParticipants(UPDATED_MAX_NUMBER_OF_PARTICIPANTS)
-            .status(UPDATED_STATUS)
-            .paid(UPDATED_PAID);
+            .numberOfParticipants(UPDATED_NUMBER_OF_PARTICIPANTS);
 
         restActivityMockMvc
             .perform(
@@ -597,8 +589,8 @@ class ActivityResourceIT {
             .status(UPDATED_STATUS)
             .coverImage(UPDATED_COVER_IMAGE)
             .coverImageContentType(UPDATED_COVER_IMAGE_CONTENT_TYPE)
-            .paid(UPDATED_PAID)
-            .costOfactivity(UPDATED_COST_OFACTIVITY);
+            .isPaid(UPDATED_IS_PAID)
+            .activityCost(UPDATED_ACTIVITY_COST);
 
         restActivityMockMvc
             .perform(

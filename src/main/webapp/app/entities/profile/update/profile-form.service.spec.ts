@@ -20,6 +20,9 @@ describe('Profile Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
+            login: expect.any(Object),
+            firstName: expect.any(Object),
+            lastName: expect.any(Object),
             bio: expect.any(Object),
             profilePicture: expect.any(Object),
             course: expect.any(Object),
@@ -37,6 +40,7 @@ describe('Profile Form Service', () => {
             eventsTime: expect.any(Object),
             preferredActivities: expect.any(Object),
             user: expect.any(Object),
+            messageThreads: expect.any(Object),
           }),
         );
       });
@@ -47,6 +51,9 @@ describe('Profile Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
+            login: expect.any(Object),
+            firstName: expect.any(Object),
+            lastName: expect.any(Object),
             bio: expect.any(Object),
             profilePicture: expect.any(Object),
             course: expect.any(Object),
@@ -64,6 +71,7 @@ describe('Profile Form Service', () => {
             eventsTime: expect.any(Object),
             preferredActivities: expect.any(Object),
             user: expect.any(Object),
+            messageThreads: expect.any(Object),
           }),
         );
       });

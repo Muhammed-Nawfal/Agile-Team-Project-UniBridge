@@ -1,7 +1,6 @@
 package bham.team.domain;
 
 import bham.team.domain.enumeration.ActivityType;
-import bham.team.domain.enumeration.IsPaid;
 import bham.team.domain.enumeration.Status;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -84,25 +83,29 @@ public class Activity implements Serializable {
     private String coverImageContentType;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "paid", nullable = false)
-    private IsPaid paid;
+    @Column(name = "is_paid", nullable = false)
+    private Boolean isPaid;
 
     @NotNull
-    @Column(name = "cost_ofactivity", precision = 21, scale = 2, nullable = false)
-    private BigDecimal costOfactivity;
+    @DecimalMin(value = "0")
+    @Column(name = "activity_cost", precision = 21, scale = 2, nullable = false)
+    private BigDecimal activityCost;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "activity")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "bookingDoneBy", "requestedUser", "bookedActivity", "activity" }, allowSetters = true)
+    @JsonIgnoreProperties(
+        value = { "timeSlots", "bookedActivity", "bookingLocation", "creator", "activity", "timeSlot" },
+        allowSetters = true
+    )
     private Set<Booking> bookings = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "user", "booking", "ranking" }, allowSetters = true)
-    private Profile userName;
+    @JsonIgnoreProperties(value = { "user", "ranking", "messageThreads" }, allowSetters = true)
+    private Profile creator;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User requesteduser;
+    @JsonIgnoreProperties(value = { "activities", "assignedTo", "createdBy" }, allowSetters = true)
+    private Challenge challenge;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -275,30 +278,30 @@ public class Activity implements Serializable {
         this.coverImageContentType = coverImageContentType;
     }
 
-    public IsPaid getPaid() {
-        return this.paid;
+    public Boolean getIsPaid() {
+        return this.isPaid;
     }
 
-    public Activity paid(IsPaid paid) {
-        this.setPaid(paid);
+    public Activity isPaid(Boolean isPaid) {
+        this.setIsPaid(isPaid);
         return this;
     }
 
-    public void setPaid(IsPaid paid) {
-        this.paid = paid;
+    public void setIsPaid(Boolean isPaid) {
+        this.isPaid = isPaid;
     }
 
-    public BigDecimal getCostOfactivity() {
-        return this.costOfactivity;
+    public BigDecimal getActivityCost() {
+        return this.activityCost;
     }
 
-    public Activity costOfactivity(BigDecimal costOfactivity) {
-        this.setCostOfactivity(costOfactivity);
+    public Activity activityCost(BigDecimal activityCost) {
+        this.setActivityCost(activityCost);
         return this;
     }
 
-    public void setCostOfactivity(BigDecimal costOfactivity) {
-        this.costOfactivity = costOfactivity;
+    public void setActivityCost(BigDecimal activityCost) {
+        this.activityCost = activityCost;
     }
 
     public Set<Booking> getBookings() {
@@ -320,41 +323,41 @@ public class Activity implements Serializable {
         return this;
     }
 
-    public Activity addBooking(Booking booking) {
+    public Activity addBookings(Booking booking) {
         this.bookings.add(booking);
         booking.setActivity(this);
         return this;
     }
 
-    public Activity removeBooking(Booking booking) {
+    public Activity removeBookings(Booking booking) {
         this.bookings.remove(booking);
         booking.setActivity(null);
         return this;
     }
 
-    public Profile getUserName() {
-        return this.userName;
+    public Profile getCreator() {
+        return this.creator;
     }
 
-    public void setUserName(Profile profile) {
-        this.userName = profile;
+    public void setCreator(Profile profile) {
+        this.creator = profile;
     }
 
-    public Activity userName(Profile profile) {
-        this.setUserName(profile);
+    public Activity creator(Profile profile) {
+        this.setCreator(profile);
         return this;
     }
 
-    public User getRequesteduser() {
-        return this.requesteduser;
+    public Challenge getChallenge() {
+        return this.challenge;
     }
 
-    public void setRequesteduser(User user) {
-        this.requesteduser = user;
+    public void setChallenge(Challenge challenge) {
+        this.challenge = challenge;
     }
 
-    public Activity requesteduser(User user) {
-        this.setRequesteduser(user);
+    public Activity challenge(Challenge challenge) {
+        this.setChallenge(challenge);
         return this;
     }
 
@@ -394,8 +397,8 @@ public class Activity implements Serializable {
             ", status='" + getStatus() + "'" +
             ", coverImage='" + getCoverImage() + "'" +
             ", coverImageContentType='" + getCoverImageContentType() + "'" +
-            ", paid='" + getPaid() + "'" +
-            ", costOfactivity=" + getCostOfactivity() +
+            ", isPaid='" + getIsPaid() + "'" +
+            ", activityCost=" + getActivityCost() +
             "}";
     }
 }

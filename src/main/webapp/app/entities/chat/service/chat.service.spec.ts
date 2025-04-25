@@ -10,6 +10,8 @@ import { ChatService, RestChat } from './chat.service';
 const requireRestSample: RestChat = {
   ...sampleWithRequiredData,
   timestamp: sampleWithRequiredData.timestamp?.toJSON(),
+  createdOn: sampleWithRequiredData.createdOn?.toJSON(),
+  updatedOn: sampleWithRequiredData.updatedOn?.toJSON(),
 };
 
 describe('Chat Service', () => {

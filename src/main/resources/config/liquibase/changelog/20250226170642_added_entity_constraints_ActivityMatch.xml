@@ -10,25 +10,25 @@
     -->
     <changeSet id="20250226170642-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="user_name_id"
+        <addForeignKeyConstraint baseColumnNames="ratings_id"
                                  baseTableName="activity_match"
-                                 constraintName="fk_activity_match__user_name_id"
+                                 constraintName="fk_activity_match__ratings_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="ranking"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="match_requestor_id"
+                                 baseTableName="activity_match"
+                                 constraintName="fk_activity_match__match_requestor_id"
                                  referencedColumnNames="id"
                                  referencedTableName="profile"
                                  />
 
-        <addForeignKeyConstraint baseColumnNames="request_user_id"
+        <addForeignKeyConstraint baseColumnNames="user_details_id"
                                  baseTableName="activity_match"
-                                 constraintName="fk_activity_match__request_user_id"
+                                 constraintName="fk_activity_match__user_details_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="jhi_user"
-                                 />
-
-        <addForeignKeyConstraint baseColumnNames="matched_user_id"
-                                 baseTableName="activity_match"
-                                 constraintName="fk_activity_match__matched_user_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="jhi_user"
+                                 referencedTableName="profile"
                                  />
 
         <addForeignKeyConstraint baseColumnNames="matched_activity_id"

@@ -1,5 +1,6 @@
 package bham.team.domain;
 
+import static bham.team.domain.ActivityMatchTestSamples.*;
 import static bham.team.domain.ProfileTestSamples.*;
 import static bham.team.domain.RankingTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,5 +34,19 @@ class RankingTest {
 
         ranking.rankGiven(null);
         assertThat(ranking.getRankGiven()).isNull();
+    }
+
+    @Test
+    void activityMatchTest() {
+        Ranking ranking = getRankingRandomSampleGenerator();
+        ActivityMatch activityMatchBack = getActivityMatchRandomSampleGenerator();
+
+        ranking.setActivityMatch(activityMatchBack);
+        assertThat(ranking.getActivityMatch()).isEqualTo(activityMatchBack);
+        assertThat(activityMatchBack.getRatings()).isEqualTo(ranking);
+
+        ranking.activityMatch(null);
+        assertThat(ranking.getActivityMatch()).isNull();
+        assertThat(activityMatchBack.getRatings()).isNull();
     }
 }

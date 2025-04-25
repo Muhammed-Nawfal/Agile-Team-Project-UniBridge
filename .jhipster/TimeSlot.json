@@ -1,0 +1,54 @@
+{
+  "annotations": {
+    "changelogDate": "20250424075930"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "date",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "startHour",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "endHour",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "capacity",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "remainingCapacity",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "AvailabilityStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "AVAILABLE,FULL,OCCUPIED,BLOCKED,MAINTENANCE"
+    }
+  ],
+  "name": "TimeSlot",
+  "relationships": [
+    {
+      "otherEntityName": "booking",
+      "relationshipName": "bookingsList",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "event",
+      "relationshipName": "event",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

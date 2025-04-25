@@ -1,0 +1,58 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (activityParticipant(); as activityParticipantRef) {
+      <div>
+        <h2 data-cy="activityParticipantDetailsHeading"><span>Activity Participant</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ activityParticipantRef.id }}</span>
+          </dd>
+          <dt><span>Joined Date</span></dt>
+          <dd>
+            <span>{{ activityParticipantRef.joinedDate | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Status</span></dt>
+          <dd>
+            <span>{{
+              { null: '', PENDING: 'PENDING', CONFIRMED: 'CONFIRMED', CANCELED: 'CANCELED' }[activityParticipantRef.status ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span>Participant</span></dt>
+          <dd>
+            @if (activityParticipant()!.participant) {
+              <div>
+                <a [routerLink]="['/profile', activityParticipant()!.participant?.id, 'view']">{{
+                  activityParticipantRef.participant?.id
+                }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Activity</span></dt>
+          <dd>
+            @if (activityParticipant()!.activity) {
+              <div>
+                <a [routerLink]="['/activity', activityParticipant()!.activity?.id, 'view']">{{ activityParticipantRef.activity?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/activity-participant', activityParticipantRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

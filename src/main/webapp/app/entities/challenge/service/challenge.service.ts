@@ -5,16 +5,15 @@ import { Observable, map } from 'rxjs';
 import dayjs from 'dayjs/esm';
 
 import { isPresent } from 'app/core/util/operators';
+import { DATE_FORMAT } from 'app/config/input.constants';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IChallenge, NewChallenge } from '../challenge.model';
 
 export type PartialUpdateChallenge = Partial<IChallenge> & Pick<IChallenge, 'id'>;
 
-type RestOf<T extends IChallenge | NewChallenge> = Omit<T, 'createdDate' | 'expiryDate' | 'completedDate'> & {
-  createdDate?: string | null;
-  expiryDate?: string | null;
-  completedDate?: string | null;
+type RestOf<T extends IChallenge | NewChallenge> = Omit<T, 'date'> & {
+  date?: string | null;
 };
 
 export type RestChallenge = RestOf<IChallenge>;
@@ -102,18 +101,14 @@ export class ChallengeService {
   protected convertDateFromClient<T extends IChallenge | NewChallenge | PartialUpdateChallenge>(challenge: T): RestOf<T> {
     return {
       ...challenge,
-      createdDate: challenge.createdDate?.toJSON() ?? null,
-      expiryDate: challenge.expiryDate?.toJSON() ?? null,
-      completedDate: challenge.completedDate?.toJSON() ?? null,
+      date: challenge.date?.format(DATE_FORMAT) ?? null,
     };
   }
 
   protected convertDateFromServer(restChallenge: RestChallenge): IChallenge {
     return {
       ...restChallenge,
-      createdDate: restChallenge.createdDate ? dayjs(restChallenge.createdDate) : undefined,
-      expiryDate: restChallenge.expiryDate ? dayjs(restChallenge.expiryDate) : undefined,
-      completedDate: restChallenge.completedDate ? dayjs(restChallenge.completedDate) : undefined,
+      date: restChallenge.date ? dayjs(restChallenge.date) : undefined,
     };
   }
 

@@ -64,6 +64,16 @@ public class CacheConfiguration {
             createCache(cm, bham.team.domain.Chat.class.getName());
             createCache(cm, bham.team.domain.Action.class.getName());
             createCache(cm, bham.team.domain.Challenge.class.getName());
+            createCache(cm, bham.team.domain.Profile.class.getName() + ".messageThreads");
+            createCache(cm, bham.team.domain.Challenge.class.getName() + ".activities");
+            createCache(cm, bham.team.domain.ActivityParticipant.class.getName());
+            createCache(cm, bham.team.domain.MessageThread.class.getName());
+            createCache(cm, bham.team.domain.MessageThread.class.getName() + ".messages");
+            createCache(cm, bham.team.domain.MessageThread.class.getName() + ".participants");
+            createCache(cm, bham.team.domain.Event.class.getName());
+            createCache(cm, bham.team.domain.TimeSlot.class.getName());
+            createCache(cm, bham.team.domain.TimeSlot.class.getName() + ".bookingsLists");
+            createCache(cm, bham.team.domain.Location.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }

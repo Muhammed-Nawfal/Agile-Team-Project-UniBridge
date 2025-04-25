@@ -159,11 +159,11 @@ public class ActivityResource {
                 if (activity.getCoverImageContentType() != null) {
                     existingActivity.setCoverImageContentType(activity.getCoverImageContentType());
                 }
-                if (activity.getPaid() != null) {
-                    existingActivity.setPaid(activity.getPaid());
+                if (activity.getIsPaid() != null) {
+                    existingActivity.setIsPaid(activity.getIsPaid());
                 }
-                if (activity.getCostOfactivity() != null) {
-                    existingActivity.setCostOfactivity(activity.getCostOfactivity());
+                if (activity.getActivityCost() != null) {
+                    existingActivity.setActivityCost(activity.getActivityCost());
                 }
 
                 return existingActivity;

@@ -2,6 +2,7 @@ package bham.team.domain;
 
 import static bham.team.domain.ActivityTestSamples.*;
 import static bham.team.domain.BookingTestSamples.*;
+import static bham.team.domain.ChallengeTestSamples.*;
 import static bham.team.domain.ProfileTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,15 +28,15 @@ class ActivityTest {
     }
 
     @Test
-    void bookingTest() {
+    void bookingsTest() {
         Activity activity = getActivityRandomSampleGenerator();
         Booking bookingBack = getBookingRandomSampleGenerator();
 
-        activity.addBooking(bookingBack);
+        activity.addBookings(bookingBack);
         assertThat(activity.getBookings()).containsOnly(bookingBack);
         assertThat(bookingBack.getActivity()).isEqualTo(activity);
 
-        activity.removeBooking(bookingBack);
+        activity.removeBookings(bookingBack);
         assertThat(activity.getBookings()).doesNotContain(bookingBack);
         assertThat(bookingBack.getActivity()).isNull();
 
@@ -49,14 +50,26 @@ class ActivityTest {
     }
 
     @Test
-    void userNameTest() {
+    void creatorTest() {
         Activity activity = getActivityRandomSampleGenerator();
         Profile profileBack = getProfileRandomSampleGenerator();
 
-        activity.setUserName(profileBack);
-        assertThat(activity.getUserName()).isEqualTo(profileBack);
+        activity.setCreator(profileBack);
+        assertThat(activity.getCreator()).isEqualTo(profileBack);
 
-        activity.userName(null);
-        assertThat(activity.getUserName()).isNull();
+        activity.creator(null);
+        assertThat(activity.getCreator()).isNull();
+    }
+
+    @Test
+    void challengeTest() {
+        Activity activity = getActivityRandomSampleGenerator();
+        Challenge challengeBack = getChallengeRandomSampleGenerator();
+
+        activity.setChallenge(challengeBack);
+        assertThat(activity.getChallenge()).isEqualTo(challengeBack);
+
+        activity.challenge(null);
+        assertThat(activity.getChallenge()).isNull();
     }
 }

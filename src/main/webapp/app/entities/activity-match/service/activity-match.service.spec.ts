@@ -2,13 +2,18 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 
+import { DATE_FORMAT } from 'app/config/input.constants';
 import { IActivityMatch } from '../activity-match.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../activity-match.test-samples';
 
-import { ActivityMatchService } from './activity-match.service';
+import { ActivityMatchService, RestActivityMatch } from './activity-match.service';
 
-const requireRestSample: IActivityMatch = {
+const requireRestSample: RestActivityMatch = {
   ...sampleWithRequiredData,
+  matchDate: sampleWithRequiredData.matchDate?.format(DATE_FORMAT),
+  matchTime: sampleWithRequiredData.matchTime?.toJSON(),
+  createdAt: sampleWithRequiredData.createdAt?.toJSON(),
+  responseAt: sampleWithRequiredData.responseAt?.toJSON(),
 };
 
 describe('ActivityMatch Service', () => {

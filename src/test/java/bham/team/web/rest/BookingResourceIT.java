@@ -9,13 +9,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import bham.team.IntegrationTest;
 import bham.team.domain.Booking;
-import bham.team.domain.enumeration.BookingType;
-import bham.team.domain.enumeration.Status;
+import bham.team.domain.enumeration.ActivityType;
+import bham.team.domain.enumeration.BookingStatus;
+import bham.team.domain.enumeration.EventType;
 import bham.team.repository.BookingRepository;
-import bham.team.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -37,32 +39,26 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class BookingResourceIT {
 
-    private static final String DEFAULT_BOOKING_NAME = "AAAAAAAAAA";
-    private static final String UPDATED_BOOKING_NAME = "BBBBBBBBBB";
+    private static final ActivityType DEFAULT_ACTIVITY_TYPE = ActivityType.SOCIAL;
+    private static final ActivityType UPDATED_ACTIVITY_TYPE = ActivityType.ACADEMIC;
 
-    private static final Status DEFAULT_BOOKING_STATUS = Status.ANNOUNCED;
-    private static final Status UPDATED_BOOKING_STATUS = Status.CURRENTLY_HAPPENING;
+    private static final EventType DEFAULT_EVENT_TYPE = EventType.STUDY_SPACES;
+    private static final EventType UPDATED_EVENT_TYPE = EventType.EVENT_ROOMS;
 
-    private static final Instant DEFAULT_BOOKING_TIME = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_BOOKING_TIME = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final LocalDate DEFAULT_BOOKING_DATE = LocalDate.ofEpochDay(0L);
+    private static final LocalDate UPDATED_BOOKING_DATE = LocalDate.now(ZoneId.systemDefault());
 
-    private static final Instant DEFAULT_BOOKING_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_BOOKING_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final Integer DEFAULT_PARTY_SIZE = 1;
+    private static final Integer UPDATED_PARTY_SIZE = 2;
 
-    private static final String DEFAULT_PHONE_NUM = "AAAAAAAAAAA";
-    private static final String UPDATED_PHONE_NUM = "BBBBBBBBBBB";
+    private static final BookingStatus DEFAULT_BOOKING_STATUS = BookingStatus.CONFIRMED;
+    private static final BookingStatus UPDATED_BOOKING_STATUS = BookingStatus.CANCELLED;
 
-    private static final BookingType DEFAULT_BOOKING_TYPE = BookingType.FOOTBALL_PITCH;
-    private static final BookingType UPDATED_BOOKING_TYPE = BookingType.TENNIS_COURT;
+    private static final Instant DEFAULT_CREATED_AT = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_CREATED_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
-    private static final Integer DEFAULT_NUM_OF_PARTICIPANTS = 1;
-    private static final Integer UPDATED_NUM_OF_PARTICIPANTS = 2;
-
-    private static final Instant DEFAULT_BOOK_START_TIME = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_BOOK_START_TIME = Instant.now().truncatedTo(ChronoUnit.MILLIS);
-
-    private static final Instant DEFAULT_BOOK_END_TIME = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_BOOK_END_TIME = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final Instant DEFAULT_ASSIGNED_AT = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_ASSIGNED_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
     private static final String ENTITY_API_URL = "/api/bookings";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -75,9 +71,6 @@ class BookingResourceIT {
 
     @Autowired
     private BookingRepository bookingRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private EntityManager em;
@@ -97,15 +90,13 @@ class BookingResourceIT {
      */
     public static Booking createEntity() {
         return new Booking()
-            .bookingName(DEFAULT_BOOKING_NAME)
-            .bookingStatus(DEFAULT_BOOKING_STATUS)
-            .bookingTime(DEFAULT_BOOKING_TIME)
+            .activityType(DEFAULT_ACTIVITY_TYPE)
+            .eventType(DEFAULT_EVENT_TYPE)
             .bookingDate(DEFAULT_BOOKING_DATE)
-            .phoneNum(DEFAULT_PHONE_NUM)
-            .bookingType(DEFAULT_BOOKING_TYPE)
-            .numOfParticipants(DEFAULT_NUM_OF_PARTICIPANTS)
-            .bookStartTime(DEFAULT_BOOK_START_TIME)
-            .bookEndTime(DEFAULT_BOOK_END_TIME);
+            .partySize(DEFAULT_PARTY_SIZE)
+            .bookingStatus(DEFAULT_BOOKING_STATUS)
+            .createdAt(DEFAULT_CREATED_AT)
+            .assignedAt(DEFAULT_ASSIGNED_AT);
     }
 
     /**
@@ -116,15 +107,13 @@ class BookingResourceIT {
      */
     public static Booking createUpdatedEntity() {
         return new Booking()
-            .bookingName(UPDATED_BOOKING_NAME)
-            .bookingStatus(UPDATED_BOOKING_STATUS)
-            .bookingTime(UPDATED_BOOKING_TIME)
+            .activityType(UPDATED_ACTIVITY_TYPE)
+            .eventType(UPDATED_EVENT_TYPE)
             .bookingDate(UPDATED_BOOKING_DATE)
-            .phoneNum(UPDATED_PHONE_NUM)
-            .bookingType(UPDATED_BOOKING_TYPE)
-            .numOfParticipants(UPDATED_NUM_OF_PARTICIPANTS)
-            .bookStartTime(UPDATED_BOOK_START_TIME)
-            .bookEndTime(UPDATED_BOOK_END_TIME);
+            .partySize(UPDATED_PARTY_SIZE)
+            .bookingStatus(UPDATED_BOOKING_STATUS)
+            .createdAt(UPDATED_CREATED_AT)
+            .assignedAt(UPDATED_ASSIGNED_AT);
     }
 
     @BeforeEach
@@ -181,10 +170,10 @@ class BookingResourceIT {
 
     @Test
     @Transactional
-    void checkBookingNameIsRequired() throws Exception {
+    void checkActivityTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        booking.setBookingName(null);
+        booking.setActivityType(null);
 
         // Create the Booking, which fails.
 
@@ -197,26 +186,10 @@ class BookingResourceIT {
 
     @Test
     @Transactional
-    void checkBookingStatusIsRequired() throws Exception {
+    void checkEventTypeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        booking.setBookingStatus(null);
-
-        // Create the Booking, which fails.
-
-        restBookingMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(booking)))
-            .andExpect(status().isBadRequest());
-
-        assertSameRepositoryCount(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
-    void checkBookingTimeIsRequired() throws Exception {
-        long databaseSizeBeforeTest = getRepositoryCount();
-        // set the field null
-        booking.setBookingTime(null);
+        booking.setEventType(null);
 
         // Create the Booking, which fails.
 
@@ -245,10 +218,10 @@ class BookingResourceIT {
 
     @Test
     @Transactional
-    void checkPhoneNumIsRequired() throws Exception {
+    void checkPartySizeIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        booking.setPhoneNum(null);
+        booking.setPartySize(null);
 
         // Create the Booking, which fails.
 
@@ -261,58 +234,10 @@ class BookingResourceIT {
 
     @Test
     @Transactional
-    void checkBookingTypeIsRequired() throws Exception {
+    void checkBookingStatusIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        booking.setBookingType(null);
-
-        // Create the Booking, which fails.
-
-        restBookingMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(booking)))
-            .andExpect(status().isBadRequest());
-
-        assertSameRepositoryCount(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
-    void checkNumOfParticipantsIsRequired() throws Exception {
-        long databaseSizeBeforeTest = getRepositoryCount();
-        // set the field null
-        booking.setNumOfParticipants(null);
-
-        // Create the Booking, which fails.
-
-        restBookingMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(booking)))
-            .andExpect(status().isBadRequest());
-
-        assertSameRepositoryCount(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
-    void checkBookStartTimeIsRequired() throws Exception {
-        long databaseSizeBeforeTest = getRepositoryCount();
-        // set the field null
-        booking.setBookStartTime(null);
-
-        // Create the Booking, which fails.
-
-        restBookingMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(booking)))
-            .andExpect(status().isBadRequest());
-
-        assertSameRepositoryCount(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
-    void checkBookEndTimeIsRequired() throws Exception {
-        long databaseSizeBeforeTest = getRepositoryCount();
-        // set the field null
-        booking.setBookEndTime(null);
+        booking.setBookingStatus(null);
 
         // Create the Booking, which fails.
 
@@ -335,15 +260,13 @@ class BookingResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(booking.getId().intValue())))
-            .andExpect(jsonPath("$.[*].bookingName").value(hasItem(DEFAULT_BOOKING_NAME)))
-            .andExpect(jsonPath("$.[*].bookingStatus").value(hasItem(DEFAULT_BOOKING_STATUS.toString())))
-            .andExpect(jsonPath("$.[*].bookingTime").value(hasItem(DEFAULT_BOOKING_TIME.toString())))
+            .andExpect(jsonPath("$.[*].activityType").value(hasItem(DEFAULT_ACTIVITY_TYPE.toString())))
+            .andExpect(jsonPath("$.[*].eventType").value(hasItem(DEFAULT_EVENT_TYPE.toString())))
             .andExpect(jsonPath("$.[*].bookingDate").value(hasItem(DEFAULT_BOOKING_DATE.toString())))
-            .andExpect(jsonPath("$.[*].phoneNum").value(hasItem(DEFAULT_PHONE_NUM)))
-            .andExpect(jsonPath("$.[*].bookingType").value(hasItem(DEFAULT_BOOKING_TYPE.toString())))
-            .andExpect(jsonPath("$.[*].numOfParticipants").value(hasItem(DEFAULT_NUM_OF_PARTICIPANTS)))
-            .andExpect(jsonPath("$.[*].bookStartTime").value(hasItem(DEFAULT_BOOK_START_TIME.toString())))
-            .andExpect(jsonPath("$.[*].bookEndTime").value(hasItem(DEFAULT_BOOK_END_TIME.toString())));
+            .andExpect(jsonPath("$.[*].partySize").value(hasItem(DEFAULT_PARTY_SIZE)))
+            .andExpect(jsonPath("$.[*].bookingStatus").value(hasItem(DEFAULT_BOOKING_STATUS.toString())))
+            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(DEFAULT_CREATED_AT.toString())))
+            .andExpect(jsonPath("$.[*].assignedAt").value(hasItem(DEFAULT_ASSIGNED_AT.toString())));
     }
 
     @Test
@@ -358,15 +281,13 @@ class BookingResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(booking.getId().intValue()))
-            .andExpect(jsonPath("$.bookingName").value(DEFAULT_BOOKING_NAME))
-            .andExpect(jsonPath("$.bookingStatus").value(DEFAULT_BOOKING_STATUS.toString()))
-            .andExpect(jsonPath("$.bookingTime").value(DEFAULT_BOOKING_TIME.toString()))
+            .andExpect(jsonPath("$.activityType").value(DEFAULT_ACTIVITY_TYPE.toString()))
+            .andExpect(jsonPath("$.eventType").value(DEFAULT_EVENT_TYPE.toString()))
             .andExpect(jsonPath("$.bookingDate").value(DEFAULT_BOOKING_DATE.toString()))
-            .andExpect(jsonPath("$.phoneNum").value(DEFAULT_PHONE_NUM))
-            .andExpect(jsonPath("$.bookingType").value(DEFAULT_BOOKING_TYPE.toString()))
-            .andExpect(jsonPath("$.numOfParticipants").value(DEFAULT_NUM_OF_PARTICIPANTS))
-            .andExpect(jsonPath("$.bookStartTime").value(DEFAULT_BOOK_START_TIME.toString()))
-            .andExpect(jsonPath("$.bookEndTime").value(DEFAULT_BOOK_END_TIME.toString()));
+            .andExpect(jsonPath("$.partySize").value(DEFAULT_PARTY_SIZE))
+            .andExpect(jsonPath("$.bookingStatus").value(DEFAULT_BOOKING_STATUS.toString()))
+            .andExpect(jsonPath("$.createdAt").value(DEFAULT_CREATED_AT.toString()))
+            .andExpect(jsonPath("$.assignedAt").value(DEFAULT_ASSIGNED_AT.toString()));
     }
 
     @Test
@@ -389,15 +310,13 @@ class BookingResourceIT {
         // Disconnect from session so that the updates on updatedBooking are not directly saved in db
         em.detach(updatedBooking);
         updatedBooking
-            .bookingName(UPDATED_BOOKING_NAME)
-            .bookingStatus(UPDATED_BOOKING_STATUS)
-            .bookingTime(UPDATED_BOOKING_TIME)
+            .activityType(UPDATED_ACTIVITY_TYPE)
+            .eventType(UPDATED_EVENT_TYPE)
             .bookingDate(UPDATED_BOOKING_DATE)
-            .phoneNum(UPDATED_PHONE_NUM)
-            .bookingType(UPDATED_BOOKING_TYPE)
-            .numOfParticipants(UPDATED_NUM_OF_PARTICIPANTS)
-            .bookStartTime(UPDATED_BOOK_START_TIME)
-            .bookEndTime(UPDATED_BOOK_END_TIME);
+            .partySize(UPDATED_PARTY_SIZE)
+            .bookingStatus(UPDATED_BOOKING_STATUS)
+            .createdAt(UPDATED_CREATED_AT)
+            .assignedAt(UPDATED_ASSIGNED_AT);
 
         restBookingMockMvc
             .perform(
@@ -473,10 +392,7 @@ class BookingResourceIT {
         Booking partialUpdatedBooking = new Booking();
         partialUpdatedBooking.setId(booking.getId());
 
-        partialUpdatedBooking
-            .bookingStatus(UPDATED_BOOKING_STATUS)
-            .bookingDate(UPDATED_BOOKING_DATE)
-            .numOfParticipants(UPDATED_NUM_OF_PARTICIPANTS);
+        partialUpdatedBooking.activityType(UPDATED_ACTIVITY_TYPE).createdAt(UPDATED_CREATED_AT);
 
         restBookingMockMvc
             .perform(
@@ -505,15 +421,13 @@ class BookingResourceIT {
         partialUpdatedBooking.setId(booking.getId());
 
         partialUpdatedBooking
-            .bookingName(UPDATED_BOOKING_NAME)
-            .bookingStatus(UPDATED_BOOKING_STATUS)
-            .bookingTime(UPDATED_BOOKING_TIME)
+            .activityType(UPDATED_ACTIVITY_TYPE)
+            .eventType(UPDATED_EVENT_TYPE)
             .bookingDate(UPDATED_BOOKING_DATE)
-            .phoneNum(UPDATED_PHONE_NUM)
-            .bookingType(UPDATED_BOOKING_TYPE)
-            .numOfParticipants(UPDATED_NUM_OF_PARTICIPANTS)
-            .bookStartTime(UPDATED_BOOK_START_TIME)
-            .bookEndTime(UPDATED_BOOK_END_TIME);
+            .partySize(UPDATED_PARTY_SIZE)
+            .bookingStatus(UPDATED_BOOKING_STATUS)
+            .createdAt(UPDATED_CREATED_AT)
+            .assignedAt(UPDATED_ASSIGNED_AT);
 
         restBookingMockMvc
             .perform(

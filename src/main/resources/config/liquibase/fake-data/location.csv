@@ -1,0 +1,11 @@
+id;name;status;capacity;remaining_capacity;is_capacity_based
+1;whether hawk which;FULL;12846;11974;false
+2;airbus;OCCUPIED;29636;8714;false
+3;ugh oh ick;FULL;25865;13471;true
+4;eminent hmph roadway;OCCUPIED;31013;23821;false
+5;aha;OCCUPIED;27777;11193;false
+6;luck swerve;OCCUPIED;22187;336;false
+7;subtract aftermath;MAINTENANCE;5121;22573;true
+8;before marathon;FULL;24044;26122;true
+9;round puritan near;MAINTENANCE;23831;16730;false
+10;for;MAINTENANCE;21389;11185;true

@@ -10,18 +10,11 @@
     -->
     <changeSet id="20250226170643-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="booking_done_by_id"
+        <addForeignKeyConstraint baseColumnNames="time_slots_id"
                                  baseTableName="booking"
-                                 constraintName="fk_booking__booking_done_by_id"
+                                 constraintName="fk_booking__time_slots_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="profile"
-                                 />
-
-        <addForeignKeyConstraint baseColumnNames="requested_user_id"
-                                 baseTableName="booking"
-                                 constraintName="fk_booking__requested_user_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="jhi_user"
+                                 referencedTableName="time_slot"
                                  />
 
         <addForeignKeyConstraint baseColumnNames="booked_activity_id"
@@ -31,11 +24,32 @@
                                  referencedTableName="activity"
                                  />
 
+        <addForeignKeyConstraint baseColumnNames="booking_location_id"
+                                 baseTableName="booking"
+                                 constraintName="fk_booking__booking_location_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="location"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="creator_id"
+                                 baseTableName="booking"
+                                 constraintName="fk_booking__creator_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="profile"
+                                 />
+
         <addForeignKeyConstraint baseColumnNames="activity_id"
                                  baseTableName="booking"
                                  constraintName="fk_booking__activity_id"
                                  referencedColumnNames="id"
                                  referencedTableName="activity"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="time_slot_id"
+                                 baseTableName="booking"
+                                 constraintName="fk_booking__time_slot_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="time_slot"
                                  />
     </changeSet>
 </databaseChangeLog>

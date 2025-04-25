@@ -47,6 +47,9 @@ public class ProfileAsserts {
     public static void assertProfileUpdatableFieldsEquals(Profile expected, Profile actual) {
         assertThat(expected)
             .as("Verify Profile relevant properties")
+            .satisfies(e -> assertThat(e.getLogin()).as("check login").isEqualTo(actual.getLogin()))
+            .satisfies(e -> assertThat(e.getFirstName()).as("check firstName").isEqualTo(actual.getFirstName()))
+            .satisfies(e -> assertThat(e.getLastName()).as("check lastName").isEqualTo(actual.getLastName()))
             .satisfies(e -> assertThat(e.getBio()).as("check bio").isEqualTo(actual.getBio()))
             .satisfies(e -> assertThat(e.getProfilePicture()).as("check profilePicture").isEqualTo(actual.getProfilePicture()))
             .satisfies(e ->
@@ -79,6 +82,8 @@ public class ProfileAsserts {
      * @param actual the actual entity
      */
     public static void assertProfileUpdatableRelationshipsEquals(Profile expected, Profile actual) {
-        // empty method
+        assertThat(expected)
+            .as("Verify Profile relationships")
+            .satisfies(e -> assertThat(e.getMessageThreads()).as("check messageThreads").isEqualTo(actual.getMessageThreads()));
     }
 }

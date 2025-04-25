@@ -68,12 +68,12 @@ public class ActivityAsserts {
             .satisfies(e ->
                 assertThat(e.getCoverImageContentType()).as("check coverImage contenty type").isEqualTo(actual.getCoverImageContentType())
             )
-            .satisfies(e -> assertThat(e.getPaid()).as("check paid").isEqualTo(actual.getPaid()))
+            .satisfies(e -> assertThat(e.getIsPaid()).as("check isPaid").isEqualTo(actual.getIsPaid()))
             .satisfies(e ->
-                assertThat(e.getCostOfactivity())
-                    .as("check costOfactivity")
+                assertThat(e.getActivityCost())
+                    .as("check activityCost")
                     .usingComparator(bigDecimalCompareTo)
-                    .isEqualTo(actual.getCostOfactivity())
+                    .isEqualTo(actual.getActivityCost())
             );
     }
 
@@ -86,6 +86,7 @@ public class ActivityAsserts {
     public static void assertActivityUpdatableRelationshipsEquals(Activity expected, Activity actual) {
         assertThat(expected)
             .as("Verify Activity relationships")
-            .satisfies(e -> assertThat(e.getUserName()).as("check userName").isEqualTo(actual.getUserName()));
+            .satisfies(e -> assertThat(e.getCreator()).as("check creator").isEqualTo(actual.getCreator()))
+            .satisfies(e -> assertThat(e.getChallenge()).as("check challenge").isEqualTo(actual.getChallenge()));
     }
 }

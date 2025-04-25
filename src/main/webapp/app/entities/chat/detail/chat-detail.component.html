@@ -23,33 +23,68 @@
           <dd>
             <span>{{ chatRef.timestamp | formatMediumDatetime }}</span>
           </dd>
+          <dt><span>Status</span></dt>
+          <dd>
+            <span>{{ { null: '', SENT: 'SENT', DELIVERED: 'DELIVERED', READ: 'READ' }[chatRef.status ?? 'null'] }}</span>
+          </dd>
           <dt><span>Type</span></dt>
           <dd>
-            <span>{{ { null: '', UNMATCH: 'UNMATCH', REPORT: 'REPORT' }[chatRef.type ?? 'null'] }}</span>
+            <span>{{ { null: '', TEXT: 'TEXT', IMAGE: 'IMAGE', VIDEO: 'VIDEO', FILE: 'FILE' }[chatRef.type ?? 'null'] }}</span>
           </dd>
-          <dt><span>Friend Chat</span></dt>
+          <dt><span>Media</span></dt>
           <dd>
-            @if (chat()!.friendChat) {
+            @if (chatRef.media) {
               <div>
-                <a [routerLink]="['/friends-list', chat()!.friendChat?.id, 'view']">{{ chatRef.friendChat?.id }}</a>
+                <a (click)="openFile(chatRef.media ?? '', chatRef.mediaContentType)">
+                  <img [src]="'data:' + chatRef.mediaContentType + ';base64,' + chatRef.media" style="max-width: 100%" alt="chat" />
+                </a>
+                {{ chatRef.mediaContentType }}, {{ byteSize(chatRef.media ?? '') }}
               </div>
             }
           </dd>
-          <dt><span>Chats</span></dt>
+          <dt><span>Is Deleted</span></dt>
           <dd>
-            @if (chat()!.chats) {
+            <span>{{ chatRef.isDeleted }}</span>
+          </dd>
+          <dt><span>Created On</span></dt>
+          <dd>
+            <span>{{ chatRef.createdOn | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Updated On</span></dt>
+          <dd>
+            <span>{{ chatRef.updatedOn | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Thread</span></dt>
+          <dd>
+            @if (chat()!.thread) {
               <div>
-                <a [routerLink]="['/profile', chat()!.chats?.id, 'view']">{{ chatRef.chats?.id }}</a>
+                <a [routerLink]="['/message-thread', chat()!.thread?.id, 'view']">{{ chatRef.thread?.id }}</a>
               </div>
             }
           </dd>
           <dt><span>Sender</span></dt>
           <dd>
-            <span>{{ chatRef.sender?.id }}</span>
+            @if (chat()!.sender) {
+              <div>
+                <a [routerLink]="['/profile', chat()!.sender?.id, 'view']">{{ chatRef.sender?.id }}</a>
+              </div>
+            }
           </dd>
           <dt><span>Receiver</span></dt>
           <dd>
-            <span>{{ chatRef.receiver?.id }}</span>
+            @if (chat()!.receiver) {
+              <div>
+                <a [routerLink]="['/profile', chat()!.receiver?.id, 'view']">{{ chatRef.receiver?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Message Thread</span></dt>
+          <dd>
+            @if (chat()!.messageThread) {
+              <div>
+                <a [routerLink]="['/message-thread', chat()!.messageThread?.id, 'view']">{{ chatRef.messageThread?.id }}</a>
+              </div>
+            }
           </dd>
         </dl>
 

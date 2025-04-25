@@ -47,15 +47,13 @@ public class BookingAsserts {
     public static void assertBookingUpdatableFieldsEquals(Booking expected, Booking actual) {
         assertThat(expected)
             .as("Verify Booking relevant properties")
-            .satisfies(e -> assertThat(e.getBookingName()).as("check bookingName").isEqualTo(actual.getBookingName()))
-            .satisfies(e -> assertThat(e.getBookingStatus()).as("check bookingStatus").isEqualTo(actual.getBookingStatus()))
-            .satisfies(e -> assertThat(e.getBookingTime()).as("check bookingTime").isEqualTo(actual.getBookingTime()))
+            .satisfies(e -> assertThat(e.getActivityType()).as("check activityType").isEqualTo(actual.getActivityType()))
+            .satisfies(e -> assertThat(e.getEventType()).as("check eventType").isEqualTo(actual.getEventType()))
             .satisfies(e -> assertThat(e.getBookingDate()).as("check bookingDate").isEqualTo(actual.getBookingDate()))
-            .satisfies(e -> assertThat(e.getPhoneNum()).as("check phoneNum").isEqualTo(actual.getPhoneNum()))
-            .satisfies(e -> assertThat(e.getBookingType()).as("check bookingType").isEqualTo(actual.getBookingType()))
-            .satisfies(e -> assertThat(e.getNumOfParticipants()).as("check numOfParticipants").isEqualTo(actual.getNumOfParticipants()))
-            .satisfies(e -> assertThat(e.getBookStartTime()).as("check bookStartTime").isEqualTo(actual.getBookStartTime()))
-            .satisfies(e -> assertThat(e.getBookEndTime()).as("check bookEndTime").isEqualTo(actual.getBookEndTime()));
+            .satisfies(e -> assertThat(e.getPartySize()).as("check partySize").isEqualTo(actual.getPartySize()))
+            .satisfies(e -> assertThat(e.getBookingStatus()).as("check bookingStatus").isEqualTo(actual.getBookingStatus()))
+            .satisfies(e -> assertThat(e.getCreatedAt()).as("check createdAt").isEqualTo(actual.getCreatedAt()))
+            .satisfies(e -> assertThat(e.getAssignedAt()).as("check assignedAt").isEqualTo(actual.getAssignedAt()));
     }
 
     /**
@@ -67,8 +65,11 @@ public class BookingAsserts {
     public static void assertBookingUpdatableRelationshipsEquals(Booking expected, Booking actual) {
         assertThat(expected)
             .as("Verify Booking relationships")
-            .satisfies(e -> assertThat(e.getBookingDoneBy()).as("check bookingDoneBy").isEqualTo(actual.getBookingDoneBy()))
+            .satisfies(e -> assertThat(e.getTimeSlots()).as("check timeSlots").isEqualTo(actual.getTimeSlots()))
             .satisfies(e -> assertThat(e.getBookedActivity()).as("check bookedActivity").isEqualTo(actual.getBookedActivity()))
-            .satisfies(e -> assertThat(e.getActivity()).as("check activity").isEqualTo(actual.getActivity()));
+            .satisfies(e -> assertThat(e.getBookingLocation()).as("check bookingLocation").isEqualTo(actual.getBookingLocation()))
+            .satisfies(e -> assertThat(e.getCreator()).as("check creator").isEqualTo(actual.getCreator()))
+            .satisfies(e -> assertThat(e.getActivity()).as("check activity").isEqualTo(actual.getActivity()))
+            .satisfies(e -> assertThat(e.getTimeSlot()).as("check timeSlot").isEqualTo(actual.getTimeSlot()));
     }
 }

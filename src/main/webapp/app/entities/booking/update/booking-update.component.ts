@@ -7,14 +7,17 @@ import { finalize, map } from 'rxjs/operators';
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { IProfile } from 'app/entities/profile/profile.model';
-import { ProfileService } from 'app/entities/profile/service/profile.service';
-import { IUser } from 'app/entities/user/user.model';
-import { UserService } from 'app/entities/user/service/user.service';
+import { ITimeSlot } from 'app/entities/time-slot/time-slot.model';
+import { TimeSlotService } from 'app/entities/time-slot/service/time-slot.service';
 import { IActivity } from 'app/entities/activity/activity.model';
 import { ActivityService } from 'app/entities/activity/service/activity.service';
-import { Status } from 'app/entities/enumerations/status.model';
-import { BookingType } from 'app/entities/enumerations/booking-type.model';
+import { ILocation } from 'app/entities/location/location.model';
+import { LocationService } from 'app/entities/location/service/location.service';
+import { IProfile } from 'app/entities/profile/profile.model';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
+import { ActivityType } from 'app/entities/enumerations/activity-type.model';
+import { EventType } from 'app/entities/enumerations/event-type.model';
+import { BookingStatus } from 'app/entities/enumerations/booking-status.model';
 import { BookingService } from '../service/booking.service';
 import { IBooking } from '../booking.model';
 import { BookingFormGroup, BookingFormService } from './booking-form.service';
@@ -28,28 +31,33 @@ import { BookingFormGroup, BookingFormService } from './booking-form.service';
 export class BookingUpdateComponent implements OnInit {
   isSaving = false;
   booking: IBooking | null = null;
-  statusValues = Object.keys(Status);
-  bookingTypeValues = Object.keys(BookingType);
+  activityTypeValues = Object.keys(ActivityType);
+  eventTypeValues = Object.keys(EventType);
+  bookingStatusValues = Object.keys(BookingStatus);
 
-  bookingDoneBiesCollection: IProfile[] = [];
-  usersSharedCollection: IUser[] = [];
+  timeSlotsSharedCollection: ITimeSlot[] = [];
   activitiesSharedCollection: IActivity[] = [];
+  locationsSharedCollection: ILocation[] = [];
+  profilesSharedCollection: IProfile[] = [];
 
   protected bookingService = inject(BookingService);
   protected bookingFormService = inject(BookingFormService);
-  protected profileService = inject(ProfileService);
-  protected userService = inject(UserService);
+  protected timeSlotService = inject(TimeSlotService);
   protected activityService = inject(ActivityService);
+  protected locationService = inject(LocationService);
+  protected profileService = inject(ProfileService);
   protected activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: BookingFormGroup = this.bookingFormService.createBookingFormGroup();
 
-  compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
-
-  compareUser = (o1: IUser | null, o2: IUser | null): boolean => this.userService.compareUser(o1, o2);
+  compareTimeSlot = (o1: ITimeSlot | null, o2: ITimeSlot | null): boolean => this.timeSlotService.compareTimeSlot(o1, o2);
 
   compareActivity = (o1: IActivity | null, o2: IActivity | null): boolean => this.activityService.compareActivity(o1, o2);
+
+  compareLocation = (o1: ILocation | null, o2: ILocation | null): boolean => this.locationService.compareLocation(o1, o2);
+
+  compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ booking }) => {
@@ -99,32 +107,36 @@ export class BookingUpdateComponent implements OnInit {
     this.booking = booking;
     this.bookingFormService.resetForm(this.editForm, booking);
 
-    this.bookingDoneBiesCollection = this.profileService.addProfileToCollectionIfMissing<IProfile>(
-      this.bookingDoneBiesCollection,
-      booking.bookingDoneBy,
+    this.timeSlotsSharedCollection = this.timeSlotService.addTimeSlotToCollectionIfMissing<ITimeSlot>(
+      this.timeSlotsSharedCollection,
+      booking.timeSlots,
+      booking.timeSlot,
     );
-    this.usersSharedCollection = this.userService.addUserToCollectionIfMissing<IUser>(this.usersSharedCollection, booking.requestedUser);
     this.activitiesSharedCollection = this.activityService.addActivityToCollectionIfMissing<IActivity>(
       this.activitiesSharedCollection,
       booking.bookedActivity,
       booking.activity,
     );
+    this.locationsSharedCollection = this.locationService.addLocationToCollectionIfMissing<ILocation>(
+      this.locationsSharedCollection,
+      booking.bookingLocation,
+    );
+    this.profilesSharedCollection = this.profileService.addProfileToCollectionIfMissing<IProfile>(
+      this.profilesSharedCollection,
+      booking.creator,
+    );
   }
 
   protected loadRelationshipsOptions(): void {
-    this.profileService
-      .query({ filter: 'booking-is-null' })
-      .pipe(map((res: HttpResponse<IProfile[]>) => res.body ?? []))
-      .pipe(
-        map((profiles: IProfile[]) => this.profileService.addProfileToCollectionIfMissing<IProfile>(profiles, this.booking?.bookingDoneBy)),
-      )
-      .subscribe((profiles: IProfile[]) => (this.bookingDoneBiesCollection = profiles));
-
-    this.userService
+    this.timeSlotService
       .query()
-      .pipe(map((res: HttpResponse<IUser[]>) => res.body ?? []))
-      .pipe(map((users: IUser[]) => this.userService.addUserToCollectionIfMissing<IUser>(users, this.booking?.requestedUser)))
-      .subscribe((users: IUser[]) => (this.usersSharedCollection = users));
+      .pipe(map((res: HttpResponse<ITimeSlot[]>) => res.body ?? []))
+      .pipe(
+        map((timeSlots: ITimeSlot[]) =>
+          this.timeSlotService.addTimeSlotToCollectionIfMissing<ITimeSlot>(timeSlots, this.booking?.timeSlots, this.booking?.timeSlot),
+        ),
+      )
+      .subscribe((timeSlots: ITimeSlot[]) => (this.timeSlotsSharedCollection = timeSlots));
 
     this.activityService
       .query()
@@ -139,5 +151,21 @@ export class BookingUpdateComponent implements OnInit {
         ),
       )
       .subscribe((activities: IActivity[]) => (this.activitiesSharedCollection = activities));
+
+    this.locationService
+      .query()
+      .pipe(map((res: HttpResponse<ILocation[]>) => res.body ?? []))
+      .pipe(
+        map((locations: ILocation[]) =>
+          this.locationService.addLocationToCollectionIfMissing<ILocation>(locations, this.booking?.bookingLocation),
+        ),
+      )
+      .subscribe((locations: ILocation[]) => (this.locationsSharedCollection = locations));
+
+    this.profileService
+      .query()
+      .pipe(map((res: HttpResponse<IProfile[]>) => res.body ?? []))
+      .pipe(map((profiles: IProfile[]) => this.profileService.addProfileToCollectionIfMissing<IProfile>(profiles, this.booking?.creator)))
+      .subscribe((profiles: IProfile[]) => (this.profilesSharedCollection = profiles));
   }
 }

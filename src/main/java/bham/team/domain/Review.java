@@ -41,14 +41,12 @@ public class Review implements Serializable {
     private String text;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "user", "booking", "ranking" }, allowSetters = true)
-    private Profile reviewsGiven;
+    @JsonIgnoreProperties(value = { "user", "ranking", "messageThreads" }, allowSetters = true)
+    private Profile aboutUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User aboutUser;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User fromUser;
+    @JsonIgnoreProperties(value = { "user", "ranking", "messageThreads" }, allowSetters = true)
+    private Profile fromUser;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -104,42 +102,29 @@ public class Review implements Serializable {
         this.text = text;
     }
 
-    public Profile getReviewsGiven() {
-        return this.reviewsGiven;
-    }
-
-    public void setReviewsGiven(Profile profile) {
-        this.reviewsGiven = profile;
-    }
-
-    public Review reviewsGiven(Profile profile) {
-        this.setReviewsGiven(profile);
-        return this;
-    }
-
-    public User getAboutUser() {
+    public Profile getAboutUser() {
         return this.aboutUser;
     }
 
-    public void setAboutUser(User user) {
-        this.aboutUser = user;
+    public void setAboutUser(Profile profile) {
+        this.aboutUser = profile;
     }
 
-    public Review aboutUser(User user) {
-        this.setAboutUser(user);
+    public Review aboutUser(Profile profile) {
+        this.setAboutUser(profile);
         return this;
     }
 
-    public User getFromUser() {
+    public Profile getFromUser() {
         return this.fromUser;
     }
 
-    public void setFromUser(User user) {
-        this.fromUser = user;
+    public void setFromUser(Profile profile) {
+        this.fromUser = profile;
     }
 
-    public Review fromUser(User user) {
-        this.setFromUser(user);
+    public Review fromUser(Profile profile) {
+        this.setFromUser(profile);
         return this;
     }
 

@@ -3,15 +3,11 @@ package bham.team.service; // Adjust to your actual package
 import bham.team.domain.ActivityMatch;
 import bham.team.domain.Profile;
 import bham.team.domain.enumeration.ActivityType;
-import bham.team.domain.enumeration.Decision;
 import bham.team.repository.ActivityMatchRepository;
 import bham.team.repository.ProfileRepository;
-import bham.team.service.dto.ProfileDTO;
-import bham.team.service.mapper.ActivityMatchMapper;
+//import bham.team.service.mapper.ActivityMatchMapper;
 import bham.team.service.mapper.ProfileMapper;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -57,7 +53,7 @@ public class ActivityMatchService {
     @Transactional(readOnly = true)
     public List<Profile> getProfilesByPreferredActivity(ActivityType activityType) {
         log.debug("Request to get profiles by preferred activity: {}", activityType);
-        return profileRepository.findByPreferredActivity(activityType);
+        return profileRepository.findByPreferredActivities(activityType);
     }
 
     //    @Transactional(readOnly = true)
