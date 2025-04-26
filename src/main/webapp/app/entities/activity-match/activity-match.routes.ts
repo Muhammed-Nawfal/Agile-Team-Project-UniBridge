@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { ASC } from 'app/config/navigation.constants';
 import ActivityMatchResolve from './route/activity-match-routing-resolve.service';
+import { MatchingComponent } from './matching/matching.component';
 
 const activityMatchRoute: Routes = [
   {
@@ -36,6 +37,10 @@ const activityMatchRoute: Routes = [
       activityMatch: ActivityMatchResolve,
     },
     canActivate: [UserRouteAccessService],
+  },
+  {
+    path: 'buddy/:type',
+    component: MatchingComponent,
   },
 ];
 

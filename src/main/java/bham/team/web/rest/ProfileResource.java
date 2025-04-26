@@ -1,6 +1,7 @@
 package bham.team.web.rest;
 
 import bham.team.domain.Profile;
+import bham.team.domain.enumeration.ActivityType;
 import bham.team.repository.ProfileRepository;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -239,5 +240,13 @@ public class ProfileResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @GetMapping("/preferred-activity")
+    public ResponseEntity<List<Profile>> getProfilesByPreferredActivity(@RequestParam ActivityType activityType) {
+        LOG.debug("REST request to get Profiles by activityType: {}", activityType);
+
+        List<Profile> profiles = profileRepository.findByPreferredActivity(activityType);
+        return ResponseEntity.ok(profiles);
     }
 }

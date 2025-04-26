@@ -9,6 +9,8 @@ import { DATE_FORMAT } from 'app/config/input.constants';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IActivityMatch, NewActivityMatch } from '../activity-match.model';
+import { IProfile } from 'app/entities/profile/profile.model';
+import { ActivityType } from '../../enumerations/activity-type.model';
 
 export type PartialUpdateActivityMatch = Partial<IActivityMatch> & Pick<IActivityMatch, 'id'>;
 
@@ -34,6 +36,14 @@ export class ActivityMatchService {
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/activity-matches');
+  protected profileUrl = this.applicationConfigService.getEndpointFor('api/profiles');
+
+  getProfilesByPreferredActivity(activityType: ActivityType): Observable<HttpResponse<IProfile[]>> {
+    return this.http.get<IProfile[]>(`${this.profileUrl}/preferred-activity`, {
+      params: { activityType },
+      observe: 'response',
+    });
+  }
 
   create(activityMatch: NewActivityMatch): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(activityMatch);
@@ -134,4 +144,12 @@ export class ActivityMatchService {
       body: res.body ? res.body.map(item => this.convertDateFromServer(item)) : null,
     });
   }
+
+  // getProfilesByPreferredActivity(buddyType: string): Observable<HttpResponse<IProfile[]>> {
+  //   const activityType = ActivityTypeMapping[buddyType as keyof typeof ActivityTypeMapping];
+  //   return this.http.get<IProfile[]>(`${this.profileUrl}/preferred-activity`, {
+  //     params: { activityType },
+  //     observe: 'response',
+  //   });
+  // }
 }

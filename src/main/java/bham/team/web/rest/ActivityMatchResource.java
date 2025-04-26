@@ -1,7 +1,10 @@
 package bham.team.web.rest;
 
 import bham.team.domain.ActivityMatch;
+import bham.team.domain.Profile;
+import bham.team.domain.enumeration.ActivityType;
 import bham.team.repository.ActivityMatchRepository;
+import bham.team.service.ActivityMatchService;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -30,6 +33,8 @@ public class ActivityMatchResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(ActivityMatchResource.class);
 
+    private final ActivityMatchService activityMatchService;
+
     private static final String ENTITY_NAME = "activityMatch";
 
     @Value("${jhipster.clientApp.name}")
@@ -37,8 +42,9 @@ public class ActivityMatchResource {
 
     private final ActivityMatchRepository activityMatchRepository;
 
-    public ActivityMatchResource(ActivityMatchRepository activityMatchRepository) {
+    public ActivityMatchResource(ActivityMatchRepository activityMatchRepository, ActivityMatchService activityMatchService) {
         this.activityMatchRepository = activityMatchRepository;
+        this.activityMatchService = activityMatchService;
     }
 
     /**
@@ -203,5 +209,19 @@ public class ActivityMatchResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * Get profiles by preferred activity.
+     *
+     * @param activityType the activity type to filter by.
+     * @return the list of profiles matching the activity type.
+     */
+    @GetMapping("/profiles/preferred-activity")
+    public ResponseEntity<List<Profile>> getProfilesByPreferredActivity(@RequestParam ActivityType activityType) {
+        LOG.debug("REST request to get profiles by preferred activity: {}", activityType);
+        List<Profile> profiles = activityMatchService.getProfilesByPreferredActivity(activityType);
+        LOG.debug("Found {} profiles for activity type {}", profiles.size(), activityType);
+        return ResponseEntity.ok(profiles);
     }
 }
