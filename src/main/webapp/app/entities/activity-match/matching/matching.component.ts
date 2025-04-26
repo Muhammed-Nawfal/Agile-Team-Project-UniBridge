@@ -1,32 +1,21 @@
-import { Component, NgZone, OnInit, OnDestroy, inject } from '@angular/core';
-import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
-import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
+import { Component, inject, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { combineLatest, Subscription } from 'rxjs';
 
 import SharedModule from 'app/shared/shared.module';
-import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
-import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
+import { SortService, sortStateSignal } from 'app/shared/sort';
 import { FormsModule } from '@angular/forms';
-import { DEFAULT_SORT_DATA, SORT } from 'app/config/navigation.constants';
 import { IActivityMatch } from '../activity-match.model';
 import { ActivityMatchService } from '../service/activity-match.service';
 import { IProfile } from '../../profile/profile.model';
-import { IUser } from '../../user/user.model';
+import { ActivityType } from '../../enumerations/activity-type.model';
 
 @Component({
   standalone: true,
   selector: 'jhi-matching',
   templateUrl: './matching.component.html',
   styleUrl: 'matching.component.scss',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    SortDirective,
-    SortByDirective,
-    DurationPipe,
-    FormatMediumDatetimePipe,
-    FormatMediumDatePipe,
-  ],
+  imports: [RouterModule, FormsModule, SharedModule],
 })
 export class MatchingComponent implements OnInit, OnDestroy {
   subscription: Subscription | null = null;
@@ -42,7 +31,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
   noMoreProfiles = false;
 
   // Add buddy type property
-  buddyType = 'gym'; // Default value
+  buddyType = ActivityType.OTHER;
 
   // Add properties for filter options
   filter1Options: { value: string; label: string }[] = [];
@@ -56,6 +45,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
   sortState = sortStateSignal({});
 
   public readonly router = inject(Router);
+  protected readonly ActivityType = ActivityType;
   protected readonly activityMatchService = inject(ActivityMatchService);
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
@@ -68,7 +58,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
         // Get the buddy type from route parameters
         const type = params.get('type');
         if (type) {
-          this.buddyType = type;
+          this.buddyType = ActivityType[type as keyof typeof ActivityType];
           this.setupFilterOptions();
           this.loadBuddies();
         }
@@ -101,10 +91,6 @@ export class MatchingComponent implements OnInit, OnDestroy {
       },
     });
   }
-  //
-  // getFirstsName(): string {
-  //   return this.currentProfile?.user?.firstName as string;
-  // }
 
   // loadGymBuddies(): void {
   //   this.isLoading = true;
@@ -169,7 +155,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
     ];
 
     switch (this.buddyType) {
-      case 'gym':
+      case ActivityType.GYM:
         this.filter1Options = [
           { value: '', label: 'All Locations' },
           { value: 'Sports And Fitness', label: 'Sports and Fitness Gym' },
@@ -186,7 +172,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
         ];
         break;
 
-      case 'study':
+      case ActivityType.ACADEMIC:
         this.filter1Options = [
           { value: '', label: 'Any Courses' },
           { value: 'Computer Science', label: 'Computer Science' },
@@ -203,7 +189,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
         ];
         break;
 
-      case 'sports':
+      case ActivityType.SPORTS:
         this.filter1Options = [
           { value: '', label: 'Any Sports' },
           { value: 'Football', label: 'Football' },
@@ -220,7 +206,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
         ];
         break;
 
-      case 'events':
+      case ActivityType.SOCIAL:
         this.filter1Options = [
           { value: '', label: 'All Societies' },
           { value: 'Computer Science Society', label: 'Computer Science Society' },
@@ -380,13 +366,13 @@ export class MatchingComponent implements OnInit, OnDestroy {
   // Filter methods based on buddy type
   applyFilter1(profiles: any[], value: string): any[] {
     switch (this.buddyType) {
-      case 'gym':
+      case ActivityType.GYM:
         return profiles.filter(p => !value || p.gymLocation.toLowerCase().includes(value.toLowerCase()));
-      case 'study':
+      case ActivityType.ACADEMIC:
         return profiles.filter(p => !value || p.course.toLowerCase().includes(value.toLowerCase()));
-      case 'sports':
+      case ActivityType.SPORTS:
         return profiles.filter(p => !value || p.sportType.toLowerCase().includes(value.toLowerCase()));
-      case 'events':
+      case ActivityType.SOCIAL:
         return profiles.filter(p => !value || p.society.toLowerCase().includes(value.toLowerCase()));
       default:
         return profiles;
@@ -395,12 +381,13 @@ export class MatchingComponent implements OnInit, OnDestroy {
 
   applyFilter2(profiles: any[], value: string): any[] {
     switch (this.buddyType) {
-      case 'gym':
-      case 'sports':
+      case ActivityType.GYM:
         return profiles.filter(p => !value || p.skillLevel.toLowerCase().includes(value.toLowerCase()));
-      case 'study':
+      case ActivityType.SPORTS:
+        return profiles.filter(p => !value || p.skillLevel.toLowerCase().includes(value.toLowerCase()));
+      case ActivityType.ACADEMIC:
         return profiles.filter(p => !value || p.university?.toLowerCase().includes(value.toLowerCase()));
-      case 'events':
+      case ActivityType.SOCIAL:
         return profiles.filter(p => !value || p.eventType.toLowerCase().includes(value.toLowerCase()));
       default:
         return profiles;
@@ -556,13 +543,13 @@ export class MatchingComponent implements OnInit, OnDestroy {
   // Helper method to get proper label for buddy type
   getLocationLabel(): string {
     switch (this.buddyType) {
-      case 'gym':
+      case ActivityType.GYM:
         return 'Gym Location';
-      case 'study':
+      case ActivityType.ACADEMIC:
         return 'Course';
-      case 'sports':
+      case ActivityType.SPORTS:
         return 'Sport';
-      case 'events':
+      case ActivityType.SOCIAL:
         return 'Society';
       default:
         return 'Location';
@@ -572,11 +559,11 @@ export class MatchingComponent implements OnInit, OnDestroy {
   // Helper method to get proper label for skill level
   getSkillLabel(): string {
     switch (this.buddyType) {
-      case 'study':
+      case ActivityType.ACADEMIC:
         return 'University';
-      case 'sports':
+      case ActivityType.SPORTS:
         return 'Skill Level';
-      case 'events':
+      case ActivityType.SOCIAL:
         return 'Event Type';
       default:
         return 'Skill Level';

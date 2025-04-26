@@ -53,14 +53,8 @@ public class ActivityMatchService {
     @Transactional(readOnly = true)
     public List<Profile> getProfilesByPreferredActivity(ActivityType activityType) {
         log.debug("Request to get profiles by preferred activity: {}", activityType);
-        return profileRepository.findByPreferredActivities(activityType);
+        return profileRepository.findByPreferredActivity(activityType);
     }
-
-    //    @Transactional(readOnly = true)
-    //    public List<Profile> getProfilesByPreferredActivity(ActivityType activityType) {
-    //        log.debug("Request to get profiles by preferred activity: {}", activityType);
-    //        return profileRepository.findByPreferredActivity(activityType);
-    //    }
 
     /**
      * Create a new activity match between users

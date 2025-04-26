@@ -1,6 +1,6 @@
-import { Component, NgZone, OnInit, inject } from '@angular/core';
+import { Component, NgZone, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
-import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
+import { Observable, Subscription, Subject, combineLatest, filter, tap, takeUntil } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import SharedModule from 'app/shared/shared.module';
@@ -8,15 +8,21 @@ import { SortByDirective, SortDirective, SortService, type SortState, sortStateS
 import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
 import { FormsModule } from '@angular/forms';
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
-import { DataUtils } from 'app/core/util/data-util.service';
 import { IActivityMatch } from '../activity-match.model';
 import { ActivityMatchService, EntityArrayResponseType } from '../service/activity-match.service';
 import { ActivityMatchDeleteDialogComponent } from '../delete/activity-match-delete-dialog.component';
+import { MatchingComponent } from '../matching/matching.component';
+
+import { AccountService } from 'app/core/auth/account.service';
+import { Account } from 'app/core/auth/account.model';
+import { IProfile } from '../../profile/profile.model';
+import { ActivityType } from '../../enumerations/activity-type.model';
 
 @Component({
   standalone: true,
   selector: 'jhi-activity-match',
   templateUrl: './activity-match.component.html',
+  styleUrl: 'activity-match.component.scss',
   imports: [
     RouterModule,
     FormsModule,
@@ -26,26 +32,60 @@ import { ActivityMatchDeleteDialogComponent } from '../delete/activity-match-del
     DurationPipe,
     FormatMediumDatetimePipe,
     FormatMediumDatePipe,
+    MatchingComponent,
   ],
 })
-export class ActivityMatchComponent implements OnInit {
-  subscription: Subscription | null = null;
+export class ActivityMatchComponent implements OnInit, OnDestroy {
+  // Public properties first
+  account = signal<Account | null>(null);
   activityMatches?: IActivityMatch[];
   isLoading = false;
-
   sortState = sortStateSignal({});
 
+  profiles: IProfile[] = [];
+
+  // Public injected services
   public readonly router = inject(Router);
+
+  // Subscriptions
+  subscription: Subscription | null = null;
+
+  // Protected services
   protected readonly activityMatchService = inject(ActivityMatchService);
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
-  protected dataUtils = inject(DataUtils);
+  protected readonly accountService = inject(AccountService);
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
 
+  protected readonly ActivityType = ActivityType;
+
+  // Private properties
+  private readonly destroy$ = new Subject<void>();
+
+  // Class methods
   trackId = (item: IActivityMatch): number => this.activityMatchService.getActivityMatchIdentifier(item);
 
   ngOnInit(): void {
+    // Subscribe to account identity
+    this.accountService
+      .identity()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(account => {
+        this.account.set(account);
+      });
+
+    // Listen for authentication state changes
+    this.accountService
+      .getAuthenticationState()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(account => {
+        if (account) {
+          this.account.set(account);
+          this.handleLoginRedirect();
+        }
+      });
+
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
       .pipe(
         tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
@@ -58,12 +98,12 @@ export class ActivityMatchComponent implements OnInit {
       .subscribe();
   }
 
-  byteSize(base64String: string): string {
-    return this.dataUtils.byteSize(base64String);
-  }
-
-  openFile(base64String: string, contentType: string | null | undefined): void {
-    return this.dataUtils.openFile(base64String, contentType);
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   delete(activityMatch: IActivityMatch): void {
@@ -86,8 +126,48 @@ export class ActivityMatchComponent implements OnInit {
     });
   }
 
+  // onButtonClick(): void {
+  //   if (!this.account()) {
+  //     // If the user is not authenticated, redirect them to the login page
+  //     localStorage.setItem('redirectUrl', this.router.url);
+  //     this.router.navigate(['/login']);
+  //   }
+  // }
+
   navigateToWithComponentValues(event: SortState): void {
     this.handleNavigation(event);
+  }
+
+  navigateToBuddy(type: ActivityType): void {
+    if (this.account()) {
+      this.router.navigate(['/activity-match/buddy', type]);
+    } else {
+      // Store the current URL and redirect to the login page
+      localStorage.setItem('redirectUrl', `/activity-match/buddy/${type}`);
+      this.router.navigate(['/login']);
+    }
+  }
+
+  navigateToBooking(): void {
+    if (this.account()) {
+      this.router.navigate(['/booking']);
+    } else {
+      // Store the current URL and redirect to the login page
+      localStorage.setItem('redirectUrl', this.router.url);
+      this.router.navigate(['/login']);
+    }
+  }
+
+  handleLoginRedirect(): void {
+    const redirectUrl = localStorage.getItem('redirectUrl');
+    if (redirectUrl) {
+      this.router.navigateByUrl(redirectUrl); // Navigate to the saved URL
+      localStorage.removeItem('redirectUrl'); // Remove the redirect URL after using it
+    }
+  }
+
+  navigateToActivity(): void {
+    this.router.navigate(['/activity']);
   }
 
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {

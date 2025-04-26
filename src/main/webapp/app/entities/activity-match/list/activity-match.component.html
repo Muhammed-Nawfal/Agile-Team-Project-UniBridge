@@ -1,200 +1,36 @@
-<div>
-  <h2 id="page-heading" data-cy="ActivityMatchHeading">
-    <span>Activity Matches</span>
-
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span>Refresh list</span>
-      </button>
-
-      <button
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-activity-match"
-        [routerLink]="['/activity-match/new']"
-      >
-        <fa-icon icon="plus"></fa-icon>
-        <span>Create a new Activity Match</span>
-      </button>
-    </div>
-  </h2>
+<div class="page" id="page-activity-match">
+  <h1 id="page-heading" class="title" data-cy="ActivityMatchHeading">
+    <span>Welcome to UNIBRIDGE</span>
+  </h1>
 
   <jhi-alert-error></jhi-alert-error>
-
   <jhi-alert></jhi-alert>
 
-  @if (activityMatches?.length === 0) {
-    <div class="alert alert-warning" id="no-result">
-      <span>No Activity Matches found</span>
-    </div>
-  }
+  <h2>Match With a Buddy</h2>
+  <div class="buddy-buttons">
+    <!--    @if (account() !== null) {-->
+    <button (click)="navigateToBuddy(ActivityType.ACADEMIC)">STUDY BUDDY</button>
+    <button (click)="navigateToBuddy(ActivityType.GYM)">GYM BUDDY</button>
+    <button (click)="navigateToBuddy(ActivityType.SPORTS)">SPORTS BUDDY</button>
+    <button (click)="navigateToBuddy(ActivityType.SOCIAL)">EVENTS BUDDY</button>
+    <!--    } @else {-->
+    <!--      <button (click)="onButtonClicktoLogin()">STUDY BUDDY</button>-->
+    <!--      <button (click)="onButtonClicktoLogin()">GYM BUDDY</button>-->
+    <!--      <button (click)="onButtonClicktoLogin()">SPORTS BUDDY</button>-->
+    <!--      <button (click)="onButtonClicktoLogin()">EVENTS BUDDY</button>-->
+    <!--    }-->
+  </div>
 
-  @if (activityMatches && activityMatches.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
-        <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
+  <h2>Create/Join</h2>
+  <div class="activity-buttons">
+    <!--    @if (account() !== null) {-->
+    <button (click)="navigateToBooking()">CREATE A BOOKING</button>
+    <button (click)="navigateToActivity()">JOIN AN ACTIVITY</button>
+    <!--    } @else {-->
+    <!--      <button (click)="onButtonClicktoLogin()">CREATE A BOOKING</button>-->
+    <!--      <button (click)="navigateToActivity()">JOIN AN ACTIVITY</button>-->
+    <!--    }-->
+  </div>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="activityType">
-              <div class="d-flex">
-                <span>Activity Type</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="status">
-              <div class="d-flex">
-                <span>Status</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="matchDate">
-              <div class="d-flex">
-                <span>Match Date</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="matchTime">
-              <div class="d-flex">
-                <span>Match Time</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="location">
-              <div class="d-flex">
-                <span>Location</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="notes">
-              <div class="d-flex">
-                <span>Notes</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="createdAt">
-              <div class="d-flex">
-                <span>Created At</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="responseAt">
-              <div class="d-flex">
-                <span>Response At</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="ratings.id">
-              <div class="d-flex">
-                <span>Ratings</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="matchRequestor.id">
-              <div class="d-flex">
-                <span>Match Requestor</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="userDetails.id">
-              <div class="d-flex">
-                <span>User Details</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="matchedActivity.id">
-              <div class="d-flex">
-                <span>Matched Activity</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (activityMatch of activityMatches; track trackId(activityMatch)) {
-            <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/activity-match', activityMatch.id, 'view']">{{ activityMatch.id }}</a>
-              </td>
-              <td>
-                {{
-                  { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[
-                    activityMatch.activityType ?? 'null'
-                  ]
-                }}
-              </td>
-              <td>{{ { null: '', ACCEPT: 'ACCEPT', DECLINED: 'DECLINED', PENDING: 'PENDING' }[activityMatch.status ?? 'null'] }}</td>
-              <td>{{ activityMatch.matchDate | formatMediumDate }}</td>
-              <td>{{ activityMatch.matchTime | formatMediumDatetime }}</td>
-              <td>{{ activityMatch.location }}</td>
-              <td>{{ activityMatch.notes }}</td>
-              <td>{{ activityMatch.createdAt | formatMediumDatetime }}</td>
-              <td>{{ activityMatch.responseAt | formatMediumDatetime }}</td>
-              <td>
-                @if (activityMatch.ratings) {
-                  <div>
-                    <a [routerLink]="['/ranking', activityMatch.ratings.id, 'view']">{{ activityMatch.ratings.id }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                @if (activityMatch.matchRequestor) {
-                  <div>
-                    <a [routerLink]="['/profile', activityMatch.matchRequestor.id, 'view']">{{ activityMatch.matchRequestor.id }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                @if (activityMatch.userDetails) {
-                  <div>
-                    <a [routerLink]="['/profile', activityMatch.userDetails.id, 'view']">{{ activityMatch.userDetails.id }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                @if (activityMatch.matchedActivity) {
-                  <div>
-                    <a [routerLink]="['/activity', activityMatch.matchedActivity.id, 'view']">{{ activityMatch.matchedActivity.id }}</a>
-                  </div>
-                }
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
-                  <a [routerLink]="['/activity-match', activityMatch.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                    <fa-icon icon="eye"></fa-icon>
-                    <span class="d-none d-md-inline">View</span>
-                  </a>
-
-                  <a [routerLink]="['/activity-match', activityMatch.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline">Edit</span>
-                  </a>
-
-                  <button type="submit" (click)="delete(activityMatch)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline">Delete</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
+  <router-outlet></router-outlet>
 </div>

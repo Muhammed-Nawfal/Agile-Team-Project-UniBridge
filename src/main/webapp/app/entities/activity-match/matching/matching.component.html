@@ -172,7 +172,7 @@
       <!-- Profile image -->
       <img [src]="currentProfile" alt="🙂" class="image" />
       <div class="card-content">
-        <div class="name">{{ currentProfile.userFirstName || 'Alice' }}</div>
+        <div class="name">{{ currentProfile.firstName || 'Alice' }}</div>
         <div class="card-details">
           <!--        <p>{{ currentProfile.bio }}</p>-->
           <p>{{ currentProfile.course }}</p>
@@ -182,27 +182,27 @@
           <div class="other-details">
             <div [class]="buddyType + '-info'">
               <!-- Gym-specific info that only appears when buddyType is 'gym' -->
-              <ng-container *ngIf="buddyType === 'gym'">
+              <ng-container *ngIf="buddyType === ActivityType.GYM">
                 <p>{{ currentProfile.gymLocation }}</p>
                 <p>{{ currentProfile.gymTime }}</p>
                 <p>{{ currentProfile.gymSkill }}</p>
               </ng-container>
 
               <!-- Study-specific info that only appears when buddyType is 'study' -->
-              <ng-container *ngIf="buddyType === 'study'">
+              <ng-container *ngIf="buddyType === ActivityType.ACADEMIC">
                 <p>Year {{ currentProfile.courseYear }}</p>
                 <p>{{ currentProfile.studyTime }}</p>
               </ng-container>
 
               <!-- Sports-specific info that only appears when buddyType is 'sports' -->
-              <ng-container *ngIf="buddyType === 'sports'">
+              <ng-container *ngIf="buddyType === ActivityType.SPORTS">
                 <p>{{ currentProfile.sports }}</p>
                 <p>{{ currentProfile.sportsTime }}</p>
                 <p>{{ currentProfile.sportsSkill }}</p>
               </ng-container>
 
               <!-- Events-specific info that only appears when buddyType is 'events' -->
-              <ng-container *ngIf="buddyType === 'events'">
+              <ng-container *ngIf="buddyType === ActivityType.SOCIAL">
                 <p>{{ currentProfile.preferredSociety }}</p>
                 <p>{{ currentProfile.preferredEvents }}</p>
                 <p>{{ currentProfile.eventsTime }}</p>
