@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { IProfile, NewProfile } from '../profile.model';
+import { IUser } from 'app/entities/user/user.model';
 
 /**
  * A partial Type with required key is used as form input.
@@ -14,32 +15,22 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type ProfileFormGroupInput = IProfile | PartialWithRequiredKeyOf<NewProfile>;
 
-type ProfileFormDefaults = Pick<NewProfile, 'id' | 'messageThreads'>;
+type ProfileFormDefaults = Pick<NewProfile, 'id'>;
 
 type ProfileFormGroupContent = {
-  id: FormControl<IProfile['id'] | NewProfile['id']>;
-  login: FormControl<IProfile['login']>;
-  firstName: FormControl<IProfile['firstName']>;
-  lastName: FormControl<IProfile['lastName']>;
+  id: FormControl;
   bio: FormControl<IProfile['bio']>;
   profilePicture: FormControl<IProfile['profilePicture']>;
   profilePictureContentType: FormControl<IProfile['profilePictureContentType']>;
   course: FormControl<IProfile['course']>;
   courseYear: FormControl<IProfile['courseYear']>;
-  university: FormControl<IProfile['university']>;
   gymSkill: FormControl<IProfile['gymSkill']>;
   gymLocation: FormControl<IProfile['gymLocation']>;
   gymTime: FormControl<IProfile['gymTime']>;
   studyTime: FormControl<IProfile['studyTime']>;
   sports: FormControl<IProfile['sports']>;
   sportsSkill: FormControl<IProfile['sportsSkill']>;
-  sportsTime: FormControl<IProfile['sportsTime']>;
-  preferredSociety: FormControl<IProfile['preferredSociety']>;
-  preferredEvents: FormControl<IProfile['preferredEvents']>;
-  eventsTime: FormControl<IProfile['eventsTime']>;
-  preferredActivities: FormControl<IProfile['preferredActivities']>;
-  user: FormControl<IProfile['user']>;
-  messageThreads: FormControl<IProfile['messageThreads']>;
+  user: FormControl<IUser | null | undefined>;
 };
 
 export type ProfileFormGroup = FormGroup<ProfileFormGroupContent>;
@@ -51,23 +42,15 @@ export class ProfileFormService {
       ...this.getFormDefaults(),
       ...profile,
     };
+
     return new FormGroup<ProfileFormGroupContent>({
+      // Remove `nonNullable: true` so `id` can be null.
       id: new FormControl(
         { value: profileRawValue.id, disabled: true },
         {
-          nonNullable: true,
           validators: [Validators.required],
         },
       ),
-      login: new FormControl(profileRawValue.login, {
-        validators: [Validators.required],
-      }),
-      firstName: new FormControl(profileRawValue.firstName, {
-        validators: [Validators.required],
-      }),
-      lastName: new FormControl(profileRawValue.lastName, {
-        validators: [Validators.required],
-      }),
       bio: new FormControl(profileRawValue.bio),
       profilePicture: new FormControl(profileRawValue.profilePicture),
       profilePictureContentType: new FormControl(profileRawValue.profilePictureContentType),
@@ -77,24 +60,18 @@ export class ProfileFormService {
       courseYear: new FormControl(profileRawValue.courseYear, {
         validators: [Validators.required, Validators.min(1), Validators.max(6)],
       }),
-      university: new FormControl(profileRawValue.university),
       gymSkill: new FormControl(profileRawValue.gymSkill),
       gymLocation: new FormControl(profileRawValue.gymLocation),
       gymTime: new FormControl(profileRawValue.gymTime),
       studyTime: new FormControl(profileRawValue.studyTime),
       sports: new FormControl(profileRawValue.sports),
       sportsSkill: new FormControl(profileRawValue.sportsSkill),
-      sportsTime: new FormControl(profileRawValue.sportsTime),
-      preferredSociety: new FormControl(profileRawValue.preferredSociety),
-      preferredEvents: new FormControl(profileRawValue.preferredEvents),
-      eventsTime: new FormControl(profileRawValue.eventsTime),
-      preferredActivities: new FormControl(profileRawValue.preferredActivities),
-      user: new FormControl(profileRawValue.user),
-      messageThreads: new FormControl(profileRawValue.messageThreads ?? []),
+      user: new FormControl<IUser | null | undefined>(profileRawValue.user),
     });
   }
 
   getProfile(form: ProfileFormGroup): IProfile | NewProfile {
+    // Returns the raw values from the form (including null if present).
     return form.getRawValue() as IProfile | NewProfile;
   }
 
@@ -111,7 +88,6 @@ export class ProfileFormService {
   private getFormDefaults(): ProfileFormDefaults {
     return {
       id: null,
-      messageThreads: [],
     };
   }
 }

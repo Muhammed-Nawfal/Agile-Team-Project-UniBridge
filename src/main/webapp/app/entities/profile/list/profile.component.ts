@@ -1,131 +1,110 @@
-import { Component, NgZone, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
-import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
-import SharedModule from 'app/shared/shared.module';
-import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
-import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
-import { FormsModule } from '@angular/forms';
-import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
-import { DataUtils } from 'app/core/util/data-util.service';
+/* eslint-disable no-console */
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProfileService } from '../service/profile.service';
+import { AccountService } from 'app/core/auth/account.service';
 import { IProfile } from '../profile.model';
-import { EntityArrayResponseType, ProfileService } from '../service/profile.service';
-import { ProfileDeleteDialogComponent } from '../delete/profile-delete-dialog.component';
+import { Account } from 'app/core/auth/account.model';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
-  standalone: true,
   selector: 'jhi-profile',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './profile.component.html',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    SortDirective,
-    SortByDirective,
-    DurationPipe,
-    FormatMediumDatetimePipe,
-    FormatMediumDatePipe,
-  ],
+  styleUrls: ['./profile.component.scss'],
 })
 export class ProfileComponent implements OnInit {
-  subscription: Subscription | null = null;
-  profiles?: IProfile[];
-  isLoading = false;
+  profile: IProfile | null = null;
+  account: Account | null = null;
+  user: { id: number; login: string } | null = null;
+  showEditTip = false;
 
-  sortState = sortStateSignal({});
-
-  public readonly router = inject(Router);
-  protected readonly profileService = inject(ProfileService);
-  protected readonly activatedRoute = inject(ActivatedRoute);
-  protected readonly sortService = inject(SortService);
-  protected dataUtils = inject(DataUtils);
-  protected modalService = inject(NgbModal);
-  protected ngZone = inject(NgZone);
-
-  trackId = (item: IProfile): number => this.profileService.getProfileIdentifier(item);
+  constructor(
+    protected activatedRoute: ActivatedRoute,
+    protected profileService: ProfileService,
+    protected accountService: AccountService,
+    protected router: Router,
+  ) {}
 
   ngOnInit(): void {
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => {
-          if (!this.profiles || this.profiles.length === 0) {
-            this.load();
-          }
-        }),
-      )
-      .subscribe();
+    this.loadAccountDetails();
+
+    // Show tip only if it hasn't been dismissed before
+    const tipDismissed = sessionStorage.getItem('editProfileTipDismissed');
+    if (!tipDismissed) {
+      this.showEditTip = true;
+    }
   }
 
-  byteSize(base64String: string): string {
-    return this.dataUtils.byteSize(base64String);
+  dismissTip(): void {
+    this.showEditTip = false;
+    sessionStorage.setItem('editProfileTipDismissed', 'true');
   }
 
-  openFile(base64String: string, contentType: string | null | undefined): void {
-    return this.dataUtils.openFile(base64String, contentType);
-  }
-
-  delete(profile: IProfile): void {
-    const modalRef = this.modalService.open(ProfileDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
-    modalRef.componentInstance.profile = profile;
-    // unsubscribe not needed because closed completes on modal close
-    modalRef.closed
-      .pipe(
-        filter(reason => reason === ITEM_DELETED_EVENT),
-        tap(() => this.load()),
-      )
-      .subscribe();
-  }
-
-  load(): void {
-    this.queryBackend().subscribe({
-      next: (res: EntityArrayResponseType) => {
-        this.onResponseSuccess(res);
-      },
+  // Step 1: Get account info
+  loadAccountDetails(): void {
+    this.accountService.identity().subscribe(account => {
+      if (account) {
+        this.account = account;
+        console.log('✅ Account Data Loaded:', this.account);
+        this.loadProfile();
+      }
     });
   }
 
-  navigateToWithComponentValues(event: SortState): void {
-    this.handleNavigation(event);
+  get hasBio(): boolean {
+    return !!this.profile?.bio && this.profile.bio.trim().length > 0;
   }
 
-  protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
-    this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
-  }
+  // Step 2: Get user by login, then profile by user ID
+  loadProfile(): void {
+    if (!this.account?.login) {
+      console.warn('⚠️ No valid account login found.');
+      return;
+    }
 
-  protected onResponseSuccess(response: EntityArrayResponseType): void {
-    const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
-    this.profiles = this.refineData(dataFromBody);
-  }
+    const accountLogin = this.account.login;
+    console.log(`🔄 Fetching user with login=${accountLogin}`);
 
-  protected refineData(data: IProfile[]): IProfile[] {
-    const { predicate, order } = this.sortState();
-    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
-  }
+    this.profileService.findUserByLogin(accountLogin).subscribe({
+      next: userResponse => {
+        if (!userResponse.body) {
+          console.warn(`⚠️ No user found for login=${accountLogin}`);
+          return;
+        }
 
-  protected fillComponentAttributesFromResponseBody(data: IProfile[] | null): IProfile[] {
-    return data ?? [];
-  }
+        const user = userResponse.body;
+        console.log('✅ Found user:', user);
+        this.user = {
+          id: user.id,
+          login: user.login ?? 'unknown',
+        };
 
-  protected queryBackend(): Observable<EntityArrayResponseType> {
-    this.isLoading = true;
-    const queryObject: any = {
-      sort: this.sortService.buildSortParam(this.sortState()),
-    };
-    return this.profileService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
-  }
+        this.profileService.find(user.id).subscribe({
+          next: profileResponse => {
+            const profile = profileResponse.body;
+            if (!profile?.id) {
+              console.warn(`⚠️ Profile is missing or incomplete for user id=${user.id}`);
+              this.router.navigate(['/no-profile']);
+              return;
+            }
 
-  protected handleNavigation(sortState: SortState): void {
-    const queryParamsObj = {
-      sort: this.sortService.buildSortParam(sortState),
-    };
+            this.profile = profile;
 
-    this.ngZone.run(() => {
-      this.router.navigate(['./'], {
-        relativeTo: this.activatedRoute,
-        queryParams: queryParamsObj,
-      });
+            this.profile = profileResponse.body;
+            console.log('✅ Profile Data Loaded:', this.profile);
+          },
+          error: err => {
+            console.error('❌ Error fetching profile:', err);
+            this.router.navigate(['/no-profile']);
+          },
+        });
+      },
+      error(err) {
+        console.error('❌ Error fetching user:', err);
+      },
     });
   }
 }
