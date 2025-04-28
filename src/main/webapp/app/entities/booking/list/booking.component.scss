@@ -1,8 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Balsamiq+Sans:wght@400;700&display=swap');
-
 * {
   box-sizing: border-box;
-  font-family: 'Balsamiq Sans';
+  font-family: 'Roboto';
   font-weight: 700;
 }
 
@@ -110,7 +108,7 @@ a {
   font-size: 16px;
   margin-bottom: 20px;
   transition: border-color 0.3s;
-  font-family: 'Balsamiq Sans';
+  font-family: 'Roboto';
   font-weight: 700;
 
   &:focus {
@@ -136,7 +134,7 @@ select.form-control {
 }
 
 .time-slot-checkbox {
-  position: relative;
+  margin: 5px 0;
 
   input[type='checkbox'] {
     position: absolute;
@@ -160,6 +158,11 @@ select.form-control {
     }
   }
 
+  input[type='checkbox']:disabled + label {
+    color: #999;
+    cursor: not-allowed;
+  }
+
   label {
     display: flex;
     align-items: center;
@@ -178,6 +181,16 @@ select.form-control {
       color: #999;
       text-decoration: line-through;
     }
+
+    &.disabled {
+      color: #999;
+      cursor: not-allowed;
+    }
+  }
+
+  label.disabled {
+    color: #999;
+    cursor: not-allowed;
   }
 
   .capacity-info {
@@ -187,7 +200,7 @@ select.form-control {
   }
 }
 
-button {
+button[type='submit'] {
   position: absolute;
   right: 20px;
   bottom: 20px;
@@ -200,7 +213,7 @@ button {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s;
-  font-family: 'Balsamiq Sans';
+  font-family: 'Roboto';
   font-weight: 700;
 
   &:hover {
@@ -268,5 +281,76 @@ button {
     margin: 0;
     font-size: 14px;
     color: #666;
+  }
+}
+
+.alert {
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 4px;
+}
+
+.alert-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+.language-selector {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+
+  button {
+    padding: 8px 16px;
+    margin-left: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &.active {
+      background-color: #007bff;
+      color: white;
+      border-color: #0056b3;
+    }
+
+    &:hover {
+      background-color: #e9ecef;
+    }
+
+    &.active:hover {
+      background-color: #0056b3;
+    }
+  }
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  padding: 20px 20px 0;
+  background-color: white;
+
+  .language-select {
+    margin: 0 30px 20px 0;
+    padding: 8px 16px;
+    border: 2px solid #4361ee;
+    border-radius: 8px;
+    background-color: white;
+    color: #4361ee;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    text-align: center;
+
+    &:hover {
+      background-color: #4361ee;
+      color: white;
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
   }
 }
