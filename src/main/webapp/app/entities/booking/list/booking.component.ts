@@ -124,7 +124,7 @@ export class BookingComponent implements OnInit {
       }
     });
 
-    // Convert map to array
+    // Convert a map to array
     return Array.from(activityMap.values()).filter(group => group.events.length > 0);
   }
 
@@ -239,7 +239,7 @@ export class BookingComponent implements OnInit {
       // When unchecking, we need to ensure we don't break continuity
       const index = this.selectedTimeSlots.indexOf(value);
       if (index === 0 || index === this.selectedTimeSlots.length - 1) {
-        // If removing first or last slot, that's fine
+        // If removing the first or last slot, that's fine
         this.selectedTimeSlots = this.selectedTimeSlots.filter(slot => slot !== value);
       } else {
         // If removing a middle slot, that would break continuity - prevent it
@@ -258,7 +258,7 @@ export class BookingComponent implements OnInit {
     return timeA.start - timeB.start;
   }
 
-  // Helper function to parse time slot strings like "09:00 - 10:00"
+  // Helper function to parse time slot strings like "09:00-10:00"
   parseTimeSlot(timeSlot: string): { start: number; end: number } {
     const [startStr, endStr] = timeSlot.split(' - ');
     const startHour = parseInt(startStr.split(':')[0], 10);
@@ -280,7 +280,7 @@ export class BookingComponent implements OnInit {
       const currentSlot = this.parseTimeSlot(sortedSlots[i]);
       const nextSlot = this.parseTimeSlot(sortedSlots[i + 1]);
 
-      // If the end time of current slot doesn't match start time of next slot
+      // If the end time of the current slot doesn't match start time of next slot
       if (currentSlot.end !== nextSlot.start) {
         return false;
       }

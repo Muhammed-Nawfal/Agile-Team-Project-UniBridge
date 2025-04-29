@@ -1,6 +1,8 @@
 package bham.team.repository;
 
+import bham.team.domain.Event;
 import bham.team.domain.TimeSlot;
+import java.time.LocalDate;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +11,8 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {}
+public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
+    boolean existsByDateAndEvent(LocalDate targetDate, Event event);
+
+    boolean existsByDateAndEventAndStartHourAndEndHour(LocalDate targetDate, Event event, Integer startHour, Integer endHour);
+}
