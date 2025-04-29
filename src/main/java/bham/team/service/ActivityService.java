@@ -63,40 +63,7 @@ public class ActivityService {
         activityRepository.deleteById(id);
     }
 
-    /**
-     * Search activities by keyword in name, description, and location.
-     *
-     * @param searchTerm the search term.
-     * @param pageable the pagination information.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public Page<Activity> search(String searchTerm, Pageable pageable) {
-        return activityRepository.searchActivities(searchTerm, pageable);
-    }
-
-    /**
-     * Search activities with additional filters.
-     *
-     * @param searchTerm the search term.
-     * @param activityType the activity type filter.
-     * @param status the status filter.
-     * @param minDate the minimum date filter.
-     * @param maxDate the maximum date filter.
-     * @param isPaid the isPaid filter.
-     * @param pageable the pagination information.
-     * @return the list of entities.
-     */
-    @Transactional(readOnly = true)
-    public Page<Activity> advancedSearch(
-        String searchTerm,
-        ActivityType activityType,
-        Status status,
-        Instant minDate,
-        Instant maxDate,
-        Boolean isPaid,
-        Pageable pageable
-    ) {
-        return activityRepository.advancedSearch(searchTerm, activityType, status, minDate, maxDate, isPaid, pageable);
+    public Page<Activity> search(String query, Pageable pageable) {
+        return activityRepository.findByActivityNameContainingIgnoreCase(query, pageable);
     }
 }
