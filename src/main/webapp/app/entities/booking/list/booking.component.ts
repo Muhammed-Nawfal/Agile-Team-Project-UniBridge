@@ -80,7 +80,6 @@ export class BookingComponent implements OnInit {
   }
 
   loadEvents(): void {
-    // Fix: Using the Observer pattern instead of separate callbacks
     this.http.get<IEvent[]>('api/events').subscribe({
       next: events => {
         // Group events by activity type
@@ -89,38 +88,10 @@ export class BookingComponent implements OnInit {
       },
       error: error => {
         console.error('Error loading events', error);
-        // Fall back to hardcoded data if API fails
-        this.initializeHardcodedActivities();
-      }, // Make sure there's a comma here
+        this.bookingError = 'Unable to load activities. Please try again later.';
+        this.activities = []; // Initialize with empty array
+      },
     });
-  }
-
-  initializeHardcodedActivities(): void {
-    this.activities = [
-      {
-        name: 'Social',
-        value: 'SOCIAL',
-        events: [
-          { name: 'Study Spaces', value: 'Study_Spaces', min: 2, max: 8, startTime: 9, endTime: 22 },
-          { name: 'Event Rooms', value: 'Event_Rooms', min: 10, max: 20, startTime: 9, endTime: 22 },
-        ],
-      },
-      {
-        name: 'Sports',
-        value: 'SPORTS',
-        events: [
-          { name: 'Football Pitch', value: 'Football_Pitch', min: 1, max: 22, startTime: 8, endTime: 24 },
-          { name: 'Tennis Court', value: 'Tennis_Court', min: 2, max: 4, startTime: 8, endTime: 22 },
-          { name: 'Basketball Court', value: 'Basketball_Court', min: 1, max: 10, startTime: 8, endTime: 24 },
-          { name: 'DOJO', value: 'DOJO', min: 1, max: 20, startTime: 8, endTime: 22 },
-          { name: 'Swimming Pool', value: 'Swimming_Pool', min: 1, max: 20, startTime: 8, endTime: 24 },
-          { name: 'Squash Court', value: 'Squash_Court', min: 2, max: 4, startTime: 8, endTime: 24 },
-        ],
-      },
-      { name: 'Academic', value: 'ACADEMIC', events: [] },
-      { name: 'Gym', value: 'GYM', events: [] },
-      { name: 'Other', value: 'OTHER', events: [] },
-    ];
   }
 
   groupEventsByActivityType(events: IEvent[]): any[] {
@@ -217,7 +188,35 @@ export class BookingComponent implements OnInit {
   }
 
   isTimeSlotDisabled(slot: string): boolean {
-    return this.selectedTimeSlots.length >= this.MAX_SLOTS && !this.selectedTimeSlots.includes(slot);
+    // If no slots selected yet, all slots are enabled
+    if (this.selectedTimeSlots.length === 0) {
+      return false;
+    }
+
+    // If this slot is already selected, it's not disabled
+    if (this.selectedTimeSlots.includes(slot)) {
+      return false;
+    }
+
+    // If we already have MAX_SLOTS selected, disable all other slots
+    if (this.selectedTimeSlots.length >= this.MAX_SLOTS) {
+      return true;
+    }
+
+    // Check if this slot is adjacent to any selected slot
+    const slotTime = this.parseTimeSlot(slot);
+
+    for (const selectedSlot of this.selectedTimeSlots) {
+      const selectedTime = this.parseTimeSlot(selectedSlot);
+
+      // If this slot starts when a selected slot ends or ends when a selected slot starts
+      if (slotTime.start === selectedTime.end || slotTime.end === selectedTime.start) {
+        return false;
+      }
+    }
+
+    // If not adjacent to any selected slot, disable it
+    return true;
   }
 
   onTimeSlotChange(event: any): void {
@@ -230,14 +229,33 @@ export class BookingComponent implements OnInit {
         this.bookingError = `Maximum booking duration is ${this.MAX_SLOTS} hours`;
         return;
       }
+
+      // Add the slot to selected slots
       if (!this.selectedTimeSlots.includes(value)) {
         this.selectedTimeSlots.push(value);
-        this.selectedTimeSlots.sort();
+        this.selectedTimeSlots.sort(this.compareTimeSlots);
       }
     } else {
-      this.selectedTimeSlots = this.selectedTimeSlots.filter(slot => slot !== value);
+      // When unchecking, we need to ensure we don't break continuity
+      const index = this.selectedTimeSlots.indexOf(value);
+      if (index === 0 || index === this.selectedTimeSlots.length - 1) {
+        // If removing first or last slot, that's fine
+        this.selectedTimeSlots = this.selectedTimeSlots.filter(slot => slot !== value);
+      } else {
+        // If removing a middle slot, that would break continuity - prevent it
+        event.target.checked = true;
+        this.bookingError = 'You can only remove slots from the beginning or end of your booking';
+        return;
+      }
     }
     this.bookingError = null;
+  }
+
+  // Helper function to compare time slots for sorting
+  compareTimeSlots(a: string, b: string): number {
+    const timeA = this.parseTimeSlot(a);
+    const timeB = this.parseTimeSlot(b);
+    return timeA.start - timeB.start;
   }
 
   // Helper function to parse time slot strings like "09:00 - 10:00"
@@ -249,7 +267,34 @@ export class BookingComponent implements OnInit {
     return { start: startHour, end: endHour };
   }
 
+  areSelectedSlotsConsecutive(): boolean {
+    if (this.selectedTimeSlots.length <= 1) {
+      return true;
+    }
+
+    // Sort selected slots by start time
+    const sortedSlots = [...this.selectedTimeSlots].sort(this.compareTimeSlots);
+
+    // Check if each slot is consecutive with the next one
+    for (let i = 0; i < sortedSlots.length - 1; i++) {
+      const currentSlot = this.parseTimeSlot(sortedSlots[i]);
+      const nextSlot = this.parseTimeSlot(sortedSlots[i + 1]);
+
+      // If the end time of current slot doesn't match start time of next slot
+      if (currentSlot.end !== nextSlot.start) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   onSubmit(): void {
+    if (!this.areSelectedSlotsConsecutive()) {
+      this.bookingError = 'Please select consecutive time slots only';
+      return;
+    }
+
     alert('Booking submitted!');
     window.location.reload();
   }

@@ -1,9 +1,9 @@
 id;name;value;activity_type;min_size;max_size;start_time;end_time;capacity
-1;Study Spaces;Study_Spaces;SOCIAL;2;8;9;22;8
-2;Event Rooms;Event_Rooms;SOCIAL;10;30;9;23;20
+1;Study Spaces;Study_Spaces;SOCIAL;2;8;9;22;15
+2;Event Rooms;Event_Rooms;SOCIAL;10;30;9;23;12
 3;Football Pitch;Football_Pitch;SPORTS;1;20;8;24;22
 4;Tennis Court;Tennis_Court;SPORTS;2;4;8;22;4
 5;Basketball Court;Basketball_Court;SPORTS;1;10;8;24;10
 6;DOJO;DOJO;SPORTS;1;20;8;22;20
-7;Swimming Pool;Swimming_Pool;SPORTS;1;20;8;24;20
+7;Swimming Pool;Swimming_Pool;SPORTS;1;20;8;24;40
 8;Squash Court;Squash_Court;SPORTS;2;4;8;24;4
