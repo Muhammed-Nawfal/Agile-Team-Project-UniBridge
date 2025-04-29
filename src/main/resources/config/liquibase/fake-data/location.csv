@@ -1,11 +1,52 @@
 id;name;status;capacity;remaining_capacity;is_capacity_based
-1;whether hawk which;FULL;12846;11974;false
-2;airbus;OCCUPIED;29636;8714;false
-3;ugh oh ick;FULL;25865;13471;true
-4;eminent hmph roadway;OCCUPIED;31013;23821;false
-5;aha;OCCUPIED;27777;11193;false
-6;luck swerve;OCCUPIED;22187;336;false
-7;subtract aftermath;MAINTENANCE;5121;22573;true
-8;before marathon;FULL;24044;26122;true
-9;round puritan near;MAINTENANCE;23831;16730;false
-10;for;MAINTENANCE;21389;11185;true
+1;Study Space 1;AVAILABLE;8;8;false
+2;Study Space 2;AVAILABLE;8;8;false
+3;Study Space 3;AVAILABLE;8;8;false
+4;Study Space 4;AVAILABLE;8;8;false
+5;Study Space 5;AVAILABLE;8;8;false
+6;Study Space 6;AVAILABLE;8;8;false
+7;Study Space 7;AVAILABLE;8;8;false
+8;Study Space 8;AVAILABLE;8;8;false
+9;Study Space 9;AVAILABLE;8;8;false
+10;Study Space 10;AVAILABLE;8;8;false
+11;Study Space 11;AVAILABLE;8;8;false
+12;Study Space 12;AVAILABLE;8;8;false
+13;Study Space 13;AVAILABLE;8;8;false
+14;Study Space 14;AVAILABLE;8;8;false
+15;Study Space 15;AVAILABLE;8;8;false
+16;Event Room 1;AVAILABLE;30;30;false
+17;Event Room 2;AVAILABLE;30;30;false
+18;Event Room 3;AVAILABLE;30;30;false
+19;Event Room 4;AVAILABLE;30;30;false
+20;Event Room 5;AVAILABLE;30;30;false
+21;Event Room 6;AVAILABLE;30;30;false
+22;Event Room 7;AVAILABLE;30;30;false
+23;Event Room 8;AVAILABLE;30;30;false
+24;Event Room 9;AVAILABLE;30;30;false
+25;Event Room 10;AVAILABLE;30;30;false
+26;Event Room 11;AVAILABLE;30;30;false
+27;Event Room 12;AVAILABLE;30;30;false
+28;Football Pitch 1;AVAILABLE;20;20;false
+29;Football Pitch 2;AVAILABLE;20;20;false
+30;Tennis Court 1;AVAILABLE;4;4;false
+31;Tennis Court 2;AVAILABLE;4;4;false
+32;Basketball Court 1;AVAILABLE;10;10;false
+33;Basketball Court 2;AVAILABLE;10;10;false
+34;DOJO 1;AVAILABLE;20;20;false
+35;DOJO 2;AVAILABLE;20;20;false
+36;DOJO 3;AVAILABLE;20;20;false
+37;DOJO 4;AVAILABLE;20;20;false
+38;DOJO 5;AVAILABLE;20;20;false
+39;DOJO 6;AVAILABLE;20;20;false
+40;DOJO 7;AVAILABLE;20;20;false
+41;DOJO 8;AVAILABLE;20;20;false
+42;DOJO 9;AVAILABLE;20;20;false
+43;DOJO 10;AVAILABLE;20;20;false
+44;DOJO 11;AVAILABLE;20;20;false
+45;DOJO 12;AVAILABLE;20;20;false
+46;Swimming Pool 1;AVAILABLE;35;35;true
+47;Squash Court 1;AVAILABLE;4;4;false
+48;Squash Court 2;AVAILABLE;4;4;false
+49;Squash Court 3;AVAILABLE;4;4;false
+50;Squash Court 4;AVAILABLE;4;4;false
+
