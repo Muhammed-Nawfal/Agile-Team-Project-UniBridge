@@ -111,14 +111,14 @@
     <div class="filter-group-container">
       <h2>Filters</h2>
       <div class="filter-group">
-        <label for="filter1">{{ getLocationLabel() }}</label>
+        <label for="filter1">{{ getFirstFilterLabel() }}</label>
         <select id="filter1" name="filter1" [(ngModel)]="filter1Value">
           <option *ngFor="let option of filter1Options" [value]="option.value">{{ option.label }}</option>
         </select>
       </div>
 
       <div class="filter-group">
-        <label for="filter2">{{ getSkillLabel() }}</label>
+        <label for="filter2">{{ getSecondFilterLabel() }}</label>
         <select id="filter2" name="filter2" [(ngModel)]="filter2Value">
           <option *ngFor="let option of filter2Options" [value]="option.value">{{ option.label }}</option>
         </select>
@@ -169,8 +169,7 @@
 
     <!-- Profile card for a potential buddy -->
     <div class="card">
-      <!-- Profile image -->
-      <img [src]="currentProfile" alt="🙂" class="image" />
+      <img [src]="currentProfile.profilePicture" [alt]="getInitials(currentProfile.firstName || '')" class="image" />
       <div class="card-content">
         <div class="name">{{ currentProfile.firstName || 'Alice' }}</div>
         <div class="card-details">

@@ -113,6 +113,10 @@ export class ActivityMatchService {
     return activityMatchCollection;
   }
 
+  forUser(userId: number): Observable<HttpResponse<IActivityMatch[]>> {
+    return this.http.get<IActivityMatch[]>(`${this.resourceUrl}/for-user/${userId}`, { observe: 'response' });
+  }
+
   protected convertDateFromClient<T extends IActivityMatch | NewActivityMatch | PartialUpdateActivityMatch>(activityMatch: T): RestOf<T> {
     return {
       ...activityMatch,

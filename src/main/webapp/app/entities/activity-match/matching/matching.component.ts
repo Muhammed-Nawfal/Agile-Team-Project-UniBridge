@@ -1,6 +1,6 @@
 import { Component, inject, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { combineLatest, Subscription } from 'rxjs';
+import { combineLatest, Subscription, switchMap } from 'rxjs';
 
 import SharedModule from 'app/shared/shared.module';
 import { SortService, sortStateSignal } from 'app/shared/sort';
@@ -9,6 +9,21 @@ import { IActivityMatch } from '../activity-match.model';
 import { ActivityMatchService } from '../service/activity-match.service';
 import { IProfile } from '../../profile/profile.model';
 import { ActivityType } from '../../enumerations/activity-type.model';
+import { GymLocation } from '../../enumerations/gym-location.model';
+import { Skill } from '../../enumerations/skill.model';
+import { PreferredTime } from '../../enumerations/preferred-time.model';
+import { Course } from '../../enumerations/course.model';
+import { University } from '../../enumerations/university.model';
+import { Sports } from '../../enumerations/sports.model';
+import { Society } from '../../enumerations/society.model';
+import { PreferredEvents } from '../../enumerations/preferred-events.model';
+
+import dayjs from 'dayjs/esm';
+import { take } from 'rxjs/operators';
+import { AccountService } from 'app/core/auth/account.service';
+import { Decision } from 'app/entities/enumerations/decision.model';
+import { NewActivityMatch } from 'app/entities/activity-match/activity-match.model';
+import { ProfileService } from '../../profile/service/profile.service';
 
 @Component({
   standalone: true,
@@ -50,6 +65,8 @@ export class MatchingComponent implements OnInit, OnDestroy {
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
   protected ngZone = inject(NgZone);
+  private accountService = inject(AccountService);
+  private profileService = inject(ProfileService);
 
   ngOnInit(): void {
     // Subscribe to both id and type parameters
@@ -75,40 +92,27 @@ export class MatchingComponent implements OnInit, OnDestroy {
 
   loadBuddies(): void {
     this.isLoading = true;
+    this.errorMessage = undefined;
     this.activityMatchService.getProfilesByPreferredActivity(this.buddyType).subscribe({
       next: res => {
         this.isLoading = false;
         this.profiles = res.body ?? [];
         if (this.profiles.length > 0) {
+          this.currentProfileIndex = 0;
           this.currentProfile = this.profiles[this.currentProfileIndex];
+          this.noMoreProfiles = false;
         } else {
+          this.currentProfile = null;
           this.noMoreProfiles = true;
         }
       },
       error: error => {
         this.isLoading = false;
-        this.errorMessage = 'Error loading profiles';
+        this.errorMessage = `Failed to load ${this.buddyType} profiles. Please try again.`;
+        console.error(`Error loading ${this.buddyType} profiles:`, error);
       },
     });
   }
-
-  // loadGymBuddies(): void {
-  //   this.isLoading = true;
-  //   this.activityMatchService.getProfilesByPreferredActivity(this.buddyType).subscribe({
-  //     next: res => {
-  //       this.isLoading = false;
-  //       this.profiles = res.body ?? [];
-  //       if (this.profiles.length > 0) {
-  //         this.currentProfile = this.profiles[this.currentProfileIndex];
-  //       } else {
-  //         this.noMoreProfiles = true;
-  //       }
-  //     },
-  //     error: () => {
-  //       this.isLoading = false;
-  //     },
-  //   });
-  // }
 
   ngOnDestroy(): void {
     if (this.subscription) {
@@ -145,84 +149,27 @@ export class MatchingComponent implements OnInit, OnDestroy {
   // Setup filter options based on buddy type
   setupFilterOptions(): void {
     // Set up location and skill level options based on buddy type
-    this.filter3Options = [
-      { value: '', label: 'Any Time' },
-      { value: 'Early Morning', label: 'Early Morning' },
-      { value: 'Morning', label: 'Morning' },
-      { value: 'Afternoon', label: 'Afternoon' },
-      { value: 'Evening', label: 'Evening' },
-      { value: 'Night', label: 'Night' },
-    ];
+    this.filter3Options = this.enumToOptions(PreferredTime, 'Any Time');
 
     switch (this.buddyType) {
       case ActivityType.GYM:
-        this.filter1Options = [
-          { value: '', label: 'All Locations' },
-          { value: 'Sports And Fitness', label: 'Sports and Fitness Gym' },
-          { value: 'Tiverton Center', label: 'Tiverton Center' },
-          { value: 'Gym Group Selly Oak', label: 'The Gym Group Selly Oak' },
-          { value: 'PureGym Five Ways', label: 'PureGym Five Ways' },
-        ];
-        this.filter2Options = [
-          { value: '', label: 'Any Skill Level' },
-          { value: 'Novice', label: 'Novice' },
-          { value: 'Intermediate', label: 'Intermediate' },
-          { value: 'Confident', label: 'Confident' },
-          { value: 'Professional', label: 'Professional' },
-        ];
+        this.filter1Options = this.enumToOptions(GymLocation, 'All Locations');
+        this.filter2Options = this.enumToOptions(Skill, 'Any Skill Level');
         break;
 
       case ActivityType.ACADEMIC:
-        this.filter1Options = [
-          { value: '', label: 'Any Courses' },
-          { value: 'Computer Science', label: 'Computer Science' },
-          { value: 'Mechanical Engineering', label: 'Mechanical Engineering' },
-          { value: 'Law', label: 'Law' },
-          { value: 'Sports Science', label: 'Sports Science' },
-        ];
-        this.filter2Options = [
-          { value: '', label: 'Any University' },
-          { value: 'University of Birmingham', label: 'University of Birmingham' },
-          { value: 'Aston University', label: 'Aston University' },
-          { value: 'Birmingham City University', label: 'Birmingham City University' },
-          { value: 'University of Nottingham', label: 'University of Nottingham' },
-        ];
+        this.filter1Options = this.enumToOptions(Course, 'All Courses');
+        this.filter2Options = this.enumToOptions(University, 'Any University');
         break;
 
       case ActivityType.SPORTS:
-        this.filter1Options = [
-          { value: '', label: 'Any Sports' },
-          { value: 'Football', label: 'Football' },
-          { value: 'Basket Ball', label: 'Basket Ball' },
-          { value: 'Tennis', label: 'Tennis' },
-          { value: 'Swimming', label: 'Swimming' },
-        ];
-        this.filter2Options = [
-          { value: '', label: 'Any Skill Level' },
-          { value: 'Beginner', label: 'Beginner' },
-          { value: 'Intermediate', label: 'Intermediate' },
-          { value: 'Advanced', label: 'Advanced' },
-          { value: 'Competitive', label: 'Competitive' },
-        ];
+        this.filter1Options = this.enumToOptions(Sports, 'Any Sports');
+        this.filter2Options = this.enumToOptions(Skill, 'Any Skill Level');
         break;
 
       case ActivityType.SOCIAL:
-        this.filter1Options = [
-          { value: '', label: 'All Societies' },
-          { value: 'Computer Science Society', label: 'Computer Science Society' },
-          { value: 'Tea Society', label: 'Tea Society' },
-          { value: 'Tamil Society', label: 'Tamil Society' },
-          { value: 'Arab Society', label: 'Arab Society' },
-          { value: 'Korean Society', label: 'Korean Society' },
-        ];
-        this.filter2Options = [
-          { value: '', label: 'Any Event Type' },
-          { value: 'Meet & Greet', label: 'Meet & Greet' },
-          { value: 'Games Night', label: 'Games Night' },
-          { value: 'Religious', label: 'Religious' },
-          { value: 'Movie Night', label: 'Movie Night' },
-          { value: 'Dinner & Dance', label: 'Dinner & Dance' },
-        ];
+        this.filter1Options = this.enumToOptions(Society, 'All Societies');
+        this.filter2Options = this.enumToOptions(PreferredEvents, 'Any Event Type');
         break;
     }
   }
@@ -404,52 +351,103 @@ export class MatchingComponent implements OnInit, OnDestroy {
   }
 
   // Accept profile method with animation
+  // acceptProfile(): void {
+  //   if (!this.currentProfile) return;
+  //
+  //   // Add animation class
+  //   const card = document.querySelector('.card');
+  //   if (card) card.classList.add('accepting');
+  //
+  //   // Wait for animation, then proceed
+  //   setTimeout(() => {
+  //     this.isLoading = true;
+  //
+  //     // Mock service call - replace with real API call
+  //     setTimeout(() => {
+  //       this.showNextProfile();
+  //       // Remove animation class after small delay
+  //       setTimeout(() => {
+  //         const newCard = document.querySelector('.card');
+  //         if (newCard) newCard.classList.remove('accepting');
+  //       }, 50);
+  //     }, 500);
+  //
+  //     // When implementing real service, use:
+  //     /*
+  //     this.activityMatchService.saveMatch({
+  //       targetUserId: this.currentProfile.id,
+  //       buddyType: this.buddyType,
+  //       action: 'ACCEPT'
+  //     }).subscribe({
+  //       next: () => {
+  //         this.showNextProfile();
+  //         setTimeout(() => {
+  //           const newCard = document.querySelector('.card');
+  //           if (newCard) newCard.classList.remove('accepting');
+  //         }, 50);
+  //       },
+  //       error: error => {
+  //         console.error('Error accepting profile:', error);
+  //         this.showNextProfile();
+  //         setTimeout(() => {
+  //           const newCard = document.querySelector('.card');
+  //           if (newCard) newCard.classList.remove('accepting');
+  //         }, 50);
+  //       }
+  //     });
+  //     */
+  //   }, 300); // Match this time with your CSS transition duration
+  // }
+
   acceptProfile(): void {
     if (!this.currentProfile) return;
 
-    // Add animation class
+    // add animation…
     const card = document.querySelector('.card');
     if (card) card.classList.add('accepting');
 
-    // Wait for animation, then proceed
-    setTimeout(() => {
-      this.isLoading = true;
-
-      // Mock service call - replace with real API call
-      setTimeout(() => {
-        this.showNextProfile();
-        // Remove animation class after small delay
-        setTimeout(() => {
-          const newCard = document.querySelector('.card');
-          if (newCard) newCard.classList.remove('accepting');
-        }, 50);
-      }, 500);
-
-      // When implementing real service, use:
-      /*
-      this.activityMatchService.saveMatch({
-        targetUserId: this.currentProfile.id,
-        buddyType: this.buddyType,
-        action: 'ACCEPT'
-      }).subscribe({
-        next: () => {
-          this.showNextProfile();
-          setTimeout(() => {
-            const newCard = document.querySelector('.card');
-            if (newCard) newCard.classList.remove('accepting');
-          }, 50);
-        },
-        error: error => {
-          console.error('Error accepting profile:', error);
-          this.showNextProfile();
-          setTimeout(() => {
-            const newCard = document.querySelector('.card');
-            if (newCard) newCard.classList.remove('accepting');
-          }, 50);
+    this.accountService
+      .identity()
+      .pipe(
+        take(1),
+        switchMap(account =>
+          // query the Profile API for my profile
+          this.profileService.query({ 'userLogin.equals': account?.login }),
+        ),
+        take(1),
+      )
+      .subscribe(profilesResp => {
+        const meProfile = profilesResp.body?.[0];
+        if (!meProfile?.id) {
+          console.error('My Profile not found');
+          return;
         }
+        const meId = meProfile.id;
+
+        const newMatch: NewActivityMatch = {
+          id: null,
+          activityType: this.buddyType,
+          status: Decision.PENDING,
+          matchDate: dayjs(),
+          matchTime: dayjs(),
+          createdAt: dayjs(),
+          responseAt: dayjs(),
+          matchRequestor: { id: meId },
+          userDetails: { id: this.currentProfile!.id },
+          matchedActivity: null,
+          ratings: null,
+          location: null,
+          notes: null,
+        };
+
+        this.activityMatchService.create(newMatch).subscribe({
+          next: () => this.showNextProfile(),
+          error: () => this.showNextProfile(),
+        });
+
+        // cleanup animation
+        setTimeout(() => card?.classList.remove('accepting'), 50);
       });
-      */
-    }, 300); // Match this time with your CSS transition duration
   }
 
   // Reject profile method with animation
@@ -541,7 +539,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
   }
 
   // Helper method to get proper label for buddy type
-  getLocationLabel(): string {
+  getFirstFilterLabel(): string {
     switch (this.buddyType) {
       case ActivityType.GYM:
         return 'Gym Location';
@@ -550,21 +548,21 @@ export class MatchingComponent implements OnInit, OnDestroy {
       case ActivityType.SPORTS:
         return 'Sport';
       case ActivityType.SOCIAL:
-        return 'Society';
+        return 'Preferred Society';
       default:
         return 'Location';
     }
   }
 
   // Helper method to get proper label for skill level
-  getSkillLabel(): string {
+  getSecondFilterLabel(): string {
     switch (this.buddyType) {
       case ActivityType.ACADEMIC:
         return 'University';
       case ActivityType.SPORTS:
         return 'Skill Level';
       case ActivityType.SOCIAL:
-        return 'Event Type';
+        return 'Preferred Event Type';
       default:
         return 'Skill Level';
     }
@@ -601,5 +599,12 @@ export class MatchingComponent implements OnInit, OnDestroy {
 
   getInitials(name: string): string {
     return name ? name.charAt(0).toUpperCase() : '?';
+  }
+
+  // Helper method to convert enum to options for select input
+  private enumToOptions(enumObj: Record<string, string>, defaultLabel: string): { value: string; label: string }[] {
+    const options = Object.values(enumObj).map(value => ({ value, label: value }));
+    options.unshift({ value: '', label: defaultLabel });
+    return options;
   }
 }
