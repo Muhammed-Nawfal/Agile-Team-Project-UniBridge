@@ -2,8 +2,22 @@
   <h2 id="page-heading" data-cy="ActivityHeading">
     <span>Some activities near you ...</span>
 
-    <div class="search-bar">
-      <input type="text" placeholder="Find Activities" class="form-control search-input" />
+    <!--    Functional Search Bar-->
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Find Activities"
+            [(ngModel)]="currentSearch"
+            (keyup.enter)="search(currentSearch)"
+          />
+          <button class="btn btn-outline-secondary" type="button" (click)="search(currentSearch)">
+            <fa-icon icon="search"></fa-icon>
+          </button>
+        </div>
+      </div>
     </div>
   </h2>
 
