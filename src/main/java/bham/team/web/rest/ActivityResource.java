@@ -1,22 +1,38 @@
 package bham.team.web.rest;
 
 import bham.team.domain.Activity;
+import bham.team.domain.enumeration.ActivityType;
+import bham.team.domain.enumeration.Status;
 import bham.team.repository.ActivityRepository;
+import bham.team.service.ActivityService;
+import bham.team.service.ActivityService;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
 /**
@@ -35,9 +51,11 @@ public class ActivityResource {
     private String applicationName;
 
     private final ActivityRepository activityRepository;
+    private final ActivityService activityService; // Add this line
 
-    public ActivityResource(ActivityRepository activityRepository) {
+    public ActivityResource(ActivityRepository activityRepository, ActivityService activityService) {
         this.activityRepository = activityRepository;
+        this.activityService = activityService;
     }
 
     /**
@@ -213,5 +231,50 @@ public class ActivityResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Activity>> searchActivities(
+        @RequestParam String query,
+        @RequestParam(required = false) String sort,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        LOG.debug("REST request to search Activities for query {}", query);
+
+        // Create safe Pageable with validated sorting
+        Pageable pageable = createSafePageable(page, size, sort);
+
+        Page<Activity> pageResult = activityRepository.findByActivityNameContainingIgnoreCase(query, pageable);
+
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), pageResult);
+        return ResponseEntity.ok().headers(headers).body(pageResult.getContent());
+    }
+
+    private Pageable createSafePageable(int page, int size, String sort) {
+        // List of valid sort properties from your entity
+        List<String> validProperties = Arrays.asList(
+            "id",
+            "activityName",
+            "activityType",
+            "activityDate",
+            "location",
+            "createdOn",
+            "updatedOn",
+            "status"
+        );
+
+        // Default sort if none provided or invalid
+        Sort sortObj = Sort.by(Sort.Direction.ASC, "activityName");
+
+        if (sort != null && !sort.isEmpty()) {
+            String[] parts = sort.split(",");
+            if (parts.length > 0 && validProperties.contains(parts[0])) {
+                Sort.Direction direction = parts.length > 1 && "desc".equalsIgnoreCase(parts[1]) ? Sort.Direction.DESC : Sort.Direction.ASC;
+                sortObj = Sort.by(direction, parts[0]);
+            }
+        }
+
+        return PageRequest.of(page, size, sortObj);
     }
 }

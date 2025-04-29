@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit, inject } from '@angular/core';
+import { Component, NgZone, OnInit, inject, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
 import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -17,6 +17,7 @@ import { ActivityDeleteDialogComponent } from '../delete/activity-delete-dialog.
   standalone: true,
   selector: 'jhi-activity',
   templateUrl: './activity.component.html',
+  styleUrl: 'activity.component.scss',
   imports: [
     RouterModule,
     FormsModule,
@@ -32,8 +33,11 @@ export class ActivityComponent implements OnInit {
   subscription: Subscription | null = null;
   activities?: IActivity[];
   isLoading = false;
+  currentSearch = '';
 
   sortState = sortStateSignal({});
+
+  @ViewChild('searchInput') searchInput!: ElementRef;
 
   public readonly router = inject(Router);
   protected readonly activityService = inject(ActivityService);
@@ -78,6 +82,11 @@ export class ActivityComponent implements OnInit {
       .subscribe();
   }
 
+  search(query: string): void {
+    this.currentSearch = query;
+    this.load();
+  }
+
   load(): void {
     this.queryBackend().subscribe({
       next: (res: EntityArrayResponseType) => {
@@ -110,10 +119,15 @@ export class ActivityComponent implements OnInit {
 
   protected queryBackend(): Observable<EntityArrayResponseType> {
     this.isLoading = true;
-    const queryObject: any = {
-      sort: this.sortService.buildSortParam(this.sortState()),
-    };
-    return this.activityService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
+    // Handle both regular listing and search
+    if (this.currentSearch) {
+      return this.activityService.search(this.currentSearch).pipe(tap(() => (this.isLoading = false)));
+    } else {
+      const queryObject: any = {
+        sort: this.sortService.buildSortParam(this.sortState()),
+      };
+      return this.activityService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
+    }
   }
 
   protected handleNavigation(sortState: SortState): void {

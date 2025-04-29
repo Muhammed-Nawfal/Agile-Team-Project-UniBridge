@@ -1,30 +1,27 @@
-import { Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-
-import SharedModule from 'app/shared/shared.module';
-import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
-import { IProfile } from '../profile.model';
-import { ProfileService } from '../service/profile.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { AlertErrorComponent } from 'app/shared/alert/alert-error.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
+  selector: 'jhi-profile-delete-dialog',
   templateUrl: './profile-delete-dialog.component.html',
-  imports: [SharedModule, FormsModule],
+  imports: [CommonModule, FontAwesomeModule, AlertErrorComponent],
+  providers: [NgbActiveModal],
 })
 export class ProfileDeleteDialogComponent {
-  profile?: IProfile;
+  @Input() profile: { id: number } | null = null;
 
-  protected profileService = inject(ProfileService);
-  protected activeModal = inject(NgbActiveModal);
+  constructor(public activeModal: NgbActiveModal) {}
 
   cancel(): void {
     this.activeModal.dismiss();
   }
 
   confirmDelete(id: number): void {
-    this.profileService.delete(id).subscribe(() => {
-      this.activeModal.close(ITEM_DELETED_EVENT);
-    });
+    // implement your deletion logic here
+    this.activeModal.close(id);
   }
 }
