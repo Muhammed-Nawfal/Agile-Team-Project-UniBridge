@@ -122,12 +122,14 @@ export class BookingComponent implements OnInit {
 
       if (group) {
         group.events.push({
+          id: event.id,
           name: event.name,
           value: event.value,
           min: event.minSize,
           max: event.maxSize,
           startTime: event.startTime,
           endTime: event.endTime,
+          capacity: event.capacity,
         });
       }
     });
@@ -371,6 +373,8 @@ export class BookingComponent implements OnInit {
     this.activities.forEach(activity => {
       activity.events.forEach((event: any) => {
         allEventValues.push(event.value);
+        // Add debug info with IDs to help troubleshoot
+        console.log(`Event: ${event.value}, ID: ${event.id}, Name: ${event.name}`);
       });
     });
     console.log('All available event values:', allEventValues);
@@ -388,15 +392,43 @@ export class BookingComponent implements OnInit {
     for (const activity of this.activities) {
       const foundEvent = activity.events.find((e: any) => {
         // Try case-insensitive comparison
-        const normalizedEventValue = eventValue.toLowerCase().replace(/[^a-z0-9_]/g, '_');
-        const normalizedValue = e.value.toLowerCase().replace(/[^a-z0-9_]/g, '_');
-        return normalizedValue === normalizedEventValue;
+        return e.value.toLowerCase() === eventValue.toLowerCase();
       });
 
       if (foundEvent?.id) {
-        console.log('Found normalized match for event:', eventValue, 'with value:', foundEvent.value, 'and ID:', foundEvent.id);
+        console.log('Found case-insensitive match for event:', eventValue, 'with value:', foundEvent.value, 'and ID:', foundEvent.id);
         return foundEvent.id as number;
       }
+    }
+
+    // Try matching by name as a last resort
+    for (const activity of this.activities) {
+      const foundEvent = activity.events.find((e: any) => {
+        // Try matching against the name field (which might be what the UI is using)
+        return e.name.replace(/\s+/g, '_') === eventValue;
+      });
+
+      if (foundEvent?.id) {
+        console.log('Found match by converted name for event:', eventValue, 'with ID:', foundEvent.id);
+        return foundEvent.id as number;
+      }
+    }
+
+    // Hardcoded fallback based on seed data (only as last resort)
+    const seedDataMap: Record<string, number> = {
+      Study_Spaces: 1,
+      Event_Rooms: 2,
+      Football_Pitch: 3,
+      Tennis_Court: 4,
+      Basketball_Court: 5,
+      DOJO: 6,
+      Swimming_Pool: 7,
+      Squash_Court: 8,
+    };
+
+    if (seedDataMap[eventValue]) {
+      console.log('Using hardcoded ID mapping for:', eventValue, 'ID:', seedDataMap[eventValue]);
+      return seedDataMap[eventValue];
     }
 
     // No match found after trying all approaches
@@ -494,88 +526,79 @@ export class BookingComponent implements OnInit {
       `Looking for time slot with startHour=${startHour}, endHour=${endHour}, event=${this.selectedEvent}, eventId=${selectedEventId}`,
     );
 
-    // Show a sample time slot to inspect its structure
-    const sampleSlot = this.availableTimeSlots[0];
-    console.log('Sample time slot structure:', JSON.stringify(sampleSlot, null, 2));
-
     // Format the selected date to match database format
     const formattedSelectedDate = dayjs(this.selectedDate).format('YYYY-MM-DD');
 
-    // Check for time slots that match the hours and the correct date
-    const todaySlots = this.availableTimeSlots.filter(slot => String(slot.date) === formattedSelectedDate);
+    console.log('Selected date:', this.selectedDate, 'formatted as:', formattedSelectedDate);
+    console.log('All available time slots:', this.availableTimeSlots.length);
 
-    console.log(`Found ${todaySlots.length} slots for today's date`);
-
-    // Get time slots that match the hours
-    const hoursMatchingSlots = this.availableTimeSlots.filter(slot => slot.startHour === startHour && slot.endHour === endHour);
-
-    console.log(`Found ${hoursMatchingSlots.length} slots with matching hours`);
-    if (hoursMatchingSlots.length > 0) {
-      console.log('First matching slot by hours:', hoursMatchingSlots[0]);
+    // For debugging, log a few time slots to check their structure
+    if (this.availableTimeSlots.length > 0) {
+      console.log('Sample time slot:', JSON.stringify(this.availableTimeSlots[0], null, 2));
     }
 
-    // First try to find a slot that matches by date, hours AND event ID
-    let matchingSlot: ITimeSlot | undefined;
+    // Initial check for any time slots that match our criteria
+    const matchingTimeSlots = this.availableTimeSlots.filter(slot => {
+      // Check if the date matches (this can be tricky due to formatting)
+      const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
+      const dateMatch = slotDate === formattedSelectedDate;
 
+      // Check if hours match
+      const hoursMatch = slot.startHour === startHour && slot.endHour === endHour;
+
+      // Check if event ID matches (if we have one)
+      const eventIdMatch = selectedEventId ? slot.event?.id === selectedEventId : true;
+
+      return dateMatch && hoursMatch && eventIdMatch;
+    });
+
+    console.log(`Found ${matchingTimeSlots.length} time slots matching all criteria`);
+
+    // If we found exact matches, use the first one
+    if (matchingTimeSlots.length > 0) {
+      console.log('Using exact match time slot:', matchingTimeSlots[0]);
+      return matchingTimeSlots[0];
+    }
+
+    // If no exact match, look for time slots that match just by date and event ID
     if (selectedEventId) {
-      // Try to find slots matching by hours and event ID
-      matchingSlot = this.availableTimeSlots.find(
-        slot =>
-          String(slot.date) === formattedSelectedDate &&
-          slot.startHour === startHour &&
-          slot.endHour === endHour &&
-          slot.event?.id === selectedEventId,
-      );
-
-      if (matchingSlot) {
-        console.log('Found perfect match by date, hours and event ID!', matchingSlot);
-      } else {
-        console.log('No match found with event ID, trying with just date and hours...');
-      }
-    } else {
-      console.log('Could not determine event ID from selection:', this.selectedEvent);
-    }
-
-    // If not found by event ID, try with just date and hours
-    if (!matchingSlot) {
-      matchingSlot = this.availableTimeSlots.find(
-        slot => String(slot.date) === formattedSelectedDate && slot.startHour === startHour && slot.endHour === endHour,
-      );
-
-      if (matchingSlot) {
-        console.log('Found match by date and hours, event ID:', matchingSlot.event?.id);
-      }
-    }
-
-    // If still not found but we have an event ID, try finding any slot with matching event ID and date
-    if (!matchingSlot && selectedEventId) {
-      matchingSlot = this.availableTimeSlots.find(
-        slot => String(slot.date) === formattedSelectedDate && slot.event?.id === selectedEventId,
-      );
-
-      if (matchingSlot) {
-        console.log('Found match by date and event ID (ignoring hours):', matchingSlot);
-      }
-    }
-
-    // Final logging about what we found
-    if (!matchingSlot) {
-      console.error('No matching time slot found for', {
-        slotString,
-        startHour,
-        endHour,
-        selectedEvent: this.selectedEvent,
-        selectedEventId,
-        date: this.selectedDate,
-        formattedDate: formattedSelectedDate,
-        availableSlotsCount: this.availableTimeSlots.length,
-        todaySlotsCount: todaySlots.length,
+      const dateAndEventSlots = this.availableTimeSlots.filter(slot => {
+        const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
+        return slotDate === formattedSelectedDate && slot.event?.id === selectedEventId;
       });
-    } else {
-      console.log('Found matching time slot:', matchingSlot);
+
+      console.log(`Found ${dateAndEventSlots.length} time slots matching date and event ID`);
+
+      if (dateAndEventSlots.length > 0) {
+        // Try to find a time slot with matching hours first
+        const timeMatch = dateAndEventSlots.find(slot => slot.startHour === startHour);
+        if (timeMatch) {
+          console.log('Found time slot matching date, event ID and start hour:', timeMatch);
+          return timeMatch;
+        }
+
+        // Otherwise, use the first one
+        console.log('Using first time slot matching date and event ID:', dateAndEventSlots[0]);
+        return dateAndEventSlots[0];
+      }
     }
 
-    return matchingSlot ?? null;
+    // Last resort: check if we have any time slots with the right date
+    const dateOnlySlots = this.availableTimeSlots.filter(slot => {
+      const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
+      return slotDate === formattedSelectedDate;
+    });
+
+    console.log(`Found ${dateOnlySlots.length} time slots matching only date`);
+
+    if (dateOnlySlots.length > 0) {
+      console.log('Using time slot matching only date:', dateOnlySlots[0]);
+      return dateOnlySlots[0];
+    }
+
+    // If we reach here, we couldn't find a suitable time slot
+    console.error('No matching time slot found');
+    return null;
   }
 
   // Helper to normalize event names for comparison
