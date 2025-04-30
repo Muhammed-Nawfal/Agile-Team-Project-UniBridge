@@ -1,7 +1,13 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
     <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="jhi-activity-heading" data-cy="ActivityCreateUpdateHeading">Create or edit a Activity</h2>
+      <h2 id="jhi-activity-heading" data-cy="ActivityCreateUpdateHeading">
+        @if (editForm.controls.id.value !== null) {
+          Edit Activity
+        } @else {
+          Create Activity
+        }
+      </h2>
 
       <div>
         <jhi-alert-error></jhi-alert-error>
