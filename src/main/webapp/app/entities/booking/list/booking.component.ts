@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -6,15 +8,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observer } from 'rxjs';
 import { EventService } from 'app/entities/event/service/event.service';
 import { IEvent } from 'app/entities/event/event.model';
-
-// Define ActivityType enum directly in the component
-enum ActivityType {
-  SOCIAL = 'SOCIAL',
-  ACADEMIC = 'ACADEMIC',
-  SPORTS = 'SPORTS',
-  GYM = 'GYM',
-  OTHER = 'OTHER',
-}
+import { BookingService } from 'app/entities/booking/service/booking.service';
+import { IBooking, NewBooking } from 'app/entities/booking/booking.model';
+import { ActivityType } from 'app/entities/enumerations/activity-type.model';
+import { EventType } from 'app/entities/enumerations/event-type.model';
+import { BookingStatus } from 'app/entities/enumerations/booking-status.model';
+import dayjs from 'dayjs/esm';
 
 @Component({
   standalone: true,
@@ -30,6 +29,10 @@ export class BookingComponent implements OnInit {
   timeSlots: string[] = [];
   selectedTimeSlots: string[] = [];
   showConfirmation = false;
+  selectedDate = '';
+  selectedActivity = '';
+  selectedEvent = '';
+  selectedPartySize: number | null = null;
 
   readonly MAX_SLOTS = 3;
   bookingError: string | null = null;
@@ -73,7 +76,10 @@ export class BookingComponent implements OnInit {
     },
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private bookingService: BookingService,
+  ) {}
 
   ngOnInit(): void {
     this.loadEvents();
@@ -141,8 +147,8 @@ export class BookingComponent implements OnInit {
   }
 
   onActivityChange(event: any): void {
-    const activityValue = event.target.value;
-    const selectedActivity = this.activities.find(act => act.value === activityValue);
+    this.selectedActivity = event.target.value;
+    const selectedActivity = this.activities.find(act => act.value === this.selectedActivity);
 
     this.events = selectedActivity ? selectedActivity.events : [];
     this.partySizes = [];
@@ -151,11 +157,11 @@ export class BookingComponent implements OnInit {
   }
 
   onEventChange(event: any): void {
-    const eventValue = event.target.value;
+    this.selectedEvent = event.target.value;
     let selectedEvent = null;
 
     for (const activity of this.activities) {
-      const foundEvent = activity.events.find((e: { value: string }) => e.value === eventValue);
+      const foundEvent = activity.events.find((e: { value: string }) => e.value === this.selectedEvent);
       if (foundEvent) {
         selectedEvent = foundEvent;
         break;
@@ -173,6 +179,14 @@ export class BookingComponent implements OnInit {
       this.partySizes = [];
       this.timeSlots = [];
     }
+  }
+
+  onPartySizeChange(event: any): void {
+    this.selectedPartySize = Number(event.target.value);
+  }
+
+  onDateChange(event: any): void {
+    this.selectedDate = event.target.value;
   }
 
   generateTimeSlots(startTime: number, endTime: number): void {
@@ -233,7 +247,8 @@ export class BookingComponent implements OnInit {
       // Add the slot to selected slots
       if (!this.selectedTimeSlots.includes(value)) {
         this.selectedTimeSlots.push(value);
-        this.selectedTimeSlots.sort(this.compareTimeSlots);
+        // Use a different approach to sort
+        this.selectedTimeSlots.sort((a, b) => this.compareTimeSlots(a, b));
       }
     } else {
       // When unchecking, we need to ensure we don't break continuity
@@ -252,11 +267,11 @@ export class BookingComponent implements OnInit {
   }
 
   // Helper function to compare time slots for sorting
-  compareTimeSlots(a: string, b: string): number {
+  compareTimeSlots = (a: string, b: string): number => {
     const timeA = this.parseTimeSlot(a);
     const timeB = this.parseTimeSlot(b);
     return timeA.start - timeB.start;
-  }
+  };
 
   // Helper function to parse time slot strings like "09:00-10:00"
   parseTimeSlot(timeSlot: string): { start: number; end: number } {
@@ -273,7 +288,7 @@ export class BookingComponent implements OnInit {
     }
 
     // Sort selected slots by start time
-    const sortedSlots = [...this.selectedTimeSlots].sort(this.compareTimeSlots);
+    const sortedSlots = [...this.selectedTimeSlots].sort((a, b) => this.compareTimeSlots(a, b));
 
     // Check if each slot is consecutive with the next one
     for (let i = 0; i < sortedSlots.length - 1; i++) {
@@ -289,13 +304,112 @@ export class BookingComponent implements OnInit {
     return true;
   }
 
-  onSubmit(): void {
+  validateBookingData(): boolean {
+    if (!this.selectedDate) {
+      this.bookingError = 'Please select a date';
+      return false;
+    }
+
+    if (!this.selectedActivity) {
+      this.bookingError = 'Please select an activity';
+      return false;
+    }
+
+    if (!this.selectedEvent) {
+      this.bookingError = 'Please select an event';
+      return false;
+    }
+
+    if (!this.selectedPartySize) {
+      this.bookingError = 'Please select party size';
+      return false;
+    }
+
+    if (this.selectedTimeSlots.length === 0) {
+      this.bookingError = 'Please select at least one time slot';
+      return false;
+    }
+
     if (!this.areSelectedSlotsConsecutive()) {
       this.bookingError = 'Please select consecutive time slots only';
+      return false;
+    }
+
+    return true;
+  }
+
+  createBookingObject(): NewBooking {
+    // Create a booking object with the mandatory fields
+    const booking: NewBooking = {
+      id: null,
+      activityType: this.selectedActivity as keyof typeof ActivityType,
+      eventType: this.selectedEvent.toUpperCase().replace(' ', '_') as keyof typeof EventType,
+      bookingDate: dayjs(this.selectedDate),
+      partySize: this.selectedPartySize ?? 1,
+      bookingStatus: 'CONFIRMED' as keyof typeof BookingStatus,
+      // Set createdAt to current time
+      createdAt: dayjs(),
+      // The following fields may be required by the backend validation:
+      assignedAt: null,
+      timeSlots: null,
+      bookedActivity: null,
+      bookingLocation: null,
+      creator: null,
+      activity: null,
+      timeSlot: null,
+    };
+
+    return booking;
+  }
+
+  testBooking(): void {
+    const minimalBooking = {
+      id: null,
+      activityType: 'SPORTS',
+      eventType: 'TENNIS_COURT', // Correct format matching backend enum
+      bookingDate: dayjs(this.selectedDate),
+      partySize: 4,
+      bookingStatus: 'CONFIRMED',
+    };
+
+    console.log('Testing with minimal booking:', minimalBooking);
+
+    this.bookingService.create(minimalBooking as any).subscribe({
+      next(response) {
+        console.log('Test booking successful!', response);
+      },
+      error(error) {
+        console.error('Test booking failed', error);
+      },
+    });
+  }
+
+  onSubmit(): void {
+    if (!this.validateBookingData()) {
       return;
     }
 
-    alert('Booking submitted!');
-    window.location.reload();
+    const bookingData = this.createBookingObject();
+
+    console.log('Sending booking data:', bookingData); // Log what you're sending
+
+    this.bookingService.create(bookingData).subscribe({
+      next(response) {
+        console.log('Booking submitted successfully!', response);
+        alert('Booking submitted successfully!');
+        window.location.reload();
+      },
+      error: error => {
+        console.error('Error creating booking', error);
+        // More detailed error message
+        if (error.error?.detail) {
+          this.bookingError = `Failed to create booking: ${error.error.detail}`;
+        } else if (error.error?.message) {
+          this.bookingError = `Failed to create booking: ${error.error.message}`;
+        } else {
+          this.bookingError = 'Failed to create booking. Please try again.';
+        }
+      },
+    });
   }
 }

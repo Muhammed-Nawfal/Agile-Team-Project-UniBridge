@@ -10,22 +10,22 @@
     <h1>{{ translate('booking') }}</h1>
     <div class="bookDetails">
       <h2>{{ translate('selectDate') }}</h2>
-      <input type="date" name="date" class="form-control" />
+      <input type="date" name="date" class="form-control" (change)="onDateChange($event)" required />
 
       <h2>{{ translate('selectActivity') }}</h2>
-      <select name="Activity" class="form-control" (change)="onActivityChange($event)">
+      <select name="Activity" class="form-control" (change)="onActivityChange($event)" required>
         <option value="" selected disabled>{{ translate('defaultActivity') }}</option>
         <option *ngFor="let activity of activities" [value]="activity.value">{{ activity.name }}</option>
       </select>
 
       <h2>{{ translate('selectEvent') }}</h2>
-      <select name="Events" class="form-control" (change)="onEventChange($event)">
+      <select name="Events" class="form-control" (change)="onEventChange($event)" required>
         <option value="" selected disabled>{{ translate('defaultEvent') }}</option>
         <option *ngFor="let event of events" [value]="event.value">{{ event.name }}</option>
       </select>
 
       <h2>{{ translate('selectPartySize') }}</h2>
-      <select name="partySize" class="form-control">
+      <select name="partySize" class="form-control" (change)="onPartySizeChange($event)" required>
         <option value="" selected disabled>{{ translate('defaultPartySize') }}</option>
         <option *ngFor="let size of partySizes" [value]="size">{{ size }}</option>
       </select>
@@ -49,7 +49,7 @@
         {{ bookingError }}
       </div>
 
-      <button type="submit" (click)="onSubmit()">{{ translate('bookNow') }}</button>
+      <button type="button" (click)="onSubmit()">{{ translate('bookNow') }}</button>
     </div>
   </form>
 
