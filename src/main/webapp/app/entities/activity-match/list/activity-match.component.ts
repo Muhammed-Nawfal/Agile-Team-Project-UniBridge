@@ -156,6 +156,10 @@ export class ActivityMatchComponent implements OnInit, OnDestroy {
     this.router.navigate(['/activity-match/upcoming-matches']);
   }
 
+  navigateToMatchRequests(): void {
+    this.router.navigate(['/activity-match/activity-match-requests']);
+  }
+
   handleLoginRedirect(): void {
     const redirectUrl = localStorage.getItem('redirectUrl');
     if (redirectUrl) {
