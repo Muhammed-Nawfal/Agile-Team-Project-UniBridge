@@ -24,13 +24,16 @@ import { AccountService } from 'app/core/auth/account.service';
 import { Decision } from 'app/entities/enumerations/decision.model';
 import { NewActivityMatch } from 'app/entities/activity-match/activity-match.model';
 import { ProfileService } from '../../profile/service/profile.service';
+import { MatchRequestDialogComponent } from '../match-request-dialog/match-request-dialog.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   standalone: true,
   selector: 'jhi-matching',
   templateUrl: './matching.component.html',
   styleUrl: 'matching.component.scss',
-  imports: [RouterModule, FormsModule, SharedModule],
+  imports: [RouterModule, FormsModule, SharedModule, MatchRequestDialogComponent],
 })
 export class MatchingComponent implements OnInit, OnDestroy {
   subscription: Subscription | null = null;
@@ -38,6 +41,8 @@ export class MatchingComponent implements OnInit, OnDestroy {
   isLoading = false;
   activityMatchId?: number;
   errorMessage?: string;
+
+  currentUserProfileId?: number;
 
   // Properties for profile navigation
   currentProfileIndex = 0;
@@ -67,6 +72,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
   protected ngZone = inject(NgZone);
   private accountService = inject(AccountService);
   private profileService = inject(ProfileService);
+  private modalService = inject(NgbModal);
 
   ngOnInit(): void {
     // Subscribe to both id and type parameters
@@ -88,6 +94,21 @@ export class MatchingComponent implements OnInit, OnDestroy {
         }
       },
     );
+    this.accountService
+      .identity()
+      .pipe(
+        take(1),
+        switchMap(account => this.profileService.query({ 'userLogin.equals': account?.login })),
+        take(1),
+      )
+      .subscribe(resp => {
+        const prof = resp.body?.[0];
+        if (prof?.id) {
+          this.currentUserProfileId = prof.id;
+        } else {
+          console.error('Could not find my profile');
+        }
+      });
   }
 
   loadBuddies(): void {
@@ -399,55 +420,56 @@ export class MatchingComponent implements OnInit, OnDestroy {
   //   }, 300); // Match this time with your CSS transition duration
   // }
 
-  acceptProfile(): void {
-    if (!this.currentProfile) return;
+  async acceptProfile(): Promise<void> {
+    if (!this.currentProfile || this.currentUserProfileId == null) {
+      return;
+    }
+    const toProfileId = this.currentProfile.id;
 
-    // add animation…
-    const card = document.querySelector('.card');
-    if (card) card.classList.add('accepting');
+    // 1. Open the dialog
+    const modalRef = this.modalService.open(MatchRequestDialogComponent);
 
-    this.accountService
-      .identity()
-      .pipe(
-        take(1),
-        switchMap(account =>
-          // query the Profile API for my profile
-          this.profileService.query({ 'userLogin.equals': account?.login }),
-        ),
-        take(1),
-      )
-      .subscribe(profilesResp => {
-        const meProfile = profilesResp.body?.[0];
-        if (!meProfile?.id) {
-          console.error('My Profile not found');
-          return;
-        }
-        const meId = meProfile.id;
+    try {
+      // Wait for user to submit or cancel
+      const result: { date: string; time: string; notes: string } = await modalRef.result;
 
-        const newMatch: NewActivityMatch = {
-          id: null,
-          activityType: this.buddyType,
-          status: Decision.PENDING,
-          matchDate: dayjs(),
-          matchTime: dayjs(),
-          createdAt: dayjs(),
-          responseAt: dayjs(),
-          matchRequestor: { id: meId },
-          userDetails: { id: this.currentProfile!.id },
-          matchedActivity: null,
-          ratings: null,
-          location: null,
-          notes: null,
-        };
+      // If they closed without data, do nothing
+      // if (!result) {
+      //   return;
+      // }
+      // Build your NewActivityMatch dto, incorporating date/time/notes
+      const { date, time, notes } = result;
+      const [hours, minutes] = time.split(':').map(t => parseInt(t, 10));
+      const matchDateTime = dayjs(date).hour(hours).minute(minutes);
 
-        this.activityMatchService.create(newMatch).subscribe({
-          next: () => this.showNextProfile(),
-          error: () => this.showNextProfile(),
-        });
+      const newMatch: NewActivityMatch = {
+        id: null,
+        activityType: this.buddyType,
+        status: 'PENDING',
+        matchDate: dayjs(date),
+        matchTime: matchDateTime,
+        createdAt: dayjs(),
+        responseAt: dayjs(),
+        matchRequestor: { id: this.currentUserProfileId },
+        userDetails: { id: toProfileId },
+        location: null,
+        notes,
+        matchedActivity: null,
+        ratings: null,
+      };
 
-        // cleanup animation
-        setTimeout(() => card?.classList.remove('accepting'), 50);
-      });
+      // Send to backend (auto-unsubscribes after first value)
+      await firstValueFrom(this.activityMatchService.create(newMatch));
+
+      // Advance to next profile
+      this.showNextProfile();
+    } catch (err) {
+      // err === 'Cancel click' | 'Cross click' if dismissed, or HTTP error
+      if (err !== 'Cancel click' && err !== 'Cross click') {
+        console.error('Match request failed', err);
+      }
+      this.showNextProfile();
+    }
   }
 
   // Reject profile method with animation

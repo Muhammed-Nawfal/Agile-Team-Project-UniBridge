@@ -55,6 +55,14 @@ const activityMatchRoute: Routes = [
     },
     canActivate: [UserRouteAccessService], // Protect the route
   },
+  {
+    path: 'activity-match-requests',
+    loadComponent: () => import('./activity-match-requests/activity-match-requests.component').then(m => m.ActivityMatchRequestsComponent),
+    resolve: {
+      requestsData: ActivityMatchResolve,
+    },
+    canActivate: [UserRouteAccessService], // Protect the route
+  },
 ];
 
 export default activityMatchRoute;
