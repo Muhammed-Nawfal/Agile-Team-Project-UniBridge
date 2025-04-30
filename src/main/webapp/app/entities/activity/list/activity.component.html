@@ -19,6 +19,15 @@
         </div>
       </div>
     </div>
+    <button
+      id="jh-create-entity"
+      data-cy="entityCreateButton"
+      class="btn btn-primary jh-create-entity create-activity"
+      [routerLink]="['/activity/new']"
+    >
+      <fa-icon icon="plus"></fa-icon>
+      <span>Create a new Activity</span>
+    </button>
   </h2>
 
   <jhi-alert-error></jhi-alert-error>
