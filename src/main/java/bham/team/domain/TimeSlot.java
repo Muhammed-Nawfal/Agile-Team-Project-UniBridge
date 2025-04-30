@@ -54,14 +54,15 @@ public class TimeSlot implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "timeSlot")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(
-        value = { "timeSlots", "bookedActivity", "bookingLocation", "creator", "activity", "timeSlot" },
-        allowSetters = true
-    )
+    @JsonIgnoreProperties(value = { "bookedActivity", "bookingLocation", "creator", "activity", "timeSlot" }, allowSetters = true)
     private Set<Booking> bookingsLists = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Event event;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "timeSlots", "bookedActivity", "bookingLocation", "creator", "activity" }, allowSetters = true)
+    private Booking booking;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -197,6 +198,19 @@ public class TimeSlot implements Serializable {
 
     public TimeSlot event(Event event) {
         this.setEvent(event);
+        return this;
+    }
+
+    public Booking getBooking() {
+        return this.booking;
+    }
+
+    public void setBooking(Booking booking) {
+        this.booking = booking;
+    }
+
+    public TimeSlot booking(Booking booking) {
+        this.setBooking(booking);
         return this;
     }
 
