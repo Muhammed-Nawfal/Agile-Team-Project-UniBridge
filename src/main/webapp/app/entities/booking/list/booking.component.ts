@@ -684,7 +684,17 @@ export class BookingComponent implements OnInit {
           this.bookingService.create(booking).subscribe({
             next: response => {
               console.log('Booking submitted successfully!', response);
-              alert(`Booking created successfully with ${timeSlots.length} time slot(s)!`);
+
+              // Now update all time slots to reference this booking
+              const bookingId = response.body?.id;
+              if (bookingId) {
+                // Update each time slot with reference to the booking
+                this.updateTimeSlotsWithBookingId(timeSlots, bookingId);
+              } else {
+                console.error('Created booking but no ID was returned');
+                alert(`Booking created successfully with ${timeSlots.length} time slot(s)!`);
+              }
+
               this.bookingError = null;
             },
             error: error => {
@@ -711,6 +721,7 @@ export class BookingComponent implements OnInit {
         remainingCapacity: this.selectedPartySize ?? 1,
         status: 'AVAILABLE',
         event: { id: selectedEventId },
+        booking: null, // Initialize with null, will be updated after booking creation
       };
 
       // Save the time slot
@@ -733,5 +744,50 @@ export class BookingComponent implements OnInit {
 
     // Start creating time slots
     createNextTimeSlot(0);
+  }
+
+  /**
+   * Updates time slots with reference to the booking ID
+   * @param timeSlots Array of time slots to update
+   * @param bookingId ID of the booking to reference
+   */
+  updateTimeSlotsWithBookingId(timeSlots: ITimeSlot[], bookingId: number): void {
+    let updatedCount = 0;
+
+    timeSlots.forEach(timeSlot => {
+      // Skip if no ID
+      if (!timeSlot.id) {
+        console.warn('Cannot update time slot without ID');
+        return;
+      }
+
+      // Create updated time slot with booking reference
+      const updatedTimeSlot = {
+        ...timeSlot,
+        booking: { id: bookingId },
+      };
+
+      // Update the time slot
+      this.http.put<ITimeSlot>(`api/time-slots/${timeSlot.id}`, updatedTimeSlot).subscribe({
+        next() {
+          console.log(`Successfully updated time slot ${timeSlot.id} with booking ${bookingId}`);
+          updatedCount++;
+
+          // When all are updated, show confirmation
+          if (updatedCount === timeSlots.length) {
+            alert(`Booking created successfully with ${timeSlots.length} time slot(s)!`);
+          }
+        },
+        error(error) {
+          console.error(`Error updating time slot ${timeSlot.id} with booking reference`, error);
+          updatedCount++;
+
+          // When all are processed, show confirmation even if some failed
+          if (updatedCount === timeSlots.length) {
+            alert(`Booking created but some time slots may not be properly linked.`);
+          }
+        },
+      });
+    });
   }
 }
