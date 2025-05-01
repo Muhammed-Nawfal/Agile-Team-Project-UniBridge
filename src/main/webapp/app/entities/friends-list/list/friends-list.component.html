@@ -8,6 +8,8 @@
       <span class="badge bg-danger ms-1" *ngIf="pendingRequestCount > 0">{{ pendingRequestCount }}</span>
     </button>
 
+    //add
+
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>

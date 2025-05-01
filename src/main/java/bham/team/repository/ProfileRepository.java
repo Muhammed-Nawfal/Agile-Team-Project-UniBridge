@@ -22,8 +22,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     @Query("SELECT p from Profile p " + "WHERE p.user.login = :login")
     Optional<Profile> findByLogin(@Param("login") String login);
- 
-  
+
     /**
      * Find the profile for the currently logged-in user
      */
