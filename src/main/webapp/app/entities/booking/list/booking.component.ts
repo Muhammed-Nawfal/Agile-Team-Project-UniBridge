@@ -661,15 +661,14 @@ export class BookingComponent implements OnInit {
       bookingStatus: 'CONFIRMED' as keyof typeof BookingStatus,
       // Set createdAt to current time
       createdAt: dayjs(),
-      // Set the time slot
-      timeSlots: timeSlotEntity,
+      // Set the time slot - using timeSlot instead of timeSlots
+      timeSlot: timeSlotEntity,
       // The following fields may be required by the backend validation:
       assignedAt: null,
       bookedActivity: null,
       bookingLocation: null,
       creator: null,
       activity: null,
-      timeSlot: null,
     };
 
     console.log('Created booking with time slot:', timeSlotEntity);
@@ -707,7 +706,7 @@ export class BookingComponent implements OnInit {
     const bookingData = this.createBookingObject();
 
     // Check if a valid time slot was found
-    if (!bookingData.timeSlots) {
+    if (!bookingData.timeSlot) {
       this.bookingError = 'Could not find a valid time slot in the database. Please try again or contact support.';
       console.error('No matching time slot found for:', this.selectedTimeSlots);
       return;
