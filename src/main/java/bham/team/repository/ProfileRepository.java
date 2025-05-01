@@ -14,12 +14,12 @@ import org.springframework.stereotype.Repository;
 @SuppressWarnings("unused")
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
+    /**
+     * Find profiles with a specific preferred activity type
+     */
     @Query("SELECT DISTINCT profile FROM Profile profile " + "WHERE profile.preferredActivities = :activityType")
     List<Profile> findByPreferredActivity(@Param("activityType") ActivityType activityType);
-
-    @Query("SELECT p from Profile p " + "WHERE p.user.login = :login")
-    Optional<Profile> findByLogin(@Param("login") String login);
-
+  
     /**
      * Find the profile for the currently logged-in user
      */
