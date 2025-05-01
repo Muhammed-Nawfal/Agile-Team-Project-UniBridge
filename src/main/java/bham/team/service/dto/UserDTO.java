@@ -28,7 +28,6 @@ public class UserDTO implements Serializable {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.login = user.getLogin();
-        this.firstName = user.getFirstName();
     }
 
     public Long getId() {
@@ -63,15 +62,6 @@ public class UserDTO implements Serializable {
         this.login = login;
     }
 
-    //    // Add getter and setter for firstName
-    //    public String getFirstName() {
-    //        return firstName;
-    //    }
-    //
-    //    public void setFirstName(String firstName) {
-    //        this.firstName = firstName;
-    //    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -89,13 +79,14 @@ public class UserDTO implements Serializable {
         return (
             Objects.equals(getId(), userDTO.getId()) &&
             Objects.equals(getLogin(), userDTO.getLogin()) &&
-            Objects.equals(getFirstName(), userDTO.getFirstName())
+            Objects.equals(getFirstName(), userDTO.getFirstName()) &&
+            Objects.equals(getLastName(), userDTO.getLastName())
         );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getLogin(), getFirstName());
+        return Objects.hash(getId(), getLogin(), getFirstName(), getLastName());
     }
 
     // prettier-ignore
@@ -105,6 +96,7 @@ public class UserDTO implements Serializable {
             "id='" + id + '\'' +
             ", login='" + login + '\'' +
             ", firstName='" + firstName + '\'' +
+            ", lastName='" + lastName + '\'' +
             "}";
     }
 }

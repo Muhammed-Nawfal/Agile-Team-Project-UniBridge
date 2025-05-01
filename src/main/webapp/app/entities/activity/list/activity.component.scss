@@ -1,145 +1,126 @@
-#page-heading {
-  display: flex;
-  justify-content: space-between;
+/* Card styling */
+.card {
+  transition: all 0.3s ease;
+  border-radius: 10px;
 }
 
-input {
-  border-radius: 50px;
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
 }
 
-.card-container {
-  margin: 0 -9px;
-  display: flex;
-  flex-wrap: wrap;
+/* Activity Type Badges */
+.activity-type {
+  font-size: 0.6rem;
+  letter-spacing: 0.5px;
+  padding: 0.25rem 0.75rem;
+  background-color: #f8f9fa;
+  color: #495057;
+}
 
-  .card {
-    margin: 10px; // for the spacing between the cards
-    box-sizing: border-box;
-    width: calc(33.333% - 20px); // to make sure that there are 3 cards per row
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    position: relative;
+.activity-type.sports {
+  background-color: #e6f7e6;
+  color: #2e7d32;
+}
 
-    .activity-status-label {
-      position: absolute;
-      bottom: 10px;
-      left: 10px;
-      font-size: 0.8em;
-      font-weight: bold;
-      padding: 4px 8px;
-      border-radius: 4px;
-      color: white;
-    }
+.activity-type.gym {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
 
-    .ANNOUNCED {
-      background-color: #c8d200;
-    }
-    .CURRENTLY_HAPPENING {
-      background-color: #41e166;
-    }
-    .FINISHED {
-      background-color: #424242;
-    }
+.activity-type.other {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
 
-    .card-content {
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1; // responsive design -> cards take right amount of space based on screen size
-    }
+/* Status Labels */
+.status-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+}
 
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+.status-label.finished {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
 
-    .activity-type {
-      color: white;
-      font-size: 0.8em;
-      font-weight: bold;
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
+.status-label.currently_happening {
+  background-color: #fff8e1;
+  color: #ff8f00;
+}
 
-    .SOCIAL {
-      background-color: #57a8ff;
-    }
-    .ACADEMIC {
-      background-color: #3bf065;
-    }
-    .SPORTS {
-      background-color: #ffad31;
-    }
-    .GYM {
-      background-color: #b700d8;
-    }
-    .OTHER {
-      background-color: #505050;
-    }
+.status-label.canceled {
+  background-color: #ffebee;
+  color: #c62828;
+}
 
-    .image-container {
-      text-align: center;
-      margin-bottom: 10px;
+.status-label.announced {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
 
-      img {
-        height: auto;
-        max-height: 135px;
-        max-width: 100%;
-        object-fit: contain;
-      }
-    }
+/* Button styling */
+.btn-outline-primary {
+  border-width: 1.5px;
+}
 
-    .card-content {
-      margin-bottom: 10px;
-      p {
-        font-size: 1.2em;
-        margin: 5px 0;
-      }
-    }
+/* Card title truncation */
+.card-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-    .card-view {
-      display: flex;
-      margin-top: auto;
-      justify-content: flex-end;
+/* Radiant Background Styles */
+.radiant-image-container {
+  overflow: hidden;
+  border-radius: 10px 10px 0 0;
+}
 
-      button,
-      a {
-        font-size: 0.8em;
-        margin-left: 5px;
-      }
-    }
+.radiant-background {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  z-index: 1;
+  background: linear-gradient(135deg, rgba(100, 200, 255, 0.8) 0%, rgba(150, 120, 255, 0.6) 50%, rgba(255, 100, 200, 0.4) 100%);
+  opacity: 0.7;
+  transform: rotate(-15deg);
+  animation: radiantAnimation 8s ease infinite;
+}
+
+/* Different radiant colors based on activity type */
+.radiant-background.sports {
+  background: linear-gradient(135deg, rgba(100, 255, 150, 0.8) 0%, rgba(50, 200, 100, 0.6) 50%, rgba(0, 150, 50, 0.4) 100%);
+}
+
+.radiant-background.gym {
+  background: linear-gradient(135deg, rgba(100, 150, 255, 0.8) 0%, rgba(50, 100, 200, 0.6) 50%, rgba(0, 50, 150, 0.4) 100%);
+}
+
+.radiant-background.other {
+  background: linear-gradient(135deg, rgba(255, 150, 100, 0.8) 0%, rgba(200, 100, 50, 0.6) 50%, rgba(150, 50, 0, 0.4) 100%);
+}
+
+@keyframes radiantAnimation {
+  0% {
+    transform: rotate(-15deg) scale(1);
+  }
+  50% {
+    transform: rotate(-10deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(-15deg) scale(1);
   }
 }
 
-.activity {
-  &-type {
-    // Existing styles remain...
-
-    &.SOCIAL {
-      background-color: #e1bee7;
-      color: #4a148c;
-    }
-
-    &.OUTDOORS {
-      background-color: #c8e6c9;
-      color: #1b5e20;
-    }
-  }
-}
-
-// responsive design adjustments
-@media (max-width: 992px) {
-  .card-container .card {
-    width: calc(50% - 20px); // 2 cards per row on medium-szed screens
-  }
-}
-
-@media (max-width: 768px) {
-  .card-container .card {
-    width: calc(100% - 20px); // 1 card per row on small-sized screens
-  }
+/* Image positioning */
+.radiant-image-container .img-fluid {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 3px solid white;
 }

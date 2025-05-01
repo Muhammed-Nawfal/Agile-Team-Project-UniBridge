@@ -10,6 +10,7 @@ import { IActivity } from '../activity.model';
   standalone: true,
   selector: 'jhi-activity-detail',
   templateUrl: './activity-detail.component.html',
+  styleUrl: 'activity-detail.component.scss',
   imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
 })
 export class ActivityDetailComponent {

@@ -1,0 +1,54 @@
+<div class="requests-container">
+  <h2 class="text-center mb-4">Match Requests</h2>
+  <div class="row g-4">
+    <div class="col-12 col-md-6 col-lg-4" *ngFor="let req of matchRequests">
+      <div class="card match-card h-100">
+        <!-- Activity‐type badge -->
+        <span class="activity-badge" [ngClass]="'badge--' + (req.activityType?.toLowerCase() || 'other')">
+          {{ req.activityType?.toString() | titlecase }}
+        </span>
+
+        <img
+          [src]="req.matchRequestor?.profilePicture || 'content/images/avatar-placeholder.jpg'"
+          class="card-img-top avatar-banner"
+          alt="Requester avatar"
+        />
+
+        <div class="card-body d-flex flex-column">
+          <!-- Name -->
+          <h5 class="card-title mb-2">{{ req.matchRequestor?.firstName }} {{ req.matchRequestor?.lastName }}</h5>
+
+          <!-- Date & Time -->
+          <p class="card-text text-muted small mb-1">
+            <fa-icon [icon]="['fas', 'calendar-alt']"></fa-icon>
+            {{ req.matchDate?.format('DD-MM-YYYY') }}
+            &nbsp;
+            <fa-icon [icon]="['fas', 'clock']"></fa-icon>
+            {{ req.matchTime }}
+          </p>
+
+          <!-- Location -->
+          <p class="card-text text-muted small mb-3">
+            <fa-icon [icon]="['fas', 'map-marker-alt']"></fa-icon>
+            {{ req.location || 'TBD' }}
+          </p>
+
+          <!-- Actions at bottom -->
+          <div class="mt-auto d-flex gap-2">
+            <button type="button" class="btn btn-light flex-fill" (click)="onRespond(req, Decision.ACCEPT)" [disabled]="isLoading">
+              Accept
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-danger flex-fill"
+              (click)="onRespond(req, Decision.DECLINED)"
+              [disabled]="isLoading"
+            >
+              Decline
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

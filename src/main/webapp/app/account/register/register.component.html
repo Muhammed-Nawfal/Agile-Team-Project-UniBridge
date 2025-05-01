@@ -30,6 +30,23 @@
       @if (!success()) {
         <form name="form" (ngSubmit)="register()" [formGroup]="registerForm">
           <div class="mb-3">
+            <label class="form-label" for="firstName">First name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="firstName"
+              name="firstName"
+              placeholder="Your first name"
+              formControlName="firstName"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="lastName">Last name</label>
+            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Your last name" formControlName="lastName" />
+          </div>
+
+          <div class="mb-3">
             <label class="form-label" for="login">Username</label>
             <input
               type="text"
@@ -166,11 +183,12 @@
 
       <div class="mt-3 alert alert-warning">
         <span>If you want to </span>
-        <a class="alert-link" routerLink="/login">sign in</a
-        ><span
-          >, you can try the default accounts:<br />- Administrator (login=&quot;admin&quot; and password=&quot;admin&quot;) <br />- User
-          (login=&quot;user&quot; and password=&quot;user&quot;).</span
-        >
+        <a class="alert-link" routerLink="/login">sign in</a>
+        <span
+          >, you can try the default accounts:<br />
+          - Administrator (login="admin" and password="admin") <br />
+          - User (login="user" and password="user").
+        </span>
       </div>
     </div>
   </div>

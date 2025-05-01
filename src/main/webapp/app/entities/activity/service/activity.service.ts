@@ -99,6 +99,17 @@ export class ActivityService {
     return activityCollection;
   }
 
+  search(query: string): Observable<EntityArrayResponseType> {
+    const options = createRequestOption({
+      query,
+      sort: ['activityName,asc'], // Default sort for search
+    });
+    return this.http.get<IActivity[]>(`${this.resourceUrl}/search`, {
+      params: options,
+      observe: 'response',
+    });
+  }
+
   protected convertDateFromClient<T extends IActivity | NewActivity | PartialUpdateActivity>(activity: T): RestOf<T> {
     return {
       ...activity,
