@@ -609,49 +609,26 @@ export class BookingComponent implements OnInit {
       .replace(/[^\w]/g, ''); // Remove non-word chars
   }
 
-  createBookingObject(): NewBooking {
+  createBookingWithNewTimeSlot(): NewBooking {
     // Get the first selected time slot from the array
     const firstSelectedSlot = this.selectedTimeSlots.length > 0 ? this.selectedTimeSlots[0] : null;
+    const parsedSlot = this.parseTimeSlot(firstSelectedSlot!);
 
-    // Find corresponding time slot entity
-    let timeSlotEntity = firstSelectedSlot ? this.findTimeSlotEntity(firstSelectedSlot) : null;
+    // Get event ID
+    const selectedEventId = this.findEventIdByValue(this.selectedEvent);
 
-    // FALLBACK: If no time slot entity found but we have available time slots, use the first one
-    if (!timeSlotEntity && this.availableTimeSlots.length > 0) {
-      console.warn('No exact matching time slot found. Using first available time slot as fallback.');
-      // Since time slots are generated hourly, finding a time slot that closely matches our needs is better than failing
-      const parsedSlot = this.parseTimeSlot(firstSelectedSlot!);
+    // Create a new time slot object (without ID since backend will create it)
+    const newTimeSlot: Omit<ITimeSlot, 'id'> = {
+      date: dayjs(this.selectedDate),
+      startHour: parsedSlot.start,
+      endHour: parsedSlot.end,
+      capacity: null,
+      remainingCapacity: null,
+      status: null,
+      event: { id: selectedEventId } as any,
+    };
 
-      // Try to find a slot with similar hours
-      for (const slot of this.availableTimeSlots) {
-        // If we find a slot with the same start hour, use it
-        if (slot.startHour === parsedSlot.start) {
-          timeSlotEntity = slot;
-          console.log('Using fallback time slot with matching start hour:', slot);
-          break;
-        }
-      }
-
-      // If still no match, just use the first one
-      if (!timeSlotEntity) {
-        timeSlotEntity = this.availableTimeSlots[0];
-        console.log('Using first available time slot as last resort:', timeSlotEntity);
-      }
-    }
-
-    if (timeSlotEntity) {
-      console.log('Selected time slot details:', {
-        id: timeSlotEntity.id,
-        date: timeSlotEntity.date,
-        startHour: timeSlotEntity.startHour,
-        endHour: timeSlotEntity.endHour,
-        event: timeSlotEntity.event,
-        requestedEvent: this.selectedEvent,
-        requestedEventId: this.findEventIdByValue(this.selectedEvent),
-      });
-    }
-
-    // Create a booking object with the mandatory fields
+    // Create booking object with the new time slot
     const booking: NewBooking = {
       id: null,
       activityType: this.selectedActivity as keyof typeof ActivityType,
@@ -659,11 +636,9 @@ export class BookingComponent implements OnInit {
       bookingDate: dayjs(this.selectedDate),
       partySize: this.selectedPartySize ?? 1,
       bookingStatus: 'CONFIRMED' as keyof typeof BookingStatus,
-      // Set createdAt to current time
       createdAt: dayjs(),
-      // Set the time slot - using timeSlot instead of timeSlots
-      timeSlot: timeSlotEntity,
-      // The following fields may be required by the backend validation:
+      timeSlot: newTimeSlot as ITimeSlot,
+      // Other required fields
       assignedAt: null,
       bookedActivity: null,
       bookingLocation: null,
@@ -671,31 +646,8 @@ export class BookingComponent implements OnInit {
       activity: null,
     };
 
-    console.log('Created booking with time slot:', timeSlotEntity);
-    console.log('Using event type:', this.selectedEvent);
+    console.log('Created booking with new time slot');
     return booking;
-  }
-
-  testBooking(): void {
-    const minimalBooking = {
-      id: null,
-      activityType: 'SPORTS',
-      eventType: 'TENNIS_COURT', // Correct format matching backend enum
-      bookingDate: dayjs(this.selectedDate),
-      partySize: 4,
-      bookingStatus: 'CONFIRMED',
-    };
-
-    console.log('Testing with minimal booking:', minimalBooking);
-
-    this.bookingService.create(minimalBooking as any).subscribe({
-      next(response) {
-        console.log('Test booking successful!', response);
-      },
-      error(error) {
-        console.error('Test booking failed', error);
-      },
-    });
   }
 
   onSubmit(): void {
@@ -703,35 +655,58 @@ export class BookingComponent implements OnInit {
       return;
     }
 
-    const bookingData = this.createBookingObject();
+    const firstSelectedSlot = this.selectedTimeSlots[0];
+    const parsedSlot = this.parseTimeSlot(firstSelectedSlot);
+    const selectedEventId = this.findEventIdByValue(this.selectedEvent);
 
-    // Check if a valid time slot was found
-    if (!bookingData.timeSlot) {
-      this.bookingError = 'Could not find a valid time slot in the database. Please try again or contact support.';
-      console.error('No matching time slot found for:', this.selectedTimeSlots);
-      return;
-    }
+    // Create time slot first with required non-null fields
+    const newTimeSlot = {
+      date: dayjs(this.selectedDate),
+      startHour: parsedSlot.start,
+      endHour: parsedSlot.end,
+      capacity: this.selectedPartySize ?? 1, // Use selected party size as capacity
+      remainingCapacity: this.selectedPartySize ?? 1, // Initially, remaining capacity equals capacity
+      status: 'AVAILABLE', // Use AVAILABLE as the default status
+      event: { id: selectedEventId },
+    };
 
-    console.log('Sending booking data:', bookingData); // Log what you're sending
+    // First save the time slot
+    this.http.post<ITimeSlot>('api/time-slots', newTimeSlot).subscribe({
+      next: savedTimeSlot => {
+        console.log('Time slot created:', savedTimeSlot);
 
-    this.bookingService.create(bookingData).subscribe({
-      next: response => {
-        console.log('Booking submitted successfully!', response);
-        this.bookingError = null;
-        alert('Booking submitted successfully! Check console for details. Click OK to continue.');
-        // Don't refresh the page so console logs remain visible
-        // window.location.reload();
+        // Then create the booking with the saved time slot
+        const booking: NewBooking = {
+          id: null,
+          activityType: this.selectedActivity as keyof typeof ActivityType,
+          eventType: this.selectedEvent.toUpperCase() as keyof typeof EventType,
+          bookingDate: dayjs(this.selectedDate),
+          partySize: this.selectedPartySize ?? 1,
+          bookingStatus: 'CONFIRMED' as keyof typeof BookingStatus,
+          createdAt: dayjs(),
+          timeSlot: savedTimeSlot,
+          assignedAt: null,
+          bookedActivity: null,
+          bookingLocation: null,
+          creator: null,
+          activity: null,
+        };
+
+        this.bookingService.create(booking).subscribe({
+          next: response => {
+            console.log('Booking submitted successfully!', response);
+            this.bookingError = null;
+            alert('Booking submitted successfully!');
+          },
+          error: error => {
+            console.error('Error creating booking', error);
+            this.bookingError = error.error?.detail || error.error?.message || 'Failed to create booking';
+          },
+        });
       },
       error: error => {
-        console.error('Error creating booking', error);
-        // More detailed error message
-        if (error.error?.detail) {
-          this.bookingError = `Failed to create booking: ${error.error.detail}`;
-        } else if (error.error?.message) {
-          this.bookingError = `Failed to create booking: ${error.error.message}`;
-        } else {
-          this.bookingError = 'Failed to create booking. Please try again.';
-        }
+        console.error('Error creating time slot', error);
+        this.bookingError = `Failed to create time slot: ${error.error?.detail || error.error?.message || 'Unknown error'}`;
       },
     });
   }

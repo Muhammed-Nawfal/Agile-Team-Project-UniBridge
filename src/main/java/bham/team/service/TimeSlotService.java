@@ -82,13 +82,36 @@ public class TimeSlotService implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Generate TimeSlots for the next 7 days when the application starts
-        generateTimeSlotsForNextDays(7); // Adjust number of days as needed
+        // Comment out or remove this pre-generation
+        // generateTimeSlotsForNextDays(7);
     }
 
-    // Optional: Automatically run every day at 3 AM to generate TimeSlots for the next 90 days
-    @Scheduled(cron = "0 0 3 * * ?") // Every day at 3AM
-    public void dailyGenerateTimeSlots() {
-        generateTimeSlotsForNextDays(90); // Generate for the next 90 days
+    // Comment out or remove the scheduled task
+    // @Scheduled(cron = "0 0 3 * * ?")
+    // public void dailyGenerateTimeSlots() {
+    //     generateTimeSlotsForNextDays(90);
+    // }
+
+    // Add a new method to create a single time slot
+    public TimeSlot createTimeSlotIfNotExists(LocalDate date, Event event, Integer startHour, Integer endHour) {
+        // Check if a TimeSlot already exists
+        TimeSlot existingSlot = timeSlotRepository.findByDateAndEventAndStartHourAndEndHour(date, event, startHour, endHour).orElse(null);
+
+        if (existingSlot != null) {
+            return existingSlot;
+        }
+
+        // Create new TimeSlot
+        TimeSlot timeSlot = new TimeSlot();
+        timeSlot.setDate(date);
+        timeSlot.setStartHour(startHour);
+        timeSlot.setEndHour(endHour);
+        timeSlot.setCapacity(event.getCapacity() != null ? event.getCapacity() : event.getMaxSize());
+        timeSlot.setRemainingCapacity(timeSlot.getCapacity());
+        timeSlot.setStatus(AvailabilityStatus.AVAILABLE);
+        timeSlot.setEvent(event);
+
+        // Save and return the new TimeSlot
+        return timeSlotRepository.save(timeSlot);
     }
 }
