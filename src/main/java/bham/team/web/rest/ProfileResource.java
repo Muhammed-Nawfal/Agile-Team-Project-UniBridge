@@ -3,6 +3,7 @@ package bham.team.web.rest;
 import bham.team.domain.Profile;
 import bham.team.domain.enumeration.ActivityType;
 import bham.team.repository.ProfileRepository;
+import bham.team.security.SecurityUtils;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -248,5 +249,15 @@ public class ProfileResource {
 
         List<Profile> profiles = profileRepository.findByPreferredActivity(activityType);
         return ResponseEntity.ok(profiles);
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<Profile> getMyProfile() {
+        LOG.debug("REST request to get current user's profile");
+
+        return SecurityUtils.getCurrentUserLogin()
+            .flatMap(profileRepository::findByLogin)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 }

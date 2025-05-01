@@ -24,6 +24,7 @@ import { ActivityFormGroup, ActivityFormService } from './activity-form.service'
   standalone: true,
   selector: 'jhi-activity-update',
   templateUrl: './activity-update.component.html',
+  styleUrl: 'activity-update.component.scss',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class ActivityUpdateComponent implements OnInit {

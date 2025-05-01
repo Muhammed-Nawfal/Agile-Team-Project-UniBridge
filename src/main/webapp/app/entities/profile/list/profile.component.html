@@ -1,494 +1,63 @@
-<div>
-  <h2 id="page-heading" data-cy="ProfileHeading">
-    <span>Profiles</span>
+<!-- profile.component.html -->
+<div class="container mt-4">
+  <div *ngIf="showEditTip" class="alert alert-info alert-dismissible fade show" role="alert">
+    💡 <strong>Tip:</strong> You can edit your profile by clicking the <strong>Edit Profile</strong> button below.
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissTip()"></button>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body text-center">
+          <!-- Example: Profile Picture (safe navigation + fallback) -->
+          <img
+            *ngIf="profile?.profilePicture && profile?.profilePictureContentType"
+            [src]="'data:' + (profile?.profilePictureContentType || '') + ';base64,' + (profile?.profilePicture || '')"
+            class="rounded-circle mb-3"
+            alt="Profile Picture"
+            style="width: 120px; height: 120px; object-fit: cover"
+          />
 
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span>Refresh list</span>
-      </button>
+          <!-- Display Name -->
+          <h3>{{ profile?.firstName || 'Unknown' }} {{ profile?.lastName || 'User' }}</h3>
 
-      <button
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-profile"
-        [routerLink]="['/profile/new']"
-      >
-        <fa-icon icon="plus"></fa-icon>
-        <span>Create a new Profile</span>
-      </button>
+          <!-- Display Username -->
+          <p class="text-muted" *ngIf="profile?.login">&#64;{{ profile?.login }}</p>
+
+          <!-- Display Bio -->
+          <p *ngIf="hasBio" class="fst-italic">{{ profile!.bio }}</p>
+
+          <!-- Additional profile data -->
+          <ng-container *ngIf="profile">
+            <p><strong>Course:</strong> {{ profile?.course || 'Not specified' }} - Year {{ profile?.courseYear || 'N/A' }}</p>
+            <div class="d-flex flex-wrap justify-content-center mt-3 gap-2">
+              <ng-container *ngIf="profile?.studyTime">
+                <span class="badge bg-success p-2">Study Time: {{ profile?.studyTime }}</span>
+              </ng-container>
+              <ng-container *ngIf="profile?.gymSkill">
+                <span class="badge bg-primary p-2">Gym Skill: {{ profile?.gymSkill }}</span>
+              </ng-container>
+              <ng-container *ngIf="profile?.gymTime">
+                <span class="badge bg-primary p-2">Gym Time: {{ profile?.gymTime }}</span>
+              </ng-container>
+              <ng-container *ngIf="profile?.gymLocation">
+                <span class="badge bg-primary p-2">Gym Location: {{ profile?.gymLocation }}</span>
+              </ng-container>
+              <ng-container *ngIf="profile?.sports">
+                <span class="badge bg-dark p-2">Sports: {{ profile?.sports }}</span>
+              </ng-container>
+              <ng-container *ngIf="profile?.sportsSkill">
+                <span class="badge bg-dark p-2">Sports Skill: {{ profile?.sportsSkill }}</span>
+              </ng-container>
+            </div>
+          </ng-container>
+
+          <!-- Edit Profile Button -->
+          <div class="mt-4" *ngIf="profile?.id">
+            <a class="btn btn-outline-primary" [routerLink]="['/profile/my/edit']"> Edit Profile </a>
+            <a class="btn btn-danger" [routerLink]="['/profile', profile!.id, 'deleteForm']"> Delete Profile </a>
+          </div>
+        </div>
+      </div>
     </div>
-  </h2>
-
-  <jhi-alert-error></jhi-alert-error>
-
-  <jhi-alert></jhi-alert>
-
-  @if (profiles?.length === 0) {
-    <div class="alert alert-warning" id="no-result">
-      <span>No Profiles found</span>
-    </div>
-  }
-
-  @if (profiles && profiles.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
-        <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="login">
-              <div class="d-flex">
-                <span>Login</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="firstName">
-              <div class="d-flex">
-                <span>First Name</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="lastName">
-              <div class="d-flex">
-                <span>Last Name</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="bio">
-              <div class="d-flex">
-                <span>Bio</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="profilePicture">
-              <div class="d-flex">
-                <span>Profile Picture</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="course">
-              <div class="d-flex">
-                <span>Course</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="courseYear">
-              <div class="d-flex">
-                <span>Course Year</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="university">
-              <div class="d-flex">
-                <span>University</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="gymSkill">
-              <div class="d-flex">
-                <span>Gym Skill</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="gymLocation">
-              <div class="d-flex">
-                <span>Gym Location</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="gymTime">
-              <div class="d-flex">
-                <span>Gym Time</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="studyTime">
-              <div class="d-flex">
-                <span>Study Time</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="sports">
-              <div class="d-flex">
-                <span>Sports</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="sportsSkill">
-              <div class="d-flex">
-                <span>Sports Skill</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="sportsTime">
-              <div class="d-flex">
-                <span>Sports Time</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="preferredSociety">
-              <div class="d-flex">
-                <span>Preferred Society</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="preferredEvents">
-              <div class="d-flex">
-                <span>Preferred Events</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="eventsTime">
-              <div class="d-flex">
-                <span>Events Time</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="preferredActivities">
-              <div class="d-flex">
-                <span>Preferred Activities</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="user.id">
-              <div class="d-flex">
-                <span>User</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="messageThread.id">
-              <div class="d-flex">
-                <span>Message Thread</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (profile of profiles; track trackId(profile)) {
-            <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/profile', profile.id, 'view']">{{ profile.id }}</a>
-              </td>
-              <td>{{ profile.login }}</td>
-              <td>{{ profile.firstName }}</td>
-              <td>{{ profile.lastName }}</td>
-              <td>{{ profile.bio }}</td>
-              <td>
-                @if (profile.profilePicture) {
-                  <a (click)="openFile(profile.profilePicture, profile.profilePictureContentType)">
-                    <img
-                      [src]="'data:' + profile.profilePictureContentType + ';base64,' + profile.profilePicture"
-                      style="max-height: 30px"
-                      alt="profile"
-                    />
-                  </a>
-                  <span>{{ profile.profilePictureContentType }}, {{ byteSize(profile.profilePicture) }}</span>
-                }
-              </td>
-              <td>
-                {{
-                  {
-                    null: '',
-                    COMPUTER_SCIENCE: 'COMPUTER_SCIENCE',
-                    ECONOMICS: 'ECONOMICS',
-                    PSYCHOLOGY: 'PSYCHOLOGY',
-                    MATHS: 'MATHS',
-                    ENGLISH: 'ENGLISH',
-                    ENGINEERING: 'ENGINEERING',
-                    PHYSICS: 'PHYSICS',
-                    CHEMISTRY: 'CHEMISTRY',
-                    BIOLOGY: 'BIOLOGY',
-                    MEDICINE: 'MEDICINE',
-                    LAW: 'LAW',
-                    BUSINESS: 'BUSINESS',
-                    ART: 'ART',
-                    MUSIC: 'MUSIC',
-                    HISTORY: 'HISTORY',
-                    GEOGRAPHY: 'GEOGRAPHY',
-                    PHILOSOPHY: 'PHILOSOPHY',
-                    LINGUISTICS: 'LINGUISTICS',
-                    SOCIOLOGY: 'SOCIOLOGY',
-                    POLITICAL_SCIENCE: 'POLITICAL_SCIENCE',
-                    ARCHITECTURE: 'ARCHITECTURE',
-                    EDUCATION: 'EDUCATION',
-                  }[profile.course ?? 'null']
-                }}
-              </td>
-              <td>{{ profile.courseYear }}</td>
-              <td>
-                {{
-                  {
-                    null: '',
-                    UNIVERSITY_OF_BIRMINGHAM: 'UNIVERSITY_OF_BIRMINGHAM',
-                    ASTON_UNIVERSITY: 'ASTON_UNIVERSITY',
-                    BIRMINGHAM_CITY_UNIVERSITY: 'BIRMINGHAM_CITY_UNIVERSITY',
-                    UNIVERSITY_OF_NOTTINGHAM: 'UNIVERSITY_OF_NOTTINGHAM',
-                  }[profile.university ?? 'null']
-                }}
-              </td>
-              <td>
-                {{
-                  { null: '', NOVICE: 'NOVICE', INTERMEDIATE: 'INTERMEDIATE', CONFIDENT: 'CONFIDENT', PROFESSIONAL: 'PROFESSIONAL' }[
-                    profile.gymSkill ?? 'null'
-                  ]
-                }}
-              </td>
-              <td>
-                {{
-                  { null: '', THE_GYM_SELLY_OAK: 'THE_GYM_SELLY_OAK', TIVERTON: 'TIVERTON', PUREGYM_FIVE_WAYS: 'PUREGYM_FIVE_WAYS' }[
-                    profile.gymLocation ?? 'null'
-                  ]
-                }}
-              </td>
-              <td>
-                {{
-                  {
-                    null: '',
-                    EARLY_MORNING: 'EARLY_MORNING',
-                    MORNING: 'MORNING',
-                    AFTERNOON: 'AFTERNOON',
-                    EVENING: 'EVENING',
-                    NIGHT: 'NIGHT',
-                    LATE_NIGHT: 'LATE_NIGHT',
-                  }[profile.gymTime ?? 'null']
-                }}
-              </td>
-              <td>
-                {{
-                  {
-                    null: '',
-                    EARLY_MORNING: 'EARLY_MORNING',
-                    MORNING: 'MORNING',
-                    AFTERNOON: 'AFTERNOON',
-                    EVENING: 'EVENING',
-                    NIGHT: 'NIGHT',
-                    LATE_NIGHT: 'LATE_NIGHT',
-                  }[profile.studyTime ?? 'null']
-                }}
-              </td>
-              <td>
-                {{
-                  {
-                    null: '',
-                    FOOTBALL: 'FOOTBALL',
-                    CRICKET: 'CRICKET',
-                    BADMINTON: 'BADMINTON',
-                    TENNIS: 'TENNIS',
-                    NETBALL: 'NETBALL',
-                    BASKETBALL: 'BASKETBALL',
-                    VOLLEYBALL: 'VOLLEYBALL',
-                    TABLE_TENNIS: 'TABLE_TENNIS',
-                    BASEBALL: 'BASEBALL',
-                    RUGBY: 'RUGBY',
-                    HOCKEY: 'HOCKEY',
-                    SWIMMING: 'SWIMMING',
-                    ATHLETICS: 'ATHLETICS',
-                    GOLF: 'GOLF',
-                    BOXING: 'BOXING',
-                    MARTIAL_ARTS: 'MARTIAL_ARTS',
-                    CYCLING: 'CYCLING',
-                    SKIING: 'SKIING',
-                    SKATEBOARDING: 'SKATEBOARDING',
-                    ESPORTS: 'ESPORTS',
-                  }[profile.sports ?? 'null']
-                }}
-              </td>
-              <td>
-                {{
-                  { null: '', NOVICE: 'NOVICE', INTERMEDIATE: 'INTERMEDIATE', CONFIDENT: 'CONFIDENT', PROFESSIONAL: 'PROFESSIONAL' }[
-                    profile.sportsSkill ?? 'null'
-                  ]
-                }}
-              </td>
-              <td>
-                {{
-                  {
-                    null: '',
-                    EARLY_MORNING: 'EARLY_MORNING',
-                    MORNING: 'MORNING',
-                    AFTERNOON: 'AFTERNOON',
-                    EVENING: 'EVENING',
-                    NIGHT: 'NIGHT',
-                    LATE_NIGHT: 'LATE_NIGHT',
-                  }[profile.sportsTime ?? 'null']
-                }}
-              </td>
-              <td>
-                {{
-                  {
-                    null: '',
-                    ABACUS: 'ABACUS',
-                    ACCOUNTING_AND_FINANCE: 'ACCOUNTING_AND_FINANCE',
-                    AFRICAN_AND_CARIBBEAN: 'AFRICAN_AND_CARIBBEAN',
-                    ALGOSOC: 'ALGOSOC',
-                    ARAB: 'ARAB',
-                    AZERBAIJANI: 'AZERBAIJANI',
-                    BAKING: 'BAKING',
-                    BALADS: 'BALADS',
-                    BENGALI: 'BENGALI',
-                    BIOSOC: 'BIOSOC',
-                    BIRMINGHAM_BLACK_AND_ETHNIC_MINORITY_SCIENTISTS: 'BIRMINGHAM_BLACK_AND_ETHNIC_MINORITY_SCIENTISTS',
-                    BLACK_LAW_STUDENTS_SOCIETY: 'BLACK_LAW_STUDENTS_SOCIETY',
-                    CANADIAN_SOCIETY: 'CANADIAN_SOCIETY',
-                    CARIBBEAN_UNION: 'CARIBBEAN_UNION',
-                    CATHOLIC: 'CATHOLIC',
-                    CHESS: 'CHESS',
-                    CIVIL_ENGINEERING: 'CIVIL_ENGINEERING',
-                    COMPUTER_SCIENCE_SOCIETY: 'COMPUTER_SCIENCE_SOCIETY',
-                    CRAFT: 'CRAFT',
-                    CRIMINOLOGY: 'CRIMINOLOGY',
-                    CULTURAL_ARTS: 'CULTURAL_ARTS',
-                    DARTS_SOCIETY: 'DARTS_SOCIETY',
-                    DEBATING: 'DEBATING',
-                    DENTAL_SOCIETY: 'DENTAL_SOCIETY',
-                    EAST_AFRICAN: 'EAST_AFRICAN',
-                    EGYPTIAN: 'EGYPTIAN',
-                    ELECTRONIC_AND_ELECTRICAL_ENGINEERING: 'ELECTRONIC_AND_ELECTRICAL_ENGINEERING',
-                    ESPORTS: 'ESPORTS',
-                    FILIPINO: 'FILIPINO',
-                    FILMSOC: 'FILMSOC',
-                    FINTECH: 'FINTECH',
-                    FRIENDS_OF_PALESTINE: 'FRIENDS_OF_PALESTINE',
-                    GAMES_DEVELOPMENT: 'GAMES_DEVELOPMENT',
-                    GERMAN: 'GERMAN',
-                    HENNA_SOCIETY: 'HENNA_SOCIETY',
-                    HIDE_AND_SEEK_SOCIETY: 'HIDE_AND_SEEK_SOCIETY',
-                    HINDU: 'HINDU',
-                    ICE_SKATING_SOCIETY: 'ICE_SKATING_SOCIETY',
-                    INDIAN: 'INDIAN',
-                    IRAQI: 'IRAQI',
-                    ISLAMIC: 'ISLAMIC',
-                    ITALIAN: 'ITALIAN',
-                    JAIN_SOCIETY: 'JAIN_SOCIETY',
-                    JAPAN_SOCIETY: 'JAPAN_SOCIETY',
-                    KICKBOXING: 'KICKBOXING',
-                    KOREA: 'KOREA',
-                    MALAYALEE: 'MALAYALEE',
-                    MALAYSIAN: 'MALAYSIAN',
-                    MATHSOC: 'MATHSOC',
-                    MEDTEC: 'MEDTEC',
-                    MIXED_MARTIAL_ARTS: 'MIXED_MARTIAL_ARTS',
-                    MUAY_THAI_BOXING: 'MUAY_THAI_BOXING',
-                    NEPALESE: 'NEPALESE',
-                    NERDSOC: 'NERDSOC',
-                    NORTH_AFRICAN: 'NORTH_AFRICAN',
-                    OMANI_SOCIETY: 'OMANI_SOCIETY',
-                    PAKISTAN: 'PAKISTAN',
-                    POWERLIFTING: 'POWERLIFTING',
-                    PSYCHOLOGY: 'PSYCHOLOGY',
-                    PUNJABI: 'PUNJABI',
-                    SAUDI: 'SAUDI',
-                    SHOOTING: 'SHOOTING',
-                    SIKH: 'SIKH',
-                    SINGAPORE_SOCIETY: 'SINGAPORE_SOCIETY',
-                    SRI_LANKAN_SOCIETY: 'SRI_LANKAN_SOCIETY',
-                    SUDANESE_SOCIETY: 'SUDANESE_SOCIETY',
-                    TAMIL: 'TAMIL',
-                    TURKISH: 'TURKISH',
-                    UKRAINIAN_SOCIETY: 'UKRAINIAN_SOCIETY',
-                    VIDEO_GAMES_SOCIETY: 'VIDEO_GAMES_SOCIETY',
-                    VIETNAMESE: 'VIETNAMESE',
-                    WAYFARERS_HIKING_SOCIETY: 'WAYFARERS_HIKING_SOCIETY',
-                    WELSH: 'WELSH',
-                    WOMEN_IN_LAW: 'WOMEN_IN_LAW',
-                    WOMEN_IN_MEDICINE: 'WOMEN_IN_MEDICINE',
-                    OTHER: 'OTHER',
-                  }[profile.preferredSociety ?? 'null']
-                }}
-              </td>
-              <td>
-                {{
-                  {
-                    null: '',
-                    GAMES_NIGHT: 'GAMES_NIGHT',
-                    MEET_AND_GREET: 'MEET_AND_GREET',
-                    SPORTS_NIGHT: 'SPORTS_NIGHT',
-                    CLUBBING: 'CLUBBING',
-                    RELIGIOUS: 'RELIGIOUS',
-                    ACADEMIC: 'ACADEMIC',
-                  }[profile.preferredEvents ?? 'null']
-                }}
-              </td>
-              <td>
-                {{
-                  {
-                    null: '',
-                    EARLY_MORNING: 'EARLY_MORNING',
-                    MORNING: 'MORNING',
-                    AFTERNOON: 'AFTERNOON',
-                    EVENING: 'EVENING',
-                    NIGHT: 'NIGHT',
-                    LATE_NIGHT: 'LATE_NIGHT',
-                  }[profile.eventsTime ?? 'null']
-                }}
-              </td>
-              <td>
-                {{
-                  { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[
-                    profile.preferredActivities ?? 'null'
-                  ]
-                }}
-              </td>
-              <td>
-                {{ profile.user?.id }}
-              </td>
-              <td>
-                @for (messageThread of profile.messageThreads; track $index; let last = $last) {
-                  <span>
-                    <a class="form-control-static" [routerLink]="['/message-thread', messageThread.id, 'view']">{{ messageThread.id }}</a
-                    >{{ last ? '' : ', ' }}
-                  </span>
-                }
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
-                  <a [routerLink]="['/profile', profile.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                    <fa-icon icon="eye"></fa-icon>
-                    <span class="d-none d-md-inline">View</span>
-                  </a>
-
-                  <a [routerLink]="['/profile', profile.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline">Edit</span>
-                  </a>
-
-                  <button type="submit" (click)="delete(profile)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline">Delete</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
+  </div>
 </div>

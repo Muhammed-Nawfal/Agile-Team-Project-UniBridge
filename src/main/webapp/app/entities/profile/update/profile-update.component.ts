@@ -1,19 +1,15 @@
-import { Component, ElementRef, OnInit, inject } from '@angular/core';
-import { HttpResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { finalize, map } from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { finalize } from 'rxjs/operators';
+import { FormBuilder } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
-import SharedModule from 'app/shared/shared.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { IProfile, NewProfile } from '../profile.model';
+import { ProfileFormService, ProfileFormGroup } from './profile-form.service';
+import { ProfileService } from '../service/profile.service';
+import { DataUtils } from 'app/core/util/data-util.service';
 
-import { AlertError } from 'app/shared/alert/alert-error.model';
-import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
-import { DataUtils, FileLoadError } from 'app/core/util/data-util.service';
-import { IUser } from 'app/entities/user/user.model';
-import { UserService } from 'app/entities/user/service/user.service';
-import { IMessageThread } from 'app/entities/message-thread/message-thread.model';
-import { MessageThreadService } from 'app/entities/message-thread/service/message-thread.service';
 import { Course } from 'app/entities/enumerations/course.model';
 import { University } from 'app/entities/enumerations/university.model';
 import { Skill } from 'app/entities/enumerations/skill.model';
@@ -23,19 +19,20 @@ import { Sports } from 'app/entities/enumerations/sports.model';
 import { Society } from 'app/entities/enumerations/society.model';
 import { PreferredEvents } from 'app/entities/enumerations/preferred-events.model';
 import { ActivityType } from 'app/entities/enumerations/activity-type.model';
-import { ProfileService } from '../service/profile.service';
-import { IProfile } from '../profile.model';
-import { ProfileFormGroup, ProfileFormService } from './profile-form.service';
 
 @Component({
-  standalone: true,
   selector: 'jhi-profile-update',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
   templateUrl: './profile-update.component.html',
-  imports: [SharedModule, FormsModule, ReactiveFormsModule],
+  styleUrls: ['./profile-update.component.scss'],
 })
 export class ProfileUpdateComponent implements OnInit {
   isSaving = false;
   profile: IProfile | null = null;
+  showUpdateTip = true;
+  editForm = this.profileFormService.createProfileFormGroup();
+  // enumerations
   courseValues = Object.keys(Course);
   universityValues = Object.keys(University);
   skillValues = Object.keys(Skill);
@@ -46,60 +43,28 @@ export class ProfileUpdateComponent implements OnInit {
   preferredEventsValues = Object.keys(PreferredEvents);
   activityTypeValues = Object.keys(ActivityType);
 
-  usersSharedCollection: IUser[] = [];
-  messageThreadsSharedCollection: IMessageThread[] = [];
+  // Keep a reference to the user field so it can be re-attached on save
+  private originalUser: IProfile['user'] | null | undefined = null;
 
-  protected dataUtils = inject(DataUtils);
-  protected eventManager = inject(EventManager);
-  protected profileService = inject(ProfileService);
-  protected profileFormService = inject(ProfileFormService);
-  protected userService = inject(UserService);
-  protected messageThreadService = inject(MessageThreadService);
-  protected elementRef = inject(ElementRef);
-  protected activatedRoute = inject(ActivatedRoute);
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  editForm: ProfileFormGroup = this.profileFormService.createProfileFormGroup();
-
-  compareUser = (o1: IUser | null, o2: IUser | null): boolean => this.userService.compareUser(o1, o2);
-
-  compareMessageThread = (o1: IMessageThread | null, o2: IMessageThread | null): boolean =>
-    this.messageThreadService.compareMessageThread(o1, o2);
+  constructor(
+    protected profileService: ProfileService,
+    protected profileFormService: ProfileFormService,
+    protected activatedRoute: ActivatedRoute,
+    protected router: Router,
+    protected fb: FormBuilder,
+    protected dataUtils: DataUtils,
+  ) {}
 
   ngOnInit(): void {
+    // Handle one-time tip for the current session
+    const tipDismissed = sessionStorage.getItem('updateProfileTipDismissed');
+    this.showUpdateTip = !tipDismissed;
+
     this.activatedRoute.data.subscribe(({ profile }) => {
       this.profile = profile;
-      if (profile) {
-        this.updateForm(profile);
-      }
-
-      this.loadRelationshipsOptions();
+      this.originalUser = profile.user; // Preserve user
+      this.updateForm(profile);
     });
-  }
-
-  byteSize(base64String: string): string {
-    return this.dataUtils.byteSize(base64String);
-  }
-
-  openFile(base64String: string, contentType: string | null | undefined): void {
-    this.dataUtils.openFile(base64String, contentType);
-  }
-
-  setFileData(event: Event, field: string, isImage: boolean): void {
-    this.dataUtils.loadFileToForm(event, this.editForm, field, isImage).subscribe({
-      error: (err: FileLoadError) =>
-        this.eventManager.broadcast(new EventWithContent<AlertError>('teamproject24App.error', { message: err.message })),
-    });
-  }
-
-  clearInputImage(field: string, fieldContentType: string, idInput: string): void {
-    this.editForm.patchValue({
-      [field]: null,
-      [fieldContentType]: null,
-    });
-    if (idInput && this.elementRef.nativeElement.querySelector(`#${idInput}`)) {
-      this.elementRef.nativeElement.querySelector(`#${idInput}`).value = null;
-    }
   }
 
   previousState(): void {
@@ -109,61 +74,70 @@ export class ProfileUpdateComponent implements OnInit {
   save(): void {
     this.isSaving = true;
     const profile = this.profileFormService.getProfile(this.editForm);
+    profile.user = this.originalUser; // Reattach user before saving
+
     if (profile.id !== null) {
-      this.subscribeToSaveResponse(this.profileService.update(profile));
+      this.profileService
+        .update(profile)
+        .pipe(finalize(() => (this.isSaving = false)))
+        .subscribe({
+          next: () => this.onSaveSuccess(),
+          error: () => this.onSaveError(),
+        });
     } else {
-      this.subscribeToSaveResponse(this.profileService.create(profile));
+      this.profileService
+        .create(profile)
+        .pipe(finalize(() => (this.isSaving = false)))
+        .subscribe({
+          next: () => this.onSaveSuccess(),
+          error: () => this.onSaveError(),
+        });
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<HttpResponse<IProfile>>): void {
-    result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
-      next: () => this.onSaveSuccess(),
-      error: () => this.onSaveError(),
+  clearInputImage(field: string, contentTypeField: string, inputId: string): void {
+    this.editForm.patchValue({
+      [field]: null,
+      [contentTypeField]: null,
     });
+    const input = document.getElementById(inputId) as HTMLInputElement;
+    input.value = '';
+  }
+
+  setFileData(event: Event, field: string, isImage: boolean): void {
+    const fileInput = event.target as HTMLInputElement;
+    if (fileInput.files?.length) {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        const base64Data = (e.target?.result as string).split(',')[1];
+        this.editForm.patchValue({
+          [field]: base64Data,
+          [`${field}ContentType`]: file.type,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  checkEditTip(): void {
+    const tipDismissed = localStorage.getItem('profileEditTipDismissed');
+    this.showUpdateTip = !tipDismissed;
+  }
+
+  dismissUpdateTip(): void {
+    this.showUpdateTip = false;
   }
 
   protected onSaveSuccess(): void {
-    this.previousState();
+    this.router.navigate(['/profile']);
   }
 
   protected onSaveError(): void {
-    // Api for inheritance.
-  }
-
-  protected onSaveFinalize(): void {
-    this.isSaving = false;
+    // Optionally display an error alert here
   }
 
   protected updateForm(profile: IProfile): void {
-    this.profile = profile;
-    this.profileFormService.resetForm(this.editForm, profile);
-
-    this.usersSharedCollection = this.userService.addUserToCollectionIfMissing<IUser>(this.usersSharedCollection, profile.user);
-    this.messageThreadsSharedCollection = this.messageThreadService.addMessageThreadToCollectionIfMissing<IMessageThread>(
-      this.messageThreadsSharedCollection,
-      ...(profile.messageThreads ?? []),
-    );
-  }
-
-  protected loadRelationshipsOptions(): void {
-    this.userService
-      .query()
-      .pipe(map((res: HttpResponse<IUser[]>) => res.body ?? []))
-      .pipe(map((users: IUser[]) => this.userService.addUserToCollectionIfMissing<IUser>(users, this.profile?.user)))
-      .subscribe((users: IUser[]) => (this.usersSharedCollection = users));
-
-    this.messageThreadService
-      .query()
-      .pipe(map((res: HttpResponse<IMessageThread[]>) => res.body ?? []))
-      .pipe(
-        map((messageThreads: IMessageThread[]) =>
-          this.messageThreadService.addMessageThreadToCollectionIfMissing<IMessageThread>(
-            messageThreads,
-            ...(this.profile?.messageThreads ?? []),
-          ),
-        ),
-      )
-      .subscribe((messageThreads: IMessageThread[]) => (this.messageThreadsSharedCollection = messageThreads));
+    this.editForm = this.profileFormService.createProfileFormGroup(profile);
   }
 }

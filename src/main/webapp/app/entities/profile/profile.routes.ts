@@ -9,7 +9,7 @@ export const profileRoutes: Routes = [
     loadComponent: () => import('./detail/profile-detail.component').then(m => m.ProfileDetailComponent),
   },
   {
-    path: ':id/edit',
+    path: 'my/edit',
     resolve: { profile: profileResolve },
     loadComponent: () => import('./update/profile-update.component').then(m => m.ProfileUpdateComponent),
   },

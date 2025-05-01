@@ -19,7 +19,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
      */
     @Query("SELECT DISTINCT profile FROM Profile profile " + "WHERE profile.preferredActivities = :activityType")
     List<Profile> findByPreferredActivity(@Param("activityType") ActivityType activityType);
-
+  
     /**
      * Find the profile for the currently logged-in user
      */

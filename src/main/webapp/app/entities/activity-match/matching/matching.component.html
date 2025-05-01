@@ -1,239 +1,125 @@
-<body>
-  <style>
-    .loading-spinner {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 300px;
+<div class="container py-4">
+  <!-- Header & Filters -->
+  <h1 class="text-center mb-4">WHO IS YOUR {{ buddyType.toUpperCase() }} BUDDY?</h1>
 
-      .spinner {
-        border: 4px solid rgba(0, 0, 0, 0.1);
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        border-left-color: #09f;
-        animation: spin 1s linear infinite;
-      }
+  <form class="row g-3 align-items-end mb-5" (submit)="applyFilters($event)" #f="ngForm">
+    <div class="col-sm-4">
+      <label class="form-label">{{ getFirstFilterLabel() }}</label>
+      <select class="form-select" name="filter1" [(ngModel)]="filter1Value" required>
+        <option *ngFor="let o of filter1Options" [value]="o.value">{{ o.label }}</option>
+      </select>
+    </div>
+    <div class="col-sm-4">
+      <label class="form-label">{{ getSecondFilterLabel() }}</label>
+      <select class="form-select" name="filter2" [(ngModel)]="filter2Value" required>
+        <option *ngFor="let o of filter2Options" [value]="o.value">{{ o.label }}</option>
+      </select>
+    </div>
+    <div class="col-sm-4">
+      <label class="form-label">{{ getTimingLabel() }}</label>
+      <select class="form-select" name="filter3" [(ngModel)]="filter3Value" required>
+        <option *ngFor="let o of filter3Options" [value]="o.value">{{ o.label }}</option>
+      </select>
+    </div>
 
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-    }
-    .profile-buttons {
-      display: flex;
-      flex-direction: row;
-      margin-top: 20px;
-      gap: 10px;
-      width: 100%;
-      justify-content: right;
-      position: absolute;
-      top: 80%;
-      right: 15%;
-    }
-
-    .button {
-      display: inline-block;
-      padding: 8px 15px;
-      border-radius: 5px;
-      font-weight: bold;
-      font-size: 20px;
-      text-align: center;
-      justify-content: center;
-    }
-
-    .view-profile {
-      background: linear-gradient(to right, #4a5de8, #7c4dff);
-      color: white;
-    }
-
-    .follow {
-      background-color: #fff;
-      color: #333;
-      border: 1px solid #ccc;
-    }
-
-    .button:hover {
-      background: black;
-      color: white;
-    }
-
-    .no-more-profiles {
-      text-align: center;
-      padding: 40px;
-      background: #f9f9f9;
-      border-radius: 8px;
-      margin: 20px 0;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-
-      h3 {
-        margin-bottom: 10px;
-        color: #555;
-      }
-    }
-
-    .popup {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #4caf50;
-      color: white;
-      padding: 16px;
-      border-radius: 4px;
-      text-align: center;
-      z-index: 1000;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      opacity: 0;
-      visibility: hidden;
-      transition:
-        opacity 0.3s,
-        visibility 0.3s;
-    }
-
-    .popup.show {
-      opacity: 1;
-      visibility: visible;
-    }
-  </style>
-  <header>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <h1>WHO IS YOUR {{ buddyType.toUpperCase() }} BUDDY?</h1>
-  </header>
-
-  <!-- Filters Form -->
-  <form id="{{ buddyType }}-buddy-filters" (submit)="applyFilters($event)">
-    <div class="filter-group-container">
-      <h2>Filters</h2>
-      <div class="filter-group">
-        <label for="filter1">{{ getLocationLabel() }}</label>
-        <select id="filter1" name="filter1" [(ngModel)]="filter1Value">
-          <option *ngFor="let option of filter1Options" [value]="option.value">{{ option.label }}</option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label for="filter2">{{ getSkillLabel() }}</label>
-        <select id="filter2" name="filter2" [(ngModel)]="filter2Value">
-          <option *ngFor="let option of filter2Options" [value]="option.value">{{ option.label }}</option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label for="filter3">{{ getTimingLabel() }}</label>
-        <select id="filter3" name="filter3" [(ngModel)]="filter3Value">
-          <option *ngFor="let option of filter3Options" [value]="option.value">{{ option.label }}</option>
-        </select>
-      </div>
-
-      <div class="filter-actions">
-        <button type="submit" class="btn btn-primary">Apply Filters</button>
-        <button type="button" class="btn btn-secondary" (click)="resetFilters()">Reset Filters</button>
-      </div>
+    <div class="col-12 text-center mt-3">
+      <button type="submit" class="btn btn-primary me-2">Apply Filters</button>
+      <button type="button" class="btn btn-outline-secondary" (click)="resetFilters()">Reset</button>
     </div>
   </form>
 
-  <!-- Loading Indicator -->
-  <div *ngIf="isLoading" class="loading-spinner">
-    <div class="spinner"></div>
-    <p>Loading buddies...</p>
-  </div>
-
-  <!-- Error Message -->
-  <div *ngIf="errorMessage" class="error-message">
-    <p>{{ errorMessage }}</p>
-  </div>
-
-  <!-- No More Profiles Message -->
-  <div *ngIf="noMoreProfiles && !isLoading" class="no-more-profiles">
-    <h3>No more {{ buddyType }} buddies available</h3>
-    <p>Check back later or try different filters.</p>
-  </div>
-
-  <!-- Main content area showing buddy profiles -->
-  <div class="main-contents" *ngIf="currentProfile && !isLoading && !noMoreProfiles">
-    <!-- Accept/reject swipe-style buttons -->
-    <div class="selection-buttons">
-      <div class="select-button accept">
-        <button (click)="acceptProfile()">Accept</button>
-      </div>
-      <div class="select-button reject">
-        <button (click)="rejectProfile()">Reject</button>
-      </div>
+  <!-- Loading / Empty / Error States -->
+  <div *ngIf="isLoading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading…</span>
     </div>
+    <p class="mt-2 text-muted">Loading buddies…</p>
+  </div>
 
-    <!-- Profile card for a potential buddy -->
-    <div class="card">
-      <!-- Profile image -->
-      <img [src]="currentProfile" alt="🙂" class="image" />
-      <div class="card-content">
-        <div class="name">{{ currentProfile.firstName || 'Alice' }}</div>
-        <div class="card-details">
-          <!--        <p>{{ currentProfile.bio }}</p>-->
-          <p>{{ currentProfile.course }}</p>
-          <p>Year {{ currentProfile.courseYear }}</p>
+  <div *ngIf="errorMessage" class="alert alert-danger text-center">
+    {{ errorMessage }}
+  </div>
 
-          <!-- Dynamic information section that changes based on buddy type -->
-          <div class="other-details">
-            <div [class]="buddyType + '-info'">
-              <!-- Gym-specific info that only appears when buddyType is 'gym' -->
-              <ng-container *ngIf="buddyType === ActivityType.GYM">
-                <p>{{ currentProfile.gymLocation }}</p>
-                <p>{{ currentProfile.gymTime }}</p>
-                <p>{{ currentProfile.gymSkill }}</p>
-              </ng-container>
+  <div *ngIf="noMoreProfiles && !isLoading" class="alert alert-secondary text-center">
+    <h5>Nothing more here!</h5>
+    <p>Try different filters or check back later.</p>
+  </div>
 
-              <!-- Study-specific info that only appears when buddyType is 'study' -->
-              <ng-container *ngIf="buddyType === ActivityType.ACADEMIC">
-                <p>Year {{ currentProfile.courseYear }}</p>
-                <p>{{ currentProfile.studyTime }}</p>
-              </ng-container>
+  <!-- Swipe‐style Profile Card -->
+  <div *ngIf="currentProfile && !isLoading && !noMoreProfiles" class="swipe-container">
+    <div class="card-wrapper">
+      <!-- Reject button -->
+      <button class="btn-swipe reject" (click)="rejectProfile()" aria-label="Reject">
+        <i class="fas fa-times fa-lg"></i>
+      </button>
 
-              <!-- Sports-specific info that only appears when buddyType is 'sports' -->
-              <ng-container *ngIf="buddyType === ActivityType.SPORTS">
-                <p>{{ currentProfile.sports }}</p>
-                <p>{{ currentProfile.sportsTime }}</p>
-                <p>{{ currentProfile.sportsSkill }}</p>
-              </ng-container>
-
-              <!-- Events-specific info that only appears when buddyType is 'events' -->
-              <ng-container *ngIf="buddyType === ActivityType.SOCIAL">
-                <p>{{ currentProfile.preferredSociety }}</p>
-                <p>{{ currentProfile.preferredEvents }}</p>
-                <p>{{ currentProfile.eventsTime }}</p>
-              </ng-container>
+      <!-- Main card -->
+      <div class="card card-large shadow">
+        <div class="card-body text-center d-flex flex-column align-items-center justify-content-center">
+          <!-- Avatar or Initials -->
+          <ng-container *ngIf="currentProfile.profilePicture; else initials">
+            <img [src]="currentProfile.profilePicture" alt="avatar" class="avatar-lg rounded-circle border" />
+          </ng-container>
+          <ng-template #initials>
+            <div class="avatar-lg initials rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center">
+              {{ getInitials(currentProfile.firstName || ' ') }}
             </div>
+          </ng-template>
+
+          <!-- Name & Meta -->
+          <h5 class="mt-3 mb-1">{{ currentProfile.firstName }}</h5>
+          <p class="text-muted small mb-2">{{ currentProfile.course }} · Year {{ currentProfile.courseYear }}</p>
+
+          <!-- Badges -->
+          <div class="badges mb-2">
+            <span class="badge bg-light text-dark me-1" *ngIf="buddyType === ActivityType.SOCIAL">
+              {{ currentProfile.preferredSociety }}
+            </span>
+            <span class="badge bg-light text-dark me-1" *ngIf="buddyType === ActivityType.SOCIAL">
+              {{ currentProfile.preferredEvents }}
+            </span>
+            <span class="badge bg-light text-dark" *ngIf="buddyType === ActivityType.SOCIAL">
+              {{ currentProfile.eventsTime }}
+            </span>
+            <!-- add other buddyType badges here -->
           </div>
         </div>
       </div>
-    </div>
 
-    <div id="followPopup" class="popup">Follow request sent!</div>
+      <!-- Accept button -->
+      <button class="btn-swipe accept" (click)="acceptProfile()" aria-label="Accept">
+        <i class="fas fa-check fa-lg"></i>
+      </button>
 
-    <!-- Your profile buttons section might look like this -->
-
-    <!-- Buttons to view profile or follow this buddy -->
-    <div class="profile-buttons">
-      <a (click)="navigateToProfile()" class="button view-profile">View Profile</a>
-      <a (click)="followUser()" class="button follow">Follow</a>
-    </div>
-
-    <!-- Ratings section showing current rating and link to detailed ratings -->
-    <div class="rating-section">
-      <div class="star-rating">
-        <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
-          <span [class]="star <= 4 ? 'star-filled' : 'star-empty'">★</span>
-        </ng-container>
-      </div>
-      <!-- Link to view detailed ratings -->
-      <div class="rating-details">
-        <a [routerLink]="['/ranking']" id="view-ratings">View detailed ratings</a>
+      <!-- Ratings & Actions (outside the card) -->
+      <div class="card-details d-flex justify-content-between align-items-center">
+        <div class="rating">
+          <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
+            <i class="fas fa-star" [class.text-warning]="star <= 4" [class.text-secondary]="star > 4"></i>
+          </ng-container>
+          <a routerLink="/ranking" class="ms-2 small text-decoration-underline"> View detailed ratings </a>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary btn-sm me-1" (click)="navigateToProfile()">View Profile</button>
+          <button class="btn btn-outline-primary btn-sm" (click)="followUser()">Follow</button>
+        </div>
       </div>
     </div>
   </div>
-</body>
+</div>
+
+<!-- Bootstrap Toast for “Follow request sent” -->
+<div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3">
+  <div
+    class="toast align-items-center text-white bg-success border-0"
+    role="alert"
+    [class.show]="showFollowPopup"
+    aria-live="assertive"
+    aria-atomic="true"
+  >
+    <div class="d-flex">
+      <div class="toast-body">Follow request sent!</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="showFollowPopup = false" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
