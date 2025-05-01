@@ -655,59 +655,83 @@ export class BookingComponent implements OnInit {
       return;
     }
 
-    const firstSelectedSlot = this.selectedTimeSlots[0];
-    const parsedSlot = this.parseTimeSlot(firstSelectedSlot);
     const selectedEventId = this.findEventIdByValue(this.selectedEvent);
+    const timeSlots: ITimeSlot[] = [];
+    let processedCount = 0;
 
-    // Create time slot first with required non-null fields
-    const newTimeSlot = {
-      date: dayjs(this.selectedDate),
-      startHour: parsedSlot.start,
-      endHour: parsedSlot.end,
-      capacity: this.selectedPartySize ?? 1, // Use selected party size as capacity
-      remainingCapacity: this.selectedPartySize ?? 1, // Initially, remaining capacity equals capacity
-      status: 'AVAILABLE', // Use AVAILABLE as the default status
-      event: { id: selectedEventId },
+    // First, create all time slots in the database
+    const createNextTimeSlot = (index: number): void => {
+      if (index >= this.selectedTimeSlots.length) {
+        // All time slots have been created, now create a single booking
+        if (timeSlots.length > 0) {
+          // Create a booking with the first time slot
+          const booking: NewBooking = {
+            id: null,
+            activityType: this.selectedActivity as keyof typeof ActivityType,
+            eventType: this.selectedEvent.toUpperCase() as keyof typeof EventType,
+            bookingDate: dayjs(this.selectedDate),
+            partySize: this.selectedPartySize ?? 1,
+            bookingStatus: 'CONFIRMED' as keyof typeof BookingStatus,
+            createdAt: dayjs(),
+            timeSlot: timeSlots[0], // Reference the first time slot
+            assignedAt: null,
+            bookedActivity: null,
+            bookingLocation: null,
+            creator: null,
+            activity: null,
+          };
+
+          this.bookingService.create(booking).subscribe({
+            next: response => {
+              console.log('Booking submitted successfully!', response);
+              alert(`Booking created successfully with ${timeSlots.length} time slot(s)!`);
+              this.bookingError = null;
+            },
+            error: error => {
+              console.error('Error creating booking', error);
+              this.bookingError = error.error?.detail || error.error?.message || 'Failed to create booking';
+            },
+          });
+        } else {
+          this.bookingError = 'Failed to create any time slots for booking.';
+        }
+        return;
+      }
+
+      // Get current time slot
+      const currentSlot = this.selectedTimeSlots[index];
+      const parsedSlot = this.parseTimeSlot(currentSlot);
+
+      // Create time slot with required non-null fields
+      const newTimeSlot = {
+        date: dayjs(this.selectedDate),
+        startHour: parsedSlot.start,
+        endHour: parsedSlot.end,
+        capacity: this.selectedPartySize ?? 1,
+        remainingCapacity: this.selectedPartySize ?? 1,
+        status: 'AVAILABLE',
+        event: { id: selectedEventId },
+      };
+
+      // Save the time slot
+      this.http.post<ITimeSlot>('api/time-slots', newTimeSlot).subscribe({
+        next(savedTimeSlot) {
+          console.log(`Time slot created for ${currentSlot}:`, savedTimeSlot);
+          timeSlots.push(savedTimeSlot);
+          processedCount++;
+          // Process next time slot
+          createNextTimeSlot(index + 1);
+        },
+        error(error) {
+          console.error(`Error creating time slot for ${currentSlot}`, error);
+          processedCount++;
+          // Continue with next time slot even if this one failed
+          createNextTimeSlot(index + 1);
+        },
+      });
     };
 
-    // First save the time slot
-    this.http.post<ITimeSlot>('api/time-slots', newTimeSlot).subscribe({
-      next: savedTimeSlot => {
-        console.log('Time slot created:', savedTimeSlot);
-
-        // Then create the booking with the saved time slot
-        const booking: NewBooking = {
-          id: null,
-          activityType: this.selectedActivity as keyof typeof ActivityType,
-          eventType: this.selectedEvent.toUpperCase() as keyof typeof EventType,
-          bookingDate: dayjs(this.selectedDate),
-          partySize: this.selectedPartySize ?? 1,
-          bookingStatus: 'CONFIRMED' as keyof typeof BookingStatus,
-          createdAt: dayjs(),
-          timeSlot: savedTimeSlot,
-          assignedAt: null,
-          bookedActivity: null,
-          bookingLocation: null,
-          creator: null,
-          activity: null,
-        };
-
-        this.bookingService.create(booking).subscribe({
-          next: response => {
-            console.log('Booking submitted successfully!', response);
-            this.bookingError = null;
-            alert('Booking submitted successfully!');
-          },
-          error: error => {
-            console.error('Error creating booking', error);
-            this.bookingError = error.error?.detail || error.error?.message || 'Failed to create booking';
-          },
-        });
-      },
-      error: error => {
-        console.error('Error creating time slot', error);
-        this.bookingError = `Failed to create time slot: ${error.error?.detail || error.error?.message || 'Unknown error'}`;
-      },
-    });
+    // Start creating time slots
+    createNextTimeSlot(0);
   }
 }
