@@ -24,6 +24,9 @@ export class NoProfileComponent {
             this.profileService
               .create({
                 id: null,
+                login: account.login,
+                firstName: account.firstName,
+                lastName: account.lastName,
                 course: 'COMPUTER_SCIENCE',
                 courseYear: 1,
                 bio: null,

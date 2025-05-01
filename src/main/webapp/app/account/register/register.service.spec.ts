@@ -1,49 +1,47 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 
-import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { RegisterService } from './register.service';
-import { Registration } from './register.model';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { IRegister } from './register.model';
 
-describe('RegisterService Service', () => {
+describe('RegisterService', () => {
   let service: RegisterService;
   let httpMock: HttpTestingController;
-  let applicationConfigService: ApplicationConfigService;
+  let appConfig: ApplicationConfigService;
+  let resourceUrl: string;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClientTesting(), RegisterService, ApplicationConfigService],
     });
-
     service = TestBed.inject(RegisterService);
-    applicationConfigService = TestBed.inject(ApplicationConfigService);
     httpMock = TestBed.inject(HttpTestingController);
+    appConfig = TestBed.inject(ApplicationConfigService);
+    resourceUrl = appConfig.getEndpointFor('api/register');
   });
 
   afterEach(() => {
     httpMock.verify();
   });
 
-  describe('Service methods', () => {
-    it('should call register endpoint with correct values', () => {
-      // GIVEN
-      const login = 'abc';
-      const email = 'test@test.com';
-      const password = 'pass';
-      const langKey = 'FR';
-      const registration = new Registration(login, email, password, langKey);
+  it('should POST registration data including firstName and lastName', () => {
+    const mockAccount: IRegister = {
+      login: 'jdoe',
+      email: 'jdoe@example.com',
+      password: '1234',
+      langKey: 'en',
+      firstName: 'John',
+      lastName: 'Doe',
+    };
 
-      // WHEN
-      service.save(registration).subscribe();
-
-      const testRequest = httpMock.expectOne({
-        method: 'POST',
-        url: applicationConfigService.getEndpointFor('api/register'),
-      });
-
-      // THEN
-      expect(testRequest.request.body).toEqual({ email, langKey, login, password });
+    service.save(mockAccount).subscribe(response => {
+      expect(response).toBeTruthy();
     });
+
+    const req = httpMock.expectOne(resourceUrl);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(mockAccount);
+    req.flush({});
   });
 });

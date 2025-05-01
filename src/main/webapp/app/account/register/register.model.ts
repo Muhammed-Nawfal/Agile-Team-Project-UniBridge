@@ -1,8 +1,8 @@
-export class Registration {
-  constructor(
-    public login: string,
-    public email: string,
-    public password: string,
-    public langKey: string,
-  ) {}
+export interface IRegister {
+  login: string;
+  email: string;
+  password: string;
+  langKey?: string;
+  firstName: string; // ← new
+  lastName: string; // ← new
 }
