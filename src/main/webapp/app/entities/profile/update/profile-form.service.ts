@@ -11,14 +11,17 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
 
 /**
  * Type for createFormGroup and resetForm argument.
- * It accepts IProfile for edit and NewProfileFormGroupInput for create.
+ * It accepts IProfile for edit and NewProfile for create.
  */
 type ProfileFormGroupInput = IProfile | PartialWithRequiredKeyOf<NewProfile>;
 
-type ProfileFormDefaults = Pick<NewProfile, 'id'>;
+type ProfileFormDefaults = Pick<NewProfile, 'id' | 'login' | 'firstName' | 'lastName'>;
 
 type ProfileFormGroupContent = {
   id: FormControl;
+  login: FormControl<IProfile['login']>;
+  firstName: FormControl<IProfile['firstName']>;
+  lastName: FormControl<IProfile['lastName']>;
   bio: FormControl<IProfile['bio']>;
   profilePicture: FormControl<IProfile['profilePicture']>;
   profilePictureContentType: FormControl<IProfile['profilePictureContentType']>;
@@ -37,20 +40,29 @@ export type ProfileFormGroup = FormGroup<ProfileFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class ProfileFormService {
-  createProfileFormGroup(profile: ProfileFormGroupInput = { id: null }): ProfileFormGroup {
-    const profileRawValue = {
-      ...this.getFormDefaults(),
-      ...profile,
-    };
+  createProfileFormGroup(profile: ProfileFormGroupInput = { id: null, login: '', firstName: '', lastName: '' }): ProfileFormGroup {
+    const profileRawValue = profile.id == null ? { ...this.getFormDefaults(), ...profile } : profile;
 
     return new FormGroup<ProfileFormGroupContent>({
-      // Remove `nonNullable: true` so `id` can be null.
       id: new FormControl(
         { value: profileRawValue.id, disabled: true },
         {
           validators: [Validators.required],
         },
       ),
+
+      login: new FormControl(profileRawValue.login, {
+        validators: [Validators.required],
+      }),
+
+      firstName: new FormControl(profileRawValue.firstName, {
+        validators: [Validators.required],
+      }),
+
+      lastName: new FormControl(profileRawValue.lastName, {
+        validators: [Validators.required],
+      }),
+
       bio: new FormControl(profileRawValue.bio),
       profilePicture: new FormControl(profileRawValue.profilePicture),
       profilePictureContentType: new FormControl(profileRawValue.profilePictureContentType),
@@ -71,23 +83,33 @@ export class ProfileFormService {
   }
 
   getProfile(form: ProfileFormGroup): IProfile | NewProfile {
-    // Returns the raw values from the form (including null if present).
-    return form.getRawValue() as IProfile | NewProfile;
+    const raw = form.getRawValue();
+    const currentUser = form.controls.user.value;
+    return {
+      ...raw,
+      user: currentUser,
+    };
   }
 
   resetForm(form: ProfileFormGroup, profile: ProfileFormGroupInput): void {
-    const profileRawValue = { ...this.getFormDefaults(), ...profile };
-    form.reset(
-      {
-        ...profileRawValue,
-        id: { value: profileRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
-    );
+    const profileRawValue = {
+      ...this.getFormDefaults(),
+      ...profile,
+      user: profile.user ?? form.controls.user.value, // <-- Preserve user if missing
+    };
+
+    form.reset({
+      ...profileRawValue,
+      id: { value: profileRawValue.id, disabled: true },
+    } as any);
   }
 
   private getFormDefaults(): ProfileFormDefaults {
     return {
       id: null,
+      login: '',
+      firstName: '',
+      lastName: '',
     };
   }
 }
