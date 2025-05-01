@@ -1,0 +1,56 @@
+{
+  "annotations": {
+    "changelogDate": "20250424075928"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "isGroup",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "100"
+    },
+    {
+      "fieldName": "createdOn",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "updatedOn",
+      "fieldType": "Instant"
+    }
+  ],
+  "name": "MessageThread",
+  "relationships": [
+    {
+      "otherEntityName": "friendsList",
+      "relationshipName": "friendChat",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "activityMatch",
+      "relationshipName": "matchChat",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "chat",
+      "relationshipName": "messages",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "profile",
+      "relationshipName": "participants",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no"
+}

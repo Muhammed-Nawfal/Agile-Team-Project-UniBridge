@@ -1,0 +1,101 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (chat(); as chatRef) {
+      <div>
+        <h2 data-cy="chatDetailsHeading"><span>Chat</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ chatRef.id }}</span>
+          </dd>
+          <dt><span>Message</span></dt>
+          <dd>
+            <span>{{ chatRef.message }}</span>
+          </dd>
+          <dt><span>Timestamp</span></dt>
+          <dd>
+            <span>{{ chatRef.timestamp | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Status</span></dt>
+          <dd>
+            <span>{{ { null: '', SENT: 'SENT', DELIVERED: 'DELIVERED', READ: 'READ' }[chatRef.status ?? 'null'] }}</span>
+          </dd>
+          <dt><span>Type</span></dt>
+          <dd>
+            <span>{{ { null: '', TEXT: 'TEXT', IMAGE: 'IMAGE', VIDEO: 'VIDEO', FILE: 'FILE' }[chatRef.type ?? 'null'] }}</span>
+          </dd>
+          <dt><span>Media</span></dt>
+          <dd>
+            @if (chatRef.media) {
+              <div>
+                <a (click)="openFile(chatRef.media ?? '', chatRef.mediaContentType)">
+                  <img [src]="'data:' + chatRef.mediaContentType + ';base64,' + chatRef.media" style="max-width: 100%" alt="chat" />
+                </a>
+                {{ chatRef.mediaContentType }}, {{ byteSize(chatRef.media ?? '') }}
+              </div>
+            }
+          </dd>
+          <dt><span>Is Deleted</span></dt>
+          <dd>
+            <span>{{ chatRef.isDeleted }}</span>
+          </dd>
+          <dt><span>Created On</span></dt>
+          <dd>
+            <span>{{ chatRef.createdOn | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Updated On</span></dt>
+          <dd>
+            <span>{{ chatRef.updatedOn | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Thread</span></dt>
+          <dd>
+            @if (chat()!.thread) {
+              <div>
+                <a [routerLink]="['/message-thread', chat()!.thread?.id, 'view']">{{ chatRef.thread?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Sender</span></dt>
+          <dd>
+            @if (chat()!.sender) {
+              <div>
+                <a [routerLink]="['/profile', chat()!.sender?.id, 'view']">{{ chatRef.sender?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Receiver</span></dt>
+          <dd>
+            @if (chat()!.receiver) {
+              <div>
+                <a [routerLink]="['/profile', chat()!.receiver?.id, 'view']">{{ chatRef.receiver?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Message Thread</span></dt>
+          <dd>
+            @if (chat()!.messageThread) {
+              <div>
+                <a [routerLink]="['/message-thread', chat()!.messageThread?.id, 'view']">{{ chatRef.messageThread?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/chat', chatRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

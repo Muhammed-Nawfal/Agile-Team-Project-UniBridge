@@ -1,0 +1,54 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (ranking(); as rankingRef) {
+      <div>
+        <h2 data-cy="rankingDetailsHeading"><span>Ranking</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ rankingRef.id }}</span>
+          </dd>
+          <dt><span>Review Number</span></dt>
+          <dd>
+            <span>{{ rankingRef.reviewNumber }}</span>
+          </dd>
+          <dt><span>Activity Number</span></dt>
+          <dd>
+            <span>{{ rankingRef.activityNumber }}</span>
+          </dd>
+          <dt><span>Star Average</span></dt>
+          <dd>
+            <span>{{ rankingRef.starAverage }}</span>
+          </dd>
+          <dt><span>Reliable</span></dt>
+          <dd>
+            <span>{{ rankingRef.reliable }}</span>
+          </dd>
+          <dt><span>Rank Given</span></dt>
+          <dd>
+            @if (ranking()!.rankGiven) {
+              <div>
+                <a [routerLink]="['/profile', ranking()!.rankGiven?.id, 'view']">{{ rankingRef.rankGiven?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/ranking', rankingRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

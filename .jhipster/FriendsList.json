@@ -1,0 +1,44 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170645"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "requestTime",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "requestStatus",
+      "fieldType": "Decision",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "ACCEPT,DECLINED,PENDING"
+    },
+    {
+      "fieldName": "friendSince",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "nickname",
+      "fieldType": "String"
+    }
+  ],
+  "name": "FriendsList",
+  "relationships": [
+    {
+      "otherEntityName": "profile",
+      "relationshipName": "requestedByProfile",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "profile",
+      "relationshipName": "requestedToProfile",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

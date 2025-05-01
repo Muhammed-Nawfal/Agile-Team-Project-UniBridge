@@ -1,0 +1,98 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (activityMatch(); as activityMatchRef) {
+      <div>
+        <h2 data-cy="activityMatchDetailsHeading"><span>Activity Match</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ activityMatchRef.id }}</span>
+          </dd>
+          <dt><span>Activity Type</span></dt>
+          <dd>
+            <span>{{
+              { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[
+                activityMatchRef.activityType ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span>Status</span></dt>
+          <dd>
+            <span>{{ { null: '', ACCEPT: 'ACCEPT', DECLINED: 'DECLINED', PENDING: 'PENDING' }[activityMatchRef.status ?? 'null'] }}</span>
+          </dd>
+          <dt><span>Match Date</span></dt>
+          <dd>
+            <span>{{ activityMatchRef.matchDate | formatMediumDate }}</span>
+          </dd>
+          <dt><span>Match Time</span></dt>
+          <dd>
+            <span>{{ activityMatchRef.matchTime | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Location</span></dt>
+          <dd>
+            <span>{{ activityMatchRef.location }}</span>
+          </dd>
+          <dt><span>Notes</span></dt>
+          <dd>
+            <span>{{ activityMatchRef.notes }}</span>
+          </dd>
+          <dt><span>Created At</span></dt>
+          <dd>
+            <span>{{ activityMatchRef.createdAt | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Response At</span></dt>
+          <dd>
+            <span>{{ activityMatchRef.responseAt | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Ratings</span></dt>
+          <dd>
+            @if (activityMatch()!.ratings) {
+              <div>
+                <a [routerLink]="['/ranking', activityMatch()!.ratings?.id, 'view']">{{ activityMatchRef.ratings?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Match Requestor</span></dt>
+          <dd>
+            @if (activityMatch()!.matchRequestor) {
+              <div>
+                <a [routerLink]="['/profile', activityMatch()!.matchRequestor?.id, 'view']">{{ activityMatchRef.matchRequestor?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>User Details</span></dt>
+          <dd>
+            @if (activityMatch()!.userDetails) {
+              <div>
+                <a [routerLink]="['/profile', activityMatch()!.userDetails?.id, 'view']">{{ activityMatchRef.userDetails?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Matched Activity</span></dt>
+          <dd>
+            @if (activityMatch()!.matchedActivity) {
+              <div>
+                <a [routerLink]="['/activity', activityMatch()!.matchedActivity?.id, 'view']">{{ activityMatchRef.matchedActivity?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/activity-match', activityMatchRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,149 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-friends-list-heading" data-cy="FriendsListCreateUpdateHeading">Create or edit a Friends List</h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let requestTimeRef = editForm.get('requestTime')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_requestTime">Request Time</label>
+          <div class="d-flex">
+            <input
+              id="field_requestTime"
+              data-cy="requestTime"
+              type="datetime-local"
+              class="form-control"
+              name="requestTime"
+              formControlName="requestTime"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (requestTimeRef.invalid && (requestTimeRef.dirty || requestTimeRef.touched)) {
+            <div>
+              @if (editForm.get('requestTime')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('requestTime')?.errors?.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let requestStatusRef = editForm.get('requestStatus')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_requestStatus">Request Status</label>
+          <select
+            class="form-control"
+            name="requestStatus"
+            formControlName="requestStatus"
+            id="field_requestStatus"
+            data-cy="requestStatus"
+          >
+            <option [ngValue]="null"></option>
+            @for (decision of decisionValues; track $index) {
+              <option [value]="decision">{{ { null: '', ACCEPT: 'ACCEPT', DECLINED: 'DECLINED', PENDING: 'PENDING' }[decision] }}</option>
+            }
+          </select>
+          @if (requestStatusRef.invalid && (requestStatusRef.dirty || requestStatusRef.touched)) {
+            <div>
+              @if (editForm.get('requestStatus')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let friendSinceRef = editForm.get('friendSince')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_friendSince">Friend Since</label>
+          <div class="d-flex">
+            <input
+              id="field_friendSince"
+              data-cy="friendSince"
+              type="datetime-local"
+              class="form-control"
+              name="friendSince"
+              formControlName="friendSince"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (friendSinceRef.invalid && (friendSinceRef.dirty || friendSinceRef.touched)) {
+            <div>
+              @if (editForm.get('friendSince')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('friendSince')?.errors?.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_nickname">Nickname</label>
+          <input type="text" class="form-control" name="nickname" id="field_nickname" data-cy="nickname" formControlName="nickname" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_requestedByProfile">Requested By Profile</label>
+          <select
+            class="form-control"
+            id="field_requestedByProfile"
+            data-cy="requestedByProfile"
+            name="requestedByProfile"
+            formControlName="requestedByProfile"
+            [compareWith]="compareProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_requestedToProfile">Requested To Profile</label>
+          <select
+            class="form-control"
+            id="field_requestedToProfile"
+            data-cy="requestedToProfile"
+            name="requestedToProfile"
+            formControlName="requestedToProfile"
+            [compareWith]="compareProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

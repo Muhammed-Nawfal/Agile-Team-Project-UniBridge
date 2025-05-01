@@ -1,0 +1,58 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (review(); as reviewRef) {
+      <div>
+        <h2 data-cy="reviewDetailsHeading"><span>Review</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ reviewRef.id }}</span>
+          </dd>
+          <dt><span>Date Published</span></dt>
+          <dd>
+            <span>{{ reviewRef.datePublished | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Star</span></dt>
+          <dd>
+            <span>{{ reviewRef.star }}</span>
+          </dd>
+          <dt><span>Text</span></dt>
+          <dd>
+            <span>{{ reviewRef.text }}</span>
+          </dd>
+          <dt><span>About User</span></dt>
+          <dd>
+            @if (review()!.aboutUser) {
+              <div>
+                <a [routerLink]="['/profile', review()!.aboutUser?.id, 'view']">{{ reviewRef.aboutUser?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>From User</span></dt>
+          <dd>
+            @if (review()!.fromUser) {
+              <div>
+                <a [routerLink]="['/profile', review()!.fromUser?.id, 'view']">{{ reviewRef.fromUser?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/review', reviewRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

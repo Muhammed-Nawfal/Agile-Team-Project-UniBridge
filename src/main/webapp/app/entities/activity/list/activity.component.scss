@@ -1,0 +1,126 @@
+/* Card styling */
+.card {
+  transition: all 0.3s ease;
+  border-radius: 10px;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Activity Type Badges */
+.activity-type {
+  font-size: 0.6rem;
+  letter-spacing: 0.5px;
+  padding: 0.25rem 0.75rem;
+  background-color: #f8f9fa;
+  color: #495057;
+}
+
+.activity-type.sports {
+  background-color: #e6f7e6;
+  color: #2e7d32;
+}
+
+.activity-type.gym {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.activity-type.other {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+/* Status Labels */
+.status-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+}
+
+.status-label.finished {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-label.currently_happening {
+  background-color: #fff8e1;
+  color: #ff8f00;
+}
+
+.status-label.canceled {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.status-label.announced {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+/* Button styling */
+.btn-outline-primary {
+  border-width: 1.5px;
+}
+
+/* Card title truncation */
+.card-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Radiant Background Styles */
+.radiant-image-container {
+  overflow: hidden;
+  border-radius: 10px 10px 0 0;
+}
+
+.radiant-background {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  z-index: 1;
+  background: linear-gradient(135deg, rgba(100, 200, 255, 0.8) 0%, rgba(150, 120, 255, 0.6) 50%, rgba(255, 100, 200, 0.4) 100%);
+  opacity: 0.7;
+  transform: rotate(-15deg);
+  animation: radiantAnimation 8s ease infinite;
+}
+
+/* Different radiant colors based on activity type */
+.radiant-background.sports {
+  background: linear-gradient(135deg, rgba(100, 255, 150, 0.8) 0%, rgba(50, 200, 100, 0.6) 50%, rgba(0, 150, 50, 0.4) 100%);
+}
+
+.radiant-background.gym {
+  background: linear-gradient(135deg, rgba(100, 150, 255, 0.8) 0%, rgba(50, 100, 200, 0.6) 50%, rgba(0, 50, 150, 0.4) 100%);
+}
+
+.radiant-background.other {
+  background: linear-gradient(135deg, rgba(255, 150, 100, 0.8) 0%, rgba(200, 100, 50, 0.6) 50%, rgba(150, 50, 0, 0.4) 100%);
+}
+
+@keyframes radiantAnimation {
+  0% {
+    transform: rotate(-15deg) scale(1);
+  }
+  50% {
+    transform: rotate(-10deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(-15deg) scale(1);
+  }
+}
+
+/* Image positioning */
+.radiant-image-container .img-fluid {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 3px solid white;
+}

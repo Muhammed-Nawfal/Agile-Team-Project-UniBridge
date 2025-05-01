@@ -1,0 +1,7 @@
+export enum GymLocation {
+  THE_GYM_SELLY_OAK = 'THE_GYM_SELLY_OAK',
+
+  TIVERTON = 'TIVERTON',
+
+  PUREGYM_FIVE_WAYS = 'PUREGYM_FIVE_WAYS',
+}

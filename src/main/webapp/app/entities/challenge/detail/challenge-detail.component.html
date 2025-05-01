@@ -1,0 +1,89 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (challenge(); as challengeRef) {
+      <div>
+        <h2 data-cy="challengeDetailsHeading"><span>Challenge</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ challengeRef.id }}</span>
+          </dd>
+          <dt><span>Title</span></dt>
+          <dd>
+            <span>{{ challengeRef.title }}</span>
+          </dd>
+          <dt><span>Description</span></dt>
+          <dd>
+            <span>{{ challengeRef.description }}</span>
+          </dd>
+          <dt><span>Category</span></dt>
+          <dd>
+            <span>{{
+              { null: '', STUDY: 'STUDY', SPORTS: 'SPORTS', COMMUNITY: 'COMMUNITY', PERSONAL_GROWTH: 'PERSONAL_GROWTH', SOCIAL: 'SOCIAL' }[
+                challengeRef.category ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span>Date</span></dt>
+          <dd>
+            <span>{{ challengeRef.date | formatMediumDate }}</span>
+          </dd>
+          <dt><span>Points</span></dt>
+          <dd>
+            <span>{{ challengeRef.points }}</span>
+          </dd>
+          <dt><span>Badge</span></dt>
+          <dd>
+            @if (challengeRef.badge) {
+              <div>
+                <a (click)="openFile(challengeRef.badge ?? '', challengeRef.badgeContentType)">
+                  <img
+                    [src]="'data:' + challengeRef.badgeContentType + ';base64,' + challengeRef.badge"
+                    style="max-width: 100%"
+                    alt="challenge"
+                  />
+                </a>
+                {{ challengeRef.badgeContentType }}, {{ byteSize(challengeRef.badge ?? '') }}
+              </div>
+            }
+          </dd>
+          <dt><span>Completed</span></dt>
+          <dd>
+            <span>{{ challengeRef.completed }}</span>
+          </dd>
+          <dt><span>Assigned To</span></dt>
+          <dd>
+            @if (challenge()!.assignedTo) {
+              <div>
+                <a [routerLink]="['/profile', challenge()!.assignedTo?.id, 'view']">{{ challengeRef.assignedTo?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Created By</span></dt>
+          <dd>
+            @if (challenge()!.createdBy) {
+              <div>
+                <a [routerLink]="['/profile', challenge()!.createdBy?.id, 'view']">{{ challengeRef.createdBy?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/challenge', challengeRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

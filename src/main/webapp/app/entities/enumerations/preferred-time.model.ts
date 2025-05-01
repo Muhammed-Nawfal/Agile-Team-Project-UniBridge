@@ -1,0 +1,13 @@
+export enum PreferredTime {
+  EARLY_MORNING = 'EARLY_MORNING',
+
+  MORNING = 'MORNING',
+
+  AFTERNOON = 'AFTERNOON',
+
+  EVENING = 'EVENING',
+
+  NIGHT = 'NIGHT',
+
+  LATE_NIGHT = 'LATE_NIGHT',
+}

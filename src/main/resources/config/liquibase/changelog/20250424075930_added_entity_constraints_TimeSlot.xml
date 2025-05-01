@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <!--
+        Added the constraints for entity TimeSlot.
+    -->
+    <changeSet id="20250424075930-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="event_id"
+                                 baseTableName="time_slot"
+                                 constraintName="fk_time_slot__event_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="event"
+                                 />
+    </changeSet>
+</databaseChangeLog>

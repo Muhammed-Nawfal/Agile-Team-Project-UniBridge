@@ -1,0 +1,136 @@
+<div>
+  <h2 id="page-heading" data-cy="FriendsListHeading">
+    <span>Friends Lists</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span>Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-friends-list"
+        [routerLink]="['/friends-list/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span>Create a new Friends List</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (friendsLists?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span>No Friends Lists found</span>
+    </div>
+  }
+
+  @if (friendsLists && friendsLists.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span>ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="requestTime">
+              <div class="d-flex">
+                <span>Request Time</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="requestStatus">
+              <div class="d-flex">
+                <span>Request Status</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="friendSince">
+              <div class="d-flex">
+                <span>Friend Since</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="nickname">
+              <div class="d-flex">
+                <span>Nickname</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="requestedByProfile.id">
+              <div class="d-flex">
+                <span>Requested By Profile</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="requestedToProfile.id">
+              <div class="d-flex">
+                <span>Requested To Profile</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (friendsList of friendsLists; track trackId(friendsList)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/friends-list', friendsList.id, 'view']">{{ friendsList.id }}</a>
+              </td>
+              <td>{{ friendsList.requestTime | formatMediumDatetime }}</td>
+              <td>{{ { null: '', ACCEPT: 'ACCEPT', DECLINED: 'DECLINED', PENDING: 'PENDING' }[friendsList.requestStatus ?? 'null'] }}</td>
+              <td>{{ friendsList.friendSince | formatMediumDatetime }}</td>
+              <td>{{ friendsList.nickname }}</td>
+              <td>
+                @if (friendsList.requestedByProfile) {
+                  <div>
+                    <a [routerLink]="['/profile', friendsList.requestedByProfile.id, 'view']">{{ friendsList.requestedByProfile.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (friendsList.requestedToProfile) {
+                  <div>
+                    <a [routerLink]="['/profile', friendsList.requestedToProfile.id, 'view']">{{ friendsList.requestedToProfile.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/friends-list', friendsList.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline">View</span>
+                  </a>
+
+                  <a [routerLink]="['/friends-list', friendsList.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(friendsList)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -1,0 +1,69 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170648"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "message",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "timestamp",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "MessageStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "SENT,DELIVERED,READ"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "MessageType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "TEXT,IMAGE,VIDEO,FILE"
+    },
+    {
+      "fieldName": "media",
+      "fieldType": "ImageBlob"
+    },
+    {
+      "fieldName": "isDeleted",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "createdOn",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "updatedOn",
+      "fieldType": "Instant"
+    }
+  ],
+  "name": "Chat",
+  "relationships": [
+    {
+      "otherEntityName": "messageThread",
+      "relationshipName": "thread",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "profile",
+      "relationshipName": "sender",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "profile",
+      "relationshipName": "receiver",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

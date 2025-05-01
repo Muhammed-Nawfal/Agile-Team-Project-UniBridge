@@ -1,0 +1,139 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-ranking-heading" data-cy="RankingCreateUpdateHeading">Create or edit a Ranking</h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let reviewNumberRef = editForm.get('reviewNumber')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_reviewNumber">Review Number</label>
+          <input
+            type="number"
+            class="form-control"
+            name="reviewNumber"
+            id="field_reviewNumber"
+            data-cy="reviewNumber"
+            formControlName="reviewNumber"
+          />
+          @if (reviewNumberRef.invalid && (reviewNumberRef.dirty || reviewNumberRef.touched)) {
+            <div>
+              @if (editForm.get('reviewNumber')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('reviewNumber')?.errors?.number"
+                >This field should be a number.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let activityNumberRef = editForm.get('activityNumber')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_activityNumber">Activity Number</label>
+          <input
+            type="number"
+            class="form-control"
+            name="activityNumber"
+            id="field_activityNumber"
+            data-cy="activityNumber"
+            formControlName="activityNumber"
+          />
+          @if (activityNumberRef.invalid && (activityNumberRef.dirty || activityNumberRef.touched)) {
+            <div>
+              @if (editForm.get('activityNumber')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('activityNumber')?.errors?.number"
+                >This field should be a number.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let starAverageRef = editForm.get('starAverage')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_starAverage">Star Average</label>
+          <input
+            type="number"
+            class="form-control"
+            name="starAverage"
+            id="field_starAverage"
+            data-cy="starAverage"
+            formControlName="starAverage"
+          />
+          @if (starAverageRef.invalid && (starAverageRef.dirty || starAverageRef.touched)) {
+            <div>
+              @if (editForm.get('starAverage')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              @if (editForm.get('starAverage')?.errors?.min) {
+                <small class="form-text text-danger">This field should be at least 0.</small>
+              }
+              @if (editForm.get('starAverage')?.errors?.max) {
+                <small class="form-text text-danger">This field cannot be more than 5.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('starAverage')?.errors?.number"
+                >This field should be a number.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let reliableRef = editForm.get('reliable')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_reliable">Reliable</label>
+          <input type="checkbox" class="form-check" name="reliable" id="field_reliable" data-cy="reliable" formControlName="reliable" />
+          @if (reliableRef.invalid && (reliableRef.dirty || reliableRef.touched)) {
+            <div>
+              @if (editForm.get('reliable')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_rankGiven">Rank Given</label>
+          <select
+            class="form-control"
+            id="field_rankGiven"
+            data-cy="rankGiven"
+            name="rankGiven"
+            formControlName="rankGiven"
+            [compareWith]="compareProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (profileOption of rankGivensCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

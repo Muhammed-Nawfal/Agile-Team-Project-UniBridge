@@ -1,0 +1,78 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170642"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "activityType",
+      "fieldType": "ActivityType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "SOCIAL,ACADEMIC,SPORTS,GYM,OTHER"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "Decision",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "ACCEPT,DECLINED,PENDING"
+    },
+    {
+      "fieldName": "matchDate",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "matchTime",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "location",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "100"
+    },
+    {
+      "fieldName": "notes",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "createdAt",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "responseAt",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "ActivityMatch",
+  "relationships": [
+    {
+      "otherEntityName": "ranking",
+      "relationshipName": "ratings",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "profile",
+      "relationshipName": "matchRequestor",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "profile",
+      "relationshipName": "userDetails",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "activity",
+      "relationshipName": "matchedActivity",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

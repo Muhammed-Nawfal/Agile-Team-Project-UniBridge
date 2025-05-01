@@ -1,0 +1,117 @@
+.matches-list-container {
+  padding: 1rem;
+}
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4rem;
+}
+.filters {
+  display: flex;
+  gap: 1rem;
+}
+.filters .btn-light:hover {
+  background-color: #f0f0f0;
+}
+
+.curved-select .form-select {
+  border-radius: 0.5rem !important;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  width: 100%;
+}
+
+//2. Image-overlay card
+// Let the cover image fill the card, then overlay your text/buttons on a
+//                                                            semi-transparent panel at the
+//                                                            bottom.
+//.match-card {
+//  position: relative;
+//  border: none;
+//  border-radius: 0.5rem;
+//  overflow: hidden;
+//}
+//.match-card .cover-image img {
+//  width: 100%;
+//  height: auto;
+//}
+//.match-card .card-body {
+//  position: absolute;
+//  bottom: 0;
+//  left: 0; right: 0;
+//  background: rgba(0,0,0,0.5);
+//  color: #fff;
+//  padding: 1rem;
+//}
+//
+
+.match-card {
+  background: #f0f0f3;
+  border-radius: 1rem;
+  box-shadow:
+    8px 8px 16px rgba(0, 0, 0, 0.1),
+    -8px -8px 16px rgba(255, 255, 255, 0.7);
+  border: none;
+}
+
+.match-card {
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+.match-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cover-image img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+.card-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.date-time,
+.location {
+  font-size: 0.875rem;
+  color: #555;
+  margin: 0.5rem 0;
+}
+.avatars {
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+.avatars img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  margin-right: -0.5rem;
+}
+.match-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+.btn-secondary {
+  background: #e0e0e0;
+  color: #333;
+}
+.btn-secondary:hover {
+  background: #d5d5d5;
+}
+
+@media (max-width: 600px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+}

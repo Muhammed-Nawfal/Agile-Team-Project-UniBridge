@@ -1,0 +1,170 @@
+<!-- profile-update.component.html -->
+<div class="container my-4">
+  <div *ngIf="showUpdateTip" class="alert alert-info alert-dismissible fade show" role="alert">
+    💡 <strong>Tip:</strong> Set your preferences to help others find you more easily!
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissUpdateTip()"></button>
+  </div>
+
+  <h2 class="text-center mb-4">Edit Your Profile</h2>
+
+  <!-- Form to update the Profile -->
+  <form [formGroup]="editForm" (ngSubmit)="save()" novalidate>
+    <div class="row">
+      <!-- COLUMN 1: User Details -->
+      <div class="col-md-4 mb-3">
+        <h4>User Details</h4>
+
+        <!-- Bio Field -->
+        <div class="mb-3">
+          <label for="field_bio" class="form-label">Bio</label>
+          <textarea id="field_bio" class="form-control" formControlName="bio" rows="4" placeholder="Enter your bio..."></textarea>
+        </div>
+
+        <!-- Profile Picture -->
+        <div class="mb-3">
+          <label class="form-label" for="file_profilePicture">Profile Picture</label>
+          <div>
+            <!-- Preview if picture is set -->
+            <img
+              *ngIf="editForm.get('profilePicture')?.value"
+              class="profile-picture-preview"
+              [src]="'data:' + editForm.get('profilePictureContentType')?.value + ';base64,' + editForm.get('profilePicture')?.value"
+              alt="Profile Picture"
+            />
+
+            <!-- Remove/clear button for the image -->
+            <div *ngIf="editForm.get('profilePicture')?.value" class="text-danger mb-2">
+              <button
+                type="button"
+                (click)="clearInputImage('profilePicture', 'profilePictureContentType', 'file_profilePicture')"
+                class="btn btn-sm btn-secondary"
+              >
+                Remove
+              </button>
+            </div>
+
+            <!-- File input -->
+            <input
+              type="file"
+              id="file_profilePicture"
+              (change)="setFileData($event, 'profilePicture', true)"
+              accept="image/*"
+              class="form-control"
+            />
+          </div>
+
+          <!-- Hidden fields to store base64 and content type -->
+          <input type="hidden" formControlName="profilePicture" />
+          <input type="hidden" formControlName="profilePictureContentType" />
+        </div>
+      </div>
+
+      <!-- COLUMN 2: Study Details -->
+      <div class="col-md-4 mb-3">
+        <h4>Study Details</h4>
+
+        <!-- Course -->
+        <div class="mb-3">
+          <label class="form-label" for="field_course">Course</label>
+          <select id="field_course" class="form-control" formControlName="course">
+            <option [ngValue]="null"></option>
+            <option *ngFor="let course of courseValues" [value]="course">
+              {{ course }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Course Year -->
+        <div class="mb-3">
+          <label class="form-label" for="field_courseYear">Year</label>
+          <input type="number" class="form-control" id="field_courseYear" formControlName="courseYear" placeholder="1, 2, 3..." />
+        </div>
+
+        <!-- Study Time -->
+        <div class="mb-3">
+          <label class="form-label" for="field_studyTime">Preferred Study Time</label>
+          <select id="field_studyTime" class="form-control" formControlName="studyTime">
+            <option [ngValue]="null"></option>
+            <option *ngFor="let time of preferredTimeValues" [value]="time">
+              {{ time }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- COLUMN 3: Gym & Sports Details -->
+      <div class="col-md-4 mb-3">
+        <h4>Gym & Sports Details</h4>
+
+        <!-- Gym Skill -->
+        <div class="mb-3">
+          <label class="form-label" for="field_gymSkill">Skill Level</label>
+          <select id="field_gymSkill" class="form-control" formControlName="gymSkill">
+            <option [ngValue]="null"></option>
+            <option *ngFor="let skill of skillValues" [value]="skill">
+              {{ skill }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Gym Time -->
+        <div class="mb-3">
+          <label class="form-label" for="field_gymTime">Preferred Workout Time</label>
+          <select id="field_gymTime" class="form-control" formControlName="gymTime">
+            <option [ngValue]="null"></option>
+            <option *ngFor="let time of preferredTimeValues" [value]="time">
+              {{ time }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Gym Location -->
+        <div class="mb-3">
+          <label class="form-label" for="field_gymLocation">Gym Location</label>
+          <select id="field_gymLocation" class="form-control" formControlName="gymLocation">
+            <option [ngValue]="null"></option>
+            <option *ngFor="let location of gymLocationValues" [value]="location">
+              {{ location }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Sports -->
+        <div class="mb-3">
+          <label class="form-label" for="field_sports">Sports</label>
+          <select id="field_sports" class="form-control" formControlName="sports">
+            <option [ngValue]="null"></option>
+            <option *ngFor="let sport of sportsValues" [value]="sport">
+              {{ sport }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Sports Skill -->
+        <div class="mb-3">
+          <label class="form-label" for="field_sportsSkill">Sports Skill</label>
+          <select id="field_sportsSkill" class="form-control" formControlName="sportsSkill">
+            <option [ngValue]="null"></option>
+            <option *ngFor="let skill of skillValues" [value]="skill">
+              {{ skill }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden/readonly ID field -->
+    <input type="hidden" formControlName="id" />
+
+    <!-- Action Buttons -->
+    <div class="row mt-3">
+      <div class="col text-center">
+        <!-- Cancel (go back) -->
+        <button type="button" class="btn btn-secondary me-2" (click)="previousState()">Cancel</button>
+
+        <!-- Save -->
+        <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid || isSaving">Save</button>
+      </div>
+    </div>
+  </form>
+</div>

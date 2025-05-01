@@ -1,0 +1,219 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-challenge-heading" data-cy="ChallengeCreateUpdateHeading">
+        {{ isEditMode ? 'Edit Challenge' : 'Create a new Challenge' }}
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let titleRef = editForm.get('title')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_title">Title</label>
+          <input type="text" class="form-control" name="title" id="field_title" data-cy="title" formControlName="title" />
+          @if (titleRef.invalid && (titleRef.dirty || titleRef.touched)) {
+            <div>
+              @if (editForm.get('title')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              @if (editForm.get('title')?.errors?.minlength) {
+                <small class="form-text text-danger">This field is required to be at least 3 characters.</small>
+              }
+              @if (editForm.get('title')?.errors?.maxlength) {
+                <small class="form-text text-danger">This field cannot be longer than 100 characters.</small>
+              }
+              @if (editForm.get('title')?.errors?.minWordCount) {
+                <small class="form-text text-danger">Title must contain at least 3 words.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let descriptionRef = editForm.get('description')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_description">Description</label>
+          <div class="position-relative">
+            <textarea
+              class="form-control"
+              name="description"
+              id="field_description"
+              data-cy="description"
+              formControlName="description"
+              rows="5"
+              [ngClass]="{ 'is-invalid': currentWordCount > maxWordCount }"
+            ></textarea>
+            <div class="word-count mt-1 d-flex justify-content-between">
+              <small [ngClass]="{ 'text-danger': currentWordCount > maxWordCount, 'text-muted': currentWordCount <= maxWordCount }">
+                {{ currentWordCount }}/{{ maxWordCount }} words
+              </small>
+            </div>
+          </div>
+          @if (descriptionRef.invalid && (descriptionRef.dirty || descriptionRef.touched)) {
+            <div>
+              @if (descriptionRef.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              @if (descriptionRef.errors?.maxWordCount) {
+                <small class="form-text text-danger">
+                  Description cannot exceed 1000 words. Current count: {{ descriptionRef.errors?.maxWordCount.actual }} words.
+                </small>
+              }
+            </div>
+          }
+          @if (currentWordCount > maxWordCount) {
+            <small class="form-text text-danger"> Description exceeds the 1000 word limit. Please shorten your text. </small>
+          }
+        </div>
+
+        @let categoryRef = editForm.get('category')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_category">Category</label>
+          <select class="form-control" name="category" formControlName="category" id="field_category" data-cy="category">
+            <option [ngValue]="null"></option>
+            @for (category of categoryValues; track $index) {
+              <option [value]="category">
+                {{
+                  {
+                    null: '',
+                    STUDY: 'STUDY',
+                    SPORTS: 'SPORTS',
+                    COMMUNITY: 'COMMUNITY',
+                    PERSONAL_GROWTH: 'PERSONAL_GROWTH',
+                    SOCIAL: 'SOCIAL',
+                  }[category]
+                }}
+              </option>
+            }
+          </select>
+          @if (categoryRef.invalid && (categoryRef.dirty || categoryRef.touched)) {
+            <div>
+              @if (editForm.get('category')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let dateRef = editForm.get('date')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_date">Date</label>
+          <div class="input-group">
+            <input
+              id="field_date"
+              data-cy="date"
+              type="text"
+              class="form-control"
+              name="date"
+              ngbDatepicker
+              #dateDp="ngbDatepicker"
+              formControlName="date"
+              [readonly]="!isEditMode"
+            />
+            <button type="button" class="btn btn-secondary" (click)="dateDp.toggle()" *ngIf="isEditMode">
+              <fa-icon icon="calendar-alt"></fa-icon>
+            </button>
+            <div class="input-group-append" *ngIf="!isEditMode">
+              <span class="input-group-text"><fa-icon icon="calendar-check"></fa-icon></span>
+            </div>
+          </div>
+          <small class="form-text text-muted" *ngIf="!isEditMode"> Today's date will be used for this challenge </small>
+          @if (dateRef.invalid && (dateRef.dirty || dateRef.touched)) {
+            <div>
+              @if (editForm.get('date')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Points field as a dropdown with values 5, 10, 15, 20, 25 -->
+        <div class="mb-3">
+          <label class="form-label" for="field_points">Points</label>
+          <select class="form-control" name="points" id="field_points" data-cy="points" formControlName="points" required>
+            <option value="" disabled selected>-- Select points --</option>
+            <option [ngValue]="5">5 points</option>
+            <option [ngValue]="10">10 points</option>
+            <option [ngValue]="15">15 points</option>
+            <option [ngValue]="20">20 points</option>
+            <option [ngValue]="25">25 points</option>
+          </select>
+          <small class="form-text text-muted">Select point value</small>
+          <div *ngIf="editForm.get('points')?.invalid && (editForm.get('points')?.dirty || editForm.get('points')?.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('points')?.errors?.required"> This field is required. </small>
+          </div>
+        </div>
+
+        @let completedRef = editForm.get('completed')!;
+        <div class="mb-3" *ngIf="isEditMode">
+          <label class="form-label" for="field_completed">Completed</label>
+          <input type="checkbox" class="form-check" name="completed" id="field_completed" data-cy="completed" formControlName="completed" />
+          @if (completedRef.invalid && (completedRef.dirty || completedRef.touched)) {
+            <div>
+              @if (editForm.get('completed')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_assignedTo">Assigned To</label>
+          <select
+            class="form-control"
+            id="field_assignedTo"
+            data-cy="assignedTo"
+            name="assignedTo"
+            formControlName="assignedTo"
+            [compareWith]="compareProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3" *ngIf="isEditMode">
+          <label class="form-label" for="field_createdBy">Created By</label>
+          <select
+            class="form-control"
+            id="field_createdBy"
+            data-cy="createdBy"
+            name="createdBy"
+            formControlName="createdBy"
+            [compareWith]="compareProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

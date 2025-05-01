@@ -1,0 +1,11 @@
+id;activity_type;status;match_date;match_time;location;notes;created_at;response_at
+1;ACADEMIC;PENDING;2025-02-26;2025-02-26T10:50:32;forsaken;../fake-data/blob/hipster.txt;2025-02-25T20:44:24;2025-02-26T00:44:13
+2;SPORTS;PENDING;2025-02-26;2025-02-26T06:49:21;hello moralise;../fake-data/blob/hipster.txt;2025-02-26T07:23:27;2025-02-26T13:03:44
+3;SOCIAL;PENDING;2025-02-26;2025-02-26T00:35:12;worthless;../fake-data/blob/hipster.txt;2025-02-26T07:02:41;2025-02-26T10:04:52
+4;OTHER;PENDING;2025-02-25;2025-02-26T14:57:35;rapidly why;../fake-data/blob/hipster.txt;2025-02-26T14:42:05;2025-02-26T14:03:43
+5;SPORTS;ACCEPT;2025-02-25;2025-02-26T07:52:14;hovercraft;../fake-data/blob/hipster.txt;2025-02-25T19:01:47;2025-02-26T16:04:49
+6;SOCIAL;ACCEPT;2025-02-25;2025-02-25T22:41:19;between meh;../fake-data/blob/hipster.txt;2025-02-25T18:48:27;2025-02-26T10:22:14
+7;GYM;DECLINED;2025-02-26;2025-02-26T01:18:55;drag marvelous however;../fake-data/blob/hipster.txt;2025-02-26T13:34:37;2025-02-26T05:26:48
+8;SOCIAL;DECLINED;2025-02-25;2025-02-26T08:46:31;construe;../fake-data/blob/hipster.txt;2025-02-25T22:51:52;2025-02-26T05:46:47
+9;SPORTS;PENDING;2025-02-25;2025-02-25T20:12:38;sedately fly;../fake-data/blob/hipster.txt;2025-02-26T08:13:05;2025-02-25T23:56:46
+10;GYM;DECLINED;2025-02-26;2025-02-26T08:15:37;brisk antique terribly;../fake-data/blob/hipster.txt;2025-02-26T09:21:44;2025-02-26T00:08:41

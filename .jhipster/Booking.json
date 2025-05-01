@@ -1,0 +1,72 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170643"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "activityType",
+      "fieldType": "ActivityType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "SOCIAL,ACADEMIC,SPORTS,GYM,OTHER"
+    },
+    {
+      "fieldName": "eventType",
+      "fieldType": "EventType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "STUDY_SPACES,EVENT_ROOMS,FOOTBALL_PITCH,TENNIS_COURT,BASKETBALL_COURT,DOJO,SWIMMING_POOL,SQUASH_COURT"
+    },
+    {
+      "fieldName": "bookingDate",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "partySize",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "bookingStatus",
+      "fieldType": "BookingStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "CONFIRMED,CANCELLED"
+    },
+    {
+      "fieldName": "createdAt",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "assignedAt",
+      "fieldType": "Instant"
+    }
+  ],
+  "name": "Booking",
+  "relationships": [
+    {
+      "otherEntityName": "timeSlot",
+      "relationshipName": "timeSlots",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "activity",
+      "relationshipName": "bookedActivity",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "location",
+      "relationshipName": "bookingLocation",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "profile",
+      "relationshipName": "creator",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

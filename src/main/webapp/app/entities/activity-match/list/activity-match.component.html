@@ -1,0 +1,28 @@
+<div class="page" id="page-activity-match">
+  <h1 id="page-heading" class="title" data-cy="ActivityMatchHeading">
+    <span>Welcome to UNIBRIDGE</span>
+  </h1>
+
+  <jhi-alert-error></jhi-alert-error>
+  <jhi-alert></jhi-alert>
+
+  <h2>Match With a Buddy</h2>
+  <div class="buddy-buttons">
+    <button (click)="navigateToBuddy(ActivityType.ACADEMIC)">ACADEMIC BUDDY</button>
+    <button (click)="navigateToBuddy(ActivityType.GYM)">GYM BUDDY</button>
+    <button (click)="navigateToBuddy(ActivityType.SPORTS)">SPORTS BUDDY</button>
+    <button (click)="navigateToBuddy(ActivityType.SOCIAL)">SOCIALS BUDDY</button>
+  </div>
+
+  <h2>Create/Join</h2>
+  <div class="activity-buttons">
+    <button (click)="navigateToBooking()">CREATE A BOOKING</button>
+    <button (click)="navigateToActivity()">JOIN AN ACTIVITY</button>
+  </div>
+
+  <h2>View Your Upcoming Matches</h2>
+  <div class="activity-buttons">
+    <button (click)="navigateToUpcomingMatches()">UPCOMING MATCHES</button>
+    <button (click)="navigateToMatchRequests()">MATCH REQUESTS</button>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+{
+  "annotations": {
+    "changelogDate": "20250424075927"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "joinedDate",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "ParticipationStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "PENDING,CONFIRMED,CANCELED"
+    }
+  ],
+  "name": "ActivityParticipant",
+  "relationships": [
+    {
+      "otherEntityName": "profile",
+      "relationshipName": "participant",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "activity",
+      "relationshipName": "activity",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

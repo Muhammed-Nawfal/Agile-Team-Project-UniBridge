@@ -1,0 +1,63 @@
+<div class="container mt-4" *ngIf="profile">
+  <!-- One-time Tip -->
+  <div *ngIf="showFollowTip" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+    💡 <strong>Tip:</strong> Follow this user to be able to send them messages.
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissTip()"></button>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body text-center">
+          <!-- Profile Picture -->
+          <img
+            *ngIf="profile?.profilePicture && profile?.profilePictureContentType"
+            [src]="'data:' + profile?.profilePictureContentType + ';base64,' + profile?.profilePicture"
+            class="rounded-circle mb-3"
+            alt="Profile Picture"
+            style="width: 120px; height: 120px; object-fit: cover"
+          />
+
+          <!-- Full name or fallback to @username -->
+          <h3>{{ fullName || '@' + (profile?.login || 'Unknown User') }}</h3>
+
+          <!-- Bio -->
+          <p *ngIf="profile?.bio?.trim()" class="fst-italic">{{ profile?.bio }}</p>
+
+          <!-- Course Info -->
+          <p><strong>Course:</strong> {{ profile?.course || 'Not specified' }} - Year {{ profile?.courseYear || 'N/A' }}</p>
+
+          <!-- Detail Tiles -->
+          <div class="d-flex flex-wrap justify-content-center mt-3 gap-2">
+            <ng-container *ngIf="profile?.studyTime">
+              <span class="badge bg-success p-2">Study Time: {{ profile?.studyTime }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.gymSkill">
+              <span class="badge bg-primary p-2">Gym Skill: {{ profile?.gymSkill }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.gymTime">
+              <span class="badge bg-primary p-2">Gym Time: {{ profile?.gymTime }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.gymLocation">
+              <span class="badge bg-primary p-2">Gym Location: {{ profile?.gymLocation }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.sports">
+              <span class="badge bg-dark p-2">Sports: {{ profile?.sports }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.sportsSkill">
+              <span class="badge bg-dark p-2">Sports Skill: {{ profile?.sportsSkill }}</span>
+            </ng-container>
+          </div>
+
+          <!-- Follow/Message -->
+          <div class="mt-4">
+            <button class="btn me-2" [ngClass]="isFollowing ? 'btn-danger' : 'btn-outline-success'" (click)="toggleFollow()">
+              {{ isFollowing ? 'Unfollow' : 'Follow' }}
+            </button>
+
+            <button class="btn btn-primary" (click)="onMessage()">Message</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

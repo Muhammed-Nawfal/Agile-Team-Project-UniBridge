@@ -1,0 +1,11 @@
+id;title;description;category;date;points;badge;badge_content_type;completed
+1;grumpy;../fake-data/blob/hipster.txt;SOCIAL;2025-03-10;34;../fake-data/blob/hipster.png;image/png;false
+2;revoke;../fake-data/blob/hipster.txt;COMMUNITY;2025-03-10;48;../fake-data/blob/hipster.png;image/png;true
+3;though;../fake-data/blob/hipster.txt;SOCIAL;2025-03-10;45;../fake-data/blob/hipster.png;image/png;false
+4;overdue;../fake-data/blob/hipster.txt;COMMUNITY;2025-03-11;17;../fake-data/blob/hipster.png;image/png;false
+5;especially behind but;../fake-data/blob/hipster.txt;SPORTS;2025-03-11;94;../fake-data/blob/hipster.png;image/png;true
+6;whose;../fake-data/blob/hipster.txt;COMMUNITY;2025-03-11;51;../fake-data/blob/hipster.png;image/png;true
+7;while;../fake-data/blob/hipster.txt;SPORTS;2025-03-11;89;../fake-data/blob/hipster.png;image/png;false
+8;since royal;../fake-data/blob/hipster.txt;SOCIAL;2025-03-11;28;../fake-data/blob/hipster.png;image/png;true
+9;phooey consequently;../fake-data/blob/hipster.txt;PERSONAL_GROWTH;2025-03-11;20;../fake-data/blob/hipster.png;image/png;false
+10;underneath irritably;../fake-data/blob/hipster.txt;SOCIAL;2025-03-11;56;../fake-data/blob/hipster.png;image/png;true

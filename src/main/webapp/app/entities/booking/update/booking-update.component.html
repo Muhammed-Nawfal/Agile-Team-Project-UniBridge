@@ -1,0 +1,285 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-booking-heading" data-cy="BookingCreateUpdateHeading">Create or edit a Booking</h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let activityTypeRef = editForm.get('activityType')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_activityType">Activity Type</label>
+          <select class="form-control" name="activityType" formControlName="activityType" id="field_activityType" data-cy="activityType">
+            <option [ngValue]="null"></option>
+            @for (activityType of activityTypeValues; track $index) {
+              <option [value]="activityType">
+                {{ { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[activityType] }}
+              </option>
+            }
+          </select>
+          @if (activityTypeRef.invalid && (activityTypeRef.dirty || activityTypeRef.touched)) {
+            <div>
+              @if (editForm.get('activityType')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let eventTypeRef = editForm.get('eventType')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_eventType">Event Type</label>
+          <select class="form-control" name="eventType" formControlName="eventType" id="field_eventType" data-cy="eventType">
+            <option [ngValue]="null"></option>
+            @for (eventType of eventTypeValues; track $index) {
+              <option [value]="eventType">
+                {{
+                  {
+                    null: '',
+                    STUDY_SPACES: 'STUDY_SPACES',
+                    EVENT_ROOMS: 'EVENT_ROOMS',
+                    FOOTBALL_PITCH: 'FOOTBALL_PITCH',
+                    TENNIS_COURT: 'TENNIS_COURT',
+                    BASKETBALL_COURT: 'BASKETBALL_COURT',
+                    DOJO: 'DOJO',
+                    SWIMMING_POOL: 'SWIMMING_POOL',
+                    SQUASH_COURT: 'SQUASH_COURT',
+                  }[eventType]
+                }}
+              </option>
+            }
+          </select>
+          @if (eventTypeRef.invalid && (eventTypeRef.dirty || eventTypeRef.touched)) {
+            <div>
+              @if (editForm.get('eventType')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let bookingDateRef = editForm.get('bookingDate')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_bookingDate">Booking Date</label>
+          <div class="input-group">
+            <input
+              id="field_bookingDate"
+              data-cy="bookingDate"
+              type="text"
+              class="form-control"
+              name="bookingDate"
+              ngbDatepicker
+              #bookingDateDp="ngbDatepicker"
+              formControlName="bookingDate"
+            />
+            <button type="button" class="btn btn-secondary" (click)="bookingDateDp.toggle()">
+              <fa-icon icon="calendar-alt"></fa-icon>
+            </button>
+          </div>
+          @if (bookingDateRef.invalid && (bookingDateRef.dirty || bookingDateRef.touched)) {
+            <div>
+              @if (editForm.get('bookingDate')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let partySizeRef = editForm.get('partySize')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_partySize">Party Size</label>
+          <input type="number" class="form-control" name="partySize" id="field_partySize" data-cy="partySize" formControlName="partySize" />
+          @if (partySizeRef.invalid && (partySizeRef.dirty || partySizeRef.touched)) {
+            <div>
+              @if (editForm.get('partySize')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('partySize')?.errors?.number"
+                >This field should be a number.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let bookingStatusRef = editForm.get('bookingStatus')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_bookingStatus">Booking Status</label>
+          <select
+            class="form-control"
+            name="bookingStatus"
+            formControlName="bookingStatus"
+            id="field_bookingStatus"
+            data-cy="bookingStatus"
+          >
+            <option [ngValue]="null"></option>
+            @for (bookingStatus of bookingStatusValues; track $index) {
+              <option [value]="bookingStatus">{{ { null: '', CONFIRMED: 'CONFIRMED', CANCELLED: 'CANCELLED' }[bookingStatus] }}</option>
+            }
+          </select>
+          @if (bookingStatusRef.invalid && (bookingStatusRef.dirty || bookingStatusRef.touched)) {
+            <div>
+              @if (editForm.get('bookingStatus')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_createdAt">Created At</label>
+          <div class="d-flex">
+            <input
+              id="field_createdAt"
+              data-cy="createdAt"
+              type="datetime-local"
+              class="form-control"
+              name="createdAt"
+              formControlName="createdAt"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_assignedAt">Assigned At</label>
+          <div class="d-flex">
+            <input
+              id="field_assignedAt"
+              data-cy="assignedAt"
+              type="datetime-local"
+              class="form-control"
+              name="assignedAt"
+              formControlName="assignedAt"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_timeSlots">Time Slots</label>
+          <select
+            class="form-control"
+            id="field_timeSlots"
+            data-cy="timeSlots"
+            name="timeSlots"
+            formControlName="timeSlots"
+            [compareWith]="compareTimeSlot"
+          >
+            <option [ngValue]="null"></option>
+            @for (timeSlotOption of timeSlotsSharedCollection; track $index) {
+              <option [ngValue]="timeSlotOption">{{ timeSlotOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_bookedActivity">Booked Activity</label>
+          <select
+            class="form-control"
+            id="field_bookedActivity"
+            data-cy="bookedActivity"
+            name="bookedActivity"
+            formControlName="bookedActivity"
+            [compareWith]="compareActivity"
+          >
+            <option [ngValue]="null"></option>
+            @for (activityOption of activitiesSharedCollection; track $index) {
+              <option [ngValue]="activityOption">{{ activityOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_bookingLocation">Booking Location</label>
+          <select
+            class="form-control"
+            id="field_bookingLocation"
+            data-cy="bookingLocation"
+            name="bookingLocation"
+            formControlName="bookingLocation"
+            [compareWith]="compareLocation"
+          >
+            <option [ngValue]="null"></option>
+            @for (locationOption of locationsSharedCollection; track $index) {
+              <option [ngValue]="locationOption">{{ locationOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_creator">Creator</label>
+          <select
+            class="form-control"
+            id="field_creator"
+            data-cy="creator"
+            name="creator"
+            formControlName="creator"
+            [compareWith]="compareProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_activity">Activity</label>
+          <select
+            class="form-control"
+            id="field_activity"
+            data-cy="activity"
+            name="activity"
+            formControlName="activity"
+            [compareWith]="compareActivity"
+          >
+            <option [ngValue]="null"></option>
+            @for (activityOption of activitiesSharedCollection; track $index) {
+              <option [ngValue]="activityOption">{{ activityOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_timeSlot">Time Slot</label>
+          <select
+            class="form-control"
+            id="field_timeSlot"
+            data-cy="timeSlot"
+            name="timeSlot"
+            formControlName="timeSlot"
+            [compareWith]="compareTimeSlot"
+          >
+            <option [ngValue]="null"></option>
+            @for (timeSlotOption of timeSlotsSharedCollection; track $index) {
+              <option [ngValue]="timeSlotOption">{{ timeSlotOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

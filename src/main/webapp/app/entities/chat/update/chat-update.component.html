@@ -1,0 +1,260 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-chat-heading" data-cy="ChatCreateUpdateHeading">Create or edit a Chat</h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label" for="field_message">Message</label>
+          <textarea class="form-control" name="message" id="field_message" data-cy="message" formControlName="message"></textarea>
+        </div>
+
+        @let timestampRef = editForm.get('timestamp')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_timestamp">Timestamp</label>
+          <div class="d-flex">
+            <input
+              id="field_timestamp"
+              data-cy="timestamp"
+              type="datetime-local"
+              class="form-control"
+              name="timestamp"
+              formControlName="timestamp"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (timestampRef.invalid && (timestampRef.dirty || timestampRef.touched)) {
+            <div>
+              @if (editForm.get('timestamp')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('timestamp')?.errors?.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let statusRef = editForm.get('status')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_status">Status</label>
+          <select class="form-control" name="status" formControlName="status" id="field_status" data-cy="status">
+            <option [ngValue]="null"></option>
+            @for (messageStatus of messageStatusValues; track $index) {
+              <option [value]="messageStatus">{{ { null: '', SENT: 'SENT', DELIVERED: 'DELIVERED', READ: 'READ' }[messageStatus] }}</option>
+            }
+          </select>
+          @if (statusRef.invalid && (statusRef.dirty || statusRef.touched)) {
+            <div>
+              @if (editForm.get('status')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let typeRef = editForm.get('type')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_type">Type</label>
+          <select class="form-control" name="type" formControlName="type" id="field_type" data-cy="type">
+            <option [ngValue]="null"></option>
+            @for (messageType of messageTypeValues; track $index) {
+              <option [value]="messageType">
+                {{ { null: '', TEXT: 'TEXT', IMAGE: 'IMAGE', VIDEO: 'VIDEO', FILE: 'FILE' }[messageType] }}
+              </option>
+            }
+          </select>
+          @if (typeRef.invalid && (typeRef.dirty || typeRef.touched)) {
+            <div>
+              @if (editForm.get('type')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let mediaRef = editForm.get('media')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_media">Media</label>
+          <div>
+            @if (mediaRef.value) {
+              <img
+                [src]="'data:' + editForm.get('mediaContentType')!.value + ';base64,' + mediaRef.value"
+                style="max-height: 100px"
+                alt="chat"
+              />
+            }
+            @if (mediaRef.value) {
+              <div class="form-text text-danger clearfix">
+                <span class="pull-start">{{ editForm.get('mediaContentType')!.value }}, {{ byteSize(mediaRef.value!) }}</span>
+                <button
+                  type="button"
+                  (click)="clearInputImage('media', 'mediaContentType', 'file_media')"
+                  class="btn btn-secondary btn-xs pull-end"
+                >
+                  <fa-icon icon="times"></fa-icon>
+                </button>
+              </div>
+            }
+            <input type="file" id="file_media" data-cy="media" (change)="setFileData($event, 'media', true)" accept="image/*" />
+          </div>
+          <input type="hidden" class="form-control" name="media" id="field_media" data-cy="media" formControlName="media" />
+          <input
+            type="hidden"
+            class="form-control"
+            name="mediaContentType"
+            id="field_mediaContentType"
+            formControlName="mediaContentType"
+          />
+        </div>
+
+        @let isDeletedRef = editForm.get('isDeleted')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_isDeleted">Is Deleted</label>
+          <input type="checkbox" class="form-check" name="isDeleted" id="field_isDeleted" data-cy="isDeleted" formControlName="isDeleted" />
+          @if (isDeletedRef.invalid && (isDeletedRef.dirty || isDeletedRef.touched)) {
+            <div>
+              @if (editForm.get('isDeleted')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let createdOnRef = editForm.get('createdOn')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_createdOn">Created On</label>
+          <div class="d-flex">
+            <input
+              id="field_createdOn"
+              data-cy="createdOn"
+              type="datetime-local"
+              class="form-control"
+              name="createdOn"
+              formControlName="createdOn"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (createdOnRef.invalid && (createdOnRef.dirty || createdOnRef.touched)) {
+            <div>
+              @if (editForm.get('createdOn')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('createdOn')?.errors?.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_updatedOn">Updated On</label>
+          <div class="d-flex">
+            <input
+              id="field_updatedOn"
+              data-cy="updatedOn"
+              type="datetime-local"
+              class="form-control"
+              name="updatedOn"
+              formControlName="updatedOn"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_thread">Thread</label>
+          <select
+            class="form-control"
+            id="field_thread"
+            data-cy="thread"
+            name="thread"
+            formControlName="thread"
+            [compareWith]="compareMessageThread"
+          >
+            <option [ngValue]="null"></option>
+            @for (messageThreadOption of messageThreadsSharedCollection; track $index) {
+              <option [ngValue]="messageThreadOption">{{ messageThreadOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_sender">Sender</label>
+          <select
+            class="form-control"
+            id="field_sender"
+            data-cy="sender"
+            name="sender"
+            formControlName="sender"
+            [compareWith]="compareProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_receiver">Receiver</label>
+          <select
+            class="form-control"
+            id="field_receiver"
+            data-cy="receiver"
+            name="receiver"
+            formControlName="receiver"
+            [compareWith]="compareProfile"
+          >
+            <option [ngValue]="null"></option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_messageThread">Message Thread</label>
+          <select
+            class="form-control"
+            id="field_messageThread"
+            data-cy="messageThread"
+            name="messageThread"
+            formControlName="messageThread"
+            [compareWith]="compareMessageThread"
+          >
+            <option [ngValue]="null"></option>
+            @for (messageThreadOption of messageThreadsSharedCollection; track $index) {
+              <option [ngValue]="messageThreadOption">{{ messageThreadOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,201 @@
+<div>
+  <h2 id="page-heading" data-cy="ChatHeading">
+    <span>Chats</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span>Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-chat"
+        [routerLink]="['/chat/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span>Create a new Chat</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (chats?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span>No Chats found</span>
+    </div>
+  }
+
+  @if (chats && chats.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span>ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="message">
+              <div class="d-flex">
+                <span>Message</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="timestamp">
+              <div class="d-flex">
+                <span>Timestamp</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="status">
+              <div class="d-flex">
+                <span>Status</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="type">
+              <div class="d-flex">
+                <span>Type</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="media">
+              <div class="d-flex">
+                <span>Media</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="isDeleted">
+              <div class="d-flex">
+                <span>Is Deleted</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="createdOn">
+              <div class="d-flex">
+                <span>Created On</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="updatedOn">
+              <div class="d-flex">
+                <span>Updated On</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="thread.id">
+              <div class="d-flex">
+                <span>Thread</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="sender.id">
+              <div class="d-flex">
+                <span>Sender</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="receiver.id">
+              <div class="d-flex">
+                <span>Receiver</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="messageThread.id">
+              <div class="d-flex">
+                <span>Message Thread</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (chat of chats; track trackId(chat)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/chat', chat.id, 'view']">{{ chat.id }}</a>
+              </td>
+              <td>{{ chat.message }}</td>
+              <td>{{ chat.timestamp | formatMediumDatetime }}</td>
+              <td>{{ { null: '', SENT: 'SENT', DELIVERED: 'DELIVERED', READ: 'READ' }[chat.status ?? 'null'] }}</td>
+              <td>{{ { null: '', TEXT: 'TEXT', IMAGE: 'IMAGE', VIDEO: 'VIDEO', FILE: 'FILE' }[chat.type ?? 'null'] }}</td>
+              <td>
+                @if (chat.media) {
+                  <a (click)="openFile(chat.media, chat.mediaContentType)">
+                    <img [src]="'data:' + chat.mediaContentType + ';base64,' + chat.media" style="max-height: 30px" alt="chat" />
+                  </a>
+                  <span>{{ chat.mediaContentType }}, {{ byteSize(chat.media) }}</span>
+                }
+              </td>
+              <td>{{ chat.isDeleted }}</td>
+              <td>{{ chat.createdOn | formatMediumDatetime }}</td>
+              <td>{{ chat.updatedOn | formatMediumDatetime }}</td>
+              <td>
+                @if (chat.thread) {
+                  <div>
+                    <a [routerLink]="['/message-thread', chat.thread.id, 'view']">{{ chat.thread.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (chat.sender) {
+                  <div>
+                    <a [routerLink]="['/profile', chat.sender.id, 'view']">{{ chat.sender.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (chat.receiver) {
+                  <div>
+                    <a [routerLink]="['/profile', chat.receiver.id, 'view']">{{ chat.receiver.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (chat.messageThread) {
+                  <div>
+                    <a [routerLink]="['/message-thread', chat.messageThread.id, 'view']">{{ chat.messageThread.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/chat', chat.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline">View</span>
+                  </a>
+
+                  <a [routerLink]="['/chat', chat.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(chat)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -1,0 +1,11 @@
+.challenge-card {
+  cursor: pointer;
+  transition: transform 0.2s;
+  &:hover {
+    transform: translateY(-4px);
+  }
+  .card-text {
+    max-height: 3.6em; // roughly two lines
+    overflow: hidden;
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170640"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "login",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "unique"]
+    },
+    {
+      "fieldName": "firstName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "lastName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "bio",
+      "fieldType": "TextBlob"
+    },
+    {
+      "fieldName": "profilePicture",
+      "fieldType": "ImageBlob"
+    },
+    {
+      "fieldName": "course",
+      "fieldType": "Course",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "COMPUTER_SCIENCE,ECONOMICS,PSYCHOLOGY,MATHS,ENGLISH,ENGINEERING,PHYSICS,CHEMISTRY,BIOLOGY,MEDICINE,LAW,BUSINESS,ART,MUSIC,HISTORY,GEOGRAPHY,PHILOSOPHY,LINGUISTICS,SOCIOLOGY,POLITICAL_SCIENCE,ARCHITECTURE,EDUCATION"
+    },
+    {
+      "fieldName": "courseYear",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required", "min", "max"],
+      "fieldValidateRulesMax": "6",
+      "fieldValidateRulesMin": "1"
+    },
+    {
+      "fieldName": "university",
+      "fieldType": "University",
+      "fieldValues": "UNIVERSITY_OF_BIRMINGHAM,ASTON_UNIVERSITY,BIRMINGHAM_CITY_UNIVERSITY,UNIVERSITY_OF_NOTTINGHAM"
+    },
+    {
+      "fieldName": "gymSkill",
+      "fieldType": "Skill",
+      "fieldValues": "NOVICE,INTERMEDIATE,CONFIDENT,PROFESSIONAL"
+    },
+    {
+      "fieldName": "gymLocation",
+      "fieldType": "GymLocation",
+      "fieldValues": "THE_GYM_SELLY_OAK,TIVERTON,PUREGYM_FIVE_WAYS"
+    },
+    {
+      "fieldName": "gymTime",
+      "fieldType": "PreferredTime",
+      "fieldValues": "EARLY_MORNING,MORNING,AFTERNOON,EVENING,NIGHT,LATE_NIGHT"
+    },
+    {
+      "fieldName": "studyTime",
+      "fieldType": "PreferredTime",
+      "fieldValues": "EARLY_MORNING,MORNING,AFTERNOON,EVENING,NIGHT,LATE_NIGHT"
+    },
+    {
+      "fieldName": "sports",
+      "fieldType": "Sports",
+      "fieldValues": "FOOTBALL,CRICKET,BADMINTON,TENNIS,NETBALL,BASKETBALL,VOLLEYBALL,TABLE_TENNIS,BASEBALL,RUGBY,HOCKEY,SWIMMING,ATHLETICS,GOLF,BOXING,MARTIAL_ARTS,CYCLING,SKIING,SKATEBOARDING,ESPORTS"
+    },
+    {
+      "fieldName": "sportsSkill",
+      "fieldType": "Skill",
+      "fieldValues": "NOVICE,INTERMEDIATE,CONFIDENT,PROFESSIONAL"
+    },
+    {
+      "fieldName": "sportsTime",
+      "fieldType": "PreferredTime",
+      "fieldValues": "EARLY_MORNING,MORNING,AFTERNOON,EVENING,NIGHT,LATE_NIGHT"
+    },
+    {
+      "fieldName": "preferredSociety",
+      "fieldType": "Society",
+      "fieldValues": "ABACUS,ACCOUNTING_AND_FINANCE,AFRICAN_AND_CARIBBEAN,ALGOSOC,ARAB,AZERBAIJANI,BAKING,BALADS,BENGALI,BIOSOC,BIRMINGHAM_BLACK_AND_ETHNIC_MINORITY_SCIENTISTS,BLACK_LAW_STUDENTS_SOCIETY,CANADIAN_SOCIETY,CARIBBEAN_UNION,CATHOLIC,CHESS,CIVIL_ENGINEERING,COMPUTER_SCIENCE_SOCIETY,CRAFT,CRIMINOLOGY,CULTURAL_ARTS,DARTS_SOCIETY,DEBATING,DENTAL_SOCIETY,EAST_AFRICAN,EGYPTIAN,ELECTRONIC_AND_ELECTRICAL_ENGINEERING,ESPORTS,FILIPINO,FILMSOC,FINTECH,FRIENDS_OF_PALESTINE,GAMES_DEVELOPMENT,GERMAN,HENNA_SOCIETY,HIDE_AND_SEEK_SOCIETY,HINDU,ICE_SKATING_SOCIETY,INDIAN,IRAQI,ISLAMIC,ITALIAN,JAIN_SOCIETY,JAPAN_SOCIETY,KICKBOXING,KOREA,MALAYALEE,MALAYSIAN,MATHSOC,MEDTEC,MIXED_MARTIAL_ARTS,MUAY_THAI_BOXING,NEPALESE,NERDSOC,NORTH_AFRICAN,OMANI_SOCIETY,PAKISTAN,POWERLIFTING,PSYCHOLOGY,PUNJABI,SAUDI,SHOOTING,SIKH,SINGAPORE_SOCIETY,SRI_LANKAN_SOCIETY,SUDANESE_SOCIETY,TAMIL,TURKISH,UKRAINIAN_SOCIETY,VIDEO_GAMES_SOCIETY,VIETNAMESE,WAYFARERS_HIKING_SOCIETY,WELSH,WOMEN_IN_LAW,WOMEN_IN_MEDICINE,OTHER"
+    },
+    {
+      "fieldName": "preferredEvents",
+      "fieldType": "PreferredEvents",
+      "fieldValues": "GAMES_NIGHT,MEET_AND_GREET,SPORTS_NIGHT,CLUBBING,RELIGIOUS,ACADEMIC"
+    },
+    {
+      "fieldName": "eventsTime",
+      "fieldType": "PreferredTime",
+      "fieldValues": "EARLY_MORNING,MORNING,AFTERNOON,EVENING,NIGHT,LATE_NIGHT"
+    },
+    {
+      "fieldName": "preferredActivities",
+      "fieldType": "ActivityType",
+      "fieldValues": "SOCIAL,ACADEMIC,SPORTS,GYM,OTHER"
+    }
+  ],
+  "name": "Profile",
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "relationshipName": "user",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one",
+      "relationshipWithBuiltInEntity": true
+    }
+  ],
+  "searchEngine": "no"
+}

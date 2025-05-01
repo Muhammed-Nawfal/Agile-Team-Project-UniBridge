@@ -1,0 +1,11 @@
+id;message;timestamp;status;type;media;media_content_type;is_deleted;created_on;updated_on
+1;../fake-data/blob/hipster.txt;2025-02-26T00:17:55;SENT;TEXT;../fake-data/blob/hipster.png;image/png;true;2025-02-25T20:54:23;2025-02-26T08:12:42
+2;../fake-data/blob/hipster.txt;2025-02-25T22:31:15;DELIVERED;IMAGE;../fake-data/blob/hipster.png;image/png;false;2025-02-25T18:42:24;2025-02-26T06:46:44
+3;../fake-data/blob/hipster.txt;2025-02-26T09:52:10;READ;IMAGE;../fake-data/blob/hipster.png;image/png;false;2025-02-26T11:58:13;2025-02-26T08:13:50
+4;../fake-data/blob/hipster.txt;2025-02-26T15:07:22;DELIVERED;FILE;../fake-data/blob/hipster.png;image/png;false;2025-02-26T01:58:08;2025-02-25T22:41:34
+5;../fake-data/blob/hipster.txt;2025-02-26T07:10:02;DELIVERED;FILE;../fake-data/blob/hipster.png;image/png;true;2025-02-26T08:19:30;2025-02-26T14:19:01
+6;../fake-data/blob/hipster.txt;2025-02-26T02:48:28;SENT;TEXT;../fake-data/blob/hipster.png;image/png;true;2025-02-26T07:08:23;2025-02-26T11:27:01
+7;../fake-data/blob/hipster.txt;2025-02-25T17:14:43;DELIVERED;FILE;../fake-data/blob/hipster.png;image/png;true;2025-02-26T06:37:52;2025-02-26T01:54:10
+8;../fake-data/blob/hipster.txt;2025-02-26T08:29:09;SENT;VIDEO;../fake-data/blob/hipster.png;image/png;false;2025-02-26T02:03:33;2025-02-26T07:26:01
+9;../fake-data/blob/hipster.txt;2025-02-26T03:10:48;DELIVERED;IMAGE;../fake-data/blob/hipster.png;image/png;false;2025-02-26T10:21:54;2025-02-26T04:00:55
+10;../fake-data/blob/hipster.txt;2025-02-26T09:39:16;SENT;IMAGE;../fake-data/blob/hipster.png;image/png;true;2025-02-26T00:26:06;2025-02-25T18:50:49

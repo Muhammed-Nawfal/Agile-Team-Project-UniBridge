@@ -1,0 +1,39 @@
+<!-- src/main/webapp/app/entities/challenge/challenge-card.component.html -->
+<div class="card mb-4 shadow-sm">
+  <div class="card-body">
+    <h5 class="card-title">{{ challenge.title }}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">From: {{ challenge.createdBy?.login || '—' }}</h6>
+    <p class="card-text" *ngIf="challenge.description">{{ challenge.description }}</p>
+
+    <ul class="list-inline mb-2">
+      <li class="list-inline-item" *ngIf="challenge.date">
+        <fa-icon icon="clock"></fa-icon>
+        {{ challenge.date.toDate() | date: 'dd/MM/yyyy' }}
+      </li>
+      <li class="list-inline-item" *ngIf="challenge.category">
+        <span class="badge bg-{{ getCategoryClass(challenge.category) }}">
+          {{ challenge.category }}
+        </span>
+      </li>
+      <li class="list-inline-item text-primary" *ngIf="challenge.points">{{ challenge.points }} points</li>
+    </ul>
+
+    <div class="d-flex justify-content-between">
+      <!-- Show based on completed status -->
+      <ng-container *ngIf="!challenge.completed">
+        <button class="btn btn-success" (click)="onAcceptClick()"><fa-icon icon="check"></fa-icon> Accept</button>
+        <button class="btn btn-danger" (click)="onRejectClick()"><fa-icon icon="times"></fa-icon> Reject</button>
+      </ng-container>
+
+      <!-- For completion -->
+      <ng-container *ngIf="!challenge.completed">
+        <button class="btn btn-primary" (click)="onCompleteClick()"><fa-icon icon="check-circle"></fa-icon> Complete</button>
+      </ng-container>
+
+      <!-- Completed: show badge -->
+      <ng-container *ngIf="challenge.completed">
+        <span class="badge bg-success">Completed</span>
+      </ng-container>
+    </div>
+  </div>
+</div>

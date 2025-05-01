@@ -1,0 +1,36 @@
+{
+  "annotations": {
+    "changelogDate": "20250424075931"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "AvailabilityStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "AVAILABLE,FULL,OCCUPIED,BLOCKED,MAINTENANCE"
+    },
+    {
+      "fieldName": "capacity",
+      "fieldType": "Integer",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "remainingCapacity",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "isCapacityBased",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Location",
+  "relationships": [],
+  "searchEngine": "no"
+}

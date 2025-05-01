@@ -1,0 +1,43 @@
+{
+  "annotations": {
+    "changelogDate": "20250226170647"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "datePublished",
+      "fieldType": "Instant",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "star",
+      "fieldType": "BigDecimal",
+      "fieldValidateRules": ["required", "min", "max"],
+      "fieldValidateRulesMax": "5",
+      "fieldValidateRulesMin": "0"
+    },
+    {
+      "fieldName": "text",
+      "fieldType": "String",
+      "fieldValidateRules": ["minlength", "maxlength"],
+      "fieldValidateRulesMaxlength": "300",
+      "fieldValidateRulesMinlength": "0"
+    }
+  ],
+  "name": "Review",
+  "relationships": [
+    {
+      "otherEntityName": "profile",
+      "relationshipName": "aboutUser",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "profile",
+      "relationshipName": "fromUser",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

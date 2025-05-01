@@ -1,0 +1,79 @@
+<div class="container-fluid">
+  <h2 id="page-heading" class="mb-4">My Challenges</h2>
+
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-primary me-2" routerLink="/challenge/new">
+      <fa-icon icon="plus"></fa-icon>
+      Create Challenge
+    </button>
+    <button class="btn btn-success me-2" routerLink="/challenge/mytrophies">
+      <fa-icon icon="trophy"></fa-icon>
+      My Trophies
+    </button>
+    <button class="btn btn-info me-2" (click)="loadUserChallenges()" [disabled]="isLoading">
+      <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+      Refresh
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border" role="status"><span class="visually-hidden">Loading…</span></div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="alert alert-danger text-center" role="alert">
+    <fa-icon icon="exclamation-circle"></fa-icon>
+    <span class="ms-1">Failed to load challenges. Please try again later.</span>
+  </div>
+
+  <!-- No Challenges Message -->
+  <div *ngIf="challenges.length === 0 && !isLoading && !error" class="alert alert-warning">
+    You don't have any challenges assigned to you yet.
+  </div>
+
+  <!-- Challenge Cards -->
+  <div *ngIf="challenges.length > 0 && !isLoading && !error" class="row g-3">
+    <div class="col-12 col-md-6 col-lg-4" *ngFor="let challenge of challenges; trackBy: trackId">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <h5 class="card-title mb-0">{{ challenge.title }}</h5>
+            <span class="badge bg-primary">{{ getCategoryLabel(challenge.category) }}</span>
+          </div>
+
+          <p class="card-text text-muted small mb-2">
+            <fa-icon icon="calendar" class="me-1"></fa-icon>
+            {{ formatDate(challenge.date) }}
+          </p>
+
+          <p class="card-text mb-3" *ngIf="challenge.description">{{ challenge.description }}</p>
+
+          <div class="d-flex justify-content-between">
+            <span class="badge bg-secondary p-2">
+              <fa-icon icon="star" class="me-1"></fa-icon>
+              {{ challenge.points }} points
+            </span>
+
+            <span class="text-muted small" *ngIf="challenge.createdBy"> Created by: {{ challenge.createdBy?.login || 'Unknown' }} </span>
+          </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-end bg-white border-0 pt-0">
+          <button
+            *ngIf="!challenge.completed"
+            class="btn btn-sm btn-success me-1"
+            (click)="onComplete(challenge.id)"
+            title="Mark as complete"
+          >
+            <fa-icon icon="check"></fa-icon>
+          </button>
+          <button *ngIf="!challenge.completed" class="btn btn-sm btn-danger" (click)="onReject(challenge.id)" title="Reject challenge">
+            <fa-icon icon="times"></fa-icon>
+          </button>
+          <span *ngIf="challenge.completed" class="badge bg-success p-2"> <fa-icon icon="check"></fa-icon> Completed </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

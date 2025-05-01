@@ -1,0 +1,240 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f8f9ff;
+  color: #333;
+}
+
+/* Main headings */
+#page-heading {
+  font-size: 28px;
+  margin: 30px 0 20px;
+  color: #4a5de8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.all-friends-heading {
+  font-size: 22px;
+  margin: 25px 0;
+  color: #4a5de8;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.all-friends-heading::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(to right, #4a5de8, #7c4dff);
+  border-radius: 3px;
+}
+
+/* Search and requests area */
+.search-area {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 25px 0;
+  background: white;
+  padding: 15px 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.search-input {
+  padding: 12px 20px;
+  border: 1px solid #e0e4f6;
+  border-radius: 30px;
+  width: 250px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  background-color: #f0f2ff;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #7c4dff;
+  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.2);
+  background-color: white;
+}
+
+.requests-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #4a5de8 0%, #7c4dff 100%);
+  color: white;
+  padding: 12px 24px;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3);
+}
+
+.requests-btn:hover {
+  background: linear-gradient(135deg, #3a4dd8 0%, #6c3dff 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(124, 77, 255, 0.4);
+}
+
+.requests-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(124, 77, 255, 0.3);
+}
+
+/* Friends grid */
+.friends-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.friend-card {
+  position: relative;
+  border: none;
+  border-radius: 12px;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: white;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.friend-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(to right, #4a5de8, #7c4dff);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.friend-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 30px rgba(124, 77, 255, 0.15);
+}
+
+.friend-card:hover::before {
+  opacity: 1;
+}
+
+/* Profile picture */
+.profile-pic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  position: relative;
+  font-size: 40px;
+  color: white;
+  font-weight: 500;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Different background colors for profile pics */
+.friend-card:nth-child(4n + 1) .profile-pic {
+  background: linear-gradient(135deg, #4a5de8, #7c4dff);
+}
+
+.friend-card:nth-child(4n + 2) .profile-pic {
+  background: linear-gradient(135deg, #9570ea, #673ab7);
+}
+
+.friend-card:nth-child(4n + 3) .profile-pic {
+  background: linear-gradient(135deg, #0004ff, #622bc0);
+}
+
+.friend-card:nth-child(4n + 4) .profile-pic {
+  background: linear-gradient(135deg, #4255ff, #5a28b0);
+}
+
+/* Friend name */
+.friend-name {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #4a5de8;
+}
+
+/* Message button */
+.message-btn {
+  width: 100%;
+  padding: 12px 0;
+  background: linear-gradient(135deg, #4a5de8, #7c4dff);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  margin: 15px 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(124, 77, 255, 0.2);
+}
+
+.message-btn:hover {
+  background: linear-gradient(135deg, #3a4dd8, #6c3dff);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(124, 77, 255, 0.3);
+}
+
+.message-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(124, 77, 255, 0.2);
+}
+
+/* Friends since */
+.friends-since {
+  font-size: 14px;
+  color: #777;
+  position: relative;
+  padding-top: 10px;
+}
+
+.friends-since::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 2px;
+  background-color: #e0e4f6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .friends-grid {
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 20px;
+  }
+
+  .search-area {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+}

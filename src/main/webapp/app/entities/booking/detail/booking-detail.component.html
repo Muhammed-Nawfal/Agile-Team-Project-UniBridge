@@ -1,0 +1,122 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (booking(); as bookingRef) {
+      <div>
+        <h2 data-cy="bookingDetailsHeading"><span>Booking</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ bookingRef.id }}</span>
+          </dd>
+          <dt><span>Activity Type</span></dt>
+          <dd>
+            <span>{{
+              { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[
+                bookingRef.activityType ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span>Event Type</span></dt>
+          <dd>
+            <span>{{
+              {
+                null: '',
+                STUDY_SPACES: 'STUDY_SPACES',
+                EVENT_ROOMS: 'EVENT_ROOMS',
+                FOOTBALL_PITCH: 'FOOTBALL_PITCH',
+                TENNIS_COURT: 'TENNIS_COURT',
+                BASKETBALL_COURT: 'BASKETBALL_COURT',
+                DOJO: 'DOJO',
+                SWIMMING_POOL: 'SWIMMING_POOL',
+                SQUASH_COURT: 'SQUASH_COURT',
+              }[bookingRef.eventType ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span>Booking Date</span></dt>
+          <dd>
+            <span>{{ bookingRef.bookingDate | formatMediumDate }}</span>
+          </dd>
+          <dt><span>Party Size</span></dt>
+          <dd>
+            <span>{{ bookingRef.partySize }}</span>
+          </dd>
+          <dt><span>Booking Status</span></dt>
+          <dd>
+            <span>{{ { null: '', CONFIRMED: 'CONFIRMED', CANCELLED: 'CANCELLED' }[bookingRef.bookingStatus ?? 'null'] }}</span>
+          </dd>
+          <dt><span>Created At</span></dt>
+          <dd>
+            <span>{{ bookingRef.createdAt | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Assigned At</span></dt>
+          <dd>
+            <span>{{ bookingRef.assignedAt | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Time Slots</span></dt>
+          <dd>
+            @if (booking()!.timeSlots) {
+              <div>
+                <a [routerLink]="['/time-slot', booking()!.timeSlots?.id, 'view']">{{ bookingRef.timeSlots?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Booked Activity</span></dt>
+          <dd>
+            @if (booking()!.bookedActivity) {
+              <div>
+                <a [routerLink]="['/activity', booking()!.bookedActivity?.id, 'view']">{{ bookingRef.bookedActivity?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Booking Location</span></dt>
+          <dd>
+            @if (booking()!.bookingLocation) {
+              <div>
+                <a [routerLink]="['/location', booking()!.bookingLocation?.id, 'view']">{{ bookingRef.bookingLocation?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Creator</span></dt>
+          <dd>
+            @if (booking()!.creator) {
+              <div>
+                <a [routerLink]="['/profile', booking()!.creator?.id, 'view']">{{ bookingRef.creator?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Activity</span></dt>
+          <dd>
+            @if (booking()!.activity) {
+              <div>
+                <a [routerLink]="['/activity', booking()!.activity?.id, 'view']">{{ bookingRef.activity?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Time Slot</span></dt>
+          <dd>
+            @if (booking()!.timeSlot) {
+              <div>
+                <a [routerLink]="['/time-slot', booking()!.timeSlot?.id, 'view']">{{ bookingRef.timeSlot?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/booking', bookingRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,152 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-message-thread-heading" data-cy="MessageThreadCreateUpdateHeading">Create or edit a Message Thread</h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id">ID</label>
+            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let isGroupRef = editForm.get('isGroup')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_isGroup">Is Group</label>
+          <input type="checkbox" class="form-check" name="isGroup" id="field_isGroup" data-cy="isGroup" formControlName="isGroup" />
+          @if (isGroupRef.invalid && (isGroupRef.dirty || isGroupRef.touched)) {
+            <div>
+              @if (editForm.get('isGroup')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let nameRef = editForm.get('name')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_name">Name</label>
+          <input type="text" class="form-control" name="name" id="field_name" data-cy="name" formControlName="name" />
+          @if (nameRef.invalid && (nameRef.dirty || nameRef.touched)) {
+            <div>
+              @if (editForm.get('name')?.errors?.maxlength) {
+                <small class="form-text text-danger">This field cannot be longer than 100 characters.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let createdOnRef = editForm.get('createdOn')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_createdOn">Created On</label>
+          <div class="d-flex">
+            <input
+              id="field_createdOn"
+              data-cy="createdOn"
+              type="datetime-local"
+              class="form-control"
+              name="createdOn"
+              formControlName="createdOn"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (createdOnRef.invalid && (createdOnRef.dirty || createdOnRef.touched)) {
+            <div>
+              @if (editForm.get('createdOn')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('createdOn')?.errors?.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_updatedOn">Updated On</label>
+          <div class="d-flex">
+            <input
+              id="field_updatedOn"
+              data-cy="updatedOn"
+              type="datetime-local"
+              class="form-control"
+              name="updatedOn"
+              formControlName="updatedOn"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_friendChat">Friend Chat</label>
+          <select
+            class="form-control"
+            id="field_friendChat"
+            data-cy="friendChat"
+            name="friendChat"
+            formControlName="friendChat"
+            [compareWith]="compareFriendsList"
+          >
+            <option [ngValue]="null"></option>
+            @for (friendsListOption of friendChatsCollection; track $index) {
+              <option [ngValue]="friendsListOption">{{ friendsListOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_matchChat">Match Chat</label>
+          <select
+            class="form-control"
+            id="field_matchChat"
+            data-cy="matchChat"
+            name="matchChat"
+            formControlName="matchChat"
+            [compareWith]="compareActivityMatch"
+          >
+            <option [ngValue]="null"></option>
+            @for (activityMatchOption of matchChatsCollection; track $index) {
+              <option [ngValue]="activityMatchOption">{{ activityMatchOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="field_participants">Participants</label>
+          <select
+            class="form-control"
+            id="field_participants"
+            data-cy="participants"
+            multiple
+            name="participants"
+            formControlName="participants"
+            [compareWith]="compareProfile"
+          >
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
