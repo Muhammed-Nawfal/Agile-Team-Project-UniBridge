@@ -21,16 +21,10 @@ public class ActivityMatchService {
 
     private final ActivityMatchRepository activityMatchRepository;
     private final ProfileRepository profileRepository;
-    private final ProfileMapper profileMapper;
 
-    public ActivityMatchService(
-        ActivityMatchRepository activityMatchRepository,
-        ProfileRepository profileRepository,
-        ProfileMapper profileMapper
-    ) {
+    public ActivityMatchService(ActivityMatchRepository activityMatchRepository, ProfileRepository profileRepository) {
         this.activityMatchRepository = activityMatchRepository;
         this.profileRepository = profileRepository;
-        this.profileMapper = profileMapper;
     }
 
     /**

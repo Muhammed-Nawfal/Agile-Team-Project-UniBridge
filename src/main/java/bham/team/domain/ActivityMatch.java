@@ -71,7 +71,7 @@ public class ActivityMatch implements Serializable {
     @JsonIgnoreProperties(value = { "user", "ranking", "messageThreads" }, allowSetters = true)
     private Profile matchRequestor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = { "user", "ranking", "messageThreads" }, allowSetters = true)
     private Profile userDetails;
 

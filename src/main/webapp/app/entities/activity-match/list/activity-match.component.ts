@@ -139,13 +139,7 @@ export class ActivityMatchComponent implements OnInit, OnDestroy {
   }
 
   navigateToBuddy(type: ActivityType): void {
-    if (this.account()) {
-      this.router.navigate(['/activity-match/buddy', type]);
-    } else {
-      // Store the current URL and redirect to the login page
-      localStorage.setItem('redirectUrl', `/activity-match/buddy/${type}`);
-      this.router.navigate(['/login']);
-    }
+    this.router.navigate(['/activity-match/buddy', type]);
   }
 
   navigateToBooking(): void {
@@ -156,6 +150,14 @@ export class ActivityMatchComponent implements OnInit, OnDestroy {
       localStorage.setItem('redirectUrl', this.router.url);
       this.router.navigate(['/login']);
     }
+  }
+
+  navigateToUpcomingMatches(): void {
+    this.router.navigate(['/activity-match/upcoming-matches']);
+  }
+
+  navigateToMatchRequests(): void {
+    this.router.navigate(['/activity-match/activity-match-requests']);
   }
 
   handleLoginRedirect(): void {
