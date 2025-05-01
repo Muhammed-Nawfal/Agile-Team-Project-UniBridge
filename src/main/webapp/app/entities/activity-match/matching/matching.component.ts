@@ -19,14 +19,14 @@ import { Society } from '../../enumerations/society.model';
 import { PreferredEvents } from '../../enumerations/preferred-events.model';
 
 import dayjs from 'dayjs/esm';
-import { take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { AccountService } from 'app/core/auth/account.service';
-import { Decision } from 'app/entities/enumerations/decision.model';
 import { NewActivityMatch } from 'app/entities/activity-match/activity-match.model';
 import { ProfileService } from '../../profile/service/profile.service';
 import { MatchRequestDialogComponent } from '../match-request-dialog/match-request-dialog.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { firstValueFrom } from 'rxjs';
+import { Decision } from '../../enumerations/decision.model';
 
 @Component({
   standalone: true,
@@ -49,6 +49,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
   profiles: IProfile[] = []; // This will store the list of potential matches
   currentProfile: IProfile | null = null;
   noMoreProfiles = false;
+  showFollowPopup = false;
 
   // Add buddy type property
   buddyType = ActivityType.OTHER;
@@ -75,36 +76,33 @@ export class MatchingComponent implements OnInit, OnDestroy {
   private modalService = inject(NgbModal);
 
   ngOnInit(): void {
-    // Subscribe to both id and type parameters
-    this.subscription = combineLatest([this.activatedRoute.paramMap, this.activatedRoute.queryParamMap]).subscribe(
-      ([params, queryParams]) => {
-        // Get the buddy type from route parameters
-        const type = params.get('type');
-        if (type) {
-          this.buddyType = ActivityType[type as keyof typeof ActivityType];
-          this.setupFilterOptions();
-          this.loadBuddies();
-        }
-
-        // Get the activity match ID if available
-        const id = params.get('id');
-        if (id) {
-          this.activityMatchId = +id;
-          this.loadActivityMatch(this.activityMatchId);
-        }
-      },
-    );
+    // 1) First resolve my profile ID
     this.accountService
       .identity()
       .pipe(
         take(1),
-        switchMap(account => this.profileService.query({ 'userLogin.equals': account?.login })),
-        take(1),
+        switchMap(account => this.profileService.query({ 'userLogin.equals': account?.login }).pipe(take(1))),
       )
       .subscribe(resp => {
-        const prof = resp.body?.[0];
-        if (prof?.id) {
-          this.currentUserProfileId = prof.id;
+        const me = resp.body?.[0];
+        if (me?.id) {
+          this.currentUserProfileId = me.id;
+
+          // 2) Now that we have my ID, listen to route changes
+          this.subscription = this.activatedRoute.paramMap.subscribe(params => {
+            const type = params.get('type');
+            if (type) {
+              this.buddyType = ActivityType[type as keyof typeof ActivityType];
+              // rebuild all three dropdowns for the new buddyType:
+              this.setupFilterOptions();
+              // clear any previous selections:
+              this.filter1Value = '';
+              this.filter2Value = '';
+              this.filter3Value = '';
+              // now load your (filtered-out) deck
+              this.loadBuddies();
+            }
+          });
         } else {
           console.error('Could not find my profile');
         }
@@ -112,25 +110,21 @@ export class MatchingComponent implements OnInit, OnDestroy {
   }
 
   loadBuddies(): void {
+    if (!this.currentUserProfileId) return;
+
     this.isLoading = true;
     this.errorMessage = undefined;
-    this.activityMatchService.getProfilesByPreferredActivity(this.buddyType).subscribe({
-      next: res => {
+
+    this.activityMatchService.getAvailableProfiles(this.buddyType, this.currentUserProfileId).subscribe({
+      next: profiles => {
         this.isLoading = false;
-        this.profiles = res.body ?? [];
-        if (this.profiles.length > 0) {
-          this.currentProfileIndex = 0;
-          this.currentProfile = this.profiles[this.currentProfileIndex];
-          this.noMoreProfiles = false;
-        } else {
-          this.currentProfile = null;
-          this.noMoreProfiles = true;
-        }
+        this.profiles = profiles;
+        this.resetCursor();
       },
-      error: error => {
+      error: err => {
         this.isLoading = false;
-        this.errorMessage = `Failed to load ${this.buddyType} profiles. Please try again.`;
-        console.error(`Error loading ${this.buddyType} profiles:`, error);
+        console.error(err);
+        this.errorMessage = 'Failed to load buddies. Please try again.';
       },
     });
   }
@@ -260,111 +254,106 @@ export class MatchingComponent implements OnInit, OnDestroy {
   // }
 
   loadMatchesByType(): void {
+    if (!this.currentUserProfileId) {
+      return;
+    }
+
     this.isLoading = true;
     this.errorMessage = undefined;
 
-    // In a real implementation, you would send these filter values to your API
-    const filters = {
-      filter1: this.filter1Value, // Location/Course/Sport/Society
-      filter2: this.filter2Value, // Skill/University/Event Type
-      filter3: this.filter3Value, // Timing
-    };
-
-    // For demo/development, using a mock service with timeout
-    setTimeout(() => {
-      // Start with all profiles
-      let filteredProfiles = [...this.profiles];
-
-      // Apply filters
-      if (this.filter1Value) {
-        filteredProfiles = this.applyFilter1(filteredProfiles, this.filter1Value);
-      }
-
-      if (this.filter2Value) {
-        filteredProfiles = this.applyFilter2(filteredProfiles, this.filter2Value);
-      }
-
-      if (this.filter3Value) {
-        filteredProfiles = this.applyFilter3(filteredProfiles, this.filter3Value);
-      }
-
-      // Set the filtered profiles
-      this.profiles = filteredProfiles;
-
-      // Set the first profile as current
-      if (this.profiles.length > 0) {
-        this.currentProfileIndex = 0;
-        this.currentProfile = this.profiles[this.currentProfileIndex];
-        this.noMoreProfiles = false;
-      } else {
-        this.currentProfile = null;
-        this.noMoreProfiles = true;
-      }
-
-      this.isLoading = false;
-    }, 1000);
-
-    // When implementing the real service, use something like:
-    /*
-    this.activityMatchService.findByTypeWithFilters(
-      this.buddyType,
-      filters
-    ).subscribe({
-      next: res => {
-        this.profiles = res.body || [];
-        if (this.profiles.length > 0) {
-          this.currentProfileIndex = 0;
-          this.currentProfile = this.profiles[this.currentProfileIndex];
-          this.noMoreProfiles = false;
-        } else {
-          this.currentProfile = null;
-          this.noMoreProfiles = true;
-        }
-        this.isLoading = false;
-      },
-      error: error => {
-        this.isLoading = false;
-        this.errorMessage = `Failed to load ${this.buddyType} buddies. Please try again.`;
-        console.error(`Error loading ${this.buddyType} buddies:`, error);
-      },
-    });
-    */
+    this.activityMatchService
+      .getAvailableProfiles(this.buddyType, this.currentUserProfileId)
+      .pipe(
+        map(profiles => {
+          let filtered = [...profiles];
+          if (this.filter1Value) {
+            filtered = this.applyFilter1(filtered, this.filter1Value);
+          }
+          if (this.filter2Value) {
+            filtered = this.applyFilter2(filtered, this.filter2Value);
+          }
+          if (this.filter3Value) {
+            filtered = this.applyFilter3(filtered, this.filter3Value);
+          }
+          return filtered;
+        }),
+      )
+      .subscribe({
+        next: profiles => {
+          this.profiles = profiles;
+          // resetProfileIndex logic
+          if (profiles.length > 0) {
+            this.currentProfileIndex = 0;
+            this.currentProfile = profiles[0];
+            this.noMoreProfiles = false;
+          } else {
+            this.currentProfile = null;
+            this.noMoreProfiles = true;
+          }
+          this.isLoading = false;
+        },
+        error: err => {
+          this.isLoading = false;
+          this.errorMessage = 'Failed to load buddies. Please try again.';
+          console.error('loadMatchesByType error', err);
+        },
+      });
   }
 
   // Filter methods based on buddy type
-  applyFilter1(profiles: any[], value: string): any[] {
+  applyFilter1(profiles: IProfile[], value: string): IProfile[] {
+    if (!value) {
+      return profiles;
+    }
     switch (this.buddyType) {
       case ActivityType.GYM:
-        return profiles.filter(p => !value || p.gymLocation.toLowerCase().includes(value.toLowerCase()));
+        return profiles.filter(p => p.gymLocation === value);
       case ActivityType.ACADEMIC:
-        return profiles.filter(p => !value || p.course.toLowerCase().includes(value.toLowerCase()));
+        return profiles.filter(p => p.course === value);
       case ActivityType.SPORTS:
-        return profiles.filter(p => !value || p.sportType.toLowerCase().includes(value.toLowerCase()));
+        // use the `sports` field, not sportType
+        return profiles.filter(p => p.sports === value);
       case ActivityType.SOCIAL:
-        return profiles.filter(p => !value || p.society.toLowerCase().includes(value.toLowerCase()));
+        return profiles.filter(p => p.preferredSociety === value);
       default:
         return profiles;
     }
   }
 
-  applyFilter2(profiles: any[], value: string): any[] {
+  applyFilter2(profiles: IProfile[], value: string): IProfile[] {
+    if (!value) {
+      return profiles;
+    }
     switch (this.buddyType) {
       case ActivityType.GYM:
-        return profiles.filter(p => !value || p.skillLevel.toLowerCase().includes(value.toLowerCase()));
       case ActivityType.SPORTS:
-        return profiles.filter(p => !value || p.skillLevel.toLowerCase().includes(value.toLowerCase()));
+        // use the sportsSkill field for SPORTS
+        return profiles.filter(p => p.sportsSkill === value);
       case ActivityType.ACADEMIC:
-        return profiles.filter(p => !value || p.university?.toLowerCase().includes(value.toLowerCase()));
+        return profiles.filter(p => p.university === value);
       case ActivityType.SOCIAL:
-        return profiles.filter(p => !value || p.eventType.toLowerCase().includes(value.toLowerCase()));
+        return profiles.filter(p => p.preferredEvents === value);
       default:
         return profiles;
     }
   }
 
-  applyFilter3(profiles: any[], value: string): any[] {
-    // Timing filter works the same for all buddy types
-    return profiles.filter(p => !value || p.preferredTime.toLowerCase().includes(value.toLowerCase()));
+  applyFilter3(profiles: IProfile[], value: string): IProfile[] {
+    if (!value) {
+      return profiles;
+    }
+    switch (this.buddyType) {
+      case ActivityType.GYM:
+        return profiles.filter(p => p.gymTime === value);
+      case ActivityType.ACADEMIC:
+        return profiles.filter(p => p.studyTime === value);
+      case ActivityType.SPORTS:
+        return profiles.filter(p => p.sportsTime === value);
+      case ActivityType.SOCIAL:
+        return profiles.filter(p => p.eventsTime === value);
+      default:
+        return profiles;
+    }
   }
 
   previousState(): void {
@@ -445,7 +434,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
       const newMatch: NewActivityMatch = {
         id: null,
         activityType: this.buddyType,
-        status: 'PENDING',
+        status: Decision.PENDING,
         matchDate: dayjs(date),
         matchTime: matchDateTime,
         createdAt: dayjs(),
@@ -472,53 +461,51 @@ export class MatchingComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Reject profile method with animation
-  rejectProfile(): void {
-    if (!this.currentProfile) return;
+  async rejectProfile(): Promise<void> {
+    if (!this.currentProfile || this.currentUserProfileId == null) {
+      return;
+    }
 
-    // Add animation class
+    // run your “rejecting” animation
     const card = document.querySelector('.card');
     if (card) card.classList.add('rejecting');
+    await new Promise(r => setTimeout(r, 300));
 
-    // Wait for animation, then proceed
-    setTimeout(() => {
-      this.isLoading = true;
+    this.isLoading = true;
 
-      // Mock service call - replace with real API call
+    // build the exact same DTO you use for Accept, just with DECLINED
+    const now = dayjs();
+    const newMatch: NewActivityMatch = {
+      id: null,
+      activityType: this.buddyType,
+      status: Decision.DECLINED,
+      matchDate: now, // or you could default to today
+      matchTime: now, // we need a time—but it’s “the moment you rejected”
+      createdAt: now,
+      responseAt: now,
+      matchRequestor: { id: this.currentUserProfileId },
+      userDetails: { id: this.currentProfile.id },
+      location: null,
+      notes: null,
+      matchedActivity: null,
+      ratings: null,
+    };
+
+    try {
+      // send the DECLINED record to your API
+      await firstValueFrom(this.activityMatchService.create(newMatch));
+    } catch (err) {
+      console.error('Error saving decline:', err);
+    } finally {
+      // advance the carousel
+      this.showNextProfile();
+      // tear down the animation class
       setTimeout(() => {
-        this.showNextProfile();
-        // Remove animation class after small delay
-        setTimeout(() => {
-          const newCard = document.querySelector('.card');
-          if (newCard) newCard.classList.remove('rejecting');
-        }, 50);
-      }, 500);
-
-      // When implementing real service, use:
-      /*
-      this.activityMatchService.saveMatch({
-        targetUserId: this.currentProfile.id,
-        buddyType: this.buddyType,
-        action: 'REJECT'
-      }).subscribe({
-        next: () => {
-          this.showNextProfile();
-          setTimeout(() => {
-            const newCard = document.querySelector('.card');
-            if (newCard) newCard.classList.remove('rejecting');
-          }, 50);
-        },
-        error: error => {
-          console.error('Error rejecting profile:', error);
-          this.showNextProfile();
-          setTimeout(() => {
-            const newCard = document.querySelector('.card');
-            if (newCard) newCard.classList.remove('rejecting');
-          }, 50);
-        }
-      });
-      */
-    }, 300); // Match this time with your CSS transition duration
+        const newCard = document.querySelector('.card');
+        if (newCard) newCard.classList.remove('rejecting');
+      }, 50);
+      this.isLoading = false;
+    }
   }
 
   // Method to show the next profile
@@ -557,7 +544,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
     this.filter3Value = '';
     // Reset the current index and reload
     this.currentProfileIndex = 0;
-    this.loadMatchesByType();
+    this.loadBuddies();
   }
 
   // Helper method to get proper label for buddy type
@@ -612,9 +599,10 @@ export class MatchingComponent implements OnInit, OnDestroy {
     if (popup) {
       popup.classList.add('show');
 
-      // Hide the popup after 3 seconds
+      this.showFollowPopup = true;
+
       setTimeout(() => {
-        popup.classList.remove('show');
+        this.showFollowPopup = false;
       }, 3000);
     }
   }
@@ -628,5 +616,16 @@ export class MatchingComponent implements OnInit, OnDestroy {
     const options = Object.values(enumObj).map(value => ({ value, label: value }));
     options.unshift({ value: '', label: defaultLabel });
     return options;
+  }
+
+  private resetCursor(): void {
+    if (this.profiles.length > 0) {
+      this.currentProfileIndex = 0;
+      this.currentProfile = this.profiles[0];
+      this.noMoreProfiles = false;
+    } else {
+      this.currentProfile = null;
+      this.noMoreProfiles = true;
+    }
   }
 }
