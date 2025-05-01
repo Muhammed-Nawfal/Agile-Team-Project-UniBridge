@@ -2,6 +2,12 @@
   <h2 id="page-heading" data-cy="FriendsListHeading">
     <span>Friends Lists</span>
 
+    <button class="btn btn-primary me-2" [routerLink]="['/friends-list/requests']">
+      <fa-icon icon="bell"></fa-icon>
+      <span>Friend Requests</span>
+      <span class="badge bg-danger ms-1" *ngIf="pendingRequestCount > 0">{{ pendingRequestCount }}</span>
+    </button>
+
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
@@ -24,6 +30,63 @@
 
   <jhi-alert></jhi-alert>
 
+  <!-- Test Follow Button Section -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h3>Test Follow Button</h3>
+    </div>
+    <div class="card-body">
+      <p>Click the follow buttons below to test the friend request functionality.</p>
+
+      <button class="btn btn-secondary mb-3" (click)="loadProfiles()" [disabled]="isLoadingProfiles">
+        <fa-icon icon="sync" [animation]="isLoadingProfiles ? 'spin' : undefined"></fa-icon>
+        <span>Refresh Profiles</span>
+      </button>
+
+      @if (profiles && profiles.length > 0) {
+        <div class="row">
+          @for (profile of profiles; track trackProfileId($index, profile)) {
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <div class="card-header">
+                  <h5>Profile #{{ profile.id }}</h5>
+                </div>
+                <div class="card-body">
+                  @if (profile.firstName || profile.lastName) {
+                    <p>{{ profile.firstName }} {{ profile.lastName }}</p>
+                  } @else {
+                    <p>Anonymous User</p>
+                  }
+
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <a [routerLink]="['/profile', profile.id, 'view']" class="btn btn-sm btn-outline-info">
+                      <fa-icon icon="eye"></fa-icon>
+                      <span class="ms-1">View</span>
+                    </a>
+
+                    <jhi-follow-button
+                      [targetProfileId]="profile.id!"
+                      (friendshipChanged)="onFriendshipChanged($event, profile.id!)"
+                    ></jhi-follow-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (isLoadingProfiles) {
+        <div class="alert alert-info">
+          <span>Loading profiles...</span>
+        </div>
+      } @else {
+        <div class="alert alert-warning">
+          <span>No profiles found to test follow functionality</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Friends List Table -->
   @if (friendsLists?.length === 0) {
     <div class="alert alert-warning" id="no-result">
       <span>No Friends Lists found</span>
@@ -38,35 +101,30 @@
             <th scope="col" jhiSortBy="id">
               <div class="d-flex">
                 <span>ID</span>
-
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="requestTime">
               <div class="d-flex">
                 <span>Request Time</span>
-
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="requestStatus">
               <div class="d-flex">
                 <span>Request Status</span>
-
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="friendSince">
               <div class="d-flex">
                 <span>Friend Since</span>
-
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
             <th scope="col" jhiSortBy="nickname">
               <div class="d-flex">
                 <span>Nickname</span>
-
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
@@ -82,17 +140,28 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col"></th>
+            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
-          @for (friendsList of friendsLists; track trackId(friendsList)) {
+          @for (friendsList of friendsLists; track trackId($index, friendsList)) {
             <tr data-cy="entityTable">
               <td>
                 <a [routerLink]="['/friends-list', friendsList.id, 'view']">{{ friendsList.id }}</a>
               </td>
               <td>{{ friendsList.requestTime | formatMediumDatetime }}</td>
-              <td>{{ { null: '', ACCEPT: 'ACCEPT', DECLINED: 'DECLINED', PENDING: 'PENDING' }[friendsList.requestStatus ?? 'null'] }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="{
+                    'bg-success': friendsList.requestStatus === 'ACCEPT',
+                    'bg-info': friendsList.requestStatus === 'PENDING',
+                    'bg-danger': friendsList.requestStatus === 'DECLINED',
+                  }"
+                >
+                  {{ friendsList.requestStatus }}
+                </span>
+              </td>
               <td>{{ friendsList.friendSince | formatMediumDatetime }}</td>
               <td>{{ friendsList.nickname }}</td>
               <td>
