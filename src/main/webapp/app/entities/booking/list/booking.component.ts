@@ -712,13 +712,25 @@ export class BookingComponent implements OnInit {
       const currentSlot = this.selectedTimeSlots[index];
       const parsedSlot = this.parseTimeSlot(currentSlot);
 
+      // Find the selected event object to get its capacity
+      let eventCapacity = null;
+      for (const activity of this.activities) {
+        const foundEvent = activity.events.find((e: any) => e.value === this.selectedEvent);
+        if (foundEvent) {
+          eventCapacity = foundEvent.capacity;
+          break;
+        }
+      }
+
+      console.log(`Using event capacity: ${eventCapacity} for time slot`);
+
       // Create time slot with required non-null fields
       const newTimeSlot = {
         date: dayjs(this.selectedDate),
         startHour: parsedSlot.start,
         endHour: parsedSlot.end,
-        capacity: this.selectedPartySize ?? 1,
-        remainingCapacity: this.selectedPartySize ?? 1,
+        capacity: eventCapacity !== null ? eventCapacity : 10, // Default to 10 if capacity not found
+        remainingCapacity: eventCapacity !== null ? eventCapacity : 10, // Default to 10 if capacity not found
         status: 'AVAILABLE',
         event: { id: selectedEventId },
         booking: null, // Initialize with null, will be updated after booking creation
