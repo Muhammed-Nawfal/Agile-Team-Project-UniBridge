@@ -114,10 +114,6 @@ export class MyChallengesComponent implements OnInit {
     return item.id;
   }
 
-  onAccept(id: number): void {
-    this.challengeService.accept(id).subscribe(() => this.loadUserChallenges());
-  }
-
   onReject(id: number): void {
     this.challengeService.reject(id).subscribe(() => this.loadUserChallenges());
   }

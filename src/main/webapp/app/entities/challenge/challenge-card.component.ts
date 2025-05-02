@@ -14,7 +14,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 })
 export class ChallengeCardComponent {
   @Input() challenge!: IChallenge;
-  @Output() accept = new EventEmitter<number>();
   @Output() reject = new EventEmitter<number>();
   @Output() complete = new EventEmitter<number>();
 
@@ -33,12 +32,11 @@ export class ChallengeCardComponent {
     return categoryMap[category.toUpperCase()] || 'secondary';
   }
 
-  onAcceptClick(): void {
-    this.accept.emit(this.challenge.id);
-  }
-
   onRejectClick(): void {
-    this.reject.emit(this.challenge.id);
+    // Add confirmation dialog before rejecting/deleting the challenge
+    if (confirm(`Are you sure you want to reject and delete this challenge: "${this.challenge.title}"? This action cannot be undone.`)) {
+      this.reject.emit(this.challenge.id);
+    }
   }
 
   onCompleteClick(): void {

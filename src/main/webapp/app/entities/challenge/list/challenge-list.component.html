@@ -27,11 +27,6 @@
 
 <div class="row g-3">
   <div class="col-12 col-sm-6 col-md-4" *ngFor="let c of challenges; trackBy: trackId">
-    <jhi-challenge-card
-      [challenge]="c"
-      (accept)="onAccept(c.id)"
-      (reject)="onReject(c.id)"
-      (complete)="onComplete(c.id)"
-    ></jhi-challenge-card>
+    <jhi-challenge-card [challenge]="c" (reject)="onReject(c.id)" (complete)="onComplete(c.id)"></jhi-challenge-card>
   </div>
 </div>

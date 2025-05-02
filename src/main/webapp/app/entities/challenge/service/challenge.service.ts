@@ -70,23 +70,24 @@ export class ChallengeService {
   }
 
   /** NEW: Accept a pending challenge */
-  accept(id: number): Observable<EntityResponseType> {
+  accept(id: number): Observable<HttpResponse<{}>> {
+    return this.http.post<HttpResponse<{}>>(`${this.resourceUrl}/${id}/complete`, {}, { observe: 'response' });
+  }
+
+  /** NEW: Reject a pending challenge - using delete since there's no reject endpoint */
+  reject(id: number): Observable<HttpResponse<{}>> {
+    // Use the delete endpoint instead of a non-existent reject endpoint
+    return this.delete(id);
+  }
+
+  /** NEW: Mark a challenge as complete */
+  complete(id: number): Observable<EntityResponseType> {
     // Create payload with completed: true and id
     const payload: PartialUpdateChallenge = {
       id,
       completed: true,
     };
     return this.partialUpdate(payload);
-  }
-
-  /** NEW: Reject a pending challenge */
-  reject(id: number): Observable<HttpResponse<{}>> {
-    return this.http.post<HttpResponse<{}>>(`${this.resourceUrl}/${id}/reject`, {}, { observe: 'response' });
-  }
-
-  /** NEW: Mark a challenge as complete */
-  complete(id: number): Observable<HttpResponse<{}>> {
-    return this.http.post<HttpResponse<{}>>(`${this.resourceUrl}/${id}/complete`, {}, { observe: 'response' });
   }
 
   getChallengeIdentifier(challenge: Pick<IChallenge, 'id'>): number {

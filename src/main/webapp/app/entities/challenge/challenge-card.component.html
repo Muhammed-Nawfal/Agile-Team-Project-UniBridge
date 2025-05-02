@@ -21,7 +21,6 @@
     <div class="d-flex justify-content-between">
       <!-- Show based on completed status -->
       <ng-container *ngIf="!challenge.completed">
-        <button class="btn btn-success" (click)="onAcceptClick()"><fa-icon icon="check"></fa-icon> Accept</button>
         <button class="btn btn-danger" (click)="onRejectClick()"><fa-icon icon="times"></fa-icon> Reject</button>
       </ng-container>
 
