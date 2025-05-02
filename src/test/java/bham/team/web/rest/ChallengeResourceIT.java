@@ -9,13 +9,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import bham.team.IntegrationTest;
 import bham.team.domain.Challenge;
-import bham.team.domain.enumeration.AchievementCategory;
+import bham.team.domain.enumeration.Category;
 import bham.team.repository.ChallengeRepository;
-import bham.team.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -43,8 +42,11 @@ class ChallengeResourceIT {
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
     private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
 
-    private static final AchievementCategory DEFAULT_CATEGORY = AchievementCategory.STUDY;
-    private static final AchievementCategory UPDATED_CATEGORY = AchievementCategory.SPORTS;
+    private static final Category DEFAULT_CATEGORY = Category.STUDY;
+    private static final Category UPDATED_CATEGORY = Category.SPORTS;
+
+    private static final LocalDate DEFAULT_DATE = LocalDate.ofEpochDay(0L);
+    private static final LocalDate UPDATED_DATE = LocalDate.now(ZoneId.systemDefault());
 
     private static final Integer DEFAULT_POINTS = 1;
     private static final Integer UPDATED_POINTS = 2;
@@ -54,20 +56,8 @@ class ChallengeResourceIT {
     private static final String DEFAULT_BADGE_CONTENT_TYPE = "image/jpg";
     private static final String UPDATED_BADGE_CONTENT_TYPE = "image/png";
 
-    private static final Instant DEFAULT_CREATED_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_CREATED_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
-
-    private static final Instant DEFAULT_EXPIRY_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_EXPIRY_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
-
-    private static final Boolean DEFAULT_IS_COMPLETED = false;
-    private static final Boolean UPDATED_IS_COMPLETED = true;
-
-    private static final Instant DEFAULT_COMPLETED_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_COMPLETED_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
-
-    private static final Boolean DEFAULT_IS_DISPLAYED = false;
-    private static final Boolean UPDATED_IS_DISPLAYED = true;
+    private static final Boolean DEFAULT_COMPLETED = false;
+    private static final Boolean UPDATED_COMPLETED = true;
 
     private static final String ENTITY_API_URL = "/api/challenges";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -80,9 +70,6 @@ class ChallengeResourceIT {
 
     @Autowired
     private ChallengeRepository challengeRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private EntityManager em;
@@ -105,14 +92,11 @@ class ChallengeResourceIT {
             .title(DEFAULT_TITLE)
             .description(DEFAULT_DESCRIPTION)
             .category(DEFAULT_CATEGORY)
+            .date(DEFAULT_DATE)
             .points(DEFAULT_POINTS)
             .badge(DEFAULT_BADGE)
             .badgeContentType(DEFAULT_BADGE_CONTENT_TYPE)
-            .createdDate(DEFAULT_CREATED_DATE)
-            .expiryDate(DEFAULT_EXPIRY_DATE)
-            .isCompleted(DEFAULT_IS_COMPLETED)
-            .completedDate(DEFAULT_COMPLETED_DATE)
-            .isDisplayed(DEFAULT_IS_DISPLAYED);
+            .completed(DEFAULT_COMPLETED);
     }
 
     /**
@@ -126,14 +110,11 @@ class ChallengeResourceIT {
             .title(UPDATED_TITLE)
             .description(UPDATED_DESCRIPTION)
             .category(UPDATED_CATEGORY)
+            .date(UPDATED_DATE)
             .points(UPDATED_POINTS)
             .badge(UPDATED_BADGE)
             .badgeContentType(UPDATED_BADGE_CONTENT_TYPE)
-            .createdDate(UPDATED_CREATED_DATE)
-            .expiryDate(UPDATED_EXPIRY_DATE)
-            .isCompleted(UPDATED_IS_COMPLETED)
-            .completedDate(UPDATED_COMPLETED_DATE)
-            .isDisplayed(UPDATED_IS_DISPLAYED);
+            .completed(UPDATED_COMPLETED);
     }
 
     @BeforeEach
@@ -222,6 +203,22 @@ class ChallengeResourceIT {
 
     @Test
     @Transactional
+    void checkDateIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        challenge.setDate(null);
+
+        // Create the Challenge, which fails.
+
+        restChallengeMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(challenge)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void checkPointsIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
@@ -238,26 +235,10 @@ class ChallengeResourceIT {
 
     @Test
     @Transactional
-    void checkCreatedDateIsRequired() throws Exception {
+    void checkCompletedIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
-        challenge.setCreatedDate(null);
-
-        // Create the Challenge, which fails.
-
-        restChallengeMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(challenge)))
-            .andExpect(status().isBadRequest());
-
-        assertSameRepositoryCount(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
-    void checkIsCompletedIsRequired() throws Exception {
-        long databaseSizeBeforeTest = getRepositoryCount();
-        // set the field null
-        challenge.setIsCompleted(null);
+        challenge.setCompleted(null);
 
         // Create the Challenge, which fails.
 
@@ -283,14 +264,11 @@ class ChallengeResourceIT {
             .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
             .andExpect(jsonPath("$.[*].category").value(hasItem(DEFAULT_CATEGORY.toString())))
+            .andExpect(jsonPath("$.[*].date").value(hasItem(DEFAULT_DATE.toString())))
             .andExpect(jsonPath("$.[*].points").value(hasItem(DEFAULT_POINTS)))
             .andExpect(jsonPath("$.[*].badgeContentType").value(hasItem(DEFAULT_BADGE_CONTENT_TYPE)))
             .andExpect(jsonPath("$.[*].badge").value(hasItem(Base64.getEncoder().encodeToString(DEFAULT_BADGE))))
-            .andExpect(jsonPath("$.[*].createdDate").value(hasItem(DEFAULT_CREATED_DATE.toString())))
-            .andExpect(jsonPath("$.[*].expiryDate").value(hasItem(DEFAULT_EXPIRY_DATE.toString())))
-            .andExpect(jsonPath("$.[*].isCompleted").value(hasItem(DEFAULT_IS_COMPLETED.booleanValue())))
-            .andExpect(jsonPath("$.[*].completedDate").value(hasItem(DEFAULT_COMPLETED_DATE.toString())))
-            .andExpect(jsonPath("$.[*].isDisplayed").value(hasItem(DEFAULT_IS_DISPLAYED.booleanValue())));
+            .andExpect(jsonPath("$.[*].completed").value(hasItem(DEFAULT_COMPLETED.booleanValue())));
     }
 
     @Test
@@ -308,14 +286,11 @@ class ChallengeResourceIT {
             .andExpect(jsonPath("$.title").value(DEFAULT_TITLE))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION.toString()))
             .andExpect(jsonPath("$.category").value(DEFAULT_CATEGORY.toString()))
+            .andExpect(jsonPath("$.date").value(DEFAULT_DATE.toString()))
             .andExpect(jsonPath("$.points").value(DEFAULT_POINTS))
             .andExpect(jsonPath("$.badgeContentType").value(DEFAULT_BADGE_CONTENT_TYPE))
             .andExpect(jsonPath("$.badge").value(Base64.getEncoder().encodeToString(DEFAULT_BADGE)))
-            .andExpect(jsonPath("$.createdDate").value(DEFAULT_CREATED_DATE.toString()))
-            .andExpect(jsonPath("$.expiryDate").value(DEFAULT_EXPIRY_DATE.toString()))
-            .andExpect(jsonPath("$.isCompleted").value(DEFAULT_IS_COMPLETED.booleanValue()))
-            .andExpect(jsonPath("$.completedDate").value(DEFAULT_COMPLETED_DATE.toString()))
-            .andExpect(jsonPath("$.isDisplayed").value(DEFAULT_IS_DISPLAYED.booleanValue()));
+            .andExpect(jsonPath("$.completed").value(DEFAULT_COMPLETED.booleanValue()));
     }
 
     @Test
@@ -341,14 +316,11 @@ class ChallengeResourceIT {
             .title(UPDATED_TITLE)
             .description(UPDATED_DESCRIPTION)
             .category(UPDATED_CATEGORY)
+            .date(UPDATED_DATE)
             .points(UPDATED_POINTS)
             .badge(UPDATED_BADGE)
             .badgeContentType(UPDATED_BADGE_CONTENT_TYPE)
-            .createdDate(UPDATED_CREATED_DATE)
-            .expiryDate(UPDATED_EXPIRY_DATE)
-            .isCompleted(UPDATED_IS_COMPLETED)
-            .completedDate(UPDATED_COMPLETED_DATE)
-            .isDisplayed(UPDATED_IS_DISPLAYED);
+            .completed(UPDATED_COMPLETED);
 
         restChallengeMockMvc
             .perform(
@@ -427,12 +399,11 @@ class ChallengeResourceIT {
         partialUpdatedChallenge.setId(challenge.getId());
 
         partialUpdatedChallenge
-            .description(UPDATED_DESCRIPTION)
+            .title(UPDATED_TITLE)
             .points(UPDATED_POINTS)
             .badge(UPDATED_BADGE)
             .badgeContentType(UPDATED_BADGE_CONTENT_TYPE)
-            .expiryDate(UPDATED_EXPIRY_DATE)
-            .completedDate(UPDATED_COMPLETED_DATE);
+            .completed(UPDATED_COMPLETED);
 
         restChallengeMockMvc
             .perform(
@@ -467,14 +438,11 @@ class ChallengeResourceIT {
             .title(UPDATED_TITLE)
             .description(UPDATED_DESCRIPTION)
             .category(UPDATED_CATEGORY)
+            .date(UPDATED_DATE)
             .points(UPDATED_POINTS)
             .badge(UPDATED_BADGE)
             .badgeContentType(UPDATED_BADGE_CONTENT_TYPE)
-            .createdDate(UPDATED_CREATED_DATE)
-            .expiryDate(UPDATED_EXPIRY_DATE)
-            .isCompleted(UPDATED_IS_COMPLETED)
-            .completedDate(UPDATED_COMPLETED_DATE)
-            .isDisplayed(UPDATED_IS_DISPLAYED);
+            .completed(UPDATED_COMPLETED);
 
         restChallengeMockMvc
             .perform(

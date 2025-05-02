@@ -1,160 +1,100 @@
 * {
-  font-weight: 700;
-  font-family: 'Times New Roman', Times, serif;
-}
-
-:host {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol';
-  font-size: 14px;
-  color: #333;
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Balsamiq Sans', sans-serif;
+  font-weight: 700;
 }
 
-.container {
-  max-width: 1000px;
+.challenge-creation-container {
+  max-width: 600px;
   margin: 0 auto;
-  padding: 20px;
-}
-
-header {
-  margin-bottom: 30px;
-
-  h1 {
-    margin: 8px 0;
-    color: #1976d2;
-    font-size: 24px;
-    font-weight: 700;
-  }
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.card {
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
   background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  margin-bottom: 20px;
+  animation: fadeIn 0.5s ease-in-out;
 
-  .card-header {
-    background-color: #f5f5f5;
-    padding: 16px 20px;
-    border-bottom: 1px solid #e0e0e0;
+  h2 {
+    text-align: center;
+    color: #2c3e50; // Darker color for better contrast
+    margin-bottom: 25px;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
 
-    h2 {
-      margin: 0;
-      font-size: 18px;
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #34495e; // Slightly darker gray for better readability
+      font-size: 14px;
+    }
+
+    input[type='text'],
+    textarea,
+    select,
+    input[type='date'],
+    input[type='number'] {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
       color: #333;
+      transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+
+      &:focus {
+        border-color: #4caf50;
+        outline: none;
+        box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+      }
+
+      &::placeholder {
+        color: #999;
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
     }
   }
 
-  .card-body {
-    padding: 20px;
-  }
-}
-
-.form-group {
-  margin-bottom: 16px;
-
-  label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 500;
-  }
-
-  .form-control {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-
-    &:focus {
-      outline: none;
-      border-color: #1976d2;
-      box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
-    }
-  }
-
-  textarea.form-control {
-    min-height: 80px;
-    resize: vertical;
-  }
-}
-
-.btn {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-
-  &.btn-primary {
-    background-color: #1976d2;
+  button {
+    background-color: #4caf50;
     color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    width: 100%;
+    transition:
+      background-color 0.3s ease,
+      transform 0.2s ease;
 
     &:hover {
-      background-color: #1565c0;
+      background-color: #45a049;
+      transform: translateY(-2px); // Slight lift effect on hover
+    }
+
+    &:active {
+      transform: translateY(0); // Reset lift effect on click
     }
 
     &:disabled {
-      background-color: #cccccc;
+      background-color: #ccc;
       cursor: not-allowed;
-    }
-  }
-}
-
-.challenge-table {
-  width: 100%;
-  border-collapse: collapse;
-
-  th,
-  td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #e0e0e0;
-  }
-
-  th {
-    font-weight: 600;
-    background-color: #f5f5f5;
-  }
-
-  tr:hover {
-    background-color: #f9f9f9;
-  }
-}
-
-.no-data {
-  padding: 20px;
-  text-align: center;
-  color: #757575;
-  font-style: Balsamic + Sans;
-}
-
-.mt-4 {
-  margin-top: 24px;
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 12px;
-  }
-
-  .challenge-table {
-    font-size: 12px;
-
-    th,
-    td {
-      padding: 8px;
+      transform: none; // Disable lift effect when disabled
     }
   }
 }

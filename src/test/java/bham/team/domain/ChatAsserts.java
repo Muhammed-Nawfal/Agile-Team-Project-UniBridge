@@ -49,7 +49,13 @@ public class ChatAsserts {
             .as("Verify Chat relevant properties")
             .satisfies(e -> assertThat(e.getMessage()).as("check message").isEqualTo(actual.getMessage()))
             .satisfies(e -> assertThat(e.getTimestamp()).as("check timestamp").isEqualTo(actual.getTimestamp()))
-            .satisfies(e -> assertThat(e.getType()).as("check type").isEqualTo(actual.getType()));
+            .satisfies(e -> assertThat(e.getStatus()).as("check status").isEqualTo(actual.getStatus()))
+            .satisfies(e -> assertThat(e.getType()).as("check type").isEqualTo(actual.getType()))
+            .satisfies(e -> assertThat(e.getMedia()).as("check media").isEqualTo(actual.getMedia()))
+            .satisfies(e -> assertThat(e.getMediaContentType()).as("check media contenty type").isEqualTo(actual.getMediaContentType()))
+            .satisfies(e -> assertThat(e.getIsDeleted()).as("check isDeleted").isEqualTo(actual.getIsDeleted()))
+            .satisfies(e -> assertThat(e.getCreatedOn()).as("check createdOn").isEqualTo(actual.getCreatedOn()))
+            .satisfies(e -> assertThat(e.getUpdatedOn()).as("check updatedOn").isEqualTo(actual.getUpdatedOn()));
     }
 
     /**
@@ -61,7 +67,9 @@ public class ChatAsserts {
     public static void assertChatUpdatableRelationshipsEquals(Chat expected, Chat actual) {
         assertThat(expected)
             .as("Verify Chat relationships")
-            .satisfies(e -> assertThat(e.getFriendChat()).as("check friendChat").isEqualTo(actual.getFriendChat()))
-            .satisfies(e -> assertThat(e.getChats()).as("check chats").isEqualTo(actual.getChats()));
+            .satisfies(e -> assertThat(e.getThread()).as("check thread").isEqualTo(actual.getThread()))
+            .satisfies(e -> assertThat(e.getSender()).as("check sender").isEqualTo(actual.getSender()))
+            .satisfies(e -> assertThat(e.getReceiver()).as("check receiver").isEqualTo(actual.getReceiver()))
+            .satisfies(e -> assertThat(e.getMessageThread()).as("check messageThread").isEqualTo(actual.getMessageThread()));
     }
 }

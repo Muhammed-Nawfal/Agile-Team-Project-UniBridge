@@ -1,11 +1,13 @@
 package bham.team.domain;
 
-import static bham.team.domain.BookingTestSamples.*;
+import static bham.team.domain.MessageThreadTestSamples.*;
 import static bham.team.domain.ProfileTestSamples.*;
 import static bham.team.domain.RankingTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import bham.team.web.rest.TestUtil;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class ProfileTest {
@@ -25,20 +27,6 @@ class ProfileTest {
     }
 
     @Test
-    void bookingTest() {
-        Profile profile = getProfileRandomSampleGenerator();
-        Booking bookingBack = getBookingRandomSampleGenerator();
-
-        profile.setBooking(bookingBack);
-        assertThat(profile.getBooking()).isEqualTo(bookingBack);
-        assertThat(bookingBack.getBookingDoneBy()).isEqualTo(profile);
-
-        profile.booking(null);
-        assertThat(profile.getBooking()).isNull();
-        assertThat(bookingBack.getBookingDoneBy()).isNull();
-    }
-
-    @Test
     void rankingTest() {
         Profile profile = getProfileRandomSampleGenerator();
         Ranking rankingBack = getRankingRandomSampleGenerator();
@@ -50,5 +38,27 @@ class ProfileTest {
         profile.ranking(null);
         assertThat(profile.getRanking()).isNull();
         assertThat(rankingBack.getRankGiven()).isNull();
+    }
+
+    @Test
+    void messageThreadTest() {
+        Profile profile = getProfileRandomSampleGenerator();
+        MessageThread messageThreadBack = getMessageThreadRandomSampleGenerator();
+
+        profile.addMessageThread(messageThreadBack);
+        assertThat(profile.getMessageThreads()).containsOnly(messageThreadBack);
+        assertThat(messageThreadBack.getParticipants()).containsOnly(profile);
+
+        profile.removeMessageThread(messageThreadBack);
+        assertThat(profile.getMessageThreads()).doesNotContain(messageThreadBack);
+        assertThat(messageThreadBack.getParticipants()).doesNotContain(profile);
+
+        profile.messageThreads(new HashSet<>(Set.of(messageThreadBack)));
+        assertThat(profile.getMessageThreads()).containsOnly(messageThreadBack);
+        assertThat(messageThreadBack.getParticipants()).containsOnly(profile);
+
+        profile.setMessageThreads(new HashSet<>());
+        assertThat(profile.getMessageThreads()).doesNotContain(messageThreadBack);
+        assertThat(messageThreadBack.getParticipants()).doesNotContain(profile);
     }
 }

@@ -9,8 +9,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IProfile } from 'app/entities/profile/profile.model';
 import { ProfileService } from 'app/entities/profile/service/profile.service';
-import { IUser } from 'app/entities/user/user.model';
-import { UserService } from 'app/entities/user/service/user.service';
 import { Decision } from 'app/entities/enumerations/decision.model';
 import { FriendsListService } from '../service/friends-list.service';
 import { IFriendsList } from '../friends-list.model';
@@ -28,20 +26,16 @@ export class FriendsListUpdateComponent implements OnInit {
   decisionValues = Object.keys(Decision);
 
   profilesSharedCollection: IProfile[] = [];
-  usersSharedCollection: IUser[] = [];
 
   protected friendsListService = inject(FriendsListService);
   protected friendsListFormService = inject(FriendsListFormService);
   protected profileService = inject(ProfileService);
-  protected userService = inject(UserService);
   protected activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: FriendsListFormGroup = this.friendsListFormService.createFriendsListFormGroup();
 
   compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
-
-  compareUser = (o1: IUser | null, o2: IUser | null): boolean => this.userService.compareUser(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ friendsList }) => {
@@ -93,12 +87,8 @@ export class FriendsListUpdateComponent implements OnInit {
 
     this.profilesSharedCollection = this.profileService.addProfileToCollectionIfMissing<IProfile>(
       this.profilesSharedCollection,
-      friendsList.friends,
-    );
-    this.usersSharedCollection = this.userService.addUserToCollectionIfMissing<IUser>(
-      this.usersSharedCollection,
-      friendsList.user,
-      friendsList.friend,
+      friendsList.requestedByProfile,
+      friendsList.requestedToProfile,
     );
   }
 
@@ -107,18 +97,14 @@ export class FriendsListUpdateComponent implements OnInit {
       .query()
       .pipe(map((res: HttpResponse<IProfile[]>) => res.body ?? []))
       .pipe(
-        map((profiles: IProfile[]) => this.profileService.addProfileToCollectionIfMissing<IProfile>(profiles, this.friendsList?.friends)),
-      )
-      .subscribe((profiles: IProfile[]) => (this.profilesSharedCollection = profiles));
-
-    this.userService
-      .query()
-      .pipe(map((res: HttpResponse<IUser[]>) => res.body ?? []))
-      .pipe(
-        map((users: IUser[]) =>
-          this.userService.addUserToCollectionIfMissing<IUser>(users, this.friendsList?.user, this.friendsList?.friend),
+        map((profiles: IProfile[]) =>
+          this.profileService.addProfileToCollectionIfMissing<IProfile>(
+            profiles,
+            this.friendsList?.requestedByProfile,
+            this.friendsList?.requestedToProfile,
+          ),
         ),
       )
-      .subscribe((users: IUser[]) => (this.usersSharedCollection = users));
+      .subscribe((profiles: IProfile[]) => (this.profilesSharedCollection = profiles));
   }
 }

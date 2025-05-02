@@ -56,15 +56,49 @@
           <label class="form-label" for="field_category">Category</label>
           <select class="form-control" name="category" formControlName="category" id="field_category" data-cy="category">
             <option [ngValue]="null"></option>
-            @for (achievementCategory of achievementCategoryValues; track $index) {
-              <option [value]="achievementCategory">
-                {{ { null: '', STUDY: 'STUDY', SPORTS: 'SPORTS', SOCIAL: 'SOCIAL' }[achievementCategory] }}
+            @for (category of categoryValues; track $index) {
+              <option [value]="category">
+                {{
+                  {
+                    null: '',
+                    STUDY: 'STUDY',
+                    SPORTS: 'SPORTS',
+                    COMMUNITY: 'COMMUNITY',
+                    PERSONAL_GROWTH: 'PERSONAL_GROWTH',
+                    SOCIAL: 'SOCIAL',
+                  }[category]
+                }}
               </option>
             }
           </select>
           @if (categoryRef.invalid && (categoryRef.dirty || categoryRef.touched)) {
             <div>
               @if (editForm.get('category')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let dateRef = editForm.get('date')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_date">Date</label>
+          <div class="input-group">
+            <input
+              id="field_date"
+              data-cy="date"
+              type="text"
+              class="form-control"
+              name="date"
+              ngbDatepicker
+              #dateDp="ngbDatepicker"
+              formControlName="date"
+            />
+            <button type="button" class="btn btn-secondary" (click)="dateDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+          </div>
+          @if (dateRef.invalid && (dateRef.dirty || dateRef.touched)) {
+            <div>
+              @if (editForm.get('date')?.errors?.required) {
                 <small class="form-text text-danger">This field is required.</small>
               }
             </div>
@@ -133,61 +167,13 @@
           }
         </div>
 
-        @let createdDateRef = editForm.get('createdDate')!;
+        @let completedRef = editForm.get('completed')!;
         <div class="mb-3">
-          <label class="form-label" for="field_createdDate">Created Date</label>
-          <div class="d-flex">
-            <input
-              id="field_createdDate"
-              data-cy="createdDate"
-              type="datetime-local"
-              class="form-control"
-              name="createdDate"
-              formControlName="createdDate"
-              placeholder="YYYY-MM-DD HH:mm"
-            />
-          </div>
-          @if (createdDateRef.invalid && (createdDateRef.dirty || createdDateRef.touched)) {
+          <label class="form-label" for="field_completed">Completed</label>
+          <input type="checkbox" class="form-check" name="completed" id="field_completed" data-cy="completed" formControlName="completed" />
+          @if (completedRef.invalid && (completedRef.dirty || completedRef.touched)) {
             <div>
-              @if (editForm.get('createdDate')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-              <small class="form-text text-danger" [hidden]="!editForm.get('createdDate')?.errors?.datetimelocal"
-                >This field should be a date and time.</small
-              >
-            </div>
-          }
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_expiryDate">Expiry Date</label>
-          <div class="d-flex">
-            <input
-              id="field_expiryDate"
-              data-cy="expiryDate"
-              type="datetime-local"
-              class="form-control"
-              name="expiryDate"
-              formControlName="expiryDate"
-              placeholder="YYYY-MM-DD HH:mm"
-            />
-          </div>
-        </div>
-
-        @let isCompletedRef = editForm.get('isCompleted')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_isCompleted">Is Completed</label>
-          <input
-            type="checkbox"
-            class="form-check"
-            name="isCompleted"
-            id="field_isCompleted"
-            data-cy="isCompleted"
-            formControlName="isCompleted"
-          />
-          @if (isCompletedRef.invalid && (isCompletedRef.dirty || isCompletedRef.touched)) {
-            <div>
-              @if (editForm.get('isCompleted')?.errors?.required) {
+              @if (editForm.get('completed')?.errors?.required) {
                 <small class="form-text text-danger">This field is required.</small>
               }
             </div>
@@ -195,40 +181,13 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_completedDate">Completed Date</label>
-          <div class="d-flex">
-            <input
-              id="field_completedDate"
-              data-cy="completedDate"
-              type="datetime-local"
-              class="form-control"
-              name="completedDate"
-              formControlName="completedDate"
-              placeholder="YYYY-MM-DD HH:mm"
-            />
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_isDisplayed">Is Displayed</label>
-          <input
-            type="checkbox"
-            class="form-check"
-            name="isDisplayed"
-            id="field_isDisplayed"
-            data-cy="isDisplayed"
-            formControlName="isDisplayed"
-          />
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_challenges">Challenges</label>
+          <label class="form-label" for="field_assignedTo">Assigned To</label>
           <select
             class="form-control"
-            id="field_challenges"
-            data-cy="challenges"
-            name="challenges"
-            formControlName="challenges"
+            id="field_assignedTo"
+            data-cy="assignedTo"
+            name="assignedTo"
+            formControlName="assignedTo"
             [compareWith]="compareProfile"
           >
             <option [ngValue]="null"></option>
@@ -239,69 +198,18 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_challengedFriend">Challenged Friend</label>
+          <label class="form-label" for="field_createdBy">Created By</label>
           <select
             class="form-control"
-            id="field_challengedFriend"
-            data-cy="challengedFriend"
-            name="challengedFriend"
-            formControlName="challengedFriend"
-            [compareWith]="compareFriendsList"
+            id="field_createdBy"
+            data-cy="createdBy"
+            name="createdBy"
+            formControlName="createdBy"
+            [compareWith]="compareProfile"
           >
             <option [ngValue]="null"></option>
-            @for (friendsListOption of friendsListsSharedCollection; track $index) {
-              <option [ngValue]="friendsListOption">{{ friendsListOption.id }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_challengedActivity">Challenged Activity</label>
-          <select
-            class="form-control"
-            id="field_challengedActivity"
-            data-cy="challengedActivity"
-            name="challengedActivity"
-            formControlName="challengedActivity"
-            [compareWith]="compareActivity"
-          >
-            <option [ngValue]="null"></option>
-            @for (activityOption of activitiesSharedCollection; track $index) {
-              <option [ngValue]="activityOption">{{ activityOption.id }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_creator">Creator</label>
-          <select
-            class="form-control"
-            id="field_creator"
-            data-cy="creator"
-            name="creator"
-            formControlName="creator"
-            [compareWith]="compareUser"
-          >
-            <option [ngValue]="null"></option>
-            @for (userOption of usersSharedCollection; track $index) {
-              <option [ngValue]="userOption">{{ userOption.id }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_recipient">Recipient</label>
-          <select
-            class="form-control"
-            id="field_recipient"
-            data-cy="recipient"
-            name="recipient"
-            formControlName="recipient"
-            [compareWith]="compareUser"
-          >
-            <option [ngValue]="null"></option>
-            @for (userOption of usersSharedCollection; track $index) {
-              <option [ngValue]="userOption">{{ userOption.id }}</option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
             }
           </select>
         </div>

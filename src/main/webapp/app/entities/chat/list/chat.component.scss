@@ -1,3 +1,61 @@
+/* Global dark mode styles for body and html elements */
+:host {
+  display: block;
+  height: 100%;
+}
+
+body.dark-theme,
+html.dark-theme {
+  background-color: #1a1a2e;
+  color: #e1e1e6;
+}
+
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #e0e4f6;
+  color: #333;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.3);
+  }
+}
+
+/* Chat container with dark mode */
+.chat-container {
+  display: flex;
+  height: calc(90vh - 72px);
+  width: 100%;
+  background-color: #f0f2ff;
+  position: relative;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+  margin: 0;
+  border-radius: 0;
+}
+
 /* Contact list */
 .contact-list {
   min-width: 280px;
@@ -60,6 +118,29 @@
   font-weight: 500;
   box-shadow: 0 3px 8px rgba(124, 77, 255, 0.2);
   flex-shrink: 0;
+}
+
+.contact-info {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.contact-name {
+  font-weight: 500;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.contact-login {
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Chat area */
@@ -130,13 +211,13 @@
   line-height: 1.5;
 }
 
-.received .message {
+.message.received {
   background: white;
   border-bottom-left-radius: 4px;
   margin-left: 8px;
 }
 
-.sent .message {
+.message.sent {
   background: linear-gradient(135deg, #4a5de8, #7c4dff);
   border-bottom-right-radius: 4px;
   margin-right: 8px;
@@ -168,6 +249,16 @@
 
 .sent .message-time {
   color: rgba(255, 255, 255, 0.7);
+}
+
+.message-status {
+  font-size: 12px;
+  color: #999;
+  margin-right: 5px;
+}
+
+.read-status {
+  color: #4a5de8;
 }
 
 /* Input area */
@@ -227,6 +318,13 @@
   box-shadow: 0 2px 8px rgba(124, 77, 255, 0.2);
 }
 
+.send-button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 /* Profile info */
 .profile-info {
   min-width: 280px;
@@ -260,6 +358,158 @@
   flex: 1;
 }
 
+/* Empty state and loading indicators */
+.empty-state {
+  color: #666;
+  max-width: 80%;
+  text-align: center;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #4a5de8;
+}
+
+.loading-indicator {
+  color: #4a5de8;
+}
+
+.no-messages-placeholder {
+  text-align: center;
+  color: #999;
+  padding: 2rem;
+  font-style: italic;
+}
+
+/* Dark Theme Styles */
+.dark-theme,
+.chat-container.dark-theme,
+body.dark-theme .chat-container,
+html.dark-theme .chat-container {
+  background-color: #1a1a2e;
+  color: #e1e1e6;
+
+  .dark-mode-toggle {
+    background: #383852;
+    color: #e1e1e6;
+    border-color: #4a4a6a;
+  }
+
+  .contact-list {
+    background: #282840;
+    border-right-color: #4a4a6a;
+  }
+
+  .contact-item:hover {
+    background: rgba(74, 93, 232, 0.1);
+  }
+
+  .contact-item.selected {
+    background: rgba(74, 93, 232, 0.2);
+  }
+
+  .contact-login {
+    color: rgba(225, 225, 230, 0.5);
+  }
+
+  .chat-area {
+    background: #1a1a2e;
+  }
+
+  .chat-header {
+    background: linear-gradient(135deg, #3a4dd8 0%, #6c3dff 100%);
+  }
+
+  .messages-container {
+    background: #1a1a2e;
+    background-image: radial-gradient(rgba(124, 77, 255, 0.02) 1px, transparent 1px);
+  }
+
+  .message.received {
+    background: #383852;
+    color: #e1e1e6;
+  }
+
+  .message.sent {
+    background: linear-gradient(135deg, #3a4dd8, #6c3dff);
+  }
+
+  .message-time {
+    color: rgba(225, 225, 230, 0.4);
+  }
+
+  .sent .message-time {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .message-status {
+    color: #9696a8;
+  }
+
+  .read-status {
+    color: #7c4dff;
+  }
+
+  .message-input-container {
+    background: #282840;
+    border-top-color: #4a4a6a;
+  }
+
+  .message-input {
+    background-color: #323250;
+    border-color: #4a4a6a;
+    color: #e1e1e6;
+  }
+
+  .message-input:focus {
+    border-color: #7c4dff;
+    background-color: #383852;
+  }
+
+  .message-input::placeholder {
+    color: #9696a8;
+  }
+
+  .send-button:disabled {
+    background: #3d3d5c;
+  }
+
+  .profile-info {
+    background: #282840;
+    border-left-color: #4a4a6a;
+  }
+
+  .profile-details h3,
+  .profile-details p {
+    color: #e1e1e6;
+  }
+
+  .empty-state {
+    color: #e1e1e6;
+  }
+
+  .empty-state h3 {
+    color: #7c4dff;
+  }
+
+  .no-messages-placeholder {
+    color: #9696a8;
+  }
+
+  .profanity-warning {
+    color: #ce93d8;
+  }
+
+  // Style for borders in dark mode
+  border-color: #4a4a6a;
+
+  // Apply border colors to child elements
+  * {
+    border-color: #4a4a6a;
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 992px) {
   .profile-info {
@@ -282,7 +532,34 @@
     margin-right: 0;
   }
 
-  .contact-item span {
+  .contact-info {
     display: none;
+  }
+
+  .dark-mode-toggle {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+}
+
+/* Ensure dark mode applies to the full viewport */
+:host-context(body.dark-theme) {
+  background-color: #1a1a2e;
+  color: #e1e1e6;
+
+  ::ng-deep .chat-container {
+    background-color: #1a1a2e;
+  }
+}
+
+/* Apply dark theme to the entire application content */
+:host-context(.dark-theme) {
+  display: block;
+  min-height: 100vh;
+  background-color: #1a1a2e;
+
+  ::ng-deep app-root {
+    background-color: #1a1a2e;
   }
 }

@@ -64,37 +64,30 @@
       "fieldType": "ImageBlob"
     },
     {
-      "fieldName": "paid",
-      "fieldType": "IsPaid",
-      "fieldValidateRules": ["required"],
-      "fieldValues": "PAID,NOTPAID"
+      "fieldName": "isPaid",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
     },
     {
-      "fieldName": "costOfactivity",
+      "fieldName": "activityCost",
       "fieldType": "BigDecimal",
-      "fieldValidateRules": ["required"]
+      "fieldValidateRules": ["required", "min"],
+      "fieldValidateRulesMin": "0"
     }
   ],
   "name": "Activity",
   "relationships": [
     {
       "otherEntityName": "booking",
-      "relationshipName": "booking",
+      "relationshipName": "bookings",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
     },
     {
       "otherEntityName": "profile",
-      "relationshipName": "userName",
+      "relationshipName": "creator",
       "relationshipSide": "left",
       "relationshipType": "many-to-one"
-    },
-    {
-      "otherEntityName": "user",
-      "relationshipName": "requesteduser",
-      "relationshipSide": "left",
-      "relationshipType": "many-to-one",
-      "relationshipWithBuiltInEntity": true
     }
   ],
   "searchEngine": "no"

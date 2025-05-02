@@ -1,40 +1,207 @@
-<div class="search-area">
-  <input type="text" placeholder="Search friends" class="search-input" />
-  <a [routerLink]="['/friends-list/friend-requests']" class="requests-btn">REQUESTS</a>
-</div>
+<div>
+  <h2 id="page-heading" data-cy="FriendsListHeading">
+    <span>Friends Lists</span>
 
-<h3 class="all-friends-heading">All Friends</h3>
+    <button class="btn btn-primary me-2" [routerLink]="['/friends-list/requests']">
+      <fa-icon icon="bell"></fa-icon>
+      <span>Friend Requests</span>
+      <span class="badge bg-danger ms-1" *ngIf="pendingRequestCount > 0">{{ pendingRequestCount }}</span>
+    </button>
 
-<div class="friends-grid">
-  <!-- Kylie's Card -->
-  <div class="friend-card">
-    <div class="profile-pic">K</div>
-    <h4 class="friend-name">Kylie</h4>
-    <button class="message-btn" routerLink="/chat">Message</button>
-    <p class="friends-since">Friend since: March 15, 2023</p>
+    //add
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span>Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-friends-list"
+        [routerLink]="['/friends-list/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span>Create a new Friends List</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <!-- Test Follow Button Section -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h3>Test Follow Button</h3>
+    </div>
+    <div class="card-body">
+      <p>Click the follow buttons below to test the friend request functionality.</p>
+
+      <button class="btn btn-secondary mb-3" (click)="loadProfiles()" [disabled]="isLoadingProfiles">
+        <fa-icon icon="sync" [animation]="isLoadingProfiles ? 'spin' : undefined"></fa-icon>
+        <span>Refresh Profiles</span>
+      </button>
+
+      @if (profiles && profiles.length > 0) {
+        <div class="row">
+          @for (profile of profiles; track trackProfileId($index, profile)) {
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <div class="card-header">
+                  <h5>Profile #{{ profile.id }}</h5>
+                </div>
+                <div class="card-body">
+                  @if (profile.firstName || profile.lastName) {
+                    <p>{{ profile.firstName }} {{ profile.lastName }}</p>
+                  } @else {
+                    <p>Anonymous User</p>
+                  }
+
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <a [routerLink]="['/profile', profile.id, 'view']" class="btn btn-sm btn-outline-info">
+                      <fa-icon icon="eye"></fa-icon>
+                      <span class="ms-1">View</span>
+                    </a>
+
+                    <jhi-follow-button
+                      [targetProfileId]="profile.id!"
+                      (friendshipChanged)="onFriendshipChanged($event, profile.id!)"
+                    ></jhi-follow-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (isLoadingProfiles) {
+        <div class="alert alert-info">
+          <span>Loading profiles...</span>
+        </div>
+      } @else {
+        <div class="alert alert-warning">
+          <span>No profiles found to test follow functionality</span>
+        </div>
+      }
+    </div>
   </div>
 
-  <!-- Nawfal's Card -->
-  <div class="friend-card">
-    <div class="profile-pic">N</div>
-    <h4 class="friend-name">Nawfal</h4>
-    <button class="message-btn" routerLink="/chat">Message</button>
-    <p class="friends-since">Friend since: January 8, 2024</p>
-  </div>
+  <!-- Friends List Table -->
+  @if (friendsLists?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span>No Friends Lists found</span>
+    </div>
+  }
 
-  <!-- Nicole's Card -->
-  <div class="friend-card">
-    <div class="profile-pic">N</div>
-    <h4 class="friend-name">Nicole</h4>
-    <button class="message-btn" routerLink="/chat">Message</button>
-    <p class="friends-since">Friend since: August 22, 2023</p>
-  </div>
+  @if (friendsLists && friendsLists.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span>ID</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="requestTime">
+              <div class="d-flex">
+                <span>Request Time</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="requestStatus">
+              <div class="d-flex">
+                <span>Request Status</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="friendSince">
+              <div class="d-flex">
+                <span>Friend Since</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="nickname">
+              <div class="d-flex">
+                <span>Nickname</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="requestedByProfile.id">
+              <div class="d-flex">
+                <span>Requested By Profile</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="requestedToProfile.id">
+              <div class="d-flex">
+                <span>Requested To Profile</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (friendsList of friendsLists; track trackId($index, friendsList)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/friends-list', friendsList.id, 'view']">{{ friendsList.id }}</a>
+              </td>
+              <td>{{ friendsList.requestTime | formatMediumDatetime }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [ngClass]="{
+                    'bg-success': friendsList.requestStatus === 'ACCEPT',
+                    'bg-info': friendsList.requestStatus === 'PENDING',
+                    'bg-danger': friendsList.requestStatus === 'DECLINED',
+                  }"
+                >
+                  {{ friendsList.requestStatus }}
+                </span>
+              </td>
+              <td>{{ friendsList.friendSince | formatMediumDatetime }}</td>
+              <td>{{ friendsList.nickname }}</td>
+              <td>
+                @if (friendsList.requestedByProfile) {
+                  <div>
+                    <a [routerLink]="['/profile', friendsList.requestedByProfile.id, 'view']">{{ friendsList.requestedByProfile.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (friendsList.requestedToProfile) {
+                  <div>
+                    <a [routerLink]="['/profile', friendsList.requestedToProfile.id, 'view']">{{ friendsList.requestedToProfile.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/friends-list', friendsList.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline">View</span>
+                  </a>
 
-  <!-- Yinrui's Card -->
-  <div class="friend-card">
-    <div class="profile-pic">Y</div>
-    <h4 class="friend-name">Yinrui</h4>
-    <button class="message-btn" routerLink="/chat">Message</button>
-    <p class="friends-since">Friend since: October 5, 2023</p>
-  </div>
+                  <a [routerLink]="['/friends-list', friendsList.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(friendsList)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
 </div>

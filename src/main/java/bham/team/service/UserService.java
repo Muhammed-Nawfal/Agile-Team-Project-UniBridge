@@ -2,13 +2,18 @@ package bham.team.service;
 
 import bham.team.config.Constants;
 import bham.team.domain.Authority;
+import bham.team.domain.Profile;
 import bham.team.domain.User;
+import bham.team.domain.enumeration.Course;
+import bham.team.domain.enumeration.University;
 import bham.team.repository.AuthorityRepository;
+import bham.team.repository.ProfileRepository;
 import bham.team.repository.UserRepository;
 import bham.team.security.AuthoritiesConstants;
 import bham.team.security.SecurityUtils;
 import bham.team.service.dto.AdminUserDTO;
 import bham.team.service.dto.UserDTO;
+import bham.team.web.rest.vm.ManagedUserVM;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -41,16 +46,20 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
+    private final ProfileRepository profileRepository;
+
     public UserService(
         UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         AuthorityRepository authorityRepository,
-        CacheManager cacheManager
+        CacheManager cacheManager,
+        ProfileRepository profileRepository
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
+        this.profileRepository = profileRepository;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -93,7 +102,11 @@ public class UserService {
             });
     }
 
-    public User registerUser(AdminUserDTO userDTO, String password) {
+    public Optional<UserDTO> getPublicUserInfoByLogin(String login) {
+        return userRepository.findOneByLogin(login).map(UserDTO::new);
+    }
+
+    public User registerUser(ManagedUserVM userDTO, String password) {
         userRepository
             .findOneByLogin(userDTO.getLogin().toLowerCase())
             .ifPresent(existingUser -> {
@@ -111,6 +124,7 @@ public class UserService {
                 }
             });
         User newUser = new User();
+
         String encryptedPassword = passwordEncoder.encode(password);
         newUser.setLogin(userDTO.getLogin().toLowerCase());
         // new user gets initially a generated password
@@ -123,13 +137,25 @@ public class UserService {
         newUser.setImageUrl(userDTO.getImageUrl());
         newUser.setLangKey(userDTO.getLangKey());
         // new user is not active
-        newUser.setActivated(false);
+        newUser.setActivated(true);
         // new user gets registration key
         newUser.setActivationKey(RandomUtil.generateActivationKey());
         Set<Authority> authorities = new HashSet<>();
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
+
+        Profile profile = new Profile();
+        profile.setUser(newUser);
+        profile.setId(userDTO.getId()); //copy user id
+        profile.setLogin(userDTO.getLogin()); //copy user login
+        profile.setFirstName(userDTO.getFirstName()); //copy user first name
+        profile.setLastName(userDTO.getLastName()); //copy user last name
+        profile.setCourse(Course.COMPUTER_SCIENCE); // Default value
+        profile.setCourseYear(1L); // Default value
+        profile.setUniversity(University.UNIVERSITY_OF_BIRMINGHAM); // Default value
+        profileRepository.save(profile);
+
         this.clearUserCaches(newUser);
         LOG.debug("Created Information for User: {}", newUser);
         return newUser;

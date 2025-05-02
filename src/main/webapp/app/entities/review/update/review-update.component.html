@@ -76,23 +76,6 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_reviewsGiven">Reviews Given</label>
-          <select
-            class="form-control"
-            id="field_reviewsGiven"
-            data-cy="reviewsGiven"
-            name="reviewsGiven"
-            formControlName="reviewsGiven"
-            [compareWith]="compareProfile"
-          >
-            <option [ngValue]="null"></option>
-            @for (profileOption of profilesSharedCollection; track $index) {
-              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
           <label class="form-label" for="field_aboutUser">About User</label>
           <select
             class="form-control"
@@ -100,11 +83,11 @@
             data-cy="aboutUser"
             name="aboutUser"
             formControlName="aboutUser"
-            [compareWith]="compareUser"
+            [compareWith]="compareProfile"
           >
             <option [ngValue]="null"></option>
-            @for (userOption of usersSharedCollection; track $index) {
-              <option [ngValue]="userOption">{{ userOption.id }}</option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
             }
           </select>
         </div>
@@ -117,11 +100,11 @@
             data-cy="fromUser"
             name="fromUser"
             formControlName="fromUser"
-            [compareWith]="compareUser"
+            [compareWith]="compareProfile"
           >
             <option [ngValue]="null"></option>
-            @for (userOption of usersSharedCollection; track $index) {
-              <option [ngValue]="userOption">{{ userOption.id }}</option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
             }
           </select>
         </div>

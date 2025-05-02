@@ -4,7 +4,7 @@ import { UserRouteAccessService } from 'app/core/auth/user-route-access.service'
 import { ASC } from 'app/config/navigation.constants';
 import ActivityMatchResolve from './route/activity-match-routing-resolve.service';
 import { MatchingComponent } from './matching/matching.component';
-import { ActivityMatchComponent } from './list/activity-match.component';
+import { MatchesListComponent } from './matches-list/matches-list.component';
 
 const activityMatchRoute: Routes = [
   {
@@ -13,7 +13,7 @@ const activityMatchRoute: Routes = [
     data: {
       defaultSort: `id,${ASC}`,
     },
-    canActivate: [],
+    canActivate: [UserRouteAccessService],
   },
   {
     path: ':id/view',
@@ -40,12 +40,28 @@ const activityMatchRoute: Routes = [
     canActivate: [UserRouteAccessService],
   },
   {
-    path: '',
-    component: ActivityMatchComponent,
+    path: 'buddy/:type',
+    loadComponent: () => import('./matching/matching.component').then(m => m.MatchingComponent),
+    resolve: {
+      matchingData: ActivityMatchResolve, // <- if you have a resolver
+    },
+    canActivate: [UserRouteAccessService], // Protect the route
   },
   {
-    path: 'buddy/:type',
-    component: MatchingComponent,
+    path: 'upcoming-matches',
+    loadComponent: () => import('./matches-list/matches-list.component').then(m => m.MatchesListComponent),
+    resolve: {
+      matchesData: ActivityMatchResolve,
+    },
+    canActivate: [UserRouteAccessService], // Protect the route
+  },
+  {
+    path: 'activity-match-requests',
+    loadComponent: () => import('./activity-match-requests/activity-match-requests.component').then(m => m.ActivityMatchRequestsComponent),
+    resolve: {
+      requestsData: ActivityMatchResolve,
+    },
+    canActivate: [UserRouteAccessService], // Protect the route
   },
 ];
 

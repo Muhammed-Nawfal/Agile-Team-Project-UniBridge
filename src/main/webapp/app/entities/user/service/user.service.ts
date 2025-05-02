@@ -17,8 +17,21 @@ export class UserService {
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/users');
 
+  // user.service.ts
+  findLoginByUserId(id: number): string | null {
+    const mockMap: Record<number, string> = {
+      1: 'admin',
+      2: 'user',
+    };
+    return mockMap[id] || null;
+  }
+
   find(id: number): Observable<EntityResponseType> {
     return this.http.get<IUser>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  }
+
+  findByLogin(login: string): Observable<EntityResponseType> {
+    return this.http.get<IUser>(`api/admin/users/${login}`, { observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {

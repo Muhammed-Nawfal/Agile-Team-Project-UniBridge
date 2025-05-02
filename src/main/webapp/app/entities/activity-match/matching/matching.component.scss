@@ -1,242 +1,97 @@
-h1 {
-  font-family: 'Times New Roman', Times, serif;
-  font-size: 50px;
-  text-align: center;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: black;
-}
-
-.filter-group-container {
+.swipe-container {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  margin: 2rem 0;
 }
 
-h2 {
-  font-size: 16px;
-  margin-right: 20px;
-  font-weight: bold;
-  color: black;
-}
-
-.filter-group {
-  margin: 10px;
-  flex-grow: 1;
-  color: #000;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-size: 14px;
-  font-weight: bold;
-  color: black;
-}
-
-select {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: white;
-  cursor: pointer;
-  color: black;
-}
-
-.filter-actions {
-  display: flex;
-  gap: 10px;
-  margin: 10px;
-}
-
-button {
-  padding: 8px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s;
-}
-
-button[type='submit'] {
-  background-color: #4caf50;
-  color: white;
-}
-
-button[type='reset'] {
-  background-color: #f44336;
-  color: white;
-}
-
-button:hover {
-  background: white;
-  color: black;
-}
-
-.main-contents {
-  width: 100%;
-  margin: 0 auto;
-  padding: 20px;
+.card-wrapper {
   position: relative;
+  width: 350px;
 }
 
-.selection-buttons {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
+.card-large {
+  width: 350px;
+  height: 350px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding-top: 1rem;
+  .card-body {
+    padding-top: 0;
+  }
+}
+
+.btn-swipe {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 10;
-}
-
-.select-button {
-  padding: 10px;
-  width: 120px;
-  height: 120px;
-  border-radius: 60%;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid;
+  background: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-}
-
-.select-button:hover {
-  transform: scale(1.05);
-  background: black;
-}
-
-.select-button button {
-  border: none;
-  background: transparent;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  font-size: 0;
-  position: relative;
-}
-
-.accept {
-  background-color: darkgreen;
-}
-
-.accept button::after {
-  content: '✓';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 50px;
-  color: white;
-}
-
-.reject {
-  background-color: darkred;
-}
-
-.reject button::after {
-  content: '✕';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 50px;
-  color: white;
-}
-
-.card {
-  width: 500px;
-  display: flex;
-  background: linear-gradient(to right, #4a5de8, #7c4dff);
-  color: white;
-  padding: 10px;
-  text-align: left;
-  height: 100%;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: auto;
-  margin: 0 auto;
-  max-width: 500px;
-  z-index: 5;
-  position: relative;
   transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
+    background 0.2s,
+    transform 0.2s;
+}
+.btn-swipe:hover {
+  background: #f8f9fa;
+  transform: translateY(-50%) scale(1.1);
+}
+.btn-swipe.reject {
+  left: -70px;
+  border-color: #e53e3e;
+  color: #e53e3e;
+}
+.btn-swipe.accept {
+  right: -70px;
+  border-color: #38a169;
+  color: #38a169;
 }
 
-.card.accepting {
-  transform: translateX(100%);
-  opacity: 0;
-}
-
-.card.rejecting {
-  transform: translateX(-100%);
-  opacity: 0;
-}
-
-.image {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
+.avatar-lg {
+  width: 120px;
+  height: 120px;
   object-fit: cover;
-  margin: 0 auto 15px;
-  border: 3px solid #eee;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.initials {
+  font-size: 2.5rem;
 }
 
-.name {
-  font-family: 'Times New Roman', serif;
-  font-size: 45px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-align: center;
+.btn-swipe.reject {
+  left: -70px;
+}
+.btn-swipe.accept {
+  right: -70px;
+}
+
+.badges .badge {
+  font-size: 0.85rem;
+  padding: 0.4em 0.75em;
 }
 
 .card-details {
-  font-family: 'Georgia', serif;
-  text-align: left;
-  padding: 0 5px;
-  font-size: 20px;
+  width: 350px;
+  padding: 0 0.5rem;
+  margin-top: 0.75rem;
+  white-space: nowrap;
+}
+.card-details .rating i {
+  font-size: 1.25rem;
+}
+.actions .btn-sm {
+  font-size: 0.85rem;
+  padding: 0.35rem 0.75rem;
 }
 
-.other-details {
-  display: flex;
-  margin-top: 15px;
-  justify-content: center;
-  gap: 5px;
+.toast-container {
+  z-index: 1060;
 }
-
-.other-details p {
-  color: black;
-  background-color: white;
-  padding: 8px 12px;
-  border-radius: 5px;
-  font-size: 18px;
-  text-align: center;
-  flex: 0 1 auto;
-  margin: 0 0 5px 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  min-width: fit-content;
-  max-width: 100%;
-  display: inline-block;
-}
-
-.rating-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 15px 0;
-  width: 100%;
-  position: relative;
-}
-
-.star-filled {
-  font-size: 30px;
-  color: gold;
-}
-
-.star-empty {
-  color: #ccc;
-  font-size: 30px;
+.actions {
+  margin-top: 0;
 }

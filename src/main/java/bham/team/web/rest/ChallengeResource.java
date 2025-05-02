@@ -132,6 +132,9 @@ public class ChallengeResource {
                 if (challenge.getCategory() != null) {
                     existingChallenge.setCategory(challenge.getCategory());
                 }
+                if (challenge.getDate() != null) {
+                    existingChallenge.setDate(challenge.getDate());
+                }
                 if (challenge.getPoints() != null) {
                     existingChallenge.setPoints(challenge.getPoints());
                 }
@@ -141,20 +144,8 @@ public class ChallengeResource {
                 if (challenge.getBadgeContentType() != null) {
                     existingChallenge.setBadgeContentType(challenge.getBadgeContentType());
                 }
-                if (challenge.getCreatedDate() != null) {
-                    existingChallenge.setCreatedDate(challenge.getCreatedDate());
-                }
-                if (challenge.getExpiryDate() != null) {
-                    existingChallenge.setExpiryDate(challenge.getExpiryDate());
-                }
-                if (challenge.getIsCompleted() != null) {
-                    existingChallenge.setIsCompleted(challenge.getIsCompleted());
-                }
-                if (challenge.getCompletedDate() != null) {
-                    existingChallenge.setCompletedDate(challenge.getCompletedDate());
-                }
-                if (challenge.getIsDisplayed() != null) {
-                    existingChallenge.setIsDisplayed(challenge.getIsDisplayed());
+                if (challenge.getCompleted() != null) {
+                    existingChallenge.setCompleted(challenge.getCompleted());
                 }
 
                 return existingChallenge;

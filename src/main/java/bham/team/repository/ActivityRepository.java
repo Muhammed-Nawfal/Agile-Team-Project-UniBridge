@@ -1,8 +1,14 @@
 package bham.team.repository;
 
 import bham.team.domain.Activity;
-import java.util.List;
+import bham.team.domain.enumeration.ActivityType;
+import bham.team.domain.enumeration.Status;
+import java.time.Instant;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -11,6 +17,5 @@ import org.springframework.stereotype.Repository;
 @SuppressWarnings("unused")
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
-    @Query("select activity from Activity activity where activity.requesteduser.login = ?#{authentication.name}")
-    List<Activity> findByRequesteduserIsCurrentUser();
+    Page<Activity> findByActivityNameContainingIgnoreCase(String query, Pageable pageable);
 }

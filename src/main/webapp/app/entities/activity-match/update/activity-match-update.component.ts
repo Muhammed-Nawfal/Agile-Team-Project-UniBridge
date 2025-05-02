@@ -7,10 +7,13 @@ import { finalize, map } from 'rxjs/operators';
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { AlertError } from 'app/shared/alert/alert-error.model';
+import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
+import { DataUtils, FileLoadError } from 'app/core/util/data-util.service';
+import { IRanking } from 'app/entities/ranking/ranking.model';
+import { RankingService } from 'app/entities/ranking/service/ranking.service';
 import { IProfile } from 'app/entities/profile/profile.model';
 import { ProfileService } from 'app/entities/profile/service/profile.service';
-import { IUser } from 'app/entities/user/user.model';
-import { UserService } from 'app/entities/user/service/user.service';
 import { IActivity } from 'app/entities/activity/activity.model';
 import { ActivityService } from 'app/entities/activity/service/activity.service';
 import { ActivityType } from 'app/entities/enumerations/activity-type.model';
@@ -31,23 +34,25 @@ export class ActivityMatchUpdateComponent implements OnInit {
   activityTypeValues = Object.keys(ActivityType);
   decisionValues = Object.keys(Decision);
 
+  ratingsCollection: IRanking[] = [];
   profilesSharedCollection: IProfile[] = [];
-  usersSharedCollection: IUser[] = [];
   activitiesSharedCollection: IActivity[] = [];
 
+  protected dataUtils = inject(DataUtils);
+  protected eventManager = inject(EventManager);
   protected activityMatchService = inject(ActivityMatchService);
   protected activityMatchFormService = inject(ActivityMatchFormService);
+  protected rankingService = inject(RankingService);
   protected profileService = inject(ProfileService);
-  protected userService = inject(UserService);
   protected activityService = inject(ActivityService);
   protected activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: ActivityMatchFormGroup = this.activityMatchFormService.createActivityMatchFormGroup();
 
-  compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
+  compareRanking = (o1: IRanking | null, o2: IRanking | null): boolean => this.rankingService.compareRanking(o1, o2);
 
-  compareUser = (o1: IUser | null, o2: IUser | null): boolean => this.userService.compareUser(o1, o2);
+  compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
 
   compareActivity = (o1: IActivity | null, o2: IActivity | null): boolean => this.activityService.compareActivity(o1, o2);
 
@@ -59,6 +64,21 @@ export class ActivityMatchUpdateComponent implements OnInit {
       }
 
       this.loadRelationshipsOptions();
+    });
+  }
+
+  byteSize(base64String: string): string {
+    return this.dataUtils.byteSize(base64String);
+  }
+
+  openFile(base64String: string, contentType: string | null | undefined): void {
+    this.dataUtils.openFile(base64String, contentType);
+  }
+
+  setFileData(event: Event, field: string, isImage: boolean): void {
+    this.dataUtils.loadFileToForm(event, this.editForm, field, isImage).subscribe({
+      error: (err: FileLoadError) =>
+        this.eventManager.broadcast(new EventWithContent<AlertError>('teamproject24App.error', { message: err.message })),
     });
   }
 
@@ -99,14 +119,11 @@ export class ActivityMatchUpdateComponent implements OnInit {
     this.activityMatch = activityMatch;
     this.activityMatchFormService.resetForm(this.editForm, activityMatch);
 
+    this.ratingsCollection = this.rankingService.addRankingToCollectionIfMissing<IRanking>(this.ratingsCollection, activityMatch.ratings);
     this.profilesSharedCollection = this.profileService.addProfileToCollectionIfMissing<IProfile>(
       this.profilesSharedCollection,
-      activityMatch.userName,
-    );
-    this.usersSharedCollection = this.userService.addUserToCollectionIfMissing<IUser>(
-      this.usersSharedCollection,
-      activityMatch.requestUser,
-      activityMatch.matchedUser,
+      activityMatch.matchRequestor,
+      activityMatch.userDetails,
     );
     this.activitiesSharedCollection = this.activityService.addActivityToCollectionIfMissing<IActivity>(
       this.activitiesSharedCollection,
@@ -115,25 +132,27 @@ export class ActivityMatchUpdateComponent implements OnInit {
   }
 
   protected loadRelationshipsOptions(): void {
+    this.rankingService
+      .query({ filter: 'activitymatch-is-null' })
+      .pipe(map((res: HttpResponse<IRanking[]>) => res.body ?? []))
+      .pipe(
+        map((rankings: IRanking[]) => this.rankingService.addRankingToCollectionIfMissing<IRanking>(rankings, this.activityMatch?.ratings)),
+      )
+      .subscribe((rankings: IRanking[]) => (this.ratingsCollection = rankings));
+
     this.profileService
       .query()
       .pipe(map((res: HttpResponse<IProfile[]>) => res.body ?? []))
       .pipe(
         map((profiles: IProfile[]) =>
-          this.profileService.addProfileToCollectionIfMissing<IProfile>(profiles, this.activityMatch?.userName),
+          this.profileService.addProfileToCollectionIfMissing<IProfile>(
+            profiles,
+            this.activityMatch?.matchRequestor,
+            this.activityMatch?.userDetails,
+          ),
         ),
       )
       .subscribe((profiles: IProfile[]) => (this.profilesSharedCollection = profiles));
-
-    this.userService
-      .query()
-      .pipe(map((res: HttpResponse<IUser[]>) => res.body ?? []))
-      .pipe(
-        map((users: IUser[]) =>
-          this.userService.addUserToCollectionIfMissing<IUser>(users, this.activityMatch?.requestUser, this.activityMatch?.matchedUser),
-        ),
-      )
-      .subscribe((users: IUser[]) => (this.usersSharedCollection = users));
 
     this.activityService
       .query()

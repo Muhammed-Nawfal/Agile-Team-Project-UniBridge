@@ -15,6 +15,8 @@ import { MatchingComponent } from '../matching/matching.component';
 
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
+import { IProfile } from '../../profile/profile.model';
+import { ActivityType } from '../../enumerations/activity-type.model';
 
 @Component({
   standalone: true,
@@ -40,6 +42,8 @@ export class ActivityMatchComponent implements OnInit, OnDestroy {
   isLoading = false;
   sortState = sortStateSignal({});
 
+  profiles: IProfile[] = [];
+
   // Public injected services
   public readonly router = inject(Router);
 
@@ -53,6 +57,8 @@ export class ActivityMatchComponent implements OnInit, OnDestroy {
   protected readonly accountService = inject(AccountService);
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
+
+  protected readonly ActivityType = ActivityType;
 
   // Private properties
   private readonly destroy$ = new Subject<void>();
@@ -120,35 +126,20 @@ export class ActivityMatchComponent implements OnInit, OnDestroy {
     });
   }
 
-  onButtonClick(): void {
-    if (!this.account()) {
-      // If the user is not authenticated, redirect them to the login page
-      localStorage.setItem('redirectUrl', this.router.url);
-      this.router.navigate(['/login']);
-    }
-  }
+  // onButtonClick(): void {
+  //   if (!this.account()) {
+  //     // If the user is not authenticated, redirect them to the login page
+  //     localStorage.setItem('redirectUrl', this.router.url);
+  //     this.router.navigate(['/login']);
+  //   }
+  // }
 
   navigateToWithComponentValues(event: SortState): void {
     this.handleNavigation(event);
   }
 
-  goToEventsBuddy(): void {
-    if (this.account()) {
-      this.router.navigate(['/events-buddy']);
-    } else {
-      localStorage.setItem('redirectUrl', this.router.url);
-      this.router.navigate(['/login']);
-    }
-  }
-
-  navigateToBuddy(type: string): void {
-    if (this.account()) {
-      this.router.navigate(['/activity-match/buddy', type]);
-    } else {
-      // Store the current URL and redirect to the login page
-      localStorage.setItem('redirectUrl', this.router.url);
-      this.router.navigate(['/login']);
-    }
+  navigateToBuddy(type: ActivityType): void {
+    this.router.navigate(['/activity-match/buddy', type]);
   }
 
   navigateToBooking(): void {
@@ -159,6 +150,14 @@ export class ActivityMatchComponent implements OnInit, OnDestroy {
       localStorage.setItem('redirectUrl', this.router.url);
       this.router.navigate(['/login']);
     }
+  }
+
+  navigateToUpcomingMatches(): void {
+    this.router.navigate(['/activity-match/upcoming-matches']);
+  }
+
+  navigateToMatchRequests(): void {
+    this.router.navigate(['/activity-match/activity-match-requests']);
   }
 
   handleLoginRedirect(): void {

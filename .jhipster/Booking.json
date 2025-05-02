@@ -5,74 +5,65 @@
   "applications": "*",
   "fields": [
     {
-      "fieldName": "bookingName",
-      "fieldType": "String",
+      "fieldName": "activityType",
+      "fieldType": "ActivityType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "SOCIAL,ACADEMIC,SPORTS,GYM,OTHER"
+    },
+    {
+      "fieldName": "eventType",
+      "fieldType": "EventType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "STUDY_SPACES,EVENT_ROOMS,FOOTBALL_PITCH,TENNIS_COURT,BASKETBALL_COURT,DOJO,SWIMMING_POOL,SQUASH_COURT"
+    },
+    {
+      "fieldName": "bookingDate",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "partySize",
+      "fieldType": "Integer",
       "fieldValidateRules": ["required"]
     },
     {
       "fieldName": "bookingStatus",
-      "fieldType": "Status",
+      "fieldType": "BookingStatus",
       "fieldValidateRules": ["required"],
-      "fieldValues": "ANNOUNCED,CURRENTLY_HAPPENING,FINISHED,CANCELED"
+      "fieldValues": "CONFIRMED,CANCELLED"
     },
     {
-      "fieldName": "bookingTime",
-      "fieldType": "Instant",
-      "fieldValidateRules": ["required"]
+      "fieldName": "createdAt",
+      "fieldType": "Instant"
     },
     {
-      "fieldName": "bookingDate",
-      "fieldType": "Instant",
-      "fieldValidateRules": ["required"]
-    },
-    {
-      "fieldName": "phoneNum",
-      "fieldType": "String",
-      "fieldValidateRules": ["required", "minlength", "maxlength"],
-      "fieldValidateRulesMaxlength": "11",
-      "fieldValidateRulesMinlength": "11"
-    },
-    {
-      "fieldName": "bookingType",
-      "fieldType": "BookingType",
-      "fieldValidateRules": ["required"],
-      "fieldValues": "FOOTBALL_PITCH,TENNIS_COURT,BASKETBALL_COURT,STUDY_SPACES,EVENT_ROOMS,DOJO,SWIMMING_POOL,SQUASH_COURT"
-    },
-    {
-      "fieldName": "numOfParticipants",
-      "fieldType": "Integer",
-      "fieldValidateRules": ["required", "min"],
-      "fieldValidateRulesMin": "1"
-    },
-    {
-      "fieldName": "bookStartTime",
-      "fieldType": "Instant",
-      "fieldValidateRules": ["required"]
-    },
-    {
-      "fieldName": "bookEndTime",
-      "fieldType": "Instant",
-      "fieldValidateRules": ["required"]
+      "fieldName": "assignedAt",
+      "fieldType": "Instant"
     }
   ],
   "name": "Booking",
   "relationships": [
     {
-      "otherEntityName": "profile",
-      "relationshipName": "bookingDoneBy",
+      "otherEntityName": "timeSlot",
+      "relationshipName": "timeSlots",
       "relationshipSide": "left",
-      "relationshipType": "one-to-one"
-    },
-    {
-      "otherEntityName": "user",
-      "relationshipName": "requestedUser",
-      "relationshipSide": "left",
-      "relationshipType": "many-to-one",
-      "relationshipWithBuiltInEntity": true
+      "relationshipType": "many-to-one"
     },
     {
       "otherEntityName": "activity",
       "relationshipName": "bookedActivity",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "location",
+      "relationshipName": "bookingLocation",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "profile",
+      "relationshipName": "creator",
       "relationshipSide": "left",
       "relationshipType": "many-to-one"
     }

@@ -15,69 +15,57 @@
           <dd>
             <span>{{ bookingRef.id }}</span>
           </dd>
-          <dt><span>Booking Name</span></dt>
-          <dd>
-            <span>{{ bookingRef.bookingName }}</span>
-          </dd>
-          <dt><span>Booking Status</span></dt>
+          <dt><span>Activity Type</span></dt>
           <dd>
             <span>{{
-              { null: '', ANNOUNCED: 'ANNOUNCED', CURRENTLY_HAPPENING: 'CURRENTLY_HAPPENING', FINISHED: 'FINISHED', CANCELED: 'CANCELED' }[
-                bookingRef.bookingStatus ?? 'null'
+              { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[
+                bookingRef.activityType ?? 'null'
               ]
             }}</span>
           </dd>
-          <dt><span>Booking Time</span></dt>
-          <dd>
-            <span>{{ bookingRef.bookingTime | formatMediumDatetime }}</span>
-          </dd>
-          <dt><span>Booking Date</span></dt>
-          <dd>
-            <span>{{ bookingRef.bookingDate | formatMediumDatetime }}</span>
-          </dd>
-          <dt><span>Phone Num</span></dt>
-          <dd>
-            <span>{{ bookingRef.phoneNum }}</span>
-          </dd>
-          <dt><span>Booking Type</span></dt>
+          <dt><span>Event Type</span></dt>
           <dd>
             <span>{{
               {
                 null: '',
+                STUDY_SPACES: 'STUDY_SPACES',
+                EVENT_ROOMS: 'EVENT_ROOMS',
                 FOOTBALL_PITCH: 'FOOTBALL_PITCH',
                 TENNIS_COURT: 'TENNIS_COURT',
                 BASKETBALL_COURT: 'BASKETBALL_COURT',
-                STUDY_SPACES: 'STUDY_SPACES',
-                EVENT_ROOMS: 'EVENT_ROOMS',
                 DOJO: 'DOJO',
                 SWIMMING_POOL: 'SWIMMING_POOL',
                 SQUASH_COURT: 'SQUASH_COURT',
-              }[bookingRef.bookingType ?? 'null']
+              }[bookingRef.eventType ?? 'null']
             }}</span>
           </dd>
-          <dt><span>Num Of Participants</span></dt>
+          <dt><span>Booking Date</span></dt>
           <dd>
-            <span>{{ bookingRef.numOfParticipants }}</span>
+            <span>{{ bookingRef.bookingDate | formatMediumDate }}</span>
           </dd>
-          <dt><span>Book Start Time</span></dt>
+          <dt><span>Party Size</span></dt>
           <dd>
-            <span>{{ bookingRef.bookStartTime | formatMediumDatetime }}</span>
+            <span>{{ bookingRef.partySize }}</span>
           </dd>
-          <dt><span>Book End Time</span></dt>
+          <dt><span>Booking Status</span></dt>
           <dd>
-            <span>{{ bookingRef.bookEndTime | formatMediumDatetime }}</span>
+            <span>{{ { null: '', CONFIRMED: 'CONFIRMED', CANCELLED: 'CANCELLED' }[bookingRef.bookingStatus ?? 'null'] }}</span>
           </dd>
-          <dt><span>Booking Done By</span></dt>
+          <dt><span>Created At</span></dt>
           <dd>
-            @if (booking()!.bookingDoneBy) {
+            <span>{{ bookingRef.createdAt | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Assigned At</span></dt>
+          <dd>
+            <span>{{ bookingRef.assignedAt | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Time Slots</span></dt>
+          <dd>
+            @if (booking()!.timeSlots) {
               <div>
-                <a [routerLink]="['/profile', booking()!.bookingDoneBy?.id, 'view']">{{ bookingRef.bookingDoneBy?.id }}</a>
+                <a [routerLink]="['/time-slot', booking()!.timeSlots?.id, 'view']">{{ bookingRef.timeSlots?.id }}</a>
               </div>
             }
-          </dd>
-          <dt><span>Requested User</span></dt>
-          <dd>
-            <span>{{ bookingRef.requestedUser?.id }}</span>
           </dd>
           <dt><span>Booked Activity</span></dt>
           <dd>
@@ -87,11 +75,35 @@
               </div>
             }
           </dd>
+          <dt><span>Booking Location</span></dt>
+          <dd>
+            @if (booking()!.bookingLocation) {
+              <div>
+                <a [routerLink]="['/location', booking()!.bookingLocation?.id, 'view']">{{ bookingRef.bookingLocation?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Creator</span></dt>
+          <dd>
+            @if (booking()!.creator) {
+              <div>
+                <a [routerLink]="['/profile', booking()!.creator?.id, 'view']">{{ bookingRef.creator?.id }}</a>
+              </div>
+            }
+          </dd>
           <dt><span>Activity</span></dt>
           <dd>
             @if (booking()!.activity) {
               <div>
                 <a [routerLink]="['/activity', booking()!.activity?.id, 'view']">{{ bookingRef.activity?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Time Slot</span></dt>
+          <dd>
+            @if (booking()!.timeSlot) {
+              <div>
+                <a [routerLink]="['/time-slot', booking()!.timeSlot?.id, 'view']">{{ bookingRef.timeSlot?.id }}</a>
               </div>
             }
           </dd>

@@ -12,9 +12,12 @@ import bham.team.domain.ActivityMatch;
 import bham.team.domain.enumeration.ActivityType;
 import bham.team.domain.enumeration.Decision;
 import bham.team.repository.ActivityMatchRepository;
-import bham.team.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.AfterEach;
@@ -41,6 +44,24 @@ class ActivityMatchResourceIT {
     private static final Decision DEFAULT_STATUS = Decision.ACCEPT;
     private static final Decision UPDATED_STATUS = Decision.DECLINED;
 
+    private static final LocalDate DEFAULT_MATCH_DATE = LocalDate.ofEpochDay(0L);
+    private static final LocalDate UPDATED_MATCH_DATE = LocalDate.now(ZoneId.systemDefault());
+
+    private static final Instant DEFAULT_MATCH_TIME = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_MATCH_TIME = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+    private static final String DEFAULT_LOCATION = "AAAAAAAAAA";
+    private static final String UPDATED_LOCATION = "BBBBBBBBBB";
+
+    private static final String DEFAULT_NOTES = "AAAAAAAAAA";
+    private static final String UPDATED_NOTES = "BBBBBBBBBB";
+
+    private static final Instant DEFAULT_CREATED_AT = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_CREATED_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
+    private static final Instant DEFAULT_RESPONSE_AT = Instant.ofEpochMilli(0L);
+    private static final Instant UPDATED_RESPONSE_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+
     private static final String ENTITY_API_URL = "/api/activity-matches";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -52,9 +73,6 @@ class ActivityMatchResourceIT {
 
     @Autowired
     private ActivityMatchRepository activityMatchRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private EntityManager em;
@@ -73,7 +91,15 @@ class ActivityMatchResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static ActivityMatch createEntity() {
-        return new ActivityMatch().activityType(DEFAULT_ACTIVITY_TYPE).status(DEFAULT_STATUS);
+        return new ActivityMatch()
+            .activityType(DEFAULT_ACTIVITY_TYPE)
+            .status(DEFAULT_STATUS)
+            .matchDate(DEFAULT_MATCH_DATE)
+            .matchTime(DEFAULT_MATCH_TIME)
+            .location(DEFAULT_LOCATION)
+            .notes(DEFAULT_NOTES)
+            .createdAt(DEFAULT_CREATED_AT)
+            .responseAt(DEFAULT_RESPONSE_AT);
     }
 
     /**
@@ -83,7 +109,15 @@ class ActivityMatchResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static ActivityMatch createUpdatedEntity() {
-        return new ActivityMatch().activityType(UPDATED_ACTIVITY_TYPE).status(UPDATED_STATUS);
+        return new ActivityMatch()
+            .activityType(UPDATED_ACTIVITY_TYPE)
+            .status(UPDATED_STATUS)
+            .matchDate(UPDATED_MATCH_DATE)
+            .matchTime(UPDATED_MATCH_TIME)
+            .location(UPDATED_LOCATION)
+            .notes(UPDATED_NOTES)
+            .createdAt(UPDATED_CREATED_AT)
+            .responseAt(UPDATED_RESPONSE_AT);
     }
 
     @BeforeEach
@@ -172,6 +206,70 @@ class ActivityMatchResourceIT {
 
     @Test
     @Transactional
+    void checkMatchDateIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        activityMatch.setMatchDate(null);
+
+        // Create the ActivityMatch, which fails.
+
+        restActivityMatchMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(activityMatch)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkMatchTimeIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        activityMatch.setMatchTime(null);
+
+        // Create the ActivityMatch, which fails.
+
+        restActivityMatchMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(activityMatch)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkCreatedAtIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        activityMatch.setCreatedAt(null);
+
+        // Create the ActivityMatch, which fails.
+
+        restActivityMatchMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(activityMatch)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkResponseAtIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        activityMatch.setResponseAt(null);
+
+        // Create the ActivityMatch, which fails.
+
+        restActivityMatchMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(activityMatch)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void getAllActivityMatches() throws Exception {
         // Initialize the database
         insertedActivityMatch = activityMatchRepository.saveAndFlush(activityMatch);
@@ -183,7 +281,13 @@ class ActivityMatchResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(activityMatch.getId().intValue())))
             .andExpect(jsonPath("$.[*].activityType").value(hasItem(DEFAULT_ACTIVITY_TYPE.toString())))
-            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())));
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
+            .andExpect(jsonPath("$.[*].matchDate").value(hasItem(DEFAULT_MATCH_DATE.toString())))
+            .andExpect(jsonPath("$.[*].matchTime").value(hasItem(DEFAULT_MATCH_TIME.toString())))
+            .andExpect(jsonPath("$.[*].location").value(hasItem(DEFAULT_LOCATION)))
+            .andExpect(jsonPath("$.[*].notes").value(hasItem(DEFAULT_NOTES.toString())))
+            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(DEFAULT_CREATED_AT.toString())))
+            .andExpect(jsonPath("$.[*].responseAt").value(hasItem(DEFAULT_RESPONSE_AT.toString())));
     }
 
     @Test
@@ -199,7 +303,13 @@ class ActivityMatchResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(activityMatch.getId().intValue()))
             .andExpect(jsonPath("$.activityType").value(DEFAULT_ACTIVITY_TYPE.toString()))
-            .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()));
+            .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()))
+            .andExpect(jsonPath("$.matchDate").value(DEFAULT_MATCH_DATE.toString()))
+            .andExpect(jsonPath("$.matchTime").value(DEFAULT_MATCH_TIME.toString()))
+            .andExpect(jsonPath("$.location").value(DEFAULT_LOCATION))
+            .andExpect(jsonPath("$.notes").value(DEFAULT_NOTES.toString()))
+            .andExpect(jsonPath("$.createdAt").value(DEFAULT_CREATED_AT.toString()))
+            .andExpect(jsonPath("$.responseAt").value(DEFAULT_RESPONSE_AT.toString()));
     }
 
     @Test
@@ -221,7 +331,15 @@ class ActivityMatchResourceIT {
         ActivityMatch updatedActivityMatch = activityMatchRepository.findById(activityMatch.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedActivityMatch are not directly saved in db
         em.detach(updatedActivityMatch);
-        updatedActivityMatch.activityType(UPDATED_ACTIVITY_TYPE).status(UPDATED_STATUS);
+        updatedActivityMatch
+            .activityType(UPDATED_ACTIVITY_TYPE)
+            .status(UPDATED_STATUS)
+            .matchDate(UPDATED_MATCH_DATE)
+            .matchTime(UPDATED_MATCH_TIME)
+            .location(UPDATED_LOCATION)
+            .notes(UPDATED_NOTES)
+            .createdAt(UPDATED_CREATED_AT)
+            .responseAt(UPDATED_RESPONSE_AT);
 
         restActivityMatchMockMvc
             .perform(
@@ -301,6 +419,8 @@ class ActivityMatchResourceIT {
         ActivityMatch partialUpdatedActivityMatch = new ActivityMatch();
         partialUpdatedActivityMatch.setId(activityMatch.getId());
 
+        partialUpdatedActivityMatch.status(UPDATED_STATUS).notes(UPDATED_NOTES).responseAt(UPDATED_RESPONSE_AT);
+
         restActivityMatchMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedActivityMatch.getId())
@@ -330,7 +450,15 @@ class ActivityMatchResourceIT {
         ActivityMatch partialUpdatedActivityMatch = new ActivityMatch();
         partialUpdatedActivityMatch.setId(activityMatch.getId());
 
-        partialUpdatedActivityMatch.activityType(UPDATED_ACTIVITY_TYPE).status(UPDATED_STATUS);
+        partialUpdatedActivityMatch
+            .activityType(UPDATED_ACTIVITY_TYPE)
+            .status(UPDATED_STATUS)
+            .matchDate(UPDATED_MATCH_DATE)
+            .matchTime(UPDATED_MATCH_TIME)
+            .location(UPDATED_LOCATION)
+            .notes(UPDATED_NOTES)
+            .createdAt(UPDATED_CREATED_AT)
+            .responseAt(UPDATED_RESPONSE_AT);
 
         restActivityMatchMockMvc
             .perform(

@@ -28,6 +28,11 @@ const routes: Routes = [
         resolve: { profile: profileResolve },
         loadComponent: () => import('./profile/update/profile-update.component').then(m => m.ProfileUpdateComponent),
       },
+      {
+        path: ':id/deleteForm', // Fixed: removed the redundant 'profile/' prefix
+        resolve: { profile: profileResolve },
+        loadComponent: () => import('./profile/delete/profile-delete-dialog.component').then(m => m.ProfileDeleteDialogComponent),
+      },
     ],
   },
   {
@@ -79,6 +84,31 @@ const routes: Routes = [
     path: 'challenge',
     data: { pageTitle: 'Challenge' },
     loadChildren: () => import('./challenge/challenge.routes'),
+  },
+  {
+    path: 'activity-participant',
+    data: { pageTitle: 'ActivityParticipants' },
+    loadChildren: () => import('./activity-participant/activity-participant.routes'),
+  },
+  {
+    path: 'message-thread',
+    data: { pageTitle: 'MessageThreads' },
+    loadChildren: () => import('./message-thread/message-thread.routes'),
+  },
+  {
+    path: 'event',
+    data: { pageTitle: 'Events' },
+    loadChildren: () => import('./event/event.routes'),
+  },
+  {
+    path: 'time-slot',
+    data: { pageTitle: 'TimeSlots' },
+    loadChildren: () => import('./time-slot/time-slot.routes'),
+  },
+  {
+    path: 'location',
+    data: { pageTitle: 'Locations' },
+    loadChildren: () => import('./location/location.routes'),
   },
   /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
 ];

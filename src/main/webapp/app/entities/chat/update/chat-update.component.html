@@ -13,17 +13,9 @@
           </div>
         }
 
-        @let messageRef = editForm.get('message')!;
         <div class="mb-3">
           <label class="form-label" for="field_message">Message</label>
           <textarea class="form-control" name="message" id="field_message" data-cy="message" formControlName="message"></textarea>
-          @if (messageRef.invalid && (messageRef.dirty || messageRef.touched)) {
-            <div>
-              @if (editForm.get('message')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-            </div>
-          }
         </div>
 
         @let timestampRef = editForm.get('timestamp')!;
@@ -52,13 +44,33 @@
           }
         </div>
 
+        @let statusRef = editForm.get('status')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_status">Status</label>
+          <select class="form-control" name="status" formControlName="status" id="field_status" data-cy="status">
+            <option [ngValue]="null"></option>
+            @for (messageStatus of messageStatusValues; track $index) {
+              <option [value]="messageStatus">{{ { null: '', SENT: 'SENT', DELIVERED: 'DELIVERED', READ: 'READ' }[messageStatus] }}</option>
+            }
+          </select>
+          @if (statusRef.invalid && (statusRef.dirty || statusRef.touched)) {
+            <div>
+              @if (editForm.get('status')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
         @let typeRef = editForm.get('type')!;
         <div class="mb-3">
           <label class="form-label" for="field_type">Type</label>
           <select class="form-control" name="type" formControlName="type" id="field_type" data-cy="type">
             <option [ngValue]="null"></option>
-            @for (actionType of actionTypeValues; track $index) {
-              <option [value]="actionType">{{ { null: '', UNMATCH: 'UNMATCH', REPORT: 'REPORT' }[actionType] }}</option>
+            @for (messageType of messageTypeValues; track $index) {
+              <option [value]="messageType">
+                {{ { null: '', TEXT: 'TEXT', IMAGE: 'IMAGE', VIDEO: 'VIDEO', FILE: 'FILE' }[messageType] }}
+              </option>
             }
           </select>
           @if (typeRef.invalid && (typeRef.dirty || typeRef.touched)) {
@@ -70,29 +82,108 @@
           }
         </div>
 
+        @let mediaRef = editForm.get('media')!;
         <div class="mb-3">
-          <label class="form-label" for="field_friendChat">Friend Chat</label>
-          <select
-            class="form-control"
-            id="field_friendChat"
-            data-cy="friendChat"
-            name="friendChat"
-            formControlName="friendChat"
-            [compareWith]="compareFriendsList"
-          >
-            <option [ngValue]="null"></option>
-            @for (friendsListOption of friendChatsCollection; track $index) {
-              <option [ngValue]="friendsListOption">{{ friendsListOption.id }}</option>
+          <label class="form-label" for="field_media">Media</label>
+          <div>
+            @if (mediaRef.value) {
+              <img
+                [src]="'data:' + editForm.get('mediaContentType')!.value + ';base64,' + mediaRef.value"
+                style="max-height: 100px"
+                alt="chat"
+              />
             }
-          </select>
+            @if (mediaRef.value) {
+              <div class="form-text text-danger clearfix">
+                <span class="pull-start">{{ editForm.get('mediaContentType')!.value }}, {{ byteSize(mediaRef.value!) }}</span>
+                <button
+                  type="button"
+                  (click)="clearInputImage('media', 'mediaContentType', 'file_media')"
+                  class="btn btn-secondary btn-xs pull-end"
+                >
+                  <fa-icon icon="times"></fa-icon>
+                </button>
+              </div>
+            }
+            <input type="file" id="file_media" data-cy="media" (change)="setFileData($event, 'media', true)" accept="image/*" />
+          </div>
+          <input type="hidden" class="form-control" name="media" id="field_media" data-cy="media" formControlName="media" />
+          <input
+            type="hidden"
+            class="form-control"
+            name="mediaContentType"
+            id="field_mediaContentType"
+            formControlName="mediaContentType"
+          />
+        </div>
+
+        @let isDeletedRef = editForm.get('isDeleted')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_isDeleted">Is Deleted</label>
+          <input type="checkbox" class="form-check" name="isDeleted" id="field_isDeleted" data-cy="isDeleted" formControlName="isDeleted" />
+          @if (isDeletedRef.invalid && (isDeletedRef.dirty || isDeletedRef.touched)) {
+            <div>
+              @if (editForm.get('isDeleted')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let createdOnRef = editForm.get('createdOn')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_createdOn">Created On</label>
+          <div class="d-flex">
+            <input
+              id="field_createdOn"
+              data-cy="createdOn"
+              type="datetime-local"
+              class="form-control"
+              name="createdOn"
+              formControlName="createdOn"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+          @if (createdOnRef.invalid && (createdOnRef.dirty || createdOnRef.touched)) {
+            <div>
+              @if (editForm.get('createdOn')?.errors?.required) {
+                <small class="form-text text-danger">This field is required.</small>
+              }
+              <small class="form-text text-danger" [hidden]="!editForm.get('createdOn')?.errors?.datetimelocal"
+                >This field should be a date and time.</small
+              >
+            </div>
+          }
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_chats">Chats</label>
-          <select class="form-control" id="field_chats" data-cy="chats" name="chats" formControlName="chats" [compareWith]="compareProfile">
+          <label class="form-label" for="field_updatedOn">Updated On</label>
+          <div class="d-flex">
+            <input
+              id="field_updatedOn"
+              data-cy="updatedOn"
+              type="datetime-local"
+              class="form-control"
+              name="updatedOn"
+              formControlName="updatedOn"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_thread">Thread</label>
+          <select
+            class="form-control"
+            id="field_thread"
+            data-cy="thread"
+            name="thread"
+            formControlName="thread"
+            [compareWith]="compareMessageThread"
+          >
             <option [ngValue]="null"></option>
-            @for (profileOption of profilesSharedCollection; track $index) {
-              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            @for (messageThreadOption of messageThreadsSharedCollection; track $index) {
+              <option [ngValue]="messageThreadOption">{{ messageThreadOption.id }}</option>
             }
           </select>
         </div>
@@ -105,11 +196,11 @@
             data-cy="sender"
             name="sender"
             formControlName="sender"
-            [compareWith]="compareUser"
+            [compareWith]="compareProfile"
           >
             <option [ngValue]="null"></option>
-            @for (userOption of usersSharedCollection; track $index) {
-              <option [ngValue]="userOption">{{ userOption.id }}</option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
             }
           </select>
         </div>
@@ -122,11 +213,28 @@
             data-cy="receiver"
             name="receiver"
             formControlName="receiver"
-            [compareWith]="compareUser"
+            [compareWith]="compareProfile"
           >
             <option [ngValue]="null"></option>
-            @for (userOption of usersSharedCollection; track $index) {
-              <option [ngValue]="userOption">{{ userOption.id }}</option>
+            @for (profileOption of profilesSharedCollection; track $index) {
+              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_messageThread">Message Thread</label>
+          <select
+            class="form-control"
+            id="field_messageThread"
+            data-cy="messageThread"
+            name="messageThread"
+            formControlName="messageThread"
+            [compareWith]="compareMessageThread"
+          >
+            <option [ngValue]="null"></option>
+            @for (messageThreadOption of messageThreadsSharedCollection; track $index) {
+              <option [ngValue]="messageThreadOption">{{ messageThreadOption.id }}</option>
             }
           </select>
         </div>

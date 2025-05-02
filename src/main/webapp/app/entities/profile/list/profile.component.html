@@ -1,5 +1,9 @@
 <!-- profile.component.html -->
 <div class="container mt-4">
+  <div *ngIf="showEditTip" class="alert alert-info alert-dismissible fade show" role="alert">
+    💡 <strong>Tip:</strong> You can edit your profile by clicking the <strong>Edit Profile</strong> button below.
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissTip()"></button>
+  </div>
   <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="card">
@@ -14,23 +18,43 @@
           />
 
           <!-- Display Name -->
-          <h3 *ngIf="account">{{ account.firstName || 'Unknown' }} {{ account.lastName || 'User' }}</h3>
+          <h3>{{ profile?.firstName || 'Unknown' }} {{ profile?.lastName || 'User' }}</h3>
 
           <!-- Display Username -->
-          <p class="text-muted" *ngIf="account?.login">&#64;{{ account?.login }}</p>
+          <p class="text-muted" *ngIf="profile?.login">&#64;{{ profile?.login }}</p>
+
+          <!-- Display Bio -->
+          <p *ngIf="hasBio" class="fst-italic">{{ profile!.bio }}</p>
 
           <!-- Additional profile data -->
           <ng-container *ngIf="profile">
-            <p><strong>Course:</strong> {{ profile.course || 'Not specified' }} - Year {{ profile.courseYear || 'N/A' }}</p>
-            <div class="d-flex justify-content-center mt-3">
-              <span class="badge bg-primary p-2 me-2">Gym Skill: {{ profile.gymSkill || 'N/A' }}</span>
-              <span class="badge bg-secondary p-2">Study Time: {{ profile.studyTime || 'N/A' }}</span>
+            <p><strong>Course:</strong> {{ profile?.course || 'Not specified' }} - Year {{ profile?.courseYear || 'N/A' }}</p>
+            <div class="d-flex flex-wrap justify-content-center mt-3 gap-2">
+              <ng-container *ngIf="profile?.studyTime">
+                <span class="badge bg-success p-2">Study Time: {{ profile?.studyTime }}</span>
+              </ng-container>
+              <ng-container *ngIf="profile?.gymSkill">
+                <span class="badge bg-primary p-2">Gym Skill: {{ profile?.gymSkill }}</span>
+              </ng-container>
+              <ng-container *ngIf="profile?.gymTime">
+                <span class="badge bg-primary p-2">Gym Time: {{ profile?.gymTime }}</span>
+              </ng-container>
+              <ng-container *ngIf="profile?.gymLocation">
+                <span class="badge bg-primary p-2">Gym Location: {{ profile?.gymLocation }}</span>
+              </ng-container>
+              <ng-container *ngIf="profile?.sports">
+                <span class="badge bg-dark p-2">Sports: {{ profile?.sports }}</span>
+              </ng-container>
+              <ng-container *ngIf="profile?.sportsSkill">
+                <span class="badge bg-dark p-2">Sports Skill: {{ profile?.sportsSkill }}</span>
+              </ng-container>
             </div>
           </ng-container>
 
           <!-- Edit Profile Button -->
           <div class="mt-4" *ngIf="profile?.id">
-            <a class="btn btn-outline-primary" [routerLink]="['/profile', profile!.id, 'edit']"> Edit Profile </a>
+            <a class="btn btn-outline-primary" [routerLink]="['/profile/my/edit']"> Edit Profile </a>
+            <a class="btn btn-danger" [routerLink]="['/profile', profile!.id, 'deleteForm']"> Delete Profile </a>
           </div>
         </div>
       </div>

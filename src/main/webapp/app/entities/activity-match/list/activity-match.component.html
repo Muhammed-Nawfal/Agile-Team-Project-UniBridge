@@ -8,29 +8,21 @@
 
   <h2>Match With a Buddy</h2>
   <div class="buddy-buttons">
-    @if (account() !== null) {
-      <button (click)="navigateToBuddy('study')">STUDY BUDDY</button>
-      <button (click)="navigateToBuddy('gym')">GYM BUDDY</button>
-      <button (click)="navigateToBuddy('sports')">SPORTS BUDDY</button>
-      <button (click)="navigateToBuddy('events')">EVENTS BUDDY</button>
-    } @else {
-      <button (click)="onButtonClick()">STUDY BUDDY</button>
-      <button (click)="onButtonClick()">GYM BUDDY</button>
-      <button (click)="onButtonClick()">SPORTS BUDDY</button>
-      <button (click)="onButtonClick()">EVENTS BUDDY</button>
-    }
+    <button (click)="navigateToBuddy(ActivityType.ACADEMIC)">ACADEMIC BUDDY</button>
+    <button (click)="navigateToBuddy(ActivityType.GYM)">GYM BUDDY</button>
+    <button (click)="navigateToBuddy(ActivityType.SPORTS)">SPORTS BUDDY</button>
+    <button (click)="navigateToBuddy(ActivityType.SOCIAL)">SOCIALS BUDDY</button>
   </div>
 
   <h2>Create/Join</h2>
   <div class="activity-buttons">
-    @if (account() !== null) {
-      <button (click)="navigateToBooking()">CREATE A BOOKING</button>
-      <button (click)="navigateToActivity()">JOIN AN ACTIVITY</button>
-    } @else {
-      <button (click)="onButtonClick()">CREATE A BOOKING</button>
-      <button (click)="navigateToActivity()">JOIN AN ACTIVITY</button>
-    }
+    <button (click)="navigateToBooking()">CREATE A BOOKING</button>
+    <button (click)="navigateToActivity()">JOIN AN ACTIVITY</button>
   </div>
 
-  <router-outlet></router-outlet>
+  <h2>View Your Upcoming Matches</h2>
+  <div class="activity-buttons">
+    <button (click)="navigateToUpcomingMatches()">UPCOMING MATCHES</button>
+    <button (click)="navigateToMatchRequests()">MATCH REQUESTS</button>
+  </div>
 </div>

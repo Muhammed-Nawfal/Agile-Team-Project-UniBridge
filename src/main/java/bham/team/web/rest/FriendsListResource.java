@@ -1,7 +1,9 @@
 package bham.team.web.rest;
 
 import bham.team.domain.FriendsList;
+import bham.team.domain.enumeration.Decision;
 import bham.team.repository.FriendsListRepository;
+import bham.team.service.FriendsListService;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -36,9 +38,11 @@ public class FriendsListResource {
     private String applicationName;
 
     private final FriendsListRepository friendsListRepository;
+    private final FriendsListService friendsListService;
 
-    public FriendsListResource(FriendsListRepository friendsListRepository) {
+    public FriendsListResource(FriendsListRepository friendsListRepository, FriendsListService friendsListService) {
         this.friendsListRepository = friendsListRepository;
+        this.friendsListService = friendsListService;
     }
 
     /**
@@ -57,6 +61,44 @@ public class FriendsListResource {
         friendsList = friendsListRepository.save(friendsList);
         return ResponseEntity.created(new URI("/api/friends-lists/" + friendsList.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, friendsList.getId().toString()))
+            .body(friendsList);
+    }
+
+    /**
+     * {@code POST  /friends-lists/send-request} : Send a friend request.
+     *
+     * @param requestorProfileId the ID of the profile sending the request.
+     * @param requestedProfileId the ID of the profile to whom the request is sent.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new friendsList.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PostMapping("/send-request")
+    public ResponseEntity<FriendsList> sendFriendRequest(@RequestParam Long requestorProfileId, @RequestParam Long requestedProfileId)
+        throws URISyntaxException {
+        LOG.debug("REST request to send friend request from profile {} to profile {}", requestorProfileId, requestedProfileId);
+
+        FriendsList friendsList = friendsListService.sendFriendRequest(requestorProfileId, requestedProfileId);
+
+        return ResponseEntity.created(new URI("/api/friends-lists/" + friendsList.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, friendsList.getId().toString()))
+            .body(friendsList);
+    }
+
+    /**
+     * {@code PUT  /friends-lists/respond/{id}} : Respond to a friend request.
+     *
+     * @param id the id of the friendsList to respond to.
+     * @param decision the decision (ACCEPT or DECLINED).
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated friendsList.
+     */
+    @PutMapping("/respond/{id}")
+    public ResponseEntity<FriendsList> respondToFriendRequest(@PathVariable Long id, @RequestParam Decision decision) {
+        LOG.debug("REST request to respond to friend request ID {} with decision {}", id, decision);
+
+        FriendsList friendsList = friendsListService.respondToFriendRequest(id, decision);
+
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, friendsList.getId().toString()))
             .body(friendsList);
     }
 
@@ -124,11 +166,17 @@ public class FriendsListResource {
         Optional<FriendsList> result = friendsListRepository
             .findById(friendsList.getId())
             .map(existingFriendsList -> {
-                if (friendsList.getFriendRequest() != null) {
-                    existingFriendsList.setFriendRequest(friendsList.getFriendRequest());
+                if (friendsList.getRequestTime() != null) {
+                    existingFriendsList.setRequestTime(friendsList.getRequestTime());
+                }
+                if (friendsList.getRequestStatus() != null) {
+                    existingFriendsList.setRequestStatus(friendsList.getRequestStatus());
                 }
                 if (friendsList.getFriendSince() != null) {
                     existingFriendsList.setFriendSince(friendsList.getFriendSince());
+                }
+                if (friendsList.getNickname() != null) {
+                    existingFriendsList.setNickname(friendsList.getNickname());
                 }
 
                 return existingFriendsList;
@@ -149,14 +197,53 @@ public class FriendsListResource {
      */
     @GetMapping("")
     public List<FriendsList> getAllFriendsLists(@RequestParam(name = "filter", required = false) String filter) {
-        if ("chat-is-null".equals(filter)) {
-            LOG.debug("REST request to get all FriendsLists where chat is null");
+        if ("messagethread-is-null".equals(filter)) {
+            LOG.debug("REST request to get all FriendsLists where messageThread is null");
             return StreamSupport.stream(friendsListRepository.findAll().spliterator(), false)
-                .filter(friendsList -> friendsList.getChat() == null)
+                .filter(friendsList -> friendsList.getMessageThread() == null)
                 .toList();
         }
         LOG.debug("REST request to get all FriendsLists");
         return friendsListRepository.findAll();
+    }
+
+    /**
+     * {@code GET  /friends-lists/profile/:profileId/accepted} : get all accepted friends for a profile.
+     *
+     * @param profileId the profile ID for which to get accepted friends.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of friendsLists in body.
+     */
+    @GetMapping("/profile/{profileId}/accepted")
+    public ResponseEntity<List<FriendsList>> getAcceptedFriendsByProfileId(@PathVariable Long profileId) {
+        LOG.debug("REST request to get accepted friends for profile ID {}", profileId);
+        List<FriendsList> friendsLists = friendsListService.getAcceptedFriendsByProfileId(profileId);
+        return ResponseEntity.ok().body(friendsLists);
+    }
+
+    /**
+     * {@code GET  /friends-lists/profile/:profileId/pending} : get all pending friend requests for a profile.
+     *
+     * @param profileId the profile ID for which to get pending requests.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of friendsLists in body.
+     */
+    @GetMapping("/profile/{profileId}/pending")
+    public ResponseEntity<List<FriendsList>> getPendingFriendRequestsByProfileId(@PathVariable Long profileId) {
+        LOG.debug("REST request to get pending friend requests for profile ID {}", profileId);
+        List<FriendsList> friendsLists = friendsListService.getPendingFriendRequestsByProfileId(profileId);
+        return ResponseEntity.ok().body(friendsLists);
+    }
+
+    /**
+     * {@code GET  /friends-lists/profile/:profileId/sent} : get all friend requests sent by a profile.
+     *
+     * @param profileId the profile ID for which to get sent requests.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of friendsLists in body.
+     */
+    @GetMapping("/profile/{profileId}/sent")
+    public ResponseEntity<List<FriendsList>> getSentFriendRequestsByProfileId(@PathVariable Long profileId) {
+        LOG.debug("REST request to get sent friend requests for profile ID {}", profileId);
+        List<FriendsList> friendsLists = friendsListService.getSentFriendRequestsByProfileId(profileId);
+        return ResponseEntity.ok().body(friendsLists);
     }
 
     /**

@@ -14,7 +14,7 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type RankingFormGroupInput = IRanking | PartialWithRequiredKeyOf<NewRanking>;
 
-type RankingFormDefaults = Pick<NewRanking, 'id'>;
+type RankingFormDefaults = Pick<NewRanking, 'id' | 'reliable'>;
 
 type RankingFormGroupContent = {
   id: FormControl<IRanking['id'] | NewRanking['id']>;
@@ -23,7 +23,6 @@ type RankingFormGroupContent = {
   starAverage: FormControl<IRanking['starAverage']>;
   reliable: FormControl<IRanking['reliable']>;
   rankGiven: FormControl<IRanking['rankGiven']>;
-  user: FormControl<IRanking['user']>;
 };
 
 export type RankingFormGroup = FormGroup<RankingFormGroupContent>;
@@ -56,7 +55,6 @@ export class RankingFormService {
         validators: [Validators.required],
       }),
       rankGiven: new FormControl(rankingRawValue.rankGiven),
-      user: new FormControl(rankingRawValue.user),
     });
   }
 
@@ -77,6 +75,7 @@ export class RankingFormService {
   private getFormDefaults(): RankingFormDefaults {
     return {
       id: null,
+      reliable: false,
     };
   }
 }

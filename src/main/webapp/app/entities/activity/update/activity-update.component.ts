@@ -12,11 +12,10 @@ import { EventManager, EventWithContent } from 'app/core/util/event-manager.serv
 import { DataUtils, FileLoadError } from 'app/core/util/data-util.service';
 import { IProfile } from 'app/entities/profile/profile.model';
 import { ProfileService } from 'app/entities/profile/service/profile.service';
-import { IUser } from 'app/entities/user/user.model';
-import { UserService } from 'app/entities/user/service/user.service';
+import { IChallenge } from 'app/entities/challenge/challenge.model';
+import { ChallengeService } from 'app/entities/challenge/service/challenge.service';
 import { ActivityType } from 'app/entities/enumerations/activity-type.model';
 import { Status } from 'app/entities/enumerations/status.model';
-import { IsPaid } from 'app/entities/enumerations/is-paid.model';
 import { ActivityService } from '../service/activity.service';
 import { IActivity } from '../activity.model';
 import { ActivityFormGroup, ActivityFormService } from './activity-form.service';
@@ -25,6 +24,7 @@ import { ActivityFormGroup, ActivityFormService } from './activity-form.service'
   standalone: true,
   selector: 'jhi-activity-update',
   templateUrl: './activity-update.component.html',
+  styleUrl: 'activity-update.component.scss',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class ActivityUpdateComponent implements OnInit {
@@ -32,17 +32,16 @@ export class ActivityUpdateComponent implements OnInit {
   activity: IActivity | null = null;
   activityTypeValues = Object.keys(ActivityType);
   statusValues = Object.keys(Status);
-  isPaidValues = Object.keys(IsPaid);
 
   profilesSharedCollection: IProfile[] = [];
-  usersSharedCollection: IUser[] = [];
+  challengesSharedCollection: IChallenge[] = [];
 
   protected dataUtils = inject(DataUtils);
   protected eventManager = inject(EventManager);
   protected activityService = inject(ActivityService);
   protected activityFormService = inject(ActivityFormService);
   protected profileService = inject(ProfileService);
-  protected userService = inject(UserService);
+  protected challengeService = inject(ChallengeService);
   protected elementRef = inject(ElementRef);
   protected activatedRoute = inject(ActivatedRoute);
 
@@ -51,7 +50,7 @@ export class ActivityUpdateComponent implements OnInit {
 
   compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
 
-  compareUser = (o1: IUser | null, o2: IUser | null): boolean => this.userService.compareUser(o1, o2);
+  compareChallenge = (o1: IChallenge | null, o2: IChallenge | null): boolean => this.challengeService.compareChallenge(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ activity }) => {
@@ -128,22 +127,29 @@ export class ActivityUpdateComponent implements OnInit {
 
     this.profilesSharedCollection = this.profileService.addProfileToCollectionIfMissing<IProfile>(
       this.profilesSharedCollection,
-      activity.userName,
+      activity.creator,
     );
-    this.usersSharedCollection = this.userService.addUserToCollectionIfMissing<IUser>(this.usersSharedCollection, activity.requesteduser);
+    this.challengesSharedCollection = this.challengeService.addChallengeToCollectionIfMissing<IChallenge>(
+      this.challengesSharedCollection,
+      activity.challenge,
+    );
   }
 
   protected loadRelationshipsOptions(): void {
     this.profileService
       .query()
       .pipe(map((res: HttpResponse<IProfile[]>) => res.body ?? []))
-      .pipe(map((profiles: IProfile[]) => this.profileService.addProfileToCollectionIfMissing<IProfile>(profiles, this.activity?.userName)))
+      .pipe(map((profiles: IProfile[]) => this.profileService.addProfileToCollectionIfMissing<IProfile>(profiles, this.activity?.creator)))
       .subscribe((profiles: IProfile[]) => (this.profilesSharedCollection = profiles));
 
-    this.userService
+    this.challengeService
       .query()
-      .pipe(map((res: HttpResponse<IUser[]>) => res.body ?? []))
-      .pipe(map((users: IUser[]) => this.userService.addUserToCollectionIfMissing<IUser>(users, this.activity?.requesteduser)))
-      .subscribe((users: IUser[]) => (this.usersSharedCollection = users));
+      .pipe(map((res: HttpResponse<IChallenge[]>) => res.body ?? []))
+      .pipe(
+        map((challenges: IChallenge[]) =>
+          this.challengeService.addChallengeToCollectionIfMissing<IChallenge>(challenges, this.activity?.challenge),
+        ),
+      )
+      .subscribe((challenges: IChallenge[]) => (this.challengesSharedCollection = challenges));
   }
 }

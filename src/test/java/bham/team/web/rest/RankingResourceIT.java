@@ -10,9 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import bham.team.IntegrationTest;
 import bham.team.domain.Ranking;
-import bham.team.domain.enumeration.Reliability;
 import bham.team.repository.RankingRepository;
-import bham.team.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
@@ -45,8 +43,8 @@ class RankingResourceIT {
     private static final BigDecimal DEFAULT_STAR_AVERAGE = new BigDecimal(0);
     private static final BigDecimal UPDATED_STAR_AVERAGE = new BigDecimal(1);
 
-    private static final Reliability DEFAULT_RELIABLE = Reliability.UNRELIABLE;
-    private static final Reliability UPDATED_RELIABLE = Reliability.RELIABLE;
+    private static final Boolean DEFAULT_RELIABLE = false;
+    private static final Boolean UPDATED_RELIABLE = true;
 
     private static final String ENTITY_API_URL = "/api/rankings";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -59,9 +57,6 @@ class RankingResourceIT {
 
     @Autowired
     private RankingRepository rankingRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private EntityManager em;
@@ -232,7 +227,7 @@ class RankingResourceIT {
             .andExpect(jsonPath("$.[*].reviewNumber").value(hasItem(DEFAULT_REVIEW_NUMBER)))
             .andExpect(jsonPath("$.[*].activityNumber").value(hasItem(DEFAULT_ACTIVITY_NUMBER)))
             .andExpect(jsonPath("$.[*].starAverage").value(hasItem(sameNumber(DEFAULT_STAR_AVERAGE))))
-            .andExpect(jsonPath("$.[*].reliable").value(hasItem(DEFAULT_RELIABLE.toString())));
+            .andExpect(jsonPath("$.[*].reliable").value(hasItem(DEFAULT_RELIABLE.booleanValue())));
     }
 
     @Test
@@ -250,7 +245,7 @@ class RankingResourceIT {
             .andExpect(jsonPath("$.reviewNumber").value(DEFAULT_REVIEW_NUMBER))
             .andExpect(jsonPath("$.activityNumber").value(DEFAULT_ACTIVITY_NUMBER))
             .andExpect(jsonPath("$.starAverage").value(sameNumber(DEFAULT_STAR_AVERAGE)))
-            .andExpect(jsonPath("$.reliable").value(DEFAULT_RELIABLE.toString()));
+            .andExpect(jsonPath("$.reliable").value(DEFAULT_RELIABLE.booleanValue()));
     }
 
     @Test

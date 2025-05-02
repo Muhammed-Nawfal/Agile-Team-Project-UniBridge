@@ -27,27 +27,32 @@ public class FriendsList implements Serializable {
     private Long id;
 
     @NotNull
+    @Column(name = "request_time", nullable = false)
+    private Instant requestTime;
+
+    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "friend_request", nullable = false)
-    private Decision friendRequest;
+    @Column(name = "request_status", nullable = false)
+    private Decision requestStatus;
 
     @NotNull
     @Column(name = "friend_since", nullable = false)
     private Instant friendSince;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "user", "booking", "ranking" }, allowSetters = true)
-    private Profile friends;
+    @Column(name = "nickname")
+    private String nickname;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    @JsonIgnoreProperties(value = { "user", "ranking", "messageThreads" }, allowSetters = true)
+    private Profile requestedByProfile;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User friend;
+    @JsonIgnoreProperties(value = { "user", "ranking", "messageThreads" }, allowSetters = true)
+    private Profile requestedToProfile;
 
-    @JsonIgnoreProperties(value = { "friendChat", "chats", "sender", "receiver" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "friendChat", "matchChat", "messages", "participants" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "friendChat")
-    private Chat chat;
+    private MessageThread messageThread;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -64,17 +69,30 @@ public class FriendsList implements Serializable {
         this.id = id;
     }
 
-    public Decision getFriendRequest() {
-        return this.friendRequest;
+    public Instant getRequestTime() {
+        return this.requestTime;
     }
 
-    public FriendsList friendRequest(Decision friendRequest) {
-        this.setFriendRequest(friendRequest);
+    public FriendsList requestTime(Instant requestTime) {
+        this.setRequestTime(requestTime);
         return this;
     }
 
-    public void setFriendRequest(Decision friendRequest) {
-        this.friendRequest = friendRequest;
+    public void setRequestTime(Instant requestTime) {
+        this.requestTime = requestTime;
+    }
+
+    public Decision getRequestStatus() {
+        return this.requestStatus;
+    }
+
+    public FriendsList requestStatus(Decision requestStatus) {
+        this.setRequestStatus(requestStatus);
+        return this;
+    }
+
+    public void setRequestStatus(Decision requestStatus) {
+        this.requestStatus = requestStatus;
     }
 
     public Instant getFriendSince() {
@@ -90,61 +108,61 @@ public class FriendsList implements Serializable {
         this.friendSince = friendSince;
     }
 
-    public Profile getFriends() {
-        return this.friends;
+    public String getNickname() {
+        return this.nickname;
     }
 
-    public void setFriends(Profile profile) {
-        this.friends = profile;
-    }
-
-    public FriendsList friends(Profile profile) {
-        this.setFriends(profile);
+    public FriendsList nickname(String nickname) {
+        this.setNickname(nickname);
         return this;
     }
 
-    public User getUser() {
-        return this.user;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public Profile getRequestedByProfile() {
+        return this.requestedByProfile;
     }
 
-    public FriendsList user(User user) {
-        this.setUser(user);
+    public void setRequestedByProfile(Profile profile) {
+        this.requestedByProfile = profile;
+    }
+
+    public FriendsList requestedByProfile(Profile profile) {
+        this.setRequestedByProfile(profile);
         return this;
     }
 
-    public User getFriend() {
-        return this.friend;
+    public Profile getRequestedToProfile() {
+        return this.requestedToProfile;
     }
 
-    public void setFriend(User user) {
-        this.friend = user;
+    public void setRequestedToProfile(Profile profile) {
+        this.requestedToProfile = profile;
     }
 
-    public FriendsList friend(User user) {
-        this.setFriend(user);
+    public FriendsList requestedToProfile(Profile profile) {
+        this.setRequestedToProfile(profile);
         return this;
     }
 
-    public Chat getChat() {
-        return this.chat;
+    public MessageThread getMessageThread() {
+        return this.messageThread;
     }
 
-    public void setChat(Chat chat) {
-        if (this.chat != null) {
-            this.chat.setFriendChat(null);
+    public void setMessageThread(MessageThread messageThread) {
+        if (this.messageThread != null) {
+            this.messageThread.setFriendChat(null);
         }
-        if (chat != null) {
-            chat.setFriendChat(this);
+        if (messageThread != null) {
+            messageThread.setFriendChat(this);
         }
-        this.chat = chat;
+        this.messageThread = messageThread;
     }
 
-    public FriendsList chat(Chat chat) {
-        this.setChat(chat);
+    public FriendsList messageThread(MessageThread messageThread) {
+        this.setMessageThread(messageThread);
         return this;
     }
 
@@ -172,8 +190,10 @@ public class FriendsList implements Serializable {
     public String toString() {
         return "FriendsList{" +
             "id=" + getId() +
-            ", friendRequest='" + getFriendRequest() + "'" +
+            ", requestTime='" + getRequestTime() + "'" +
+            ", requestStatus='" + getRequestStatus() + "'" +
             ", friendSince='" + getFriendSince() + "'" +
+            ", nickname='" + getNickname() + "'" +
             "}";
     }
 }

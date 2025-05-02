@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 
+import { DATE_FORMAT } from 'app/config/input.constants';
 import { IChallenge } from '../challenge.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../challenge.test-samples';
 
@@ -9,9 +10,7 @@ import { ChallengeService, RestChallenge } from './challenge.service';
 
 const requireRestSample: RestChallenge = {
   ...sampleWithRequiredData,
-  createdDate: sampleWithRequiredData.createdDate?.toJSON(),
-  expiryDate: sampleWithRequiredData.expiryDate?.toJSON(),
-  completedDate: sampleWithRequiredData.completedDate?.toJSON(),
+  date: sampleWithRequiredData.date?.format(DATE_FORMAT),
 };
 
 describe('Challenge Service', () => {

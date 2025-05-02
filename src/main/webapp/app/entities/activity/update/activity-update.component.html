@@ -1,385 +1,373 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
-    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="jhi-activity-heading" data-cy="ActivityCreateUpdateHeading">Create or edit a Activity</h2>
-
-      <div>
-        <jhi-alert-error></jhi-alert-error>
-
-        @if (editForm.controls.id.value !== null) {
-          <div class="mb-3">
-            <label class="form-label" for="field_id">ID</label>
-            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-          </div>
-        }
-
-        @let activityNameRef = editForm.get('activityName')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_activityName">Activity Name</label>
-          <input
-            type="text"
-            class="form-control"
-            name="activityName"
-            id="field_activityName"
-            data-cy="activityName"
-            formControlName="activityName"
-          />
-          @if (activityNameRef.invalid && (activityNameRef.dirty || activityNameRef.touched)) {
-            <div>
-              @if (editForm.get('activityName')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-              @if (editForm.get('activityName')?.errors?.minlength) {
-                <small class="form-text text-danger">This field is required to be at least 1 characters.</small>
-              }
-              @if (editForm.get('activityName')?.errors?.maxlength) {
-                <small class="form-text text-danger">This field cannot be longer than 120 characters.</small>
-              }
-            </div>
-          }
-        </div>
-
-        @let activityTypeRef = editForm.get('activityType')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_activityType">Activity Type</label>
-          <select class="form-control" name="activityType" formControlName="activityType" id="field_activityType" data-cy="activityType">
-            <option [ngValue]="null"></option>
-            @for (activityType of activityTypeValues; track $index) {
-              <option [value]="activityType">
-                {{ { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[activityType] }}
-              </option>
+<div class="main container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+      <div class="create-activity-card">
+        <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+          <h2 id="jhi-activity-heading" data-cy="ActivityCreateUpdateHeading" class="mb-4 text-center">
+            @if (editForm.controls.id.value !== null) {
+              Edit Activity
+            } @else {
+              Create Activity
             }
-          </select>
-          @if (activityTypeRef.invalid && (activityTypeRef.dirty || activityTypeRef.touched)) {
-            <div>
-              @if (editForm.get('activityType')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
+          </h2>
+
+          <jhi-alert-error></jhi-alert-error>
+
+          @if (editForm.controls.id.value !== null) {
+            <div class="mb-3 visually-hidden">
+              <label class="form-label" for="field_id">ID</label>
+              <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
             </div>
           }
-        </div>
 
-        @let activityDateRef = editForm.get('activityDate')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_activityDate">Activity Date</label>
-          <div class="d-flex">
+          @let activityNameRef = editForm.get('activityName')!;
+          <div class="mb-3 position-relative">
+            <label class="form-label" for="field_activityName">Activity Name</label>
             <input
-              id="field_activityDate"
-              data-cy="activityDate"
-              type="datetime-local"
+              type="text"
               class="form-control"
-              name="activityDate"
-              formControlName="activityDate"
-              placeholder="YYYY-MM-DD HH:mm"
+              name="activityName"
+              id="field_activityName"
+              data-cy="activityName"
+              formControlName="activityName"
+              placeholder="e.g., Reviewing uncertainty handling methods in machine learning"
             />
-          </div>
-          @if (activityDateRef.invalid && (activityDateRef.dirty || activityDateRef.touched)) {
-            <div>
-              @if (editForm.get('activityDate')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-              <small class="form-text text-danger" [hidden]="!editForm.get('activityDate')?.errors?.datetimelocal"
-                >This field should be a date and time.</small
-              >
-            </div>
-          }
-        </div>
-
-        @let numberOfParticipantsRef = editForm.get('numberOfParticipants')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_numberOfParticipants">Number Of Participants</label>
-          <input
-            type="number"
-            class="form-control"
-            name="numberOfParticipants"
-            id="field_numberOfParticipants"
-            data-cy="numberOfParticipants"
-            formControlName="numberOfParticipants"
-          />
-          @if (numberOfParticipantsRef.invalid && (numberOfParticipantsRef.dirty || numberOfParticipantsRef.touched)) {
-            <div>
-              @if (editForm.get('numberOfParticipants')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-              <small class="form-text text-danger" [hidden]="!editForm.get('numberOfParticipants')?.errors?.number"
-                >This field should be a number.</small
-              >
-            </div>
-          }
-        </div>
-
-        @let maxNumberOfParticipantsRef = editForm.get('maxNumberOfParticipants')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_maxNumberOfParticipants">Max Number Of Participants</label>
-          <input
-            type="number"
-            class="form-control"
-            name="maxNumberOfParticipants"
-            id="field_maxNumberOfParticipants"
-            data-cy="maxNumberOfParticipants"
-            formControlName="maxNumberOfParticipants"
-          />
-          @if (maxNumberOfParticipantsRef.invalid && (maxNumberOfParticipantsRef.dirty || maxNumberOfParticipantsRef.touched)) {
-            <div>
-              @if (editForm.get('maxNumberOfParticipants')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-              @if (editForm.get('maxNumberOfParticipants')?.errors?.min) {
-                <small class="form-text text-danger">This field should be at least 2.</small>
-              }
-              <small class="form-text text-danger" [hidden]="!editForm.get('maxNumberOfParticipants')?.errors?.number"
-                >This field should be a number.</small
-              >
-            </div>
-          }
-        </div>
-
-        @let locationRef = editForm.get('location')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_location">Location</label>
-          <input type="text" class="form-control" name="location" id="field_location" data-cy="location" formControlName="location" />
-          @if (locationRef.invalid && (locationRef.dirty || locationRef.touched)) {
-            <div>
-              @if (editForm.get('location')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-              @if (editForm.get('location')?.errors?.maxlength) {
-                <small class="form-text text-danger">This field cannot be longer than 95 characters.</small>
-              }
-            </div>
-          }
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_description">Description</label>
-          <textarea
-            class="form-control"
-            name="description"
-            id="field_description"
-            data-cy="description"
-            formControlName="description"
-          ></textarea>
-        </div>
-
-        @let createdOnRef = editForm.get('createdOn')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_createdOn">Created On</label>
-          <div class="d-flex">
-            <input
-              id="field_createdOn"
-              data-cy="createdOn"
-              type="datetime-local"
-              class="form-control"
-              name="createdOn"
-              formControlName="createdOn"
-              placeholder="YYYY-MM-DD HH:mm"
-            />
-          </div>
-          @if (createdOnRef.invalid && (createdOnRef.dirty || createdOnRef.touched)) {
-            <div>
-              @if (editForm.get('createdOn')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-              <small class="form-text text-danger" [hidden]="!editForm.get('createdOn')?.errors?.datetimelocal"
-                >This field should be a date and time.</small
-              >
-            </div>
-          }
-        </div>
-
-        @let updatedOnRef = editForm.get('updatedOn')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_updatedOn">Updated On</label>
-          <div class="d-flex">
-            <input
-              id="field_updatedOn"
-              data-cy="updatedOn"
-              type="datetime-local"
-              class="form-control"
-              name="updatedOn"
-              formControlName="updatedOn"
-              placeholder="YYYY-MM-DD HH:mm"
-            />
-          </div>
-          @if (updatedOnRef.invalid && (updatedOnRef.dirty || updatedOnRef.touched)) {
-            <div>
-              @if (editForm.get('updatedOn')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-              <small class="form-text text-danger" [hidden]="!editForm.get('updatedOn')?.errors?.datetimelocal"
-                >This field should be a date and time.</small
-              >
-            </div>
-          }
-        </div>
-
-        @let statusRef = editForm.get('status')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_status">Status</label>
-          <select class="form-control" name="status" formControlName="status" id="field_status" data-cy="status">
-            <option [ngValue]="null"></option>
-            @for (status of statusValues; track $index) {
-              <option [value]="status">
-                {{
-                  {
-                    null: '',
-                    ANNOUNCED: 'ANNOUNCED',
-                    CURRENTLY_HAPPENING: 'CURRENTLY_HAPPENING',
-                    FINISHED: 'FINISHED',
-                    CANCELED: 'CANCELED',
-                  }[status]
-                }}
-              </option>
-            }
-          </select>
-          @if (statusRef.invalid && (statusRef.dirty || statusRef.touched)) {
-            <div>
-              @if (editForm.get('status')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-            </div>
-          }
-        </div>
-
-        @let coverImageRef = editForm.get('coverImage')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_coverImage">Cover Image</label>
-          <div>
-            @if (coverImageRef.value) {
-              <img
-                [src]="'data:' + editForm.get('coverImageContentType')!.value + ';base64,' + coverImageRef.value"
-                style="max-height: 100px"
-                alt="activity"
-              />
-            }
-            @if (coverImageRef.value) {
-              <div class="form-text text-danger clearfix">
-                <span class="pull-start">{{ editForm.get('coverImageContentType')!.value }}, {{ byteSize(coverImageRef.value!) }}</span>
-                <button
-                  type="button"
-                  (click)="clearInputImage('coverImage', 'coverImageContentType', 'file_coverImage')"
-                  class="btn btn-secondary btn-xs pull-end"
-                >
-                  <fa-icon icon="times"></fa-icon>
-                </button>
+            @if (activityNameRef.invalid && (activityNameRef.dirty || activityNameRef.touched)) {
+              <div class="invalid-feedback d-block">
+                @if (editForm.get('activityName')?.errors?.required) {
+                  <small>This field is required.</small>
+                }
+                @if (editForm.get('activityName')?.errors?.minlength) {
+                  <small>Must be at least 1 character.</small>
+                }
+                @if (editForm.get('activityName')?.errors?.maxlength) {
+                  <small>Cannot be longer than 120 characters.</small>
+                }
               </div>
             }
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              @let activityTypeRef = editForm.get('activityType')!;
+              <div class="mb-3">
+                <label class="form-label" for="field_activityType">Activity Type</label>
+                <select
+                  class="form-select"
+                  name="activityType"
+                  formControlName="activityType"
+                  id="field_activityType"
+                  data-cy="activityType"
+                >
+                  <option [ngValue]="null" disabled selected>Select Type</option>
+                  @for (activityType of activityTypeValues; track $index) {
+                    <option [value]="activityType">
+                      {{ { null: '', SOCIAL: 'Social', ACADEMIC: 'Academic', SPORTS: 'Sports', GYM: 'Gym', OTHER: 'Other' }[activityType] }}
+                    </option>
+                  }
+                </select>
+                @if (activityTypeRef.invalid && (activityTypeRef.dirty || activityTypeRef.touched)) {
+                  <div class="invalid-feedback d-block">
+                    @if (editForm.get('activityType')?.errors?.required) {
+                      <small>This field is required.</small>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="col-md-6">
+              @let activityDateRef = editForm.get('activityDate')!;
+              <div class="mb-3">
+                <label class="form-label" for="field_activityDate">Date & Time</label>
+                <input
+                  id="field_activityDate"
+                  data-cy="activityDate"
+                  type="datetime-local"
+                  class="form-control"
+                  name="activityDate"
+                  formControlName="activityDate"
+                  placeholder="YYYY-MM-DD HH:mm"
+                />
+                @if (activityDateRef.invalid && (activityDateRef.dirty || activityDateRef.touched)) {
+                  <div class="invalid-feedback d-block">
+                    @if (editForm.get('activityDate')?.errors?.required) {
+                      <small>This field is required.</small>
+                    }
+                    <small [hidden]="!editForm.get('activityDate')?.errors?.datetimelocal"> Invalid date/time format. </small>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              @let numberOfParticipantsRef = editForm.get('numberOfParticipants')!;
+              <div class="mb-3">
+                <label class="form-label" for="field_numberOfParticipants">Current Participants</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="numberOfParticipants"
+                  id="field_numberOfParticipants"
+                  data-cy="numberOfParticipants"
+                  formControlName="numberOfParticipants"
+                  placeholder="0"
+                />
+                @if (numberOfParticipantsRef.invalid && (numberOfParticipantsRef.dirty || numberOfParticipantsRef.touched)) {
+                  <div class="invalid-feedback d-block">
+                    @if (editForm.get('numberOfParticipants')?.errors?.required) {
+                      <small>This field is required.</small>
+                    }
+                    <small [hidden]="!editForm.get('numberOfParticipants')?.errors?.number"> Must be a number. </small>
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="col-md-6">
+              @let maxNumberOfParticipantsRef = editForm.get('maxNumberOfParticipants')!;
+              <div class="mb-3">
+                <label class="form-label" for="field_maxNumberOfParticipants">Max Participants</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  name="maxNumberOfParticipants"
+                  id="field_maxNumberOfParticipants"
+                  data-cy="maxNumberOfParticipants"
+                  formControlName="maxNumberOfParticipants"
+                  placeholder="e.g., 10"
+                />
+                @if (maxNumberOfParticipantsRef.invalid && (maxNumberOfParticipantsRef.dirty || maxNumberOfParticipantsRef.touched)) {
+                  <div class="invalid-feedback d-block">
+                    @if (editForm.get('maxNumberOfParticipants')?.errors?.required) {
+                      <small>This field is required.</small>
+                    }
+                    @if (editForm.get('maxNumberOfParticipants')?.errors?.min) {
+                      <small>Minimum is 2.</small>
+                    }
+                    <small [hidden]="!editForm.get('maxNumberOfParticipants')?.errors?.number"> Must be a number. </small>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          @let locationRef = editForm.get('location')!;
+          <div class="mb-3">
+            <label class="form-label" for="field_location">Location</label>
+            <input
+              type="text"
+              class="form-control"
+              name="location"
+              id="field_location"
+              data-cy="location"
+              formControlName="location"
+              placeholder="e.g., 2nd floor Teaching and Learning Building"
+            />
+            @if (locationRef.invalid && (locationRef.dirty || locationRef.touched)) {
+              <div class="invalid-feedback d-block">
+                @if (editForm.get('location')?.errors?.required) {
+                  <small>This field is required.</small>
+                }
+                @if (editForm.get('location')?.errors?.maxlength) {
+                  <small>Cannot be longer than 95 characters.</small>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="field_description">Description</label>
+            <textarea
+              class="form-control"
+              name="description"
+              id="field_description"
+              data-cy="description"
+              formControlName="description"
+              rows="4"
+              placeholder="Add more details about the activity..."
+            ></textarea>
+          </div>
+
+          @let coverImageRef = editForm.get('coverImage')!;
+          <div class="mb-3 cover-image-section">
+            <label class="form-label" for="file_coverImage">Cover Image (Optional)</label>
+            <div class="cover-image-preview mb-2 text-center">
+              @if (coverImageRef.value) {
+                <img
+                  [src]="'data:' + editForm.get('coverImageContentType')!.value + ';base64,' + coverImageRef.value"
+                  alt="activity cover preview"
+                  class="img-fluid rounded"
+                />
+              } @else {
+                <div class="no-image-placeholder">
+                  <fa-icon [icon]="['fas', 'image']" size="3x"></fa-icon>
+                  <p>No image uploaded</p>
+                </div>
+              }
+            </div>
+
             <input
               type="file"
+              class="form-control"
               id="file_coverImage"
               data-cy="coverImage"
               (change)="setFileData($event, 'coverImage', true)"
               accept="image/*"
             />
+
+            @if (coverImageRef.value) {
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <small class="text-muted">{{ editForm.get('coverImageContentType')!.value }}, {{ byteSize(coverImageRef.value!) }}</small>
+                <button
+                  type="button"
+                  (click)="clearInputImage('coverImage', 'coverImageContentType', 'file_coverImage')"
+                  class="btn btn-sm btn-outline-danger"
+                >
+                  <fa-icon icon="times" class="me-1"></fa-icon>Remove
+                </button>
+              </div>
+            }
+
+            <input type="hidden" name="coverImage" formControlName="coverImage" />
+            <input type="hidden" name="coverImageContentType" formControlName="coverImageContentType" />
           </div>
-          <input
-            type="hidden"
-            class="form-control"
-            name="coverImage"
-            id="field_coverImage"
-            data-cy="coverImage"
-            formControlName="coverImage"
-          />
-          <input
-            type="hidden"
-            class="form-control"
-            name="coverImageContentType"
-            id="field_coverImageContentType"
-            formControlName="coverImageContentType"
-          />
-        </div>
 
-        @let paidRef = editForm.get('paid')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_paid">Paid</label>
-          <select class="form-control" name="paid" formControlName="paid" id="field_paid" data-cy="paid">
-            <option [ngValue]="null"></option>
-            @for (isPaid of isPaidValues; track $index) {
-              <option [value]="isPaid">{{ { null: '', PAID: 'PAID', NOTPAID: 'NOTPAID' }[isPaid] }}</option>
-            }
-          </select>
-          @if (paidRef.invalid && (paidRef.dirty || paidRef.touched)) {
-            <div>
-              @if (editForm.get('paid')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
+          <div class="row align-items-center mb-3">
+            <div class="col-md-auto">
+              @let isPaidRef = editForm.get('isPaid')!;
+              <div class="form-check form-switch mb-md-0 mb-2">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="field_isPaid"
+                  name="isPaid"
+                  data-cy="isPaid"
+                  formControlName="isPaid"
+                />
+                <label class="form-check-label" for="field_isPaid">Is this a Paid Activity?</label>
+                @if (isPaidRef.invalid && (isPaidRef.dirty || isPaidRef.touched)) {
+                  @if (editForm.get('isPaid')?.errors?.required) {
+                    <span class="text-danger ms-2">*</span>
+                  }
+                }
+              </div>
             </div>
-          }
-        </div>
+            <div class="col-md">
+              @let activityCostRef = editForm.get('activityCost')!;
+              <div [class.visually-hidden]="!editForm.get('isPaid')?.value">
+                <label class="form-label visually-hidden" for="field_activityCost">Activity Cost</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    name="activityCost"
+                    id="field_activityCost"
+                    data-cy="activityCost"
+                    formControlName="activityCost"
+                    placeholder="Enter cost"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+                @if (activityCostRef.invalid && (activityCostRef.dirty || activityCostRef.touched) && editForm.get('isPaid')?.value) {
+                  <div class="invalid-feedback d-block">
+                    @if (editForm.get('activityCost')?.errors?.required) {
+                      <small>Cost is required for paid activities.</small>
+                    }
+                    @if (editForm.get('activityCost')?.errors?.min) {
+                      <small>Cost cannot be negative.</small>
+                    }
+                    <small [hidden]="!editForm.get('activityCost')?.errors?.number"> Must be a number. </small>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
 
-        @let costOfactivityRef = editForm.get('costOfactivity')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_costOfactivity">Cost Ofactivity</label>
-          <input
-            type="number"
-            class="form-control"
-            name="costOfactivity"
-            id="field_costOfactivity"
-            data-cy="costOfactivity"
-            formControlName="costOfactivity"
-          />
-          @if (costOfactivityRef.invalid && (costOfactivityRef.dirty || costOfactivityRef.touched)) {
-            <div>
-              @if (editForm.get('costOfactivity')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-              <small class="form-text text-danger" [hidden]="!editForm.get('costOfactivity')?.errors?.number"
-                >This field should be a number.</small
+          <div class="visually-hidden">
+            <div class="mb-3">
+              <label class="form-label" for="field_creator">Creator</label>
+              <select
+                class="form-control"
+                id="field_creator"
+                data-cy="creator"
+                name="creator"
+                formControlName="creator"
+                [compareWith]="compareProfile"
               >
+                <option [ngValue]="null"></option>
+                @for (profileOption of profilesSharedCollection; track $index) {
+                  <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+                }
+              </select>
             </div>
-          }
-        </div>
+            @let createdOnRef = editForm.get('createdOn')!;
+            <div class="mb-3">
+              <label class="form-label" for="field_createdOn">Created On</label>
+              <input id="field_createdOn" type="datetime-local" class="form-control" name="createdOn" formControlName="createdOn" />
+            </div>
+            @let updatedOnRef = editForm.get('updatedOn')!;
+            <div class="mb-3">
+              <label class="form-label" for="field_updatedOn">Updated On</label>
+              <input id="field_updatedOn" type="datetime-local" class="form-control" name="updatedOn" formControlName="updatedOn" />
+            </div>
+            @let statusRef = editForm.get('status')!;
+            <div class="mb-3">
+              <label class="form-label" for="field_status">Status</label>
+              <select class="form-control" name="status" formControlName="status" id="field_status" data-cy="status">
+                <option [ngValue]="null"></option>
+                @for (status of statusValues; track $index) {
+                  <option [value]="status">{{ status }}</option>
+                }
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="field_challenge">Challenge</label>
+              <select
+                class="form-control"
+                id="field_challenge"
+                name="challenge"
+                formControlName="challenge"
+                [compareWith]="compareChallenge"
+              >
+                <option [ngValue]="null"></option>
+                @for (challengeOption of challengesSharedCollection; track $index) {
+                  <option [ngValue]="challengeOption">{{ challengeOption.id }}</option>
+                }
+              </select>
+            </div>
+          </div>
 
-        <div class="mb-3">
-          <label class="form-label" for="field_userName">User Name</label>
-          <select
-            class="form-control"
-            id="field_userName"
-            data-cy="userName"
-            name="userName"
-            formControlName="userName"
-            [compareWith]="compareProfile"
-          >
-            <option [ngValue]="null"></option>
-            @for (profileOption of profilesSharedCollection; track $index) {
-              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_requesteduser">Requesteduser</label>
-          <select
-            class="form-control"
-            id="field_requesteduser"
-            data-cy="requesteduser"
-            name="requesteduser"
-            formControlName="requesteduser"
-            [compareWith]="compareUser"
-          >
-            <option [ngValue]="null"></option>
-            @for (userOption of usersSharedCollection; track $index) {
-              <option [ngValue]="userOption">{{ userOption.id }}</option>
-            }
-          </select>
-        </div>
+          <div class="form-actions mt-4 pt-3 border-top">
+            <button
+              type="button"
+              id="cancel-save"
+              data-cy="entityCreateCancelButton"
+              class="btn btn-secondary me-2"
+              (click)="previousState()"
+            >
+              <fa-icon icon="ban" class="me-1"></fa-icon>Cancel
+            </button>
+            <button
+              type="submit"
+              id="save-entity"
+              data-cy="entityCreateSaveButton"
+              [disabled]="editForm.invalid || isSaving"
+              class="btn btn-primary"
+            >
+              <fa-icon icon="save" class="me-1"></fa-icon>
+              @if (isSaving) {
+                <span>Saving...</span>
+              } @else {
+                <span>Save Activity</span>
+              }
+            </button>
+          </div>
+        </form>
       </div>
-
-      <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
-          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
-        </button>
-
-        <button
-          type="submit"
-          id="save-entity"
-          data-cy="entityCreateSaveButton"
-          [disabled]="editForm.invalid || isSaving"
-          class="btn btn-primary"
-        >
-          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
-        </button>
-      </div>
-    </form>
+    </div>
   </div>
 </div>

@@ -1,113 +1,111 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
-    @if (activity(); as activityRef) {
-      <div>
-        <h2 data-cy="activityDetailsHeading"><span>Activity</span></h2>
+<div class="activity-container">
+  @if (activity(); as activityRef) {
+    <div class="activity-card">
+      @if (activityRef.coverImage) {
+        <div class="activity-hero">
+          <img
+            [src]="'data:' + activityRef.coverImageContentType + ';base64,' + activityRef.coverImage"
+            alt="Activity cover image"
+            class="cover-image"
+          />
+          <div class="activity-status-badge" [ngClass]="'status-' + (activityRef.status?.toLowerCase() || '')">
+            {{
+              {
+                null: '',
+                ANNOUNCED: 'Upcoming',
+                CURRENTLY_HAPPENING: 'Live Now',
+                FINISHED: 'Completed',
+                CANCELED: 'Canceled',
+              }[activityRef.status ?? 'null']
+            }}
+          </div>
+        </div>
+      }
 
-        <hr />
+      <div class="activity-content">
+        <div class="activity-header">
+          <h1 class="activity-title">{{ activityRef.activityName }}</h1>
+          <div class="activity-type-badge" [ngClass]="'type-' + (activityRef.activityType?.toLowerCase() || 'other')">
+            {{
+              {
+                null: 'Activity',
+                SOCIAL: 'Social',
+                ACADEMIC: 'Academic',
+                SPORTS: 'Sports',
+                GYM: 'Fitness',
+                OTHER: 'Other',
+              }[activityRef.activityType ?? 'null']
+            }}
+          </div>
+        </div>
 
-        <jhi-alert-error></jhi-alert-error>
+        <div class="activity-section">
+          <h3>Details</h3>
+          <div class="activity-meta">
+            <div class="meta-item">
+              <fa-icon icon="calendar-alt" class="meta-icon"></fa-icon>
+              <span>{{ activityRef.activityDate | formatMediumDatetime }}</span>
+            </div>
+            <div class="meta-item">
+              <fa-icon icon="map-marker-alt" class="meta-icon"></fa-icon>
+              <span>{{ activityRef.location }}</span>
+            </div>
+            <div class="meta-item">
+              <fa-icon icon="users" class="meta-icon"></fa-icon>
+              <span>{{ activityRef.numberOfParticipants }} / {{ activityRef.maxNumberOfParticipants }} participants</span>
+            </div>
+            @if (activityRef.isPaid) {
+              <div class="meta-item">
+                <fa-icon icon="tag" class="meta-icon"></fa-icon>
+                <span>${{ activityRef.activityCost }}</span>
+              </div>
+            }
+          </div>
+        </div>
 
-        <jhi-alert></jhi-alert>
+        <div class="activity-section">
+          <h3>About this activity</h3>
+          <div class="activity-description">
+            <p>{{ activityRef.description }}</p>
+          </div>
+        </div>
 
-        <dl class="row-md jh-entity-details">
-          <dt><span>ID</span></dt>
-          <dd>
-            <span>{{ activityRef.id }}</span>
-          </dd>
-          <dt><span>Activity Name</span></dt>
-          <dd>
-            <span>{{ activityRef.activityName }}</span>
-          </dd>
-          <dt><span>Activity Type</span></dt>
-          <dd>
-            <span>{{
-              { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[
-                activityRef.activityType ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>Activity Date</span></dt>
-          <dd>
-            <span>{{ activityRef.activityDate | formatMediumDatetime }}</span>
-          </dd>
-          <dt><span>Number Of Participants</span></dt>
-          <dd>
-            <span>{{ activityRef.numberOfParticipants }}</span>
-          </dd>
-          <dt><span>Max Number Of Participants</span></dt>
-          <dd>
-            <span>{{ activityRef.maxNumberOfParticipants }}</span>
-          </dd>
-          <dt><span>Location</span></dt>
-          <dd>
-            <span>{{ activityRef.location }}</span>
-          </dd>
-          <dt><span>Description</span></dt>
-          <dd>
-            <span>{{ activityRef.description }}</span>
-          </dd>
-          <dt><span>Created On</span></dt>
-          <dd>
-            <span>{{ activityRef.createdOn | formatMediumDatetime }}</span>
-          </dd>
-          <dt><span>Updated On</span></dt>
-          <dd>
-            <span>{{ activityRef.updatedOn | formatMediumDatetime }}</span>
-          </dd>
-          <dt><span>Status</span></dt>
-          <dd>
-            <span>{{
-              { null: '', ANNOUNCED: 'ANNOUNCED', CURRENTLY_HAPPENING: 'CURRENTLY_HAPPENING', FINISHED: 'FINISHED', CANCELED: 'CANCELED' }[
-                activityRef.status ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>Cover Image</span></dt>
-          <dd>
-            @if (activityRef.coverImage) {
-              <div>
-                <a (click)="openFile(activityRef.coverImage ?? '', activityRef.coverImageContentType)">
-                  <img
-                    [src]="'data:' + activityRef.coverImageContentType + ';base64,' + activityRef.coverImage"
-                    style="max-width: 100%"
-                    alt="activity"
-                  />
+        @if (activityRef.creator) {
+          <div class="activity-section">
+            <h3>Organizer</h3>
+            <div class="organizer-info">
+              <div class="organizer-avatar">
+                <fa-icon icon="user-circle" class="avatar-icon"></fa-icon>
+              </div>
+              <div class="organizer-details">
+                <a [routerLink]="['/profile', activityRef.creator?.id, 'view']" class="organizer-name">
+                  {{ activityRef.creator?.login || 'Organizer' }}
                 </a>
-                {{ activityRef.coverImageContentType }}, {{ byteSize(activityRef.coverImage ?? '') }}
+                <div class="organizer-meta">Created on {{ activityRef.createdOn | formatMediumDate }}</div>
               </div>
-            }
-          </dd>
-          <dt><span>Paid</span></dt>
-          <dd>
-            <span>{{ { null: '', PAID: 'PAID', NOTPAID: 'NOTPAID' }[activityRef.paid ?? 'null'] }}</span>
-          </dd>
-          <dt><span>Cost Ofactivity</span></dt>
-          <dd>
-            <span>{{ activityRef.costOfactivity }}</span>
-          </dd>
-          <dt><span>User Name</span></dt>
-          <dd>
-            @if (activity()!.userName) {
-              <div>
-                <a [routerLink]="['/profile', activity()!.userName?.id, 'view']">{{ activityRef.userName?.id }}</a>
-              </div>
-            }
-          </dd>
-          <dt><span>Requesteduser</span></dt>
-          <dd>
-            <span>{{ activityRef.requesteduser?.id }}</span>
-          </dd>
-        </dl>
+            </div>
+          </div>
+        }
 
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
-          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
-        </button>
+        <div class="activity-actions">
+          <button type="submit" (click)="previousState()" class="btn btn-outline-secondary action-btn">
+            <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+          </button>
 
-        <button type="button" [routerLink]="['/activity', activityRef.id, 'edit']" class="btn btn-primary">
-          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
-        </button>
+          <button type="button" [routerLink]="['/activity', activityRef.id, 'edit']" class="btn btn-primary action-btn">
+            <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit Activity</span>
+          </button>
+          <!--          @if (activityRef.joinButtonVisible) {  // Assuming you have a variable/logic for join button visibility-->
+          <!--            <button-->
+          <!--              type="button"-->
+          <!--              (click)="joinActivity(activityRef.id)" // Replace with your join logic-->
+          <!--              class="btn btn-success action-btn"-->
+          <!--              >-->
+          <!--            <fa-icon icon="user-plus"></fa-icon>&nbsp;<span>Join Activity</span>-->
+          <!--            </button>-->
+          <!--          }-->
+        </div>
       </div>
-    }
-  </div>
+    </div>
+  }
 </div>

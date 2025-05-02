@@ -123,32 +123,26 @@ public class BookingResource {
         Optional<Booking> result = bookingRepository
             .findById(booking.getId())
             .map(existingBooking -> {
-                if (booking.getBookingName() != null) {
-                    existingBooking.setBookingName(booking.getBookingName());
+                if (booking.getActivityType() != null) {
+                    existingBooking.setActivityType(booking.getActivityType());
                 }
-                if (booking.getBookingStatus() != null) {
-                    existingBooking.setBookingStatus(booking.getBookingStatus());
-                }
-                if (booking.getBookingTime() != null) {
-                    existingBooking.setBookingTime(booking.getBookingTime());
+                if (booking.getEventType() != null) {
+                    existingBooking.setEventType(booking.getEventType());
                 }
                 if (booking.getBookingDate() != null) {
                     existingBooking.setBookingDate(booking.getBookingDate());
                 }
-                if (booking.getPhoneNum() != null) {
-                    existingBooking.setPhoneNum(booking.getPhoneNum());
+                if (booking.getPartySize() != null) {
+                    existingBooking.setPartySize(booking.getPartySize());
                 }
-                if (booking.getBookingType() != null) {
-                    existingBooking.setBookingType(booking.getBookingType());
+                if (booking.getBookingStatus() != null) {
+                    existingBooking.setBookingStatus(booking.getBookingStatus());
                 }
-                if (booking.getNumOfParticipants() != null) {
-                    existingBooking.setNumOfParticipants(booking.getNumOfParticipants());
+                if (booking.getCreatedAt() != null) {
+                    existingBooking.setCreatedAt(booking.getCreatedAt());
                 }
-                if (booking.getBookStartTime() != null) {
-                    existingBooking.setBookStartTime(booking.getBookStartTime());
-                }
-                if (booking.getBookEndTime() != null) {
-                    existingBooking.setBookEndTime(booking.getBookEndTime());
+                if (booking.getAssignedAt() != null) {
+                    existingBooking.setAssignedAt(booking.getAssignedAt());
                 }
 
                 return existingBooking;

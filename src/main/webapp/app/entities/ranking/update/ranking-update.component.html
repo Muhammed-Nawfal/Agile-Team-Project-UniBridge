@@ -91,12 +91,7 @@
         @let reliableRef = editForm.get('reliable')!;
         <div class="mb-3">
           <label class="form-label" for="field_reliable">Reliable</label>
-          <select class="form-control" name="reliable" formControlName="reliable" id="field_reliable" data-cy="reliable">
-            <option [ngValue]="null"></option>
-            @for (reliability of reliabilityValues; track $index) {
-              <option [value]="reliability">{{ { null: '', UNRELIABLE: 'UNRELIABLE', RELIABLE: 'RELIABLE' }[reliability] }}</option>
-            }
-          </select>
+          <input type="checkbox" class="form-check" name="reliable" id="field_reliable" data-cy="reliable" formControlName="reliable" />
           @if (reliableRef.invalid && (reliableRef.dirty || reliableRef.touched)) {
             <div>
               @if (editForm.get('reliable')?.errors?.required) {
@@ -119,16 +114,6 @@
             <option [ngValue]="null"></option>
             @for (profileOption of rankGivensCollection; track $index) {
               <option [ngValue]="profileOption">{{ profileOption.id }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_user">User</label>
-          <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUser">
-            <option [ngValue]="null"></option>
-            @for (userOption of usersSharedCollection; track $index) {
-              <option [ngValue]="userOption">{{ userOption.id }}</option>
             }
           </select>
         </div>

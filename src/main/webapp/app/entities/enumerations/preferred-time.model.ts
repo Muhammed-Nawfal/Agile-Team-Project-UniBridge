@@ -1,5 +1,5 @@
 export enum PreferredTime {
-  EARLY = 'EARLY',
+  EARLY_MORNING = 'EARLY_MORNING',
 
   MORNING = 'MORNING',
 
@@ -9,5 +9,5 @@ export enum PreferredTime {
 
   NIGHT = 'NIGHT',
 
-  LATE = 'LATE',
+  LATE_NIGHT = 'LATE_NIGHT',
 }

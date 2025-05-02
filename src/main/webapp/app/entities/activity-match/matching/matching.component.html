@@ -1,235 +1,125 @@
-<header>
-  <h1>WHO IS YOUR {{ buddyType.toUpperCase() }} BUDDY?</h1>
-</header>
+<div class="container py-4">
+  <!-- Header & Filters -->
+  <h1 class="text-center mb-4">WHO IS YOUR {{ buddyType.toUpperCase() }} BUDDY?</h1>
 
-<!-- Filters Form -->
-<form id="{{ buddyType }}-buddy-filters" (submit)="applyFilters($event)">
-  <div class="filter-group-container">
-    <h2>Filters</h2>
-    <div class="filter-group">
-      <label for="filter1">{{ getLocationLabel() }}</label>
-      <select id="filter1" name="filter1" [(ngModel)]="filter1Value">
-        <option *ngFor="let option of filter1Options" [value]="option.value">{{ option.label }}</option>
+  <form class="row g-3 align-items-end mb-5" (submit)="applyFilters($event)" #f="ngForm">
+    <div class="col-sm-4">
+      <label class="form-label">{{ getFirstFilterLabel() }}</label>
+      <select class="form-select" name="filter1" [(ngModel)]="filter1Value" required>
+        <option *ngFor="let o of filter1Options" [value]="o.value">{{ o.label }}</option>
+      </select>
+    </div>
+    <div class="col-sm-4">
+      <label class="form-label">{{ getSecondFilterLabel() }}</label>
+      <select class="form-select" name="filter2" [(ngModel)]="filter2Value" required>
+        <option *ngFor="let o of filter2Options" [value]="o.value">{{ o.label }}</option>
+      </select>
+    </div>
+    <div class="col-sm-4">
+      <label class="form-label">{{ getTimingLabel() }}</label>
+      <select class="form-select" name="filter3" [(ngModel)]="filter3Value" required>
+        <option *ngFor="let o of filter3Options" [value]="o.value">{{ o.label }}</option>
       </select>
     </div>
 
-    <div class="filter-group">
-      <label for="filter2">{{ getSkillLabel() }}</label>
-      <select id="filter2" name="filter2" [(ngModel)]="filter2Value">
-        <option *ngFor="let option of filter2Options" [value]="option.value">{{ option.label }}</option>
-      </select>
+    <div class="col-12 text-center mt-3">
+      <button type="submit" class="btn btn-primary me-2">Apply Filters</button>
+      <button type="button" class="btn btn-outline-secondary" (click)="resetFilters()">Reset</button>
     </div>
+  </form>
 
-    <div class="filter-group">
-      <label for="filter3">{{ getTimingLabel() }}</label>
-      <select id="filter3" name="filter3" [(ngModel)]="filter3Value">
-        <option *ngFor="let option of filter3Options" [value]="option.value">{{ option.label }}</option>
-      </select>
+  <!-- Loading / Empty / Error States -->
+  <div *ngIf="isLoading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading…</span>
     </div>
-
-    <div class="filter-actions">
-      <button type="submit" class="btn btn-primary">Apply Filters</button>
-      <button type="button" class="btn btn-secondary" (click)="resetFilters()">Reset Filters</button>
-    </div>
-  </div>
-</form>
-
-<!-- Loading Indicator -->
-<div *ngIf="isLoading" class="loading-spinner">
-  <div class="spinner"></div>
-  <p>Loading buddies...</p>
-</div>
-
-<!-- Error Message -->
-<div *ngIf="errorMessage" class="error-message">
-  <p>{{ errorMessage }}</p>
-</div>
-
-<!-- No More Profiles Message -->
-<div *ngIf="noMoreProfiles && !isLoading" class="no-more-profiles">
-  <h3>No more {{ buddyType }} buddies available</h3>
-  <p>Check back later or try different filters.</p>
-</div>
-
-<!-- Main content area showing buddy profiles -->
-<div class="main-contents" *ngIf="currentProfile && !isLoading && !noMoreProfiles">
-  <!-- Accept/reject swipe-style buttons -->
-  <div class="selection-buttons">
-    <div class="select-button accept">
-      <button (click)="acceptProfile()">Accept</button>
-    </div>
-    <div class="select-button reject">
-      <button (click)="rejectProfile()">Reject</button>
-    </div>
+    <p class="mt-2 text-muted">Loading buddies…</p>
   </div>
 
-  <!-- Profile card for a potential buddy -->
-  <div class="card">
-    <!-- Profile image -->
-    <img alt="Profile" class="image" />
+  <div *ngIf="errorMessage" class="alert alert-danger text-center">
+    {{ errorMessage }}
+  </div>
 
-    <!-- Profile content/information -->
-    <div class="card-content">
-      <div class="name">{{ currentProfile.name }}</div>
-      <div class="card-details">
-        <p>{{ currentProfile.bio }}</p>
-        <p>{{ currentProfile.course }}</p>
-        <p>Year {{ currentProfile.year }}</p>
+  <div *ngIf="noMoreProfiles && !isLoading" class="alert alert-secondary text-center">
+    <h5>Nothing more here!</h5>
+    <p>Try different filters or check back later.</p>
+  </div>
 
-        <!-- Dynamic information section that changes based on buddy type -->
-        <div class="other-details">
-          <div [class]="buddyType + '-info'">
-            <!-- Gym-specific info that only appears when buddyType is 'gym' -->
-            <ng-container *ngIf="buddyType === 'gym'">
-              <p>{{ currentProfile.gymLocation }}</p>
-              <p>{{ currentProfile.preferredTime }}</p>
-              <p>{{ currentProfile.skillLevel }}</p>
-            </ng-container>
+  <!-- Swipe‐style Profile Card -->
+  <div *ngIf="currentProfile && !isLoading && !noMoreProfiles" class="swipe-container">
+    <div class="card-wrapper">
+      <!-- Reject button -->
+      <button class="btn-swipe reject" (click)="rejectProfile()" aria-label="Reject">
+        <i class="fas fa-times fa-lg"></i>
+      </button>
 
-            <!-- Study-specific info that only appears when buddyType is 'study' -->
-            <ng-container *ngIf="buddyType === 'study'">
-              <p>Year {{ currentProfile.year }}</p>
-              <p>{{ currentProfile.preferredTime }}</p>
-            </ng-container>
+      <!-- Main card -->
+      <div class="card card-large shadow">
+        <div class="card-body text-center d-flex flex-column align-items-center justify-content-center">
+          <!-- Avatar or Initials -->
+          <ng-container *ngIf="currentProfile.profilePicture; else initials">
+            <img [src]="currentProfile.profilePicture" alt="avatar" class="avatar-lg rounded-circle border" />
+          </ng-container>
+          <ng-template #initials>
+            <div class="avatar-lg initials rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center">
+              {{ getInitials(currentProfile.firstName || ' ') }}
+            </div>
+          </ng-template>
 
-            <!-- Sports-specific info that only appears when buddyType is 'sports' -->
-            <ng-container *ngIf="buddyType === 'sports'">
-              <p>{{ currentProfile.sportType }}</p>
-              <p>{{ currentProfile.preferredTime }}</p>
-              <p>{{ currentProfile.skillLevel }}</p>
-            </ng-container>
+          <!-- Name & Meta -->
+          <h5 class="mt-3 mb-1">{{ currentProfile.firstName }}</h5>
+          <p class="text-muted small mb-2">{{ currentProfile.course }} · Year {{ currentProfile.courseYear }}</p>
 
-            <!-- Events-specific info that only appears when buddyType is 'events' -->
-            <ng-container *ngIf="buddyType === 'events'">
-              <p>{{ currentProfile.society }}</p>
-              <p>{{ currentProfile.preferredTime }}</p>
-              <p>{{ currentProfile.eventType }}</p>
-            </ng-container>
+          <!-- Badges -->
+          <div class="badges mb-2">
+            <span class="badge bg-light text-dark me-1" *ngIf="buddyType === ActivityType.SOCIAL">
+              {{ currentProfile.preferredSociety }}
+            </span>
+            <span class="badge bg-light text-dark me-1" *ngIf="buddyType === ActivityType.SOCIAL">
+              {{ currentProfile.preferredEvents }}
+            </span>
+            <span class="badge bg-light text-dark" *ngIf="buddyType === ActivityType.SOCIAL">
+              {{ currentProfile.eventsTime }}
+            </span>
+            <!-- add other buddyType badges here -->
           </div>
+        </div>
+      </div>
+
+      <!-- Accept button -->
+      <button class="btn-swipe accept" (click)="acceptProfile()" aria-label="Accept">
+        <i class="fas fa-check fa-lg"></i>
+      </button>
+
+      <!-- Ratings & Actions (outside the card) -->
+      <div class="card-details d-flex justify-content-between align-items-center">
+        <div class="rating">
+          <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
+            <i class="fas fa-star" [class.text-warning]="star <= 4" [class.text-secondary]="star > 4"></i>
+          </ng-container>
+          <a routerLink="/ranking" class="ms-2 small text-decoration-underline"> View detailed ratings </a>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary btn-sm me-1" (click)="navigateToProfile()">View Profile</button>
+          <button class="btn btn-outline-primary btn-sm" (click)="followUser()">Follow</button>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Buttons to view profile or follow this buddy -->
-  <div class="profile-buttons">
-    <a (click)="navigateToProfile()" class="button view-profile">View Profile</a>
-    <a (click)="followProfile(currentProfile.id)" class="button follow">Follow</a>
-  </div>
-
-  <!-- Ratings section showing current rating and link to detailed ratings -->
-  <div class="rating-section">
-    <!-- Star rating display (dynamic based on rating) -->
-    <div class="star-rating">
-      <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
-        <span [class]="star <= currentProfile.rating ? 'star-filled' : 'star-empty'">★</span>
-      </ng-container>
-    </div>
-    <!-- Link to view detailed ratings -->
-    <div class="rating-details">
-      <a [routerLink]="['/ratings', currentProfile.id]" id="view-ratings">View detailed ratings</a>
+<!-- Bootstrap Toast for “Follow request sent” -->
+<div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3">
+  <div
+    class="toast align-items-center text-white bg-success border-0"
+    role="alert"
+    [class.show]="showFollowPopup"
+    aria-live="assertive"
+    aria-atomic="true"
+  >
+    <div class="d-flex">
+      <div class="toast-body">Follow request sent!</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="showFollowPopup = false" aria-label="Close"></button>
     </div>
   </div>
 </div>
-
-<!--    <div class="filter-group">-->
-<!--      <label for="skill-level">-->
-<!--        {{buddyType === 'study' ? 'Subject' : 'Skill'}} Level:-->
-<!--      </label>-->
-<!--      <select id="skill-level" name="skill-level">-->
-<!--        <option value="">Any Skill Level</option>-->
-<!--        <option value="novice">Novice</option>-->
-<!--        <option value="intermediate">Intermediate</option>-->
-<!--        <option value="confident">Confident</option>-->
-<!--        <option value="professional">Professional</option>-->
-<!--      </select>-->
-<!--    </div>-->
-
-<!--    <div class="filter-group">-->
-<!--      <label for="timing">Preferred Workout Time:</label>-->
-<!--      <select id="timing" name="timing">-->
-<!--        <option value="">Anytime</option>-->
-<!--        <option value="early-morning">Early Morning (5-8 AM)</option>-->
-<!--        <option value="morning">Morning (8-12 AM)</option>-->
-<!--        <option value="afternoon">Afternoon (12-4 PM)</option>-->
-<!--        <option value="evening">Evening (4-8 PM)</option>-->
-<!--        <option value="night">Night (8-11 PM)</option>-->
-<!--        <option value="late-night">Late Night (11 PM - 5 AM)</option>-->
-<!--      </select>-->
-<!--    </div>-->
-
-<!--      <div class="filter-actions">-->
-<!--        <button type="submit">Apply Filters</button>-->
-<!--        <button type="reset">Reset Filters</button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </form>-->
-
-<!--<div class="main-contents">-->
-<!--  <div class="selection-buttons">-->
-<!--    <div class="select-button accept">-->
-<!--      <button>Accept</button>-->
-<!--    </div>-->
-<!--    <div class="select-button reject">-->
-<!--      <button>Reject</button>-->
-<!--    </div>-->
-<!--  </div>-->
-
-<!--  <div class="card">-->
-<!--    <img src="content/images/5imrkq.jpg" alt="Profile" class="image">-->
-<!--    <div class="card-content">-->
-<!--      <div class="name">Nawfal</div>-->
-<!--      <div class="card-details">-->
-<!--        <p>My Bio</p>-->
-<!--        <p>Computer Science</p>-->
-<!--        <p>Year 2</p>-->
-<!--        <div class="gym-info">-->
-<!--          <p>The Gym Group Selly Oak</p>-->
-<!--          <p>Evening</p>-->
-<!--          <p>Intermediate</p>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--  </div>-->
-
-<!--    <div class="profile-buttons">-->
-<!--      <a href="#" class="button view-profile">View Profile</a>-->
-<!--      <a href="#" class="button follow">Follow</a>-->
-<!--    </div>-->
-
-<!--  <div class="rating-section">-->
-<!--    <div class="star-rating">-->
-<!--      <span class="star-filled">★</span>-->
-<!--      <span class="star-filled">★</span>-->
-<!--      <span class="star-filled">★</span>-->
-<!--      <span class="star-filled">★</span>-->
-<!--      <span class="star-empty">★</span>-->
-<!--    </div>-->
-<!--    <div class="rating-details">-->
-<!--      <a href="#" id="view-ratings">View detailed ratings</a>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--  </div>-->
-
-<!--    <div class="filter-group">-->
-<!--      <label for="workout-type">Workout Type:</label>-->
-<!--      <select id="workout-type" name="workout-type">-->
-<!--        <option value="">All Workout Types</option>-->
-<!--        <option value="strength">Strength Training</option>-->
-<!--        <option value="cardio">Cardio</option>-->
-<!--        <option value="yoga">Yoga</option>-->
-<!--        <option value="crossfit">CrossFit</option>-->
-<!--        <option value="weight-loss">Weight Loss</option>-->
-<!--      </select>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; Gender Preference Filter &ndash;&gt;-->
-<!--    <div class="filter-group">-->
-<!--      <label for="gender-preference">Gender Preference:</label>-->
-<!--      <select id="gender-preference" name="gender-preference">-->
-<!--        <option value="">No Preference</option>-->
-<!--        <option value="male">Male</option>-->
-<!--        <option value="female">Female</option>-->
-<!--        <option value="non-binary">Non-Binary</option>-->
-<!--      </select>-->
-<!--    </div>-->

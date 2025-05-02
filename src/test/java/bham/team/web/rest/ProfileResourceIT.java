@@ -9,13 +9,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import bham.team.IntegrationTest;
 import bham.team.domain.Profile;
+import bham.team.domain.enumeration.ActivityType;
 import bham.team.domain.enumeration.Course;
 import bham.team.domain.enumeration.GymLocation;
+import bham.team.domain.enumeration.PreferredEvents;
+import bham.team.domain.enumeration.PreferredTime;
+import bham.team.domain.enumeration.PreferredTime;
 import bham.team.domain.enumeration.PreferredTime;
 import bham.team.domain.enumeration.PreferredTime;
 import bham.team.domain.enumeration.Skill;
 import bham.team.domain.enumeration.Skill;
+import bham.team.domain.enumeration.Society;
 import bham.team.domain.enumeration.Sports;
+import bham.team.domain.enumeration.University;
 import bham.team.repository.ProfileRepository;
 import bham.team.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,6 +47,15 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class ProfileResourceIT {
 
+    private static final String DEFAULT_LOGIN = "AAAAAAAAAA";
+    private static final String UPDATED_LOGIN = "BBBBBBBBBB";
+
+    private static final String DEFAULT_FIRST_NAME = "AAAAAAAAAA";
+    private static final String UPDATED_FIRST_NAME = "BBBBBBBBBB";
+
+    private static final String DEFAULT_LAST_NAME = "AAAAAAAAAA";
+    private static final String UPDATED_LAST_NAME = "BBBBBBBBBB";
+
     private static final String DEFAULT_BIO = "AAAAAAAAAA";
     private static final String UPDATED_BIO = "BBBBBBBBBB";
 
@@ -55,16 +70,19 @@ class ProfileResourceIT {
     private static final Long DEFAULT_COURSE_YEAR = 1L;
     private static final Long UPDATED_COURSE_YEAR = 2L;
 
+    private static final University DEFAULT_UNIVERSITY = University.UNIVERSITY_OF_BIRMINGHAM;
+    private static final University UPDATED_UNIVERSITY = University.ASTON_UNIVERSITY;
+
     private static final Skill DEFAULT_GYM_SKILL = Skill.NOVICE;
     private static final Skill UPDATED_GYM_SKILL = Skill.INTERMEDIATE;
 
     private static final GymLocation DEFAULT_GYM_LOCATION = GymLocation.THE_GYM_SELLY_OAK;
     private static final GymLocation UPDATED_GYM_LOCATION = GymLocation.TIVERTON;
 
-    private static final PreferredTime DEFAULT_GYM_TIME = PreferredTime.EARLY;
+    private static final PreferredTime DEFAULT_GYM_TIME = PreferredTime.EARLY_MORNING;
     private static final PreferredTime UPDATED_GYM_TIME = PreferredTime.MORNING;
 
-    private static final PreferredTime DEFAULT_STUDY_TIME = PreferredTime.EARLY;
+    private static final PreferredTime DEFAULT_STUDY_TIME = PreferredTime.EARLY_MORNING;
     private static final PreferredTime UPDATED_STUDY_TIME = PreferredTime.MORNING;
 
     private static final Sports DEFAULT_SPORTS = Sports.FOOTBALL;
@@ -72,6 +90,21 @@ class ProfileResourceIT {
 
     private static final Skill DEFAULT_SPORTS_SKILL = Skill.NOVICE;
     private static final Skill UPDATED_SPORTS_SKILL = Skill.INTERMEDIATE;
+
+    private static final PreferredTime DEFAULT_SPORTS_TIME = PreferredTime.EARLY_MORNING;
+    private static final PreferredTime UPDATED_SPORTS_TIME = PreferredTime.MORNING;
+
+    private static final Society DEFAULT_PREFERRED_SOCIETY = Society.ABACUS;
+    private static final Society UPDATED_PREFERRED_SOCIETY = Society.ACCOUNTING_AND_FINANCE;
+
+    private static final PreferredEvents DEFAULT_PREFERRED_EVENTS = PreferredEvents.GAMES_NIGHT;
+    private static final PreferredEvents UPDATED_PREFERRED_EVENTS = PreferredEvents.MEET_AND_GREET;
+
+    private static final PreferredTime DEFAULT_EVENTS_TIME = PreferredTime.EARLY_MORNING;
+    private static final PreferredTime UPDATED_EVENTS_TIME = PreferredTime.MORNING;
+
+    private static final ActivityType DEFAULT_PREFERRED_ACTIVITIES = ActivityType.SOCIAL;
+    private static final ActivityType UPDATED_PREFERRED_ACTIVITIES = ActivityType.ACADEMIC;
 
     private static final String ENTITY_API_URL = "/api/profiles";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -106,17 +139,26 @@ class ProfileResourceIT {
      */
     public static Profile createEntity() {
         return new Profile()
+            .login(DEFAULT_LOGIN)
+            .firstName(DEFAULT_FIRST_NAME)
+            .lastName(DEFAULT_LAST_NAME)
             .bio(DEFAULT_BIO)
             .profilePicture(DEFAULT_PROFILE_PICTURE)
             .profilePictureContentType(DEFAULT_PROFILE_PICTURE_CONTENT_TYPE)
             .course(DEFAULT_COURSE)
             .courseYear(DEFAULT_COURSE_YEAR)
+            .university(DEFAULT_UNIVERSITY)
             .gymSkill(DEFAULT_GYM_SKILL)
             .gymLocation(DEFAULT_GYM_LOCATION)
             .gymTime(DEFAULT_GYM_TIME)
             .studyTime(DEFAULT_STUDY_TIME)
             .sports(DEFAULT_SPORTS)
-            .sportsSkill(DEFAULT_SPORTS_SKILL);
+            .sportsSkill(DEFAULT_SPORTS_SKILL)
+            .sportsTime(DEFAULT_SPORTS_TIME)
+            .preferredSociety(DEFAULT_PREFERRED_SOCIETY)
+            .preferredEvents(DEFAULT_PREFERRED_EVENTS)
+            .eventsTime(DEFAULT_EVENTS_TIME)
+            .preferredActivities(DEFAULT_PREFERRED_ACTIVITIES);
     }
 
     /**
@@ -127,17 +169,26 @@ class ProfileResourceIT {
      */
     public static Profile createUpdatedEntity() {
         return new Profile()
+            .login(UPDATED_LOGIN)
+            .firstName(UPDATED_FIRST_NAME)
+            .lastName(UPDATED_LAST_NAME)
             .bio(UPDATED_BIO)
             .profilePicture(UPDATED_PROFILE_PICTURE)
             .profilePictureContentType(UPDATED_PROFILE_PICTURE_CONTENT_TYPE)
             .course(UPDATED_COURSE)
             .courseYear(UPDATED_COURSE_YEAR)
+            .university(UPDATED_UNIVERSITY)
             .gymSkill(UPDATED_GYM_SKILL)
             .gymLocation(UPDATED_GYM_LOCATION)
             .gymTime(UPDATED_GYM_TIME)
             .studyTime(UPDATED_STUDY_TIME)
             .sports(UPDATED_SPORTS)
-            .sportsSkill(UPDATED_SPORTS_SKILL);
+            .sportsSkill(UPDATED_SPORTS_SKILL)
+            .sportsTime(UPDATED_SPORTS_TIME)
+            .preferredSociety(UPDATED_PREFERRED_SOCIETY)
+            .preferredEvents(UPDATED_PREFERRED_EVENTS)
+            .eventsTime(UPDATED_EVENTS_TIME)
+            .preferredActivities(UPDATED_PREFERRED_ACTIVITIES);
     }
 
     @BeforeEach
@@ -194,6 +245,54 @@ class ProfileResourceIT {
 
     @Test
     @Transactional
+    void checkLoginIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        profile.setLogin(null);
+
+        // Create the Profile, which fails.
+
+        restProfileMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(profile)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkFirstNameIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        profile.setFirstName(null);
+
+        // Create the Profile, which fails.
+
+        restProfileMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(profile)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    void checkLastNameIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        profile.setLastName(null);
+
+        // Create the Profile, which fails.
+
+        restProfileMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(profile)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void checkCourseIsRequired() throws Exception {
         long databaseSizeBeforeTest = getRepositoryCount();
         // set the field null
@@ -236,17 +335,26 @@ class ProfileResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(profile.getId().intValue())))
+            .andExpect(jsonPath("$.[*].login").value(hasItem(DEFAULT_LOGIN)))
+            .andExpect(jsonPath("$.[*].firstName").value(hasItem(DEFAULT_FIRST_NAME)))
+            .andExpect(jsonPath("$.[*].lastName").value(hasItem(DEFAULT_LAST_NAME)))
             .andExpect(jsonPath("$.[*].bio").value(hasItem(DEFAULT_BIO.toString())))
             .andExpect(jsonPath("$.[*].profilePictureContentType").value(hasItem(DEFAULT_PROFILE_PICTURE_CONTENT_TYPE)))
             .andExpect(jsonPath("$.[*].profilePicture").value(hasItem(Base64.getEncoder().encodeToString(DEFAULT_PROFILE_PICTURE))))
             .andExpect(jsonPath("$.[*].course").value(hasItem(DEFAULT_COURSE.toString())))
             .andExpect(jsonPath("$.[*].courseYear").value(hasItem(DEFAULT_COURSE_YEAR.intValue())))
+            .andExpect(jsonPath("$.[*].university").value(hasItem(DEFAULT_UNIVERSITY.toString())))
             .andExpect(jsonPath("$.[*].gymSkill").value(hasItem(DEFAULT_GYM_SKILL.toString())))
             .andExpect(jsonPath("$.[*].gymLocation").value(hasItem(DEFAULT_GYM_LOCATION.toString())))
             .andExpect(jsonPath("$.[*].gymTime").value(hasItem(DEFAULT_GYM_TIME.toString())))
             .andExpect(jsonPath("$.[*].studyTime").value(hasItem(DEFAULT_STUDY_TIME.toString())))
             .andExpect(jsonPath("$.[*].sports").value(hasItem(DEFAULT_SPORTS.toString())))
-            .andExpect(jsonPath("$.[*].sportsSkill").value(hasItem(DEFAULT_SPORTS_SKILL.toString())));
+            .andExpect(jsonPath("$.[*].sportsSkill").value(hasItem(DEFAULT_SPORTS_SKILL.toString())))
+            .andExpect(jsonPath("$.[*].sportsTime").value(hasItem(DEFAULT_SPORTS_TIME.toString())))
+            .andExpect(jsonPath("$.[*].preferredSociety").value(hasItem(DEFAULT_PREFERRED_SOCIETY.toString())))
+            .andExpect(jsonPath("$.[*].preferredEvents").value(hasItem(DEFAULT_PREFERRED_EVENTS.toString())))
+            .andExpect(jsonPath("$.[*].eventsTime").value(hasItem(DEFAULT_EVENTS_TIME.toString())))
+            .andExpect(jsonPath("$.[*].preferredActivities").value(hasItem(DEFAULT_PREFERRED_ACTIVITIES.toString())));
     }
 
     @Test
@@ -261,17 +369,26 @@ class ProfileResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(profile.getId().intValue()))
+            .andExpect(jsonPath("$.login").value(DEFAULT_LOGIN))
+            .andExpect(jsonPath("$.firstName").value(DEFAULT_FIRST_NAME))
+            .andExpect(jsonPath("$.lastName").value(DEFAULT_LAST_NAME))
             .andExpect(jsonPath("$.bio").value(DEFAULT_BIO.toString()))
             .andExpect(jsonPath("$.profilePictureContentType").value(DEFAULT_PROFILE_PICTURE_CONTENT_TYPE))
             .andExpect(jsonPath("$.profilePicture").value(Base64.getEncoder().encodeToString(DEFAULT_PROFILE_PICTURE)))
             .andExpect(jsonPath("$.course").value(DEFAULT_COURSE.toString()))
             .andExpect(jsonPath("$.courseYear").value(DEFAULT_COURSE_YEAR.intValue()))
+            .andExpect(jsonPath("$.university").value(DEFAULT_UNIVERSITY.toString()))
             .andExpect(jsonPath("$.gymSkill").value(DEFAULT_GYM_SKILL.toString()))
             .andExpect(jsonPath("$.gymLocation").value(DEFAULT_GYM_LOCATION.toString()))
             .andExpect(jsonPath("$.gymTime").value(DEFAULT_GYM_TIME.toString()))
             .andExpect(jsonPath("$.studyTime").value(DEFAULT_STUDY_TIME.toString()))
             .andExpect(jsonPath("$.sports").value(DEFAULT_SPORTS.toString()))
-            .andExpect(jsonPath("$.sportsSkill").value(DEFAULT_SPORTS_SKILL.toString()));
+            .andExpect(jsonPath("$.sportsSkill").value(DEFAULT_SPORTS_SKILL.toString()))
+            .andExpect(jsonPath("$.sportsTime").value(DEFAULT_SPORTS_TIME.toString()))
+            .andExpect(jsonPath("$.preferredSociety").value(DEFAULT_PREFERRED_SOCIETY.toString()))
+            .andExpect(jsonPath("$.preferredEvents").value(DEFAULT_PREFERRED_EVENTS.toString()))
+            .andExpect(jsonPath("$.eventsTime").value(DEFAULT_EVENTS_TIME.toString()))
+            .andExpect(jsonPath("$.preferredActivities").value(DEFAULT_PREFERRED_ACTIVITIES.toString()));
     }
 
     @Test
@@ -294,17 +411,26 @@ class ProfileResourceIT {
         // Disconnect from session so that the updates on updatedProfile are not directly saved in db
         em.detach(updatedProfile);
         updatedProfile
+            .login(UPDATED_LOGIN)
+            .firstName(UPDATED_FIRST_NAME)
+            .lastName(UPDATED_LAST_NAME)
             .bio(UPDATED_BIO)
             .profilePicture(UPDATED_PROFILE_PICTURE)
             .profilePictureContentType(UPDATED_PROFILE_PICTURE_CONTENT_TYPE)
             .course(UPDATED_COURSE)
             .courseYear(UPDATED_COURSE_YEAR)
+            .university(UPDATED_UNIVERSITY)
             .gymSkill(UPDATED_GYM_SKILL)
             .gymLocation(UPDATED_GYM_LOCATION)
             .gymTime(UPDATED_GYM_TIME)
             .studyTime(UPDATED_STUDY_TIME)
             .sports(UPDATED_SPORTS)
-            .sportsSkill(UPDATED_SPORTS_SKILL);
+            .sportsSkill(UPDATED_SPORTS_SKILL)
+            .sportsTime(UPDATED_SPORTS_TIME)
+            .preferredSociety(UPDATED_PREFERRED_SOCIETY)
+            .preferredEvents(UPDATED_PREFERRED_EVENTS)
+            .eventsTime(UPDATED_EVENTS_TIME)
+            .preferredActivities(UPDATED_PREFERRED_ACTIVITIES);
 
         restProfileMockMvc
             .perform(
@@ -381,8 +507,12 @@ class ProfileResourceIT {
         partialUpdatedProfile.setId(profile.getId());
 
         partialUpdatedProfile
-            .gymSkill(UPDATED_GYM_SKILL)
+            .firstName(UPDATED_FIRST_NAME)
+            .lastName(UPDATED_LAST_NAME)
+            .courseYear(UPDATED_COURSE_YEAR)
+            .university(UPDATED_UNIVERSITY)
             .gymLocation(UPDATED_GYM_LOCATION)
+            .gymTime(UPDATED_GYM_TIME)
             .sports(UPDATED_SPORTS)
             .sportsSkill(UPDATED_SPORTS_SKILL);
 
@@ -413,17 +543,26 @@ class ProfileResourceIT {
         partialUpdatedProfile.setId(profile.getId());
 
         partialUpdatedProfile
+            .login(UPDATED_LOGIN)
+            .firstName(UPDATED_FIRST_NAME)
+            .lastName(UPDATED_LAST_NAME)
             .bio(UPDATED_BIO)
             .profilePicture(UPDATED_PROFILE_PICTURE)
             .profilePictureContentType(UPDATED_PROFILE_PICTURE_CONTENT_TYPE)
             .course(UPDATED_COURSE)
             .courseYear(UPDATED_COURSE_YEAR)
+            .university(UPDATED_UNIVERSITY)
             .gymSkill(UPDATED_GYM_SKILL)
             .gymLocation(UPDATED_GYM_LOCATION)
             .gymTime(UPDATED_GYM_TIME)
             .studyTime(UPDATED_STUDY_TIME)
             .sports(UPDATED_SPORTS)
-            .sportsSkill(UPDATED_SPORTS_SKILL);
+            .sportsSkill(UPDATED_SPORTS_SKILL)
+            .sportsTime(UPDATED_SPORTS_TIME)
+            .preferredSociety(UPDATED_PREFERRED_SOCIETY)
+            .preferredEvents(UPDATED_PREFERRED_EVENTS)
+            .eventsTime(UPDATED_EVENTS_TIME)
+            .preferredActivities(UPDATED_PREFERRED_ACTIVITIES);
 
         restProfileMockMvc
             .perform(

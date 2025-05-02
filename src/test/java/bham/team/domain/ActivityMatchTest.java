@@ -2,7 +2,9 @@ package bham.team.domain;
 
 import static bham.team.domain.ActivityMatchTestSamples.*;
 import static bham.team.domain.ActivityTestSamples.*;
+import static bham.team.domain.MessageThreadTestSamples.*;
 import static bham.team.domain.ProfileTestSamples.*;
+import static bham.team.domain.RankingTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import bham.team.web.rest.TestUtil;
@@ -25,15 +27,39 @@ class ActivityMatchTest {
     }
 
     @Test
-    void userNameTest() {
+    void ratingsTest() {
+        ActivityMatch activityMatch = getActivityMatchRandomSampleGenerator();
+        Ranking rankingBack = getRankingRandomSampleGenerator();
+
+        activityMatch.setRatings(rankingBack);
+        assertThat(activityMatch.getRatings()).isEqualTo(rankingBack);
+
+        activityMatch.ratings(null);
+        assertThat(activityMatch.getRatings()).isNull();
+    }
+
+    @Test
+    void matchRequestorTest() {
         ActivityMatch activityMatch = getActivityMatchRandomSampleGenerator();
         Profile profileBack = getProfileRandomSampleGenerator();
 
-        activityMatch.setUserName(profileBack);
-        assertThat(activityMatch.getUserName()).isEqualTo(profileBack);
+        activityMatch.setMatchRequestor(profileBack);
+        assertThat(activityMatch.getMatchRequestor()).isEqualTo(profileBack);
 
-        activityMatch.userName(null);
-        assertThat(activityMatch.getUserName()).isNull();
+        activityMatch.matchRequestor(null);
+        assertThat(activityMatch.getMatchRequestor()).isNull();
+    }
+
+    @Test
+    void userDetailsTest() {
+        ActivityMatch activityMatch = getActivityMatchRandomSampleGenerator();
+        Profile profileBack = getProfileRandomSampleGenerator();
+
+        activityMatch.setUserDetails(profileBack);
+        assertThat(activityMatch.getUserDetails()).isEqualTo(profileBack);
+
+        activityMatch.userDetails(null);
+        assertThat(activityMatch.getUserDetails()).isNull();
     }
 
     @Test
@@ -46,5 +72,19 @@ class ActivityMatchTest {
 
         activityMatch.matchedActivity(null);
         assertThat(activityMatch.getMatchedActivity()).isNull();
+    }
+
+    @Test
+    void messageThreadTest() {
+        ActivityMatch activityMatch = getActivityMatchRandomSampleGenerator();
+        MessageThread messageThreadBack = getMessageThreadRandomSampleGenerator();
+
+        activityMatch.setMessageThread(messageThreadBack);
+        assertThat(activityMatch.getMessageThread()).isEqualTo(messageThreadBack);
+        assertThat(messageThreadBack.getMatchChat()).isEqualTo(activityMatch);
+
+        activityMatch.messageThread(null);
+        assertThat(activityMatch.getMessageThread()).isNull();
+        assertThat(messageThreadBack.getMatchChat()).isNull();
     }
 }

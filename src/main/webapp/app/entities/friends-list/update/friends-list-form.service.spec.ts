@@ -20,11 +20,12 @@ describe('FriendsList Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
-            friendRequest: expect.any(Object),
+            requestTime: expect.any(Object),
+            requestStatus: expect.any(Object),
             friendSince: expect.any(Object),
-            friends: expect.any(Object),
-            user: expect.any(Object),
-            friend: expect.any(Object),
+            nickname: expect.any(Object),
+            requestedByProfile: expect.any(Object),
+            requestedToProfile: expect.any(Object),
           }),
         );
       });
@@ -35,11 +36,12 @@ describe('FriendsList Form Service', () => {
         expect(formGroup.controls).toEqual(
           expect.objectContaining({
             id: expect.any(Object),
-            friendRequest: expect.any(Object),
+            requestTime: expect.any(Object),
+            requestStatus: expect.any(Object),
             friendSince: expect.any(Object),
-            friends: expect.any(Object),
-            user: expect.any(Object),
-            friend: expect.any(Object),
+            nickname: expect.any(Object),
+            requestedByProfile: expect.any(Object),
+            requestedToProfile: expect.any(Object),
           }),
         );
       });

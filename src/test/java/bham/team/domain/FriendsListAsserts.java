@@ -47,8 +47,10 @@ public class FriendsListAsserts {
     public static void assertFriendsListUpdatableFieldsEquals(FriendsList expected, FriendsList actual) {
         assertThat(expected)
             .as("Verify FriendsList relevant properties")
-            .satisfies(e -> assertThat(e.getFriendRequest()).as("check friendRequest").isEqualTo(actual.getFriendRequest()))
-            .satisfies(e -> assertThat(e.getFriendSince()).as("check friendSince").isEqualTo(actual.getFriendSince()));
+            .satisfies(e -> assertThat(e.getRequestTime()).as("check requestTime").isEqualTo(actual.getRequestTime()))
+            .satisfies(e -> assertThat(e.getRequestStatus()).as("check requestStatus").isEqualTo(actual.getRequestStatus()))
+            .satisfies(e -> assertThat(e.getFriendSince()).as("check friendSince").isEqualTo(actual.getFriendSince()))
+            .satisfies(e -> assertThat(e.getNickname()).as("check nickname").isEqualTo(actual.getNickname()));
     }
 
     /**
@@ -60,6 +62,7 @@ public class FriendsListAsserts {
     public static void assertFriendsListUpdatableRelationshipsEquals(FriendsList expected, FriendsList actual) {
         assertThat(expected)
             .as("Verify FriendsList relationships")
-            .satisfies(e -> assertThat(e.getFriends()).as("check friends").isEqualTo(actual.getFriends()));
+            .satisfies(e -> assertThat(e.getRequestedByProfile()).as("check requestedByProfile").isEqualTo(actual.getRequestedByProfile()))
+            .satisfies(e -> assertThat(e.getRequestedToProfile()).as("check requestedToProfile").isEqualTo(actual.getRequestedToProfile()));
     }
 }

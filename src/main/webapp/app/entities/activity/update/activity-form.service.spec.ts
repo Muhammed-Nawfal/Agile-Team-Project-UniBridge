@@ -31,10 +31,10 @@ describe('Activity Form Service', () => {
             updatedOn: expect.any(Object),
             status: expect.any(Object),
             coverImage: expect.any(Object),
-            paid: expect.any(Object),
-            costOfactivity: expect.any(Object),
-            userName: expect.any(Object),
-            requesteduser: expect.any(Object),
+            isPaid: expect.any(Object),
+            activityCost: expect.any(Object),
+            creator: expect.any(Object),
+            challenge: expect.any(Object),
           }),
         );
       });
@@ -56,10 +56,10 @@ describe('Activity Form Service', () => {
             updatedOn: expect.any(Object),
             status: expect.any(Object),
             coverImage: expect.any(Object),
-            paid: expect.any(Object),
-            costOfactivity: expect.any(Object),
-            userName: expect.any(Object),
-            requesteduser: expect.any(Object),
+            isPaid: expect.any(Object),
+            activityCost: expect.any(Object),
+            creator: expect.any(Object),
+            challenge: expect.any(Object),
           }),
         );
       });

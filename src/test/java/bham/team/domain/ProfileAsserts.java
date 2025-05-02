@@ -47,6 +47,9 @@ public class ProfileAsserts {
     public static void assertProfileUpdatableFieldsEquals(Profile expected, Profile actual) {
         assertThat(expected)
             .as("Verify Profile relevant properties")
+            .satisfies(e -> assertThat(e.getLogin()).as("check login").isEqualTo(actual.getLogin()))
+            .satisfies(e -> assertThat(e.getFirstName()).as("check firstName").isEqualTo(actual.getFirstName()))
+            .satisfies(e -> assertThat(e.getLastName()).as("check lastName").isEqualTo(actual.getLastName()))
             .satisfies(e -> assertThat(e.getBio()).as("check bio").isEqualTo(actual.getBio()))
             .satisfies(e -> assertThat(e.getProfilePicture()).as("check profilePicture").isEqualTo(actual.getProfilePicture()))
             .satisfies(e ->
@@ -56,12 +59,20 @@ public class ProfileAsserts {
             )
             .satisfies(e -> assertThat(e.getCourse()).as("check course").isEqualTo(actual.getCourse()))
             .satisfies(e -> assertThat(e.getCourseYear()).as("check courseYear").isEqualTo(actual.getCourseYear()))
+            .satisfies(e -> assertThat(e.getUniversity()).as("check university").isEqualTo(actual.getUniversity()))
             .satisfies(e -> assertThat(e.getGymSkill()).as("check gymSkill").isEqualTo(actual.getGymSkill()))
             .satisfies(e -> assertThat(e.getGymLocation()).as("check gymLocation").isEqualTo(actual.getGymLocation()))
             .satisfies(e -> assertThat(e.getGymTime()).as("check gymTime").isEqualTo(actual.getGymTime()))
             .satisfies(e -> assertThat(e.getStudyTime()).as("check studyTime").isEqualTo(actual.getStudyTime()))
             .satisfies(e -> assertThat(e.getSports()).as("check sports").isEqualTo(actual.getSports()))
-            .satisfies(e -> assertThat(e.getSportsSkill()).as("check sportsSkill").isEqualTo(actual.getSportsSkill()));
+            .satisfies(e -> assertThat(e.getSportsSkill()).as("check sportsSkill").isEqualTo(actual.getSportsSkill()))
+            .satisfies(e -> assertThat(e.getSportsTime()).as("check sportsTime").isEqualTo(actual.getSportsTime()))
+            .satisfies(e -> assertThat(e.getPreferredSociety()).as("check preferredSociety").isEqualTo(actual.getPreferredSociety()))
+            .satisfies(e -> assertThat(e.getPreferredEvents()).as("check preferredEvents").isEqualTo(actual.getPreferredEvents()))
+            .satisfies(e -> assertThat(e.getEventsTime()).as("check eventsTime").isEqualTo(actual.getEventsTime()))
+            .satisfies(e ->
+                assertThat(e.getPreferredActivities()).as("check preferredActivities").isEqualTo(actual.getPreferredActivities())
+            );
     }
 
     /**
@@ -71,6 +82,8 @@ public class ProfileAsserts {
      * @param actual the actual entity
      */
     public static void assertProfileUpdatableRelationshipsEquals(Profile expected, Profile actual) {
-        // empty method
+        assertThat(expected)
+            .as("Verify Profile relationships")
+            .satisfies(e -> assertThat(e.getMessageThreads()).as("check messageThreads").isEqualTo(actual.getMessageThreads()));
     }
 }

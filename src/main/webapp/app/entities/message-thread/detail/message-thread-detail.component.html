@@ -1,0 +1,71 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (messageThread(); as messageThreadRef) {
+      <div>
+        <h2 data-cy="messageThreadDetailsHeading"><span>Message Thread</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ messageThreadRef.id }}</span>
+          </dd>
+          <dt><span>Is Group</span></dt>
+          <dd>
+            <span>{{ messageThreadRef.isGroup }}</span>
+          </dd>
+          <dt><span>Name</span></dt>
+          <dd>
+            <span>{{ messageThreadRef.name }}</span>
+          </dd>
+          <dt><span>Created On</span></dt>
+          <dd>
+            <span>{{ messageThreadRef.createdOn | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Updated On</span></dt>
+          <dd>
+            <span>{{ messageThreadRef.updatedOn | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span>Friend Chat</span></dt>
+          <dd>
+            @if (messageThread()!.friendChat) {
+              <div>
+                <a [routerLink]="['/friends-list', messageThread()!.friendChat?.id, 'view']">{{ messageThreadRef.friendChat?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Match Chat</span></dt>
+          <dd>
+            @if (messageThread()!.matchChat) {
+              <div>
+                <a [routerLink]="['/activity-match', messageThread()!.matchChat?.id, 'view']">{{ messageThreadRef.matchChat?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Participants</span></dt>
+          <dd>
+            @for (participants of messageThreadRef.participants; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/profile', participants.id, 'view']">{{ participants?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/message-thread', messageThreadRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

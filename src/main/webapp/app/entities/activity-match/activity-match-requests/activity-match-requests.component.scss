@@ -1,0 +1,89 @@
+/* 1. Outer spacing */
+.requests-container {
+  padding: 1rem;
+}
+
+/* 2. Card base */
+.match-card {
+  position: relative; /* for absolute badge positioning */
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  .avatar-banner {
+    height: 120px;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  /* 2b. If using background-image via ngStyle, ensure these:
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  */
+
+  /* 3. Body overlay */
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    color: #fff; /* ensure text is readable */
+  }
+
+  /* 4. Title & text */
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+  .card-text {
+    &.small {
+      font-size: 0.9rem;
+    }
+    fa-icon {
+      margin-right: 0.25rem;
+    }
+    margin-bottom: 0.75rem;
+  }
+
+  /* 5. Buttons */
+  .btn {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* 6. Activity‐type badge */
+  .activity-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    color: #fff;
+    border-radius: 999px;
+    z-index: 2;
+  }
+
+  /* 7. Badge color variants */
+  .badge--social {
+    background-color: #4f9aff;
+  } /* blue   */
+  .badge--academic {
+    background-color: #ff8c42;
+  } /* orange */
+  .badge--sports {
+    background-color: #42d882;
+  } /* green  */
+  .badge--gym {
+    background-color: #d142f4;
+  } /* purple */
+  .badge--other {
+    background-color: #888888;
+  } /* gray   */
+}

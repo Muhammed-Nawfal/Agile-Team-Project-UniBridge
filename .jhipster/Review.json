@@ -28,23 +28,15 @@
   "relationships": [
     {
       "otherEntityName": "profile",
-      "relationshipName": "reviewsGiven",
+      "relationshipName": "aboutUser",
       "relationshipSide": "left",
       "relationshipType": "many-to-one"
     },
     {
-      "otherEntityName": "user",
-      "relationshipName": "aboutUser",
-      "relationshipSide": "left",
-      "relationshipType": "many-to-one",
-      "relationshipWithBuiltInEntity": true
-    },
-    {
-      "otherEntityName": "user",
+      "otherEntityName": "profile",
       "relationshipName": "fromUser",
       "relationshipSide": "left",
-      "relationshipType": "many-to-one",
-      "relationshipWithBuiltInEntity": true
+      "relationshipType": "many-to-one"
     }
   ],
   "searchEngine": "no"

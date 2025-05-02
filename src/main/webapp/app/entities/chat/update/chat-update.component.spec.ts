@@ -4,12 +4,10 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, from, of } from 'rxjs';
 
-import { IFriendsList } from 'app/entities/friends-list/friends-list.model';
-import { FriendsListService } from 'app/entities/friends-list/service/friends-list.service';
+import { IMessageThread } from 'app/entities/message-thread/message-thread.model';
+import { MessageThreadService } from 'app/entities/message-thread/service/message-thread.service';
 import { IProfile } from 'app/entities/profile/profile.model';
 import { ProfileService } from 'app/entities/profile/service/profile.service';
-import { IUser } from 'app/entities/user/user.model';
-import { UserService } from 'app/entities/user/service/user.service';
 import { IChat } from '../chat.model';
 import { ChatService } from '../service/chat.service';
 import { ChatFormService } from './chat-form.service';
@@ -22,9 +20,8 @@ describe('Chat Management Update Component', () => {
   let activatedRoute: ActivatedRoute;
   let chatFormService: ChatFormService;
   let chatService: ChatService;
-  let friendsListService: FriendsListService;
+  let messageThreadService: MessageThreadService;
   let profileService: ProfileService;
-  let userService: UserService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -47,40 +44,47 @@ describe('Chat Management Update Component', () => {
     activatedRoute = TestBed.inject(ActivatedRoute);
     chatFormService = TestBed.inject(ChatFormService);
     chatService = TestBed.inject(ChatService);
-    friendsListService = TestBed.inject(FriendsListService);
+    messageThreadService = TestBed.inject(MessageThreadService);
     profileService = TestBed.inject(ProfileService);
-    userService = TestBed.inject(UserService);
 
     comp = fixture.componentInstance;
   });
 
   describe('ngOnInit', () => {
-    it('Should call friendChat query and add missing value', () => {
+    it('Should call MessageThread query and add missing value', () => {
       const chat: IChat = { id: 456 };
-      const friendChat: IFriendsList = { id: 30969 };
-      chat.friendChat = friendChat;
+      const thread: IMessageThread = { id: 20023 };
+      chat.thread = thread;
+      const messageThread: IMessageThread = { id: 21456 };
+      chat.messageThread = messageThread;
 
-      const friendChatCollection: IFriendsList[] = [{ id: 12582 }];
-      jest.spyOn(friendsListService, 'query').mockReturnValue(of(new HttpResponse({ body: friendChatCollection })));
-      const expectedCollection: IFriendsList[] = [friendChat, ...friendChatCollection];
-      jest.spyOn(friendsListService, 'addFriendsListToCollectionIfMissing').mockReturnValue(expectedCollection);
+      const messageThreadCollection: IMessageThread[] = [{ id: 12541 }];
+      jest.spyOn(messageThreadService, 'query').mockReturnValue(of(new HttpResponse({ body: messageThreadCollection })));
+      const additionalMessageThreads = [thread, messageThread];
+      const expectedCollection: IMessageThread[] = [...additionalMessageThreads, ...messageThreadCollection];
+      jest.spyOn(messageThreadService, 'addMessageThreadToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ chat });
       comp.ngOnInit();
 
-      expect(friendsListService.query).toHaveBeenCalled();
-      expect(friendsListService.addFriendsListToCollectionIfMissing).toHaveBeenCalledWith(friendChatCollection, friendChat);
-      expect(comp.friendChatsCollection).toEqual(expectedCollection);
+      expect(messageThreadService.query).toHaveBeenCalled();
+      expect(messageThreadService.addMessageThreadToCollectionIfMissing).toHaveBeenCalledWith(
+        messageThreadCollection,
+        ...additionalMessageThreads.map(expect.objectContaining),
+      );
+      expect(comp.messageThreadsSharedCollection).toEqual(expectedCollection);
     });
 
     it('Should call Profile query and add missing value', () => {
       const chat: IChat = { id: 456 };
-      const chats: IProfile = { id: 3096 };
-      chat.chats = chats;
+      const sender: IProfile = { id: 12164 };
+      chat.sender = sender;
+      const receiver: IProfile = { id: 32111 };
+      chat.receiver = receiver;
 
-      const profileCollection: IProfile[] = [{ id: 5115 }];
+      const profileCollection: IProfile[] = [{ id: 1792 }];
       jest.spyOn(profileService, 'query').mockReturnValue(of(new HttpResponse({ body: profileCollection })));
-      const additionalProfiles = [chats];
+      const additionalProfiles = [sender, receiver];
       const expectedCollection: IProfile[] = [...additionalProfiles, ...profileCollection];
       jest.spyOn(profileService, 'addProfileToCollectionIfMissing').mockReturnValue(expectedCollection);
 
@@ -95,48 +99,24 @@ describe('Chat Management Update Component', () => {
       expect(comp.profilesSharedCollection).toEqual(expectedCollection);
     });
 
-    it('Should call User query and add missing value', () => {
-      const chat: IChat = { id: 456 };
-      const sender: IUser = { id: 23627 };
-      chat.sender = sender;
-      const receiver: IUser = { id: 16867 };
-      chat.receiver = receiver;
-
-      const userCollection: IUser[] = [{ id: 5292 }];
-      jest.spyOn(userService, 'query').mockReturnValue(of(new HttpResponse({ body: userCollection })));
-      const additionalUsers = [sender, receiver];
-      const expectedCollection: IUser[] = [...additionalUsers, ...userCollection];
-      jest.spyOn(userService, 'addUserToCollectionIfMissing').mockReturnValue(expectedCollection);
-
-      activatedRoute.data = of({ chat });
-      comp.ngOnInit();
-
-      expect(userService.query).toHaveBeenCalled();
-      expect(userService.addUserToCollectionIfMissing).toHaveBeenCalledWith(
-        userCollection,
-        ...additionalUsers.map(expect.objectContaining),
-      );
-      expect(comp.usersSharedCollection).toEqual(expectedCollection);
-    });
-
     it('Should update editForm', () => {
       const chat: IChat = { id: 456 };
-      const friendChat: IFriendsList = { id: 22626 };
-      chat.friendChat = friendChat;
-      const chats: IProfile = { id: 5733 };
-      chat.chats = chats;
-      const sender: IUser = { id: 28666 };
+      const thread: IMessageThread = { id: 25266 };
+      chat.thread = thread;
+      const messageThread: IMessageThread = { id: 14076 };
+      chat.messageThread = messageThread;
+      const sender: IProfile = { id: 25233 };
       chat.sender = sender;
-      const receiver: IUser = { id: 9766 };
+      const receiver: IProfile = { id: 18207 };
       chat.receiver = receiver;
 
       activatedRoute.data = of({ chat });
       comp.ngOnInit();
 
-      expect(comp.friendChatsCollection).toContain(friendChat);
-      expect(comp.profilesSharedCollection).toContain(chats);
-      expect(comp.usersSharedCollection).toContain(sender);
-      expect(comp.usersSharedCollection).toContain(receiver);
+      expect(comp.messageThreadsSharedCollection).toContain(thread);
+      expect(comp.messageThreadsSharedCollection).toContain(messageThread);
+      expect(comp.profilesSharedCollection).toContain(sender);
+      expect(comp.profilesSharedCollection).toContain(receiver);
       expect(comp.chat).toEqual(chat);
     });
   });
@@ -210,13 +190,13 @@ describe('Chat Management Update Component', () => {
   });
 
   describe('Compare relationships', () => {
-    describe('compareFriendsList', () => {
-      it('Should forward to friendsListService', () => {
+    describe('compareMessageThread', () => {
+      it('Should forward to messageThreadService', () => {
         const entity = { id: 123 };
         const entity2 = { id: 456 };
-        jest.spyOn(friendsListService, 'compareFriendsList');
-        comp.compareFriendsList(entity, entity2);
-        expect(friendsListService.compareFriendsList).toHaveBeenCalledWith(entity, entity2);
+        jest.spyOn(messageThreadService, 'compareMessageThread');
+        comp.compareMessageThread(entity, entity2);
+        expect(messageThreadService.compareMessageThread).toHaveBeenCalledWith(entity, entity2);
       });
     });
 
@@ -227,16 +207,6 @@ describe('Chat Management Update Component', () => {
         jest.spyOn(profileService, 'compareProfile');
         comp.compareProfile(entity, entity2);
         expect(profileService.compareProfile).toHaveBeenCalledWith(entity, entity2);
-      });
-    });
-
-    describe('compareUser', () => {
-      it('Should forward to userService', () => {
-        const entity = { id: 123 };
-        const entity2 = { id: 456 };
-        jest.spyOn(userService, 'compareUser');
-        comp.compareUser(entity, entity2);
-        expect(userService.compareUser).toHaveBeenCalledWith(entity, entity2);
       });
     });
   });

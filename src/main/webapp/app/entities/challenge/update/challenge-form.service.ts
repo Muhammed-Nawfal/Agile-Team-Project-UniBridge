@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-import dayjs from 'dayjs/esm';
-import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 import { IChallenge, NewChallenge } from '../challenge.model';
 
 /**
@@ -16,39 +14,20 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type ChallengeFormGroupInput = IChallenge | PartialWithRequiredKeyOf<NewChallenge>;
 
-/**
- * Type that converts some properties for forms.
- */
-type FormValueOf<T extends IChallenge | NewChallenge> = Omit<T, 'createdDate' | 'expiryDate' | 'completedDate'> & {
-  createdDate?: string | null;
-  expiryDate?: string | null;
-  completedDate?: string | null;
-};
-
-type ChallengeFormRawValue = FormValueOf<IChallenge>;
-
-type NewChallengeFormRawValue = FormValueOf<NewChallenge>;
-
-type ChallengeFormDefaults = Pick<NewChallenge, 'id' | 'createdDate' | 'expiryDate' | 'isCompleted' | 'completedDate' | 'isDisplayed'>;
+type ChallengeFormDefaults = Pick<NewChallenge, 'id' | 'completed'>;
 
 type ChallengeFormGroupContent = {
-  id: FormControl<ChallengeFormRawValue['id'] | NewChallenge['id']>;
-  title: FormControl<ChallengeFormRawValue['title']>;
-  description: FormControl<ChallengeFormRawValue['description']>;
-  category: FormControl<ChallengeFormRawValue['category']>;
-  points: FormControl<ChallengeFormRawValue['points']>;
-  badge: FormControl<ChallengeFormRawValue['badge']>;
-  badgeContentType: FormControl<ChallengeFormRawValue['badgeContentType']>;
-  createdDate: FormControl<ChallengeFormRawValue['createdDate']>;
-  expiryDate: FormControl<ChallengeFormRawValue['expiryDate']>;
-  isCompleted: FormControl<ChallengeFormRawValue['isCompleted']>;
-  completedDate: FormControl<ChallengeFormRawValue['completedDate']>;
-  isDisplayed: FormControl<ChallengeFormRawValue['isDisplayed']>;
-  challenges: FormControl<ChallengeFormRawValue['challenges']>;
-  challengedFriend: FormControl<ChallengeFormRawValue['challengedFriend']>;
-  challengedActivity: FormControl<ChallengeFormRawValue['challengedActivity']>;
-  creator: FormControl<ChallengeFormRawValue['creator']>;
-  recipient: FormControl<ChallengeFormRawValue['recipient']>;
+  id: FormControl<IChallenge['id'] | NewChallenge['id']>;
+  title: FormControl<IChallenge['title']>;
+  description: FormControl<IChallenge['description']>;
+  category: FormControl<IChallenge['category']>;
+  date: FormControl<IChallenge['date']>;
+  points: FormControl<IChallenge['points']>;
+  badge: FormControl<IChallenge['badge']>;
+  badgeContentType: FormControl<IChallenge['badgeContentType']>;
+  completed: FormControl<IChallenge['completed']>;
+  assignedTo: FormControl<IChallenge['assignedTo']>;
+  createdBy: FormControl<IChallenge['createdBy']>;
 };
 
 export type ChallengeFormGroup = FormGroup<ChallengeFormGroupContent>;
@@ -56,10 +35,10 @@ export type ChallengeFormGroup = FormGroup<ChallengeFormGroupContent>;
 @Injectable({ providedIn: 'root' })
 export class ChallengeFormService {
   createChallengeFormGroup(challenge: ChallengeFormGroupInput = { id: null }): ChallengeFormGroup {
-    const challengeRawValue = this.convertChallengeToChallengeRawValue({
+    const challengeRawValue = {
       ...this.getFormDefaults(),
       ...challenge,
-    });
+    };
     return new FormGroup<ChallengeFormGroupContent>({
       id: new FormControl(
         { value: challengeRawValue.id, disabled: true },
@@ -77,6 +56,9 @@ export class ChallengeFormService {
       category: new FormControl(challengeRawValue.category, {
         validators: [Validators.required],
       }),
+      date: new FormControl(challengeRawValue.date, {
+        validators: [Validators.required],
+      }),
       points: new FormControl(challengeRawValue.points, {
         validators: [Validators.required, Validators.min(1), Validators.max(100)],
       }),
@@ -84,29 +66,20 @@ export class ChallengeFormService {
         validators: [Validators.required],
       }),
       badgeContentType: new FormControl(challengeRawValue.badgeContentType),
-      createdDate: new FormControl(challengeRawValue.createdDate, {
+      completed: new FormControl(challengeRawValue.completed, {
         validators: [Validators.required],
       }),
-      expiryDate: new FormControl(challengeRawValue.expiryDate),
-      isCompleted: new FormControl(challengeRawValue.isCompleted, {
-        validators: [Validators.required],
-      }),
-      completedDate: new FormControl(challengeRawValue.completedDate),
-      isDisplayed: new FormControl(challengeRawValue.isDisplayed),
-      challenges: new FormControl(challengeRawValue.challenges),
-      challengedFriend: new FormControl(challengeRawValue.challengedFriend),
-      challengedActivity: new FormControl(challengeRawValue.challengedActivity),
-      creator: new FormControl(challengeRawValue.creator),
-      recipient: new FormControl(challengeRawValue.recipient),
+      assignedTo: new FormControl(challengeRawValue.assignedTo),
+      createdBy: new FormControl(challengeRawValue.createdBy),
     });
   }
 
   getChallenge(form: ChallengeFormGroup): IChallenge | NewChallenge {
-    return this.convertChallengeRawValueToChallenge(form.getRawValue() as ChallengeFormRawValue | NewChallengeFormRawValue);
+    return form.getRawValue() as IChallenge | NewChallenge;
   }
 
   resetForm(form: ChallengeFormGroup, challenge: ChallengeFormGroupInput): void {
-    const challengeRawValue = this.convertChallengeToChallengeRawValue({ ...this.getFormDefaults(), ...challenge });
+    const challengeRawValue = { ...this.getFormDefaults(), ...challenge };
     form.reset(
       {
         ...challengeRawValue,
@@ -116,35 +89,9 @@ export class ChallengeFormService {
   }
 
   private getFormDefaults(): ChallengeFormDefaults {
-    const currentTime = dayjs();
-
     return {
       id: null,
-      createdDate: currentTime,
-      expiryDate: currentTime,
-      isCompleted: false,
-      completedDate: currentTime,
-      isDisplayed: false,
-    };
-  }
-
-  private convertChallengeRawValueToChallenge(rawChallenge: ChallengeFormRawValue | NewChallengeFormRawValue): IChallenge | NewChallenge {
-    return {
-      ...rawChallenge,
-      createdDate: dayjs(rawChallenge.createdDate, DATE_TIME_FORMAT),
-      expiryDate: dayjs(rawChallenge.expiryDate, DATE_TIME_FORMAT),
-      completedDate: dayjs(rawChallenge.completedDate, DATE_TIME_FORMAT),
-    };
-  }
-
-  private convertChallengeToChallengeRawValue(
-    challenge: IChallenge | (Partial<NewChallenge> & ChallengeFormDefaults),
-  ): ChallengeFormRawValue | PartialWithRequiredKeyOf<NewChallengeFormRawValue> {
-    return {
-      ...challenge,
-      createdDate: challenge.createdDate ? challenge.createdDate.format(DATE_TIME_FORMAT) : undefined,
-      expiryDate: challenge.expiryDate ? challenge.expiryDate.format(DATE_TIME_FORMAT) : undefined,
-      completedDate: challenge.completedDate ? challenge.completedDate.format(DATE_TIME_FORMAT) : undefined,
+      completed: false,
     };
   }
 }

@@ -14,6 +14,11 @@ const friendsListRoute: Routes = [
     canActivate: [UserRouteAccessService],
   },
   {
+    path: 'requests',
+    loadComponent: () => import('./friend-requests/friend-requests.component').then(m => m.FriendRequestsComponent),
+    canActivate: [UserRouteAccessService],
+  },
+  {
     path: ':id/view',
     loadComponent: () => import('./detail/friends-list-detail.component').then(m => m.FriendsListDetailComponent),
     resolve: {
@@ -36,11 +41,6 @@ const friendsListRoute: Routes = [
       friendsList: FriendsListResolve,
     },
     canActivate: [UserRouteAccessService],
-  },
-  {
-    path: 'friend-requests', // This is the new route for FriendRequestsComponent
-    loadComponent: () => import('./friend-requests/friend-requests.component').then(m => m.FriendRequestsComponent),
-    canActivate: [UserRouteAccessService], // Can be customized to your access control requirements
   },
 ];
 

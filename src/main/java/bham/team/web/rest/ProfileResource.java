@@ -1,7 +1,9 @@
 package bham.team.web.rest;
 
 import bham.team.domain.Profile;
+import bham.team.domain.enumeration.ActivityType;
 import bham.team.repository.ProfileRepository;
+import bham.team.security.SecurityUtils;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -124,6 +126,15 @@ public class ProfileResource {
         Optional<Profile> result = profileRepository
             .findById(profile.getId())
             .map(existingProfile -> {
+                if (profile.getLogin() != null) {
+                    existingProfile.setLogin(profile.getLogin());
+                }
+                if (profile.getFirstName() != null) {
+                    existingProfile.setFirstName(profile.getFirstName());
+                }
+                if (profile.getLastName() != null) {
+                    existingProfile.setLastName(profile.getLastName());
+                }
                 if (profile.getBio() != null) {
                     existingProfile.setBio(profile.getBio());
                 }
@@ -138,6 +149,9 @@ public class ProfileResource {
                 }
                 if (profile.getCourseYear() != null) {
                     existingProfile.setCourseYear(profile.getCourseYear());
+                }
+                if (profile.getUniversity() != null) {
+                    existingProfile.setUniversity(profile.getUniversity());
                 }
                 if (profile.getGymSkill() != null) {
                     existingProfile.setGymSkill(profile.getGymSkill());
@@ -156,6 +170,21 @@ public class ProfileResource {
                 }
                 if (profile.getSportsSkill() != null) {
                     existingProfile.setSportsSkill(profile.getSportsSkill());
+                }
+                if (profile.getSportsTime() != null) {
+                    existingProfile.setSportsTime(profile.getSportsTime());
+                }
+                if (profile.getPreferredSociety() != null) {
+                    existingProfile.setPreferredSociety(profile.getPreferredSociety());
+                }
+                if (profile.getPreferredEvents() != null) {
+                    existingProfile.setPreferredEvents(profile.getPreferredEvents());
+                }
+                if (profile.getEventsTime() != null) {
+                    existingProfile.setEventsTime(profile.getEventsTime());
+                }
+                if (profile.getPreferredActivities() != null) {
+                    existingProfile.setPreferredActivities(profile.getPreferredActivities());
                 }
 
                 return existingProfile;
@@ -176,13 +205,6 @@ public class ProfileResource {
      */
     @GetMapping("")
     public List<Profile> getAllProfiles(@RequestParam(name = "filter", required = false) String filter) {
-        if ("booking-is-null".equals(filter)) {
-            LOG.debug("REST request to get all Profiles where booking is null");
-            return StreamSupport.stream(profileRepository.findAll().spliterator(), false)
-                .filter(profile -> profile.getBooking() == null)
-                .toList();
-        }
-
         if ("ranking-is-null".equals(filter)) {
             LOG.debug("REST request to get all Profiles where ranking is null");
             return StreamSupport.stream(profileRepository.findAll().spliterator(), false)
@@ -219,5 +241,23 @@ public class ProfileResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    @GetMapping("/preferred-activity")
+    public ResponseEntity<List<Profile>> getProfilesByPreferredActivity(@RequestParam ActivityType activityType) {
+        LOG.debug("REST request to get Profiles by activityType: {}", activityType);
+
+        List<Profile> profiles = profileRepository.findByPreferredActivity(activityType);
+        return ResponseEntity.ok(profiles);
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<Profile> getMyProfile() {
+        LOG.debug("REST request to get current user's profile");
+
+        return SecurityUtils.getCurrentUserLogin()
+            .flatMap(profileRepository::findByLogin)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 }
