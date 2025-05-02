@@ -747,7 +747,7 @@ export class BookingComponent implements OnInit {
                   const bookingId = response.body?.id;
                   if (bookingId) {
                     // Update each time slot with reference to the booking
-                    this.updateTimeSlotsWithBookingId(timeSlots, bookingId);
+                    this.updateTimeSlotsWithBookingId(timeSlots, bookingId, availableLocation?.id);
 
                     // Update location capacity if we have a location
                     if (availableLocation) {
@@ -845,8 +845,9 @@ export class BookingComponent implements OnInit {
    * Updates time slots with reference to the booking ID
    * @param timeSlots Array of time slots to update
    * @param bookingId ID of the booking to reference
+   * @param locationId Optional location ID to set for time slots
    */
-  updateTimeSlotsWithBookingId(timeSlots: ITimeSlot[], bookingId: number): void {
+  updateTimeSlotsWithBookingId(timeSlots: ITimeSlot[], bookingId: number, locationId?: number): void {
     let updatedCount = 0;
 
     timeSlots.forEach(timeSlot => {
@@ -856,16 +857,19 @@ export class BookingComponent implements OnInit {
         return;
       }
 
-      // Create updated time slot with booking reference
+      // Create updated time slot with booking reference and location reference if available
       const updatedTimeSlot = {
         ...timeSlot,
         booking: { id: bookingId },
+        location: locationId ? { id: locationId } : null,
       };
 
       // Update the time slot
       this.http.put<ITimeSlot>(`api/time-slots/${timeSlot.id}`, updatedTimeSlot).subscribe({
         next() {
-          console.log(`Successfully updated time slot ${timeSlot.id} with booking ${bookingId}`);
+          console.log(
+            `Successfully updated time slot ${timeSlot.id} with booking ${bookingId}${locationId ? ` and location ${locationId}` : ''}`,
+          );
           updatedCount++;
 
           // When all are updated, show confirmation
