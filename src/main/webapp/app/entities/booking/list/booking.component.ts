@@ -985,9 +985,62 @@ export class BookingComponent implements OnInit {
                         return;
                       }
 
-                      // Select the first available location that isn't already booked
-                      const availableLocation = availableLocations[0];
-                      console.log('Selected available location:', availableLocation);
+                      // MODIFIED: Check if any of our selected time slots have conflicts for the available locations
+                      let locationsAvailableForAllSlots: any[] = [...availableLocations];
+
+                      // Check each additional time slot (if there are multiple selected)
+                      if (this.selectedTimeSlots.length > 1) {
+                        console.log('Checking additional time slots for location conflicts...');
+
+                        // For each time slot after the first one
+                        for (let i = 1; i < this.selectedTimeSlots.length; i++) {
+                          const additionalSlot = this.selectedTimeSlots[i];
+                          const parsedAdditionalSlot = this.parseTimeSlot(additionalSlot);
+                          const additionalStartHour = parsedAdditionalSlot.start;
+                          const additionalEndHour = parsedAdditionalSlot.end;
+
+                          console.log(`Checking conflicts for additional time slot: ${additionalStartHour}:00 - ${additionalEndHour}:00`);
+
+                          // Filter existing time slots for this additional time slot
+                          const additionalConflictingTimeSlots = existingTimeSlots.filter((slot: any) => {
+                            const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
+                            return (
+                              slotDate === bookingDateStr &&
+                              slot.startHour === additionalStartHour &&
+                              slot.endHour === additionalEndHour &&
+                              Boolean(slot.location) &&
+                              Boolean(slot.location.id)
+                            );
+                          });
+
+                          console.log(`Found ${additionalConflictingTimeSlots.length} conflicting slots for additional time`);
+
+                          // Get location IDs that are booked for this additional time slot
+                          const additionalBookedLocationIds = additionalConflictingTimeSlots
+                            .map((slot: any) => Number(slot.location.id))
+                            .filter(Boolean);
+
+                          console.log('Additional booked location IDs:', additionalBookedLocationIds);
+
+                          // Filter our available locations to only include those available for ALL time slots
+                          locationsAvailableForAllSlots = locationsAvailableForAllSlots.filter(
+                            loc => !additionalBookedLocationIds.includes(loc.id),
+                          );
+
+                          console.log(`Locations available for all slots so far: ${locationsAvailableForAllSlots.length}`);
+                        }
+                      }
+
+                      // Now check if any locations are available for ALL selected time slots
+                      if (locationsAvailableForAllSlots.length === 0) {
+                        console.error('No locations available for all selected time slots');
+                        this.bookingError = `No ${locationTypeName} locations are available for all selected time slots`;
+                        return;
+                      }
+
+                      // Select the first available location that isn't booked for ANY of our time slots
+                      const availableLocation = locationsAvailableForAllSlots[0];
+                      console.log('Selected available location for all time slots:', availableLocation);
 
                       if (availableLocation) {
                         // Add location to booking
