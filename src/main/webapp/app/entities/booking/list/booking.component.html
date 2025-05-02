@@ -58,11 +58,26 @@
 
   <div class="activitySection">
     <h1>{{ translate('upcomingActivities') }}</h1>
-    <div class="activity-list">
-      <div class="activity-card" *ngFor="let activity of upcomingActivities">
-        <div class="activity-icon">{{ activity.icon }}</div>
-        <h3>{{ activity.name }}</h3>
-        <p>Time: {{ activity.time }}</p>
+
+    <!-- Loading state -->
+    <div *ngIf="isLoadingBookings" class="loading-indicator">
+      <p>Loading your bookings...</p>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!isLoadingBookings && upcomingBookings.length === 0" class="empty-bookings">
+      <p>{{ translate('noBookings') }}</p>
+    </div>
+
+    <!-- Bookings list -->
+    <div class="activity-list" *ngIf="!isLoadingBookings && upcomingBookings.length > 0">
+      <div class="activity-card" *ngFor="let booking of upcomingBookings">
+        <div class="activity-icon">{{ booking.icon }}</div>
+        <h3>{{ booking.name }}</h3>
+        <p>{{ booking.date }} | {{ booking.time }}</p>
+        <span class="booking-status" [ngClass]="booking.status?.toLowerCase() || 'confirmed'">
+          {{ booking.status || 'CONFIRMED' }}
+        </span>
       </div>
     </div>
   </div>

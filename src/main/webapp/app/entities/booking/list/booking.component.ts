@@ -16,6 +16,7 @@ import { BookingStatus } from 'app/entities/enumerations/booking-status.model';
 import dayjs from 'dayjs/esm';
 import { ITimeSlot } from 'app/entities/time-slot/time-slot.model';
 import { Observable } from 'rxjs';
+import { AccountService } from 'app/core/auth/account.service';
 
 @Component({
   standalone: true,
@@ -41,12 +42,9 @@ export class BookingComponent implements OnInit {
   readonly MAX_SLOTS = 3;
   bookingError: string | null = null;
 
-  // Upcoming activities
-  upcomingActivities = [
-    { name: 'Basketball', icon: '🏀', time: '18:00 - 19:00' },
-    { name: 'Swimming', icon: '🏊‍♂️', time: '17:00 - 18:00' },
-    { name: 'Tennis', icon: '🎾', time: '16:00 - 17:00' },
-  ];
+  // Upcoming activities (will be replaced with user's bookings)
+  upcomingBookings: any[] = [];
+  isLoadingBookings = false;
 
   currentLanguage: 'en' | 'es' = 'en';
   translations: Record<'en' | 'es', Record<string, string>> = {
@@ -58,11 +56,12 @@ export class BookingComponent implements OnInit {
       selectPartySize: 'Select Party Size',
       selectTime: 'Select Time',
       bookNow: 'Book Now',
-      upcomingActivities: 'Upcoming Activities',
+      upcomingActivities: 'Your Upcoming Bookings',
       time: 'Time',
       defaultActivity: 'Activities',
       defaultEvent: 'Events',
       defaultPartySize: 'Party Size',
+      noBookings: 'You have no upcoming bookings',
     },
     es: {
       booking: 'Reserva',
@@ -72,21 +71,103 @@ export class BookingComponent implements OnInit {
       selectPartySize: 'Seleccionar Capacidad',
       selectTime: 'Seleccionar Hora',
       bookNow: 'Reservar Ahora',
-      upcomingActivities: 'Próximas Actividades',
+      upcomingActivities: 'Tus Próximas Reservas',
       time: 'Hora',
       defaultActivity: 'Actividades',
       defaultEvent: 'Eventos',
       defaultPartySize: 'Capacidad',
+      noBookings: 'No tienes reservas próximas',
     },
   };
 
   constructor(
     private http: HttpClient,
     private bookingService: BookingService,
+    private accountService: AccountService,
   ) {}
 
   ngOnInit(): void {
     this.loadEvents();
+    this.loadUserBookings();
+  }
+
+  // New method to load user bookings
+  loadUserBookings(): void {
+    this.isLoadingBookings = true;
+
+    // Temporarily fetch all bookings (since authentication isn't implemented yet)
+    // Once authentication is ready, we can filter by user
+    const today = dayjs().format('YYYY-MM-DD');
+
+    // Create filter parameters to get only future bookings
+    const params = new HttpParams().set('bookingDate.greaterThanOrEqual', today).set('sort', 'bookingDate,asc');
+
+    this.http.get<IBooking[]>('api/bookings', { params }).subscribe({
+      next: bookings => {
+        // Process all bookings for now - can be filtered by user later
+        this.upcomingBookings = bookings.map(booking => {
+          // Format time info based on time slot
+          let timeInfo = 'TBD';
+          if (booking.timeSlot?.startHour !== undefined && booking.timeSlot.endHour !== undefined) {
+            const startHour = booking.timeSlot.startHour!.toString().padStart(2, '0');
+            const endHour = booking.timeSlot.endHour!.toString().padStart(2, '0');
+            timeInfo = `${startHour}:00 - ${endHour}:00`;
+          }
+
+          // Format date
+          const formattedDate = booking.bookingDate ? dayjs(booking.bookingDate).format('MMM DD') : '';
+
+          // Get an appropriate icon based on activity type
+          const icon = this.getActivityIcon(booking.activityType);
+
+          return {
+            id: booking.id,
+            name: booking.eventType ?? 'Booking',
+            icon,
+            time: timeInfo,
+            date: formattedDate,
+            status: booking.bookingStatus,
+          };
+        });
+
+        // Take only the first 5 bookings for demo purposes
+        this.upcomingBookings = this.upcomingBookings.slice(0, 5);
+
+        this.isLoadingBookings = false;
+        console.log('Loaded bookings:', this.upcomingBookings);
+      },
+      error: error => {
+        console.error('Error loading bookings', error);
+        this.isLoadingBookings = false;
+        this.upcomingBookings = [];
+      },
+    });
+  }
+
+  // Helper method to get an icon for each activity type
+  getActivityIcon(activityType: string | null | undefined): string {
+    if (!activityType) return '📅';
+
+    switch (activityType.toUpperCase()) {
+      case 'SPORTS':
+        return '🏀';
+      case 'STUDY':
+        return '📚';
+      case 'ENTERTAINMENT':
+        return '🎭';
+      case 'SWIM':
+        return '🏊‍♂️';
+      case 'TENNIS':
+        return '🎾';
+      case 'FOOTBALL':
+        return '⚽';
+      case 'BASKETBALL':
+        return '🏀';
+      case 'SQUASH':
+        return '🎾';
+      default:
+        return '📅';
+    }
   }
 
   loadEvents(): void {
