@@ -1,0 +1,5 @@
+<button type="button" class="btn btn-primary btn-sm" [disabled]="isLoading" (click)="toggleJoin()">
+  <fa-icon [icon]="isJoined ? 'user-minus' : 'user-plus'"></fa-icon>
+  <span *ngIf="isLoading" class="spinner-border spinner-border-sm mr-1"></span>
+  <span>{{ isJoined ? 'Leave Activity' : 'Join Activity' }}</span>
+</button>
