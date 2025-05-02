@@ -4,7 +4,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observer } from 'rxjs';
 import { EventService } from 'app/entities/event/service/event.service';
 import { IEvent } from 'app/entities/event/event.model';
@@ -15,6 +15,7 @@ import { EventType } from 'app/entities/enumerations/event-type.model';
 import { BookingStatus } from 'app/entities/enumerations/booking-status.model';
 import dayjs from 'dayjs/esm';
 import { ITimeSlot } from 'app/entities/time-slot/time-slot.model';
+import { Observable } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -527,9 +528,8 @@ export class BookingComponent implements OnInit {
       `Looking for time slot with startHour=${startHour}, endHour=${endHour}, event=${this.selectedEvent}, eventId=${selectedEventId}`,
     );
 
-    // Format the selected date to match database format - use startOf('day') for consistency
-    const bookingDate = dayjs(this.selectedDate).startOf('day');
-    const formattedSelectedDate = bookingDate.format('YYYY-MM-DD');
+    // Format the selected date to match database format
+    const formattedSelectedDate = dayjs(this.selectedDate).format('YYYY-MM-DD');
 
     console.log('Selected date:', this.selectedDate, 'formatted as:', formattedSelectedDate);
     console.log('All available time slots:', this.availableTimeSlots.length);
@@ -542,7 +542,7 @@ export class BookingComponent implements OnInit {
     // Initial check for any time slots that match our criteria
     const matchingTimeSlots = this.availableTimeSlots.filter(slot => {
       // Check if the date matches (this can be tricky due to formatting)
-      const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).startOf('day').format('YYYY-MM-DD');
+      const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
       const dateMatch = slotDate === formattedSelectedDate;
 
       // Check if hours match
@@ -565,7 +565,7 @@ export class BookingComponent implements OnInit {
     // If no exact match, look for time slots that match just by date and event ID
     if (selectedEventId) {
       const dateAndEventSlots = this.availableTimeSlots.filter(slot => {
-        const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).startOf('day').format('YYYY-MM-DD');
+        const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
         return slotDate === formattedSelectedDate && slot.event?.id === selectedEventId;
       });
 
@@ -587,7 +587,7 @@ export class BookingComponent implements OnInit {
 
     // Last resort: check if we have any time slots with the right date
     const dateOnlySlots = this.availableTimeSlots.filter(slot => {
-      const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).startOf('day').format('YYYY-MM-DD');
+      const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
       return slotDate === formattedSelectedDate;
     });
 
@@ -619,12 +619,9 @@ export class BookingComponent implements OnInit {
     // Get event ID
     const selectedEventId = this.findEventIdByValue(this.selectedEvent);
 
-    // Ensure consistent date handling
-    const bookingDate = dayjs(this.selectedDate).startOf('day');
-
     // Create a new time slot object (without ID since backend will create it)
     const newTimeSlot: Omit<ITimeSlot, 'id'> = {
-      date: bookingDate,
+      date: dayjs(this.selectedDate),
       startHour: parsedSlot.start,
       endHour: parsedSlot.end,
       capacity: null,
@@ -638,7 +635,7 @@ export class BookingComponent implements OnInit {
       id: null,
       activityType: this.selectedActivity as keyof typeof ActivityType,
       eventType: this.selectedEvent.toUpperCase() as keyof typeof EventType,
-      bookingDate,
+      bookingDate: dayjs(this.selectedDate),
       partySize: this.selectedPartySize ?? 1,
       bookingStatus: 'CONFIRMED' as keyof typeof BookingStatus,
       createdAt: dayjs(),
@@ -740,32 +737,49 @@ export class BookingComponent implements OnInit {
                   return;
                 }
 
-                // Now get all existing time slots for the same date to check for location conflicts
+                // Log the exact date we're booking for to ensure we're filtering correctly
+                console.log('Exact booking date we are checking conflicts for:', bookingDateStr);
+
+                // Now get all existing time slots for the EXACT same date to check for location conflicts
                 this.http
                   .get<any[]>('api/time-slots', {
                     params: {
                       'date.equals': bookingDateStr,
-                      // Remove time filters to get ALL bookings for this date
-                      // We'll filter by time manually to ensure proper comparison
+                      // We're only interested in conflicts on this specific date
                     },
                   })
                   .subscribe({
                     next: (existingTimeSlots: any[]) => {
                       console.log('All time slots for this date:', existingTimeSlots);
 
-                      // Filter slots to match only our specific time range
-                      const conflictingTimeSlots = existingTimeSlots.filter(
-                        (slot: any) => slot.startHour === startHour && slot.endHour === endHour,
-                      );
+                      // Debug log exact dates of time slots to check matching
+                      existingTimeSlots.forEach((slot: any) => {
+                        console.log('Time slot date:', typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD'));
+                      });
 
-                      console.log('Time slots with matching hours:', conflictingTimeSlots);
+                      // Filter slots to match only our specific time range AND that have locations assigned
+                      const conflictingTimeSlots = existingTimeSlots.filter((slot: any) => {
+                        // Get date in consistent format
+                        const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
 
-                      // Get all location IDs that are already booked for this SPECIFIC time
+                        // Make sure date matches EXACTLY
+                        return (
+                          slotDate === bookingDateStr &&
+                          slot.startHour === startHour &&
+                          slot.endHour === endHour &&
+                          Boolean(slot.location) /* type-safe truthy check */ &&
+                          Boolean(slot.location.id) /* check location has an ID */
+                        );
+                      });
+
+                      console.log('Time slots with matching hours that have locations assigned:', conflictingTimeSlots);
+
+                      // Get all location IDs that are already booked for this SPECIFIC time and date
                       const bookedLocationIds = conflictingTimeSlots
-                        .filter((slot: any) => slot.location?.id)
-                        .map((slot: any) => slot.location.id as number);
+                        .map((slot: any) => Number(slot.location.id)) // Convert to number explicitly
+                        .filter(Boolean); // Simple way to filter out any falsy values
 
-                      console.log('Location IDs booked for this specific time:', bookedLocationIds);
+                      console.log('Location IDs booked for this specific date and time:', bookedLocationIds);
 
                       // Filter out locations that are already booked for this date/time
                       const availableLocations = matchingLocations.filter(loc => !bookedLocationIds.includes(loc.id));
