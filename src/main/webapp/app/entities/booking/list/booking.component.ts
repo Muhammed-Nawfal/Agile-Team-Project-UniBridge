@@ -700,27 +700,80 @@ export class BookingComponent implements OnInit {
           // Log the booking date to verify format before submitting
           console.log('Final booking date to be submitted:', booking.bookingDate?.format('YYYY-MM-DD') ?? 'undefined date');
 
-          this.bookingService.create(booking).subscribe({
-            next: response => {
-              console.log('Booking submitted successfully!', response);
+          // After creating the booking but before creating time slots
+          const locationTypeName = this.getLocationTypeFromEvent(this.selectedEvent);
+          const requiredCapacity = this.selectedPartySize ?? 1;
 
-              // Now update all time slots to reference this booking
-              const bookingId = response.body?.id;
-              if (bookingId) {
-                // Update each time slot with reference to the booking
-                this.updateTimeSlotsWithBookingId(timeSlots, bookingId);
-              } else {
-                console.error('Created booking but no ID was returned');
-                alert(`Booking created successfully with ${timeSlots.length} time slot(s)!`);
+          this.http
+            .get<any[]>('api/locations', {
+              params: {
+                'status.equals': 'AVAILABLE',
+                'name.startsWith': locationTypeName,
+              },
+            })
+            .subscribe(locations => {
+              console.log('All available locations:', locations);
+
+              // Try partial matching, normalize spaces and underscores
+              const matchingLocations = locations.filter(loc => {
+                const locName = loc.name?.toLowerCase().replace(/_/g, ' ');
+                const typeName = locationTypeName.toLowerCase().replace(/_/g, ' ');
+                return locName?.includes(typeName);
+              });
+
+              console.log('Filtered locations for', locationTypeName, ':', matchingLocations);
+
+              // Find first available location with sufficient capacity from the filtered list
+              let availableLocation =
+                matchingLocations.length > 0 ? matchingLocations.find(loc => loc.remainingCapacity >= requiredCapacity) : null;
+
+              // If no matching location with capacity, try any matching location
+              if (!availableLocation && matchingLocations.length > 0) {
+                console.log('No location with sufficient capacity, using first matching location');
+                availableLocation = matchingLocations[0];
               }
 
-              this.bookingError = null;
-            },
-            error: error => {
-              console.error('Error creating booking', error);
-              this.bookingError = error.error?.detail || error.error?.message || 'Failed to create booking';
-            },
-          });
+              if (availableLocation) {
+                // Add location to booking
+                booking.bookingLocation = { id: availableLocation.id };
+              }
+
+              // Now create the booking with location assigned if found
+              this.bookingService.create(booking).subscribe({
+                next: response => {
+                  console.log('Booking submitted successfully!', response);
+
+                  // Now update all time slots to reference this booking
+                  const bookingId = response.body?.id;
+                  if (bookingId) {
+                    // Update each time slot with reference to the booking
+                    this.updateTimeSlotsWithBookingId(timeSlots, bookingId);
+
+                    // Update location capacity if we have a location
+                    if (availableLocation) {
+                      // Update location's remaining capacity
+                      const updatedLocation = {
+                        ...availableLocation,
+                        remainingCapacity: availableLocation.remainingCapacity - requiredCapacity,
+                      };
+                      this.http.put(`api/locations/${availableLocation.id}`, updatedLocation).subscribe({
+                        next: () => console.log(`Updated location ${availableLocation.id} capacity`),
+                        error: error => console.error(`Failed to update location capacity`, error),
+                      });
+                    }
+                  } else {
+                    console.error('Created booking but no ID was returned');
+                    alert(`Booking created successfully with ${timeSlots.length} time slot(s)!`);
+                  }
+
+                  this.bookingError = null;
+                },
+                error: error => {
+                  console.error('Error creating booking', error);
+                  this.bookingError = error.error?.detail || error.error?.message || 'Failed to create booking';
+                },
+              });
+            });
         } else {
           this.bookingError = 'Failed to create any time slots for booking.';
         }
@@ -831,5 +884,35 @@ export class BookingComponent implements OnInit {
         },
       });
     });
+  }
+
+  getLocationTypeFromEvent(event: string): string {
+    // Make sure event is uppercase for consistent switch matching
+    const upperEvent = event.toUpperCase();
+
+    // Log the event value for debugging
+    console.log('Converting event type to location:', upperEvent);
+
+    switch (upperEvent) {
+      case 'EVENT_ROOMS':
+        return 'Event Room'; // Singular to match database
+      case 'STUDY_SPACES':
+        return 'Study Space'; // Singular to match database
+      case 'FOOTBALL_PITCH':
+        return 'Football Pitch';
+      case 'BASKETBALL_COURT':
+        return 'Basketball Court';
+      case 'TENNIS_COURT':
+        return 'Tennis Court';
+      case 'SWIMMING_POOL':
+        return 'Swimming Pool';
+      case 'SQUASH_COURT':
+        return 'Squash Court';
+      case 'DOJO':
+        return 'DOJO';
+      default:
+        // Replace ALL underscores with spaces, not just the first
+        return event.replace(/_/g, ' ');
+    }
   }
 }
