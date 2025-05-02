@@ -143,4 +143,8 @@ export class TrophyComponent implements OnInit {
   getTotalTrophies(): number {
     return this.trophyCounts.reduce((sum, trophy) => sum + trophy.count, 0);
   }
+
+  getTotalPoints(): number {
+    return this.trophyCounts.reduce((sum, trophy) => sum + trophy.count * trophy.points, 0);
+  }
 }
