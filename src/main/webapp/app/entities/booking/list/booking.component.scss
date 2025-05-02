@@ -259,6 +259,11 @@ button[type='button'] {
   margin-top: 15px;
 }
 
+.activity-card:hover {
+  border: 2px dodgerblue solid;
+  cursor: pointer;
+}
+
 .activity-card {
   display: flex;
   align-items: center;

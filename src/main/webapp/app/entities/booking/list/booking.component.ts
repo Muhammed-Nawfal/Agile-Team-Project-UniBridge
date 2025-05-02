@@ -56,7 +56,7 @@ export class BookingComponent implements OnInit {
       selectPartySize: 'Select Party Size',
       selectTime: 'Select Time',
       bookNow: 'Book Now',
-      upcomingActivities: 'Your Upcoming Bookings',
+      upcomingActivities: 'Upcoming Bookings',
       time: 'Time',
       defaultActivity: 'Activities',
       defaultEvent: 'Events',
@@ -182,7 +182,7 @@ export class BookingComponent implements OnInit {
             });
 
             // Use the processed bookings and limit to 5
-            this.upcomingBookings = processedBookings.slice(0, 5);
+            this.upcomingBookings = processedBookings.slice(0, 8);
 
             this.isLoadingBookings = false;
             console.log('Final upcoming bookings array:', this.upcomingBookings);
