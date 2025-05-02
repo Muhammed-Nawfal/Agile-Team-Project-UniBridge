@@ -442,8 +442,9 @@ export class BookingComponent implements OnInit {
       return;
     }
 
-    // Format date for the backend
-    const formattedDate = dayjs(this.selectedDate).format('YYYY-MM-DD');
+    // Ensure consistent date format with startOf('day')
+    const bookingDate = dayjs(this.selectedDate).startOf('day');
+    const formattedDate = bookingDate.format('YYYY-MM-DD');
 
     // Get the event ID for the selected event (this connects to EVENT_ID column)
     const eventId = this.findEventIdByValue(this.selectedEvent);
@@ -526,8 +527,9 @@ export class BookingComponent implements OnInit {
       `Looking for time slot with startHour=${startHour}, endHour=${endHour}, event=${this.selectedEvent}, eventId=${selectedEventId}`,
     );
 
-    // Format the selected date to match database format
-    const formattedSelectedDate = dayjs(this.selectedDate).format('YYYY-MM-DD');
+    // Format the selected date to match database format - use startOf('day') for consistency
+    const bookingDate = dayjs(this.selectedDate).startOf('day');
+    const formattedSelectedDate = bookingDate.format('YYYY-MM-DD');
 
     console.log('Selected date:', this.selectedDate, 'formatted as:', formattedSelectedDate);
     console.log('All available time slots:', this.availableTimeSlots.length);
@@ -540,7 +542,7 @@ export class BookingComponent implements OnInit {
     // Initial check for any time slots that match our criteria
     const matchingTimeSlots = this.availableTimeSlots.filter(slot => {
       // Check if the date matches (this can be tricky due to formatting)
-      const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
+      const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).startOf('day').format('YYYY-MM-DD');
       const dateMatch = slotDate === formattedSelectedDate;
 
       // Check if hours match
@@ -563,7 +565,7 @@ export class BookingComponent implements OnInit {
     // If no exact match, look for time slots that match just by date and event ID
     if (selectedEventId) {
       const dateAndEventSlots = this.availableTimeSlots.filter(slot => {
-        const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
+        const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).startOf('day').format('YYYY-MM-DD');
         return slotDate === formattedSelectedDate && slot.event?.id === selectedEventId;
       });
 
@@ -585,7 +587,7 @@ export class BookingComponent implements OnInit {
 
     // Last resort: check if we have any time slots with the right date
     const dateOnlySlots = this.availableTimeSlots.filter(slot => {
-      const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
+      const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).startOf('day').format('YYYY-MM-DD');
       return slotDate === formattedSelectedDate;
     });
 
@@ -617,9 +619,12 @@ export class BookingComponent implements OnInit {
     // Get event ID
     const selectedEventId = this.findEventIdByValue(this.selectedEvent);
 
+    // Ensure consistent date handling
+    const bookingDate = dayjs(this.selectedDate).startOf('day');
+
     // Create a new time slot object (without ID since backend will create it)
     const newTimeSlot: Omit<ITimeSlot, 'id'> = {
-      date: dayjs(this.selectedDate),
+      date: bookingDate,
       startHour: parsedSlot.start,
       endHour: parsedSlot.end,
       capacity: null,
@@ -633,7 +638,7 @@ export class BookingComponent implements OnInit {
       id: null,
       activityType: this.selectedActivity as keyof typeof ActivityType,
       eventType: this.selectedEvent.toUpperCase() as keyof typeof EventType,
-      bookingDate: dayjs(this.selectedDate),
+      bookingDate,
       partySize: this.selectedPartySize ?? 1,
       bookingStatus: 'CONFIRMED' as keyof typeof BookingStatus,
       createdAt: dayjs(),
@@ -659,6 +664,17 @@ export class BookingComponent implements OnInit {
     const timeSlots: ITimeSlot[] = [];
     let processedCount = 0;
 
+    // Get the exact date string from input field to avoid timezone issues
+    const selectedDateString = this.selectedDate;
+    // Use ISO format YYYY-MM-DD to avoid any timezone shifts
+    const formattedDateStr = dayjs(selectedDateString).format('YYYY-MM-DD');
+    // Create the booking date object from the formatted string to ensure consistency
+    const bookingDate = dayjs(formattedDateStr);
+
+    console.log('Selected date string:', selectedDateString);
+    console.log('Formatted date string:', formattedDateStr);
+    console.log('Booking date to be used:', bookingDate.format('YYYY-MM-DD'));
+
     // First, create all time slots in the database
     const createNextTimeSlot = (index: number): void => {
       if (index >= this.selectedTimeSlots.length) {
@@ -669,7 +685,7 @@ export class BookingComponent implements OnInit {
             id: null,
             activityType: this.selectedActivity as keyof typeof ActivityType,
             eventType: this.selectedEvent.toUpperCase() as keyof typeof EventType,
-            bookingDate: dayjs(this.selectedDate),
+            bookingDate, // Use consistent booking date
             partySize: this.selectedPartySize ?? 1,
             bookingStatus: 'CONFIRMED' as keyof typeof BookingStatus,
             createdAt: dayjs(),
@@ -680,6 +696,9 @@ export class BookingComponent implements OnInit {
             creator: null,
             activity: null,
           };
+
+          // Log the booking date to verify format before submitting
+          console.log('Final booking date to be submitted:', booking.bookingDate?.format('YYYY-MM-DD') ?? 'undefined date');
 
           this.bookingService.create(booking).subscribe({
             next: response => {
@@ -724,9 +743,13 @@ export class BookingComponent implements OnInit {
 
       console.log(`Using event capacity: ${eventCapacity} for time slot`);
 
-      // Create time slot with required non-null fields
+      // IMPORTANT: Create the date string manually to ensure EXACT format match with booking
+      // This avoids any timezone or formatting issues
+      const timeSlotDateString = formattedDateStr; // Use the exact same formatted string
+
+      // Create time slot with required non-null fields using explicitly formatted date
       const newTimeSlot = {
-        date: dayjs(this.selectedDate),
+        date: timeSlotDateString, // Use exact string format instead of dayjs object
         startHour: parsedSlot.start,
         endHour: parsedSlot.end,
         capacity: eventCapacity !== null ? eventCapacity : 10, // Default to 10 if capacity not found
@@ -736,10 +759,17 @@ export class BookingComponent implements OnInit {
         booking: null, // Initialize with null, will be updated after booking creation
       };
 
+      // Log the time slot date to verify format before submitting
+      console.log(`Time slot date to be created for ${currentSlot}:`, newTimeSlot.date);
+
       // Save the time slot
       this.http.post<ITimeSlot>('api/time-slots', newTimeSlot).subscribe({
         next(savedTimeSlot) {
           console.log(`Time slot created for ${currentSlot}:`, savedTimeSlot);
+          console.log(
+            `Time slot date after save:`,
+            typeof savedTimeSlot.date === 'string' ? savedTimeSlot.date : dayjs(savedTimeSlot.date).format('YYYY-MM-DD'),
+          );
           timeSlots.push(savedTimeSlot);
           processedCount++;
           // Process next time slot
