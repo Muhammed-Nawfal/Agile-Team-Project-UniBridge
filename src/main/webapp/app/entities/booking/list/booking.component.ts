@@ -724,14 +724,7 @@ export class BookingComponent implements OnInit {
               console.log('Filtered locations for', locationTypeName, ':', matchingLocations);
 
               // Find first available location with sufficient capacity from the filtered list
-              let availableLocation =
-                matchingLocations.length > 0 ? matchingLocations.find(loc => loc.remainingCapacity >= requiredCapacity) : null;
-
-              // If no matching location with capacity, try any matching location
-              if (!availableLocation && matchingLocations.length > 0) {
-                console.log('No location with sufficient capacity, using first matching location');
-                availableLocation = matchingLocations[0];
-              }
+              const availableLocation = matchingLocations.length > 0 ? matchingLocations[0] : null;
 
               if (availableLocation) {
                 // Add location to booking
@@ -748,19 +741,6 @@ export class BookingComponent implements OnInit {
                   if (bookingId) {
                     // Update each time slot with reference to the booking
                     this.updateTimeSlotsWithBookingId(timeSlots, bookingId, availableLocation?.id);
-
-                    // Update location capacity if we have a location
-                    if (availableLocation) {
-                      // Update location's remaining capacity
-                      const updatedLocation = {
-                        ...availableLocation,
-                        remainingCapacity: availableLocation.remainingCapacity - requiredCapacity,
-                      };
-                      this.http.put(`api/locations/${availableLocation.id}`, updatedLocation).subscribe({
-                        next: () => console.log(`Updated location ${availableLocation.id} capacity`),
-                        error: error => console.error(`Failed to update location capacity`, error),
-                      });
-                    }
                   } else {
                     console.error('Created booking but no ID was returned');
                     alert(`Booking created successfully with ${timeSlots.length} time slot(s)!`);
