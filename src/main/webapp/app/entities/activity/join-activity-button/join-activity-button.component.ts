@@ -66,7 +66,7 @@ export class JoinActivityButtonComponent implements OnInit {
         } else if (error.error?.title === 'Activity not found') {
           this.errorMessage = 'Activity not found';
         } else {
-          this.errorMessage = 'Error joining activity';
+          this.errorMessage = `Error joining activity: ${error.status ? `${error.status} - ` : ''}${error.message || 'Unknown error'}`;
         }
 
         console.error('Error joining activity', error);

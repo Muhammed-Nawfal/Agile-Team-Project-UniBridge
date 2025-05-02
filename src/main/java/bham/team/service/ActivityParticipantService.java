@@ -8,12 +8,15 @@ import bham.team.domain.enumeration.Status;
 import bham.team.repository.ActivityParticipantRepository;
 import bham.team.repository.ActivityRepository;
 import bham.team.repository.ProfileRepository;
+import bham.team.security.SecurityUtils;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,11 +47,8 @@ public class ActivityParticipantService {
      * @throws BadRequestAlertException if the activity is full or user has already joined
      */
     public ActivityParticipant joinActivity(Long activityId) {
-        // get the current logged in user
-        Profile profile = profileRepository
-            .findByUserIsCurrentUser()
-            .orElseThrow(() -> new BadRequestAlertException("User profile not found", "activityParticipant", "profilenotfound"));
-
+        //get current user
+        Profile profile = getCurrentUserProfile();
         // get the activity
         Activity activity = activityRepository
             .findById(activityId)
@@ -64,10 +64,10 @@ public class ActivityParticipantService {
             throw new BadRequestAlertException("You have already joined this activity", "activityParticipant", "alreadyjoined");
         }
 
-        // checks if the activity is already full
-        if (activity.getNumberOfParticipants() >= activity.getMaxNumberOfParticipants()) {
-            throw new BadRequestAlertException("Activity is already full", "activityParticipant", "activityfull");
-        }
+        //        // checks if the activity is already full
+        //        if (activity.getNumberOfParticipants() >= activity.getMaxNumberOfParticipants()) {
+        //            throw new BadRequestAlertException("Activity is already full", "activityParticipant", "activityfull");
+        //        }
 
         // creation of the  new ActivityParticipant
         ActivityParticipant activityParticipant = new ActivityParticipant();
@@ -94,9 +94,10 @@ public class ActivityParticipantService {
      * @return true if the user has joined, false otherwise
      */
     public boolean hasUserJoinedActivity(Long activityId) {
-        Profile profile = profileRepository
-            .findByUserIsCurrentUser()
-            .orElseThrow(() -> new BadRequestAlertException("User profile not found", "activityParticipant", "profilenotfound"));
+        //        Profile profile = profileRepository
+        //            .findByUserIsCurrentUser()
+        //            .orElseThrow(() -> new BadRequestAlertException("User profile not found", "activityParticipant", "profilenotfound"));
+        Profile profile = getCurrentUserProfile();
 
         return activityParticipantRepository.findByParticipantIdAndActivityId(profile.getId(), activityId).isPresent();
     }
@@ -117,10 +118,35 @@ public class ActivityParticipantService {
      * @return the list of activity participants
      */
     public List<ActivityParticipant> findActivitiesByCurrentUser() {
-        Profile profile = profileRepository
-            .findByUserIsCurrentUser()
-            .orElseThrow(() -> new BadRequestAlertException("User profile not found", "activityParticipant", "profilenotfound"));
+        //        Profile profile = profileRepository
+        //            .findByUserIsCurrentUser()
+        //            .orElseThrow(() -> new BadRequestAlertException("User profile not found", "activityParticipant", "profilenotfound"));
+        Profile profile = getCurrentUserProfile();
 
         return activityParticipantRepository.findByParticipantId(profile.getId());
+    }
+
+    /**
+     * Helper method to get the current username from the security context
+     * This handles both JWT and session-based authentication
+     */
+    private String getCurrentUsername() {
+        // Use SecurityUtils from JHipster rather than trying to extract directly
+        return SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new BadRequestAlertException("No authenticated user found", "activityParticipant", "noauth"));
+    }
+
+    /**
+     * Helper method to get the current authenticated user's Profile entity.
+     *
+     * @return Profile of the current user
+     * @throws BadRequestAlertException if the user is not authenticated or profile is missing
+     */
+    private Profile getCurrentUserProfile() {
+        String currentUsername = getCurrentUsername();
+
+        return profileRepository
+            .findByUserLogin(currentUsername)
+            .orElseThrow(() -> new BadRequestAlertException("Current user has no profile", "activityParticipant", "profilenotfound"));
     }
 }
