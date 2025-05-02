@@ -2,11 +2,13 @@ import { Component, Input, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApplicationConfigService } from '../../../core/config/application-config.service';
 import { ActivityParticipantService } from '../../activity-participant/service/activity-participant.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'jhi-join-activity-button',
   standalone: true,
-  imports: [],
+  imports: [NgClass],
   templateUrl: './join-activity-button.component.html',
   styleUrl: './join-activity-button.component.scss',
 })

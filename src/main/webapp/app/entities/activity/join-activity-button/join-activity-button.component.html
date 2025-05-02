@@ -1,5 +1,22 @@
-<button type="button" class="btn btn-primary btn-sm" [disabled]="isLoading" (click)="toggleJoin()">
-  <fa-icon [icon]="isJoined ? 'user-minus' : 'user-plus'"></fa-icon>
-  <span *ngIf="isLoading" class="spinner-border spinner-border-sm mr-1"></span>
-  <span>{{ isJoined ? 'Leave Activity' : 'Join Activity' }}</span>
+<button
+  [class]="cssClass"
+  (click)="joinActivity()"
+  [disabled]="hasJoined || isLoading || isFull"
+  [ngClass]="{ 'btn-success': hasJoined, 'btn-secondary': isFull }"
+>
+  @if (isLoading) {
+    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+  } @else if (hasJoined) {
+    <span>{{ joinedText }}</span>
+  } @else if (isFull) {
+    <span>{{ fullText }}</span>
+  } @else {
+    <span>{{ buttonText }}</span>
+  }
 </button>
+
+@if (errorMessage) {
+  <div class="text-danger small mt-1">
+    {{ errorMessage }}
+  </div>
+}
