@@ -11,6 +11,7 @@ import bham.team.repository.ProfileRepository;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -58,26 +59,68 @@ public class ActivityParticipantService {
             throw new BadRequestAlertException("Activity is not open for joining", "activityParticipant", "activitynotopen");
         }
 
+        // checks if the user has already joined this activity
+        if (activityParticipantRepository.findByParticipantIdAndActivityId(profile.getId(), activityId).isPresent()) {
+            throw new BadRequestAlertException("You have already joined this activity", "activityParticipant", "alreadyjoined");
+        }
+
         // checks if the activity is already full
         if (activity.getNumberOfParticipants() >= activity.getMaxNumberOfParticipants()) {
             throw new BadRequestAlertException("Activity is already full", "activityParticipant", "activityfull");
         }
 
-        // Create new ActivityParticipant
+        // creation of the  new ActivityParticipant
         ActivityParticipant activityParticipant = new ActivityParticipant();
         activityParticipant.setJoinedDate(Instant.now());
         activityParticipant.setStatus(ParticipationStatus.CONFIRMED);
         activityParticipant.setParticipant(profile);
         activityParticipant.setActivity(activity);
 
-        // Increment the number of participants
+        // increments the # of participants
         activity.setNumberOfParticipants(activity.getNumberOfParticipants() + 1);
         activity.setUpdatedOn(Instant.now());
 
-        // Save the activity with updated participants count
+        // saves the activity with updated participants count
         activityRepository.save(activity);
 
-        // Save and return the activity participant
+        // saves and returns the activity participant
         return activityParticipantRepository.save(activityParticipant);
+    }
+
+    /**
+     * Check if the current user has joined an activity.
+     *
+     * @param activityId the ID of the activity to check
+     * @return true if the user has joined, false otherwise
+     */
+    public boolean hasUserJoinedActivity(Long activityId) {
+        Profile profile = profileRepository
+            .findByUserIsCurrentUser()
+            .orElseThrow(() -> new BadRequestAlertException("User profile not found", "activityParticipant", "profilenotfound"));
+
+        return activityParticipantRepository.findByParticipantIdAndActivityId(profile.getId(), activityId).isPresent();
+    }
+
+    /**
+     * Find all participants for an activity.
+     *
+     * @param activityId the ID of the activity
+     * @return the list of activity participants
+     */
+    public List<ActivityParticipant> findParticipantsByActivityId(Long activityId) {
+        return activityParticipantRepository.findByActivityId(activityId);
+    }
+
+    /**
+     * Find all activities joined by the current user.
+     *
+     * @return the list of activity participants
+     */
+    public List<ActivityParticipant> findActivitiesByCurrentUser() {
+        Profile profile = profileRepository
+            .findByUserIsCurrentUser()
+            .orElseThrow(() -> new BadRequestAlertException("User profile not found", "activityParticipant", "profilenotfound"));
+
+        return activityParticipantRepository.findByParticipantId(profile.getId());
     }
 }
