@@ -704,6 +704,16 @@ export class BookingComponent implements OnInit {
           const locationTypeName = this.getLocationTypeFromEvent(this.selectedEvent);
           const requiredCapacity = this.selectedPartySize ?? 1;
 
+          // Get first time slot details to check for conflicts
+          const firstTimeSlot = timeSlots[0];
+          const startHour = firstTimeSlot.startHour;
+          const endHour = firstTimeSlot.endHour;
+          const bookingDateStr =
+            typeof firstTimeSlot.date === 'string' ? firstTimeSlot.date : dayjs(firstTimeSlot.date).format('YYYY-MM-DD');
+
+          console.log(`Looking for available locations for ${locationTypeName} on ${bookingDateStr} from ${startHour}:00 to ${endHour}:00`);
+
+          // First, find all matching locations for the event type
           this.http
             .get<any[]>('api/locations', {
               params: {
@@ -711,48 +721,105 @@ export class BookingComponent implements OnInit {
                 'name.startsWith': locationTypeName,
               },
             })
-            .subscribe(locations => {
-              console.log('All available locations:', locations);
+            .subscribe({
+              next: locations => {
+                console.log('All available locations:', locations);
 
-              // Try partial matching, normalize spaces and underscores
-              const matchingLocations = locations.filter(loc => {
-                const locName = loc.name?.toLowerCase().replace(/_/g, ' ');
-                const typeName = locationTypeName.toLowerCase().replace(/_/g, ' ');
-                return locName?.includes(typeName);
-              });
+                // Try partial matching, normalize spaces and underscores
+                const matchingLocations = locations.filter(loc => {
+                  const locName = loc.name?.toLowerCase().replace(/_/g, ' ');
+                  const typeName = locationTypeName.toLowerCase().replace(/_/g, ' ');
+                  return locName?.includes(typeName);
+                });
 
-              console.log('Filtered locations for', locationTypeName, ':', matchingLocations);
+                console.log('Filtered locations for', locationTypeName, ':', matchingLocations);
 
-              // Find first available location with sufficient capacity from the filtered list
-              const availableLocation = matchingLocations.length > 0 ? matchingLocations[0] : null;
+                if (matchingLocations.length === 0) {
+                  console.error('No matching locations found for', locationTypeName);
+                  this.bookingError = `No available locations found for ${locationTypeName}`;
+                  return;
+                }
 
-              if (availableLocation) {
-                // Add location to booking
-                booking.bookingLocation = { id: availableLocation.id };
-              }
+                // Now get all existing time slots for the same date to check for location conflicts
+                this.http
+                  .get<any[]>('api/time-slots', {
+                    params: {
+                      'date.equals': bookingDateStr,
+                      // Remove time filters to get ALL bookings for this date
+                      // We'll filter by time manually to ensure proper comparison
+                    },
+                  })
+                  .subscribe({
+                    next: (existingTimeSlots: any[]) => {
+                      console.log('All time slots for this date:', existingTimeSlots);
 
-              // Now create the booking with location assigned if found
-              this.bookingService.create(booking).subscribe({
-                next: response => {
-                  console.log('Booking submitted successfully!', response);
+                      // Filter slots to match only our specific time range
+                      const conflictingTimeSlots = existingTimeSlots.filter(
+                        (slot: any) => slot.startHour === startHour && slot.endHour === endHour,
+                      );
 
-                  // Now update all time slots to reference this booking
-                  const bookingId = response.body?.id;
-                  if (bookingId) {
-                    // Update each time slot with reference to the booking
-                    this.updateTimeSlotsWithBookingId(timeSlots, bookingId, availableLocation?.id);
-                  } else {
-                    console.error('Created booking but no ID was returned');
-                    alert(`Booking created successfully with ${timeSlots.length} time slot(s)!`);
-                  }
+                      console.log('Time slots with matching hours:', conflictingTimeSlots);
 
-                  this.bookingError = null;
-                },
-                error: error => {
-                  console.error('Error creating booking', error);
-                  this.bookingError = error.error?.detail || error.error?.message || 'Failed to create booking';
-                },
-              });
+                      // Get all location IDs that are already booked for this SPECIFIC time
+                      const bookedLocationIds = conflictingTimeSlots
+                        .filter((slot: any) => slot.location?.id)
+                        .map((slot: any) => slot.location.id as number);
+
+                      console.log('Location IDs booked for this specific time:', bookedLocationIds);
+
+                      // Filter out locations that are already booked for this date/time
+                      const availableLocations = matchingLocations.filter(loc => !bookedLocationIds.includes(loc.id));
+
+                      console.log('Available locations after filtering out booked ones:', availableLocations);
+
+                      if (availableLocations.length === 0) {
+                        console.error('All matching locations are already booked for this date/time');
+                        this.bookingError = `All ${locationTypeName} locations are already booked for the selected date and time`;
+                        return;
+                      }
+
+                      // Select the first available location that isn't already booked
+                      const availableLocation = availableLocations[0];
+                      console.log('Selected available location:', availableLocation);
+
+                      if (availableLocation) {
+                        // Add location to booking
+                        booking.bookingLocation = { id: availableLocation.id };
+                      }
+
+                      // Now create the booking with location assigned if found
+                      this.bookingService.create(booking).subscribe({
+                        next: response => {
+                          console.log('Booking submitted successfully!', response);
+
+                          // Now update all time slots to reference this booking
+                          const bookingId = response.body?.id;
+                          if (bookingId) {
+                            // Update each time slot with reference to the booking
+                            this.updateTimeSlotsWithBookingId(timeSlots, bookingId, availableLocation?.id);
+                          } else {
+                            console.error('Created booking but no ID was returned');
+                            alert(`Booking created successfully with ${timeSlots.length} time slot(s)!`);
+                          }
+
+                          this.bookingError = null;
+                        },
+                        error: error => {
+                          console.error('Error creating booking', error);
+                          this.bookingError = error.error?.detail || error.error?.message || 'Failed to create booking';
+                        },
+                      });
+                    },
+                    error: error => {
+                      console.error('Error checking existing time slots:', error);
+                      this.bookingError = 'Error checking time slot availability';
+                    },
+                  });
+              },
+              error: error => {
+                console.error('Error loading locations:', error);
+                this.bookingError = 'Error loading available locations';
+              },
             });
         } else {
           this.bookingError = 'Failed to create any time slots for booking.';
