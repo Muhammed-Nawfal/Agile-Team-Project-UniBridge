@@ -151,6 +151,33 @@
           </div>
         </div>
 
+        <!-- Badge upload field -->
+        <div class="mb-3">
+          <label class="form-label" for="file_badge">Badge</label>
+          <div>
+            @if (editForm.get('badge')!.value) {
+              <div>
+                <img
+                  [src]="'data:' + editForm.get('badgeContentType')!.value + ';base64,' + editForm.get('badge')!.value"
+                  style="max-height: 100px"
+                  alt="challenge image"
+                />
+              </div>
+              <div>
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  (click)="clearInputImage('badge', 'badgeContentType', 'file_badge_input')"
+                >
+                  <fa-icon icon="times"></fa-icon><span class="ms-1">Clear</span>
+                </button>
+              </div>
+            }
+            <input type="file" id="file_badge_input" data-cy="badge" accept="image/*" (change)="setFileData($event, 'badge', true)" />
+          </div>
+          <small class="form-text text-danger" *ngIf="!editForm.get('badge')!.value">Badge image is required</small>
+        </div>
+
         @let completedRef = editForm.get('completed')!;
         <div class="mb-3" *ngIf="isEditMode">
           <label class="form-label" for="field_completed">Completed</label>

@@ -70,8 +70,13 @@ export class ChallengeService {
   }
 
   /** NEW: Accept a pending challenge */
-  accept(id: number): Observable<HttpResponse<{}>> {
-    return this.http.post<HttpResponse<{}>>(`${this.resourceUrl}/${id}/accept`, {}, { observe: 'response' });
+  accept(id: number): Observable<EntityResponseType> {
+    // Create payload with completed: true and id
+    const payload: PartialUpdateChallenge = {
+      id,
+      completed: true,
+    };
+    return this.partialUpdate(payload);
   }
 
   /** NEW: Reject a pending challenge */

@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 import dayjs from 'dayjs/esm';
@@ -42,6 +42,7 @@ export class ChallengeUpdateComponent implements OnInit {
   protected profileService = inject(ProfileService);
   protected elementRef = inject(ElementRef);
   protected activatedRoute = inject(ActivatedRoute);
+  protected router = inject(Router);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: ChallengeFormGroup = this.challengeFormService.createChallengeFormGroup();
@@ -141,7 +142,9 @@ export class ChallengeUpdateComponent implements OnInit {
   }
 
   protected onSaveSuccess(): void {
-    this.previousState();
+    // Navigate to the challenge list page instead of just going back
+    // This ensures the list is refreshed with the new challenge
+    this.router.navigate(['/challenge']);
   }
 
   protected onSaveError(): void {
