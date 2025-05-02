@@ -36,6 +36,7 @@ export class BookingComponent implements OnInit {
   selectedEvent = '';
   selectedPartySize: number | null = null;
   availableTimeSlots: ITimeSlot[] = [];
+  fullyBookedTimeSlots: string[] = []; // Track fully booked time slots
 
   readonly MAX_SLOTS = 3;
   bookingError: string | null = null;
@@ -443,6 +444,9 @@ export class BookingComponent implements OnInit {
       return;
     }
 
+    // Clear fully booked time slots when fetching new data
+    this.fullyBookedTimeSlots = [];
+
     // Ensure consistent date format with startOf('day')
     const bookingDate = dayjs(this.selectedDate).startOf('day');
     const formattedDate = bookingDate.format('YYYY-MM-DD');
@@ -490,6 +494,9 @@ export class BookingComponent implements OnInit {
 
                 if (this.availableTimeSlots.length === 0) {
                   console.error(`No time slots found for date ${formattedDate}. Make sure time slots are generated for this date.`);
+                } else {
+                  // Check for fully booked time slots
+                  this.checkForFullyBookedTimeSlots();
                 }
               },
             });
@@ -502,6 +509,8 @@ export class BookingComponent implements OnInit {
             console.error('Time slots found but they have no IDs!');
           } else {
             console.log(`Found ${slotsWithIds.length} valid time slots with IDs`);
+            // Check for fully booked time slots
+            this.checkForFullyBookedTimeSlots();
           }
         }
       },
@@ -510,6 +519,99 @@ export class BookingComponent implements OnInit {
         this.bookingError = 'Could not load time slots. Please try again.';
       },
     });
+  }
+
+  /**
+   * Checks if a time slot is fully booked based on remainingCapacity
+   * and location availability
+   */
+  checkForFullyBookedTimeSlots(): void {
+    // Get location type for the selected event
+    const locationTypeName = this.getLocationTypeFromEvent(this.selectedEvent);
+
+    // Get event capacity
+    let eventCapacity = null;
+    for (const activity of this.activities) {
+      const foundEvent = activity.events.find((e: any) => e.value === this.selectedEvent);
+      if (foundEvent) {
+        eventCapacity = foundEvent.capacity;
+        break;
+      }
+    }
+
+    // Format the selected date to match database format
+    const formattedSelectedDate = dayjs(this.selectedDate).format('YYYY-MM-DD');
+
+    // Get all matching locations for this event type
+    this.http
+      .get<any[]>('api/locations', {
+        params: {
+          'status.equals': 'AVAILABLE',
+          'name.startsWith': locationTypeName,
+        },
+      })
+      .subscribe({
+        next: locations => {
+          // Try partial matching, normalize spaces and underscores
+          const matchingLocations = locations.filter(loc => {
+            const locName = loc.name?.toLowerCase().replace(/_/g, ' ');
+            const typeName = locationTypeName.toLowerCase().replace(/_/g, ' ');
+            return locName?.includes(typeName);
+          });
+
+          // Find total number of available locations for this event type
+          const totalAvailableLocations = matchingLocations.length;
+          console.log(`Total available ${locationTypeName} locations: ${totalAvailableLocations}`);
+
+          if (totalAvailableLocations === 0) {
+            // If no locations available, all time slots are fully booked
+            this.fullyBookedTimeSlots = [...this.timeSlots];
+            return;
+          }
+
+          // For each UI time slot, check if all locations are already booked
+          this.timeSlots.forEach(timeSlot => {
+            const parsedSlot = this.parseTimeSlot(timeSlot);
+            const startHour = parsedSlot.start;
+            const endHour = parsedSlot.end;
+
+            // Find time slots in our availableTimeSlots array that match this time AND date
+            const matchingDBSlots = this.availableTimeSlots.filter(slot => {
+              // Check if the slot has the same time
+              const timeMatch = slot.startHour === startHour && slot.endHour === endHour;
+
+              // Check if the slot has the same date
+              const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
+              const dateMatch = slotDate === formattedSelectedDate;
+
+              return timeMatch && dateMatch;
+            });
+
+            // Find how many locations are already booked for this time
+            const bookedLocationsCount = matchingDBSlots.filter(slot => Boolean(slot.location?.id)).length;
+
+            console.log(
+              `Time slot ${timeSlot} on ${formattedSelectedDate}: ${bookedLocationsCount} of ${totalAvailableLocations} locations booked`,
+            );
+
+            // If all locations are booked, or if the event is at capacity
+            if (bookedLocationsCount >= totalAvailableLocations) {
+              this.fullyBookedTimeSlots.push(timeSlot);
+              console.log(`Time slot ${timeSlot} on ${formattedSelectedDate} is fully booked (all locations taken)`);
+            }
+          });
+        },
+        error(error) {
+          console.error('Error checking location availability:', error);
+        },
+      });
+  }
+
+  /**
+   * Checks if a time slot is fully booked and should be crossed out
+   */
+  isTimeSlotFullyBooked(timeSlot: string): boolean {
+    return this.fullyBookedTimeSlots.includes(timeSlot);
   }
 
   findTimeSlotEntity(slotString: string): ITimeSlot | null {
@@ -814,6 +916,8 @@ export class BookingComponent implements OnInit {
                           } else {
                             console.error('Created booking but no ID was returned');
                             alert(`Booking created successfully with ${timeSlots.length} time slot(s)!`);
+                            // Refresh the page after showing alert
+                            window.location.reload();
                           }
 
                           this.bookingError = null;
@@ -936,6 +1040,8 @@ export class BookingComponent implements OnInit {
           // When all are updated, show confirmation
           if (updatedCount === timeSlots.length) {
             alert(`Booking created successfully with ${timeSlots.length} time slot(s)!`);
+            // Refresh the page after all time slots are updated
+            window.location.reload();
           }
         },
         error(error) {
@@ -945,6 +1051,8 @@ export class BookingComponent implements OnInit {
           // When all are processed, show confirmation even if some failed
           if (updatedCount === timeSlots.length) {
             alert(`Booking created but some time slots may not be properly linked.`);
+            // Still refresh the page even if there were some errors
+            window.location.reload();
           }
         },
       });

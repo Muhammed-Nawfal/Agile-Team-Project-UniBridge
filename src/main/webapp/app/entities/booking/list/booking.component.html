@@ -38,10 +38,13 @@
             [id]="'slot-' + i"
             [value]="slot"
             (change)="onTimeSlotChange($event)"
-            [disabled]="isTimeSlotDisabled(slot)"
+            [disabled]="isTimeSlotDisabled(slot) || isTimeSlotFullyBooked(slot)"
             [checked]="selectedTimeSlots.includes(slot)"
           />
-          <label [for]="'slot-' + i" [class.disabled]="isTimeSlotDisabled(slot)">{{ slot }}</label>
+          <label [for]="'slot-' + i" [class.disabled]="isTimeSlotDisabled(slot) || isTimeSlotFullyBooked(slot)">
+            {{ slot }}
+            <span *ngIf="isTimeSlotFullyBooked(slot)" class="capacity-info"></span>
+          </label>
         </div>
       </div>
 
