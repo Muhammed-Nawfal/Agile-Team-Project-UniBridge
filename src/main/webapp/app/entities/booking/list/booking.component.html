@@ -72,12 +72,9 @@
     <!-- Bookings list -->
     <div class="activity-list" *ngIf="!isLoadingBookings && upcomingBookings.length > 0">
       <div class="activity-card" *ngFor="let booking of upcomingBookings">
-        <div class="activity-icon">{{ booking.icon }}</div>
         <h3>{{ booking.name }}</h3>
-        <p>{{ booking.date }} | {{ booking.time }}</p>
-        <span class="booking-status" [ngClass]="booking.status?.toLowerCase() || 'confirmed'">
-          {{ booking.status || 'CONFIRMED' }}
-        </span>
+
+        <p style="text-align: right; width: 100%">{{ booking.date }} | {{ booking.time }}</p>
       </div>
     </div>
   </div>

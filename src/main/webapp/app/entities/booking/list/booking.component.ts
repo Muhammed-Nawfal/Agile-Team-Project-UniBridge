@@ -246,6 +246,7 @@ export class BookingComponent implements OnInit {
   onEventChange(event: any): void {
     this.selectedEvent = event.target.value;
     this.selectedTimeSlots = []; // Reset selected time slots when event changes
+    this.fullyBookedTimeSlots = []; // Clear fully booked time slots when event changes
 
     // Get the selected event details
     let selectedEventObj = null;
@@ -607,6 +608,9 @@ export class BookingComponent implements OnInit {
    * and location availability
    */
   checkForFullyBookedTimeSlots(): void {
+    // Clear fully booked time slots before recalculating
+    this.fullyBookedTimeSlots = [];
+
     // Get location type for the selected event
     const locationTypeName = this.getLocationTypeFromEvent(this.selectedEvent);
 
@@ -665,20 +669,27 @@ export class BookingComponent implements OnInit {
               const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
               const dateMatch = slotDate === formattedSelectedDate;
 
-              return timeMatch && dateMatch;
+              // Check if the slot is for the current event
+              const eventId = this.findEventIdByValue(this.selectedEvent);
+              const eventMatch = slot.event?.id === eventId;
+
+              // Only consider slots that match time, date AND event
+              return timeMatch && dateMatch && eventMatch;
             });
 
             // Find how many locations are already booked for this time
             const bookedLocationsCount = matchingDBSlots.filter(slot => Boolean(slot.location?.id)).length;
 
             console.log(
-              `Time slot ${timeSlot} on ${formattedSelectedDate}: ${bookedLocationsCount} of ${totalAvailableLocations} locations booked`,
+              `Time slot ${timeSlot} on ${formattedSelectedDate} for event ${this.selectedEvent}: ${bookedLocationsCount} of ${totalAvailableLocations} locations booked`,
             );
 
             // If all locations are booked, or if the event is at capacity
             if (bookedLocationsCount >= totalAvailableLocations) {
               this.fullyBookedTimeSlots.push(timeSlot);
-              console.log(`Time slot ${timeSlot} on ${formattedSelectedDate} is fully booked (all locations taken)`);
+              console.log(
+                `Time slot ${timeSlot} on ${formattedSelectedDate} for event ${this.selectedEvent} is fully booked (all locations taken)`,
+              );
             }
           });
         },
@@ -813,7 +824,6 @@ export class BookingComponent implements OnInit {
       event: { id: selectedEventId } as any,
     };
 
-    // Create booking object with the new time slot
     const booking: NewBooking = {
       id: null,
       activityType: this.selectedActivity as keyof typeof ActivityType,
