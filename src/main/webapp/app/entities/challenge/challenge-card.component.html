@@ -1,7 +1,12 @@
 <!-- src/main/webapp/app/entities/challenge/challenge-card.component.html -->
 <div class="card mb-4 shadow-sm">
   <div class="card-body">
-    <h5 class="card-title">{{ challenge.title }}</h5>
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <h5 class="card-title mb-0">{{ challenge.title }}</h5>
+      <button class="btn btn-sm btn-outline-info" (click)="onViewDetailsClick()">
+        <fa-icon icon="eye"></fa-icon>
+      </button>
+    </div>
     <h6 class="card-subtitle mb-2 text-muted">From: {{ challenge.createdBy?.login || '—' }}</h6>
     <p class="card-text" *ngIf="challenge.description">{{ challenge.description }}</p>
 
@@ -19,20 +24,26 @@
     </ul>
 
     <div class="d-flex justify-content-between">
-      <!-- Show based on completed status -->
-      <ng-container *ngIf="!challenge.completed">
-        <button class="btn btn-danger" (click)="onRejectClick()"><fa-icon icon="times"></fa-icon> Reject</button>
-      </ng-container>
+      <div>
+        <!-- Placeholder to maintain layout structure -->
+      </div>
 
-      <!-- For completion -->
-      <ng-container *ngIf="!challenge.completed">
-        <button class="btn btn-primary" (click)="onCompleteClick()"><fa-icon icon="check-circle"></fa-icon> Complete</button>
-      </ng-container>
+      <div>
+        <!-- Show based on completed status -->
+        <ng-container *ngIf="!challenge.completed">
+          <button class="btn btn-danger mx-1" (click)="onRejectClick()"><fa-icon icon="times"></fa-icon> Reject</button>
+        </ng-container>
 
-      <!-- Completed: show badge -->
-      <ng-container *ngIf="challenge.completed">
-        <span class="badge bg-success">Completed</span>
-      </ng-container>
+        <!-- For completion -->
+        <ng-container *ngIf="!challenge.completed">
+          <button class="btn btn-primary" (click)="onCompleteClick()"><fa-icon icon="check-circle"></fa-icon> Complete</button>
+        </ng-container>
+
+        <!-- Completed: show badge -->
+        <ng-container *ngIf="challenge.completed">
+          <span class="badge bg-success">Completed</span>
+        </ng-container>
+      </div>
     </div>
   </div>
 </div>

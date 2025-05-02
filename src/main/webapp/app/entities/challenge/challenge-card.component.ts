@@ -4,6 +4,7 @@ import { IChallenge } from 'app/entities/challenge/challenge.model';
 import { NgIf, NgClass, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'jhi-challenge-card',
@@ -16,6 +17,8 @@ export class ChallengeCardComponent {
   @Input() challenge!: IChallenge;
   @Output() reject = new EventEmitter<number>();
   @Output() complete = new EventEmitter<number>();
+
+  constructor(private router: Router) {}
 
   // Map category names to Bootstrap contextual classes
   getCategoryClass(category: string | null | undefined): string {
@@ -41,5 +44,12 @@ export class ChallengeCardComponent {
 
   onCompleteClick(): void {
     this.complete.emit(this.challenge.id);
+  }
+
+  onViewDetailsClick(): void {
+    if (this.challenge.id) {
+      // Navigate to the challenge detail page
+      this.router.navigate(['/challenge', this.challenge.id, 'view']);
+    }
   }
 }
