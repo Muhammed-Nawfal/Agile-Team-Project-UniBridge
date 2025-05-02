@@ -103,6 +103,45 @@ export class ActivityParticipantService {
     return activityParticipantCollection;
   }
 
+  /**
+   * Join an activity for the current logged-in user
+   *
+   * @param activityId the ID of the activity to join
+   * @returns the created ActivityParticipant entity
+   */
+  joinActivity(activityId: number): Observable<IActivityParticipant> {
+    return this.http.post<IActivityParticipant>(`${this.resourceUrl}/activities/${activityId}/join`, {});
+  }
+
+  /**
+   * checks if the current user has joined an activity
+   *
+   * @param activityId the ID of the activity to check
+   * @returns true if the user has joined, false otherwise
+   */
+  hasUserJoinedActivity(activityId: number): Observable<boolean> {
+    return this.http.get<boolean>(`${this.resourceUrl}/activities/${activityId}/has-joined`);
+  }
+
+  /**
+   * gets all participants for an activity
+   *
+   * @param activityId the ID of the activity
+   * @returns the list of activity participants
+   */
+  getActivityParticipants(activityId: number): Observable<IActivityParticipant[]> {
+    return this.http.get<IActivityParticipant[]>(`${this.resourceUrl}/activities/${activityId}/participants`);
+  }
+
+  /**
+   * gets all activities joined by the current user
+   *
+   * @returns the list of activity participants
+   */
+  getUserActivities(): Observable<IActivityParticipant[]> {
+    return this.http.get<IActivityParticipant[]>(`${this.resourceUrl}/profiles/activities`);
+  }
+
   protected convertDateFromClient<T extends IActivityParticipant | NewActivityParticipant | PartialUpdateActivityParticipant>(
     activityParticipant: T,
   ): RestOf<T> {
