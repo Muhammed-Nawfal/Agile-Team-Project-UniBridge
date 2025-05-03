@@ -1,0 +1,47 @@
+.trophy-card {
+  transition: transform 0.3s;
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.trophy-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.trophy-icon {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trophy-count {
+  padding: 5px 15px;
+  border-radius: 20px;
+  background: #f8f9fa;
+  display: inline-block;
+}
+
+// Trophy-specific color classes
+.bronze {
+  color: #cd7f32;
+}
+
+.silver {
+  color: #c0c0c0;
+}
+
+.gold {
+  color: #ffd700;
+}
+
+.platinum {
+  color: #e5e4e2;
+}
+
+.diamond {
+  color: #b9f2ff;
+}

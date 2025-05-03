@@ -4,21 +4,21 @@ import { ActivatedRoute } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { sampleWithRequiredData } from '../friends-list.test-samples';
-import { FriendsListService } from '../service/friends-list.service';
+import { sampleWithRequiredData } from '../challenge.test-samples';
+import { ChallengeService } from '../service/challenge.service';
 
-import { FriendsListComponent } from './friends-list.component';
+import { ChallengeComponent } from './challenge-list.component';
 import SpyInstance = jest.SpyInstance;
 
-describe('FriendsList Management Component', () => {
-  let comp: FriendsListComponent;
-  let fixture: ComponentFixture<FriendsListComponent>;
-  let service: FriendsListService;
+describe('Challenge Management Component', () => {
+  let comp: ChallengeComponent;
+  let fixture: ComponentFixture<ChallengeComponent>;
+  let service: ChallengeService;
   let routerNavigateSpy: SpyInstance<Promise<boolean>>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [FriendsListComponent],
+      imports: [ChallengeComponent],
       providers: [
         provideHttpClient(),
         {
@@ -46,12 +46,12 @@ describe('FriendsList Management Component', () => {
         },
       ],
     })
-      .overrideTemplate(FriendsListComponent, '')
+      .overrideTemplate(ChallengeComponent, '')
       .compileComponents();
 
-    fixture = TestBed.createComponent(FriendsListComponent);
+    fixture = TestBed.createComponent(ChallengeComponent);
     comp = fixture.componentInstance;
-    service = TestBed.inject(FriendsListService);
+    service = TestBed.inject(ChallengeService);
     routerNavigateSpy = jest.spyOn(comp.router, 'navigate');
 
     jest
@@ -84,15 +84,15 @@ describe('FriendsList Management Component', () => {
 
     // THEN
     expect(service.query).toHaveBeenCalled();
-    expect(comp.friendsLists[0]).toEqual(expect.objectContaining({ id: 123 }));
+    expect(comp.challenges?.[0]).toEqual(expect.objectContaining({ id: 123 }));
   });
 
   describe('trackId', () => {
-    it('Should forward to friendsListService', () => {
+    it('Should forward to challengeService', () => {
       const entity = { id: 123 };
-      jest.spyOn(service, 'getFriendsListIdentifier');
+      jest.spyOn(service, 'getChallengeIdentifier');
       const id = comp.trackId(entity);
-      expect(service.getFriendsListIdentifier).toHaveBeenCalledWith(entity);
+      expect(service.getChallengeIdentifier).toHaveBeenCalledWith(entity);
       expect(id).toBe(entity.id);
     });
   });

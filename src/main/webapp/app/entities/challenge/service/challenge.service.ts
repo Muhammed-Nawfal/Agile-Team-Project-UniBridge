@@ -1,7 +1,8 @@
+// src/main/webapp/app/entities/challenge/service/challenge.service.ts
+
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-
 import dayjs from 'dayjs/esm';
 
 import { isPresent } from 'app/core/util/operators';
@@ -17,9 +18,7 @@ type RestOf<T extends IChallenge | NewChallenge> = Omit<T, 'date'> & {
 };
 
 export type RestChallenge = RestOf<IChallenge>;
-
 export type NewRestChallenge = RestOf<NewChallenge>;
-
 export type PartialUpdateRestChallenge = RestOf<PartialUpdateChallenge>;
 
 export type EntityResponseType = HttpResponse<IChallenge>;
@@ -70,11 +69,32 @@ export class ChallengeService {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
+  /** NEW: Accept a pending challenge */
+  accept(id: number): Observable<HttpResponse<{}>> {
+    return this.http.post<HttpResponse<{}>>(`${this.resourceUrl}/${id}/complete`, {}, { observe: 'response' });
+  }
+
+  /** NEW: Reject a pending challenge - using delete since there's no reject endpoint */
+  reject(id: number): Observable<HttpResponse<{}>> {
+    // Use the delete endpoint instead of a non-existent reject endpoint
+    return this.delete(id);
+  }
+
+  /** NEW: Mark a challenge as complete */
+  complete(id: number): Observable<EntityResponseType> {
+    // Create payload with completed: true and id
+    const payload: PartialUpdateChallenge = {
+      id,
+      completed: true,
+    };
+    return this.partialUpdate(payload);
+  }
+
   getChallengeIdentifier(challenge: Pick<IChallenge, 'id'>): number {
     return challenge.id;
   }
 
-  compareChallenge(o1: Pick<IChallenge, 'id'> | null, o2: Pick<IChallenge, 'id'> | null): boolean {
+  compareChallenges(o1: Pick<IChallenge, 'id'> | null, o2: Pick<IChallenge, 'id'> | null): boolean {
     return o1 && o2 ? this.getChallengeIdentifier(o1) === this.getChallengeIdentifier(o2) : o1 === o2;
   }
 
@@ -84,7 +104,7 @@ export class ChallengeService {
   ): Type[] {
     const challenges: Type[] = challengesToCheck.filter(isPresent);
     if (challenges.length > 0) {
-      const challengeCollectionIdentifiers = challengeCollection.map(challengeItem => this.getChallengeIdentifier(challengeItem));
+      const challengeCollectionIdentifiers = challengeCollection.map(item => this.getChallengeIdentifier(item));
       const challengesToAdd = challenges.filter(challengeItem => {
         const challengeIdentifier = this.getChallengeIdentifier(challengeItem);
         if (challengeCollectionIdentifiers.includes(challengeIdentifier)) {
@@ -93,7 +113,7 @@ export class ChallengeService {
         challengeCollectionIdentifiers.push(challengeIdentifier);
         return true;
       });
-      return [...challengesToAdd, ...challengeCollection];
+      return [...challengeCollection, ...challengesToAdd];
     }
     return challengeCollection;
   }
@@ -105,10 +125,10 @@ export class ChallengeService {
     };
   }
 
-  protected convertDateFromServer(restChallenge: RestChallenge): IChallenge {
+  protected convertDateFromServer(rest: RestChallenge): IChallenge {
     return {
-      ...restChallenge,
-      date: restChallenge.date ? dayjs(restChallenge.date) : undefined,
+      ...rest,
+      date: rest.date ? dayjs(rest.date) : undefined,
     };
   }
 
