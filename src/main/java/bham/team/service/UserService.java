@@ -13,6 +13,7 @@ import bham.team.security.AuthoritiesConstants;
 import bham.team.security.SecurityUtils;
 import bham.team.service.dto.AdminUserDTO;
 import bham.team.service.dto.UserDTO;
+import bham.team.web.rest.vm.ManagedUserVM;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -105,7 +106,7 @@ public class UserService {
         return userRepository.findOneByLogin(login).map(UserDTO::new);
     }
 
-    public User registerUser(AdminUserDTO userDTO, String password) {
+    public User registerUser(ManagedUserVM userDTO, String password) {
         userRepository
             .findOneByLogin(userDTO.getLogin().toLowerCase())
             .ifPresent(existingUser -> {
@@ -123,13 +124,6 @@ public class UserService {
                 }
             });
         User newUser = new User();
-
-        Profile profile = new Profile();
-        profile.setUser(newUser);
-        profile.setCourse(Course.COMPUTER_SCIENCE); // Default value
-        profile.setCourseYear(1L); // Default value
-        profile.setUniversity(University.UNIVERSITY_OF_BIRMINGHAM); // Default value
-        profileRepository.save(profile);
 
         String encryptedPassword = passwordEncoder.encode(password);
         newUser.setLogin(userDTO.getLogin().toLowerCase());
@@ -150,6 +144,18 @@ public class UserService {
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
         userRepository.save(newUser);
+
+        Profile profile = new Profile();
+        profile.setUser(newUser);
+        profile.setId(userDTO.getId()); //copy user id
+        profile.setLogin(userDTO.getLogin()); //copy user login
+        profile.setFirstName(userDTO.getFirstName()); //copy user first name
+        profile.setLastName(userDTO.getLastName()); //copy user last name
+        profile.setCourse(Course.COMPUTER_SCIENCE); // Default value
+        profile.setCourseYear(1L); // Default value
+        profile.setUniversity(University.UNIVERSITY_OF_BIRMINGHAM); // Default value
+        profileRepository.save(profile);
+
         this.clearUserCaches(newUser);
         LOG.debug("Created Information for User: {}", newUser);
         return newUser;

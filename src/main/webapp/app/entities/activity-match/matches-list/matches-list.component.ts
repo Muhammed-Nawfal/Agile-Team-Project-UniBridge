@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subject, switchMap, take, takeUntil } from 'rxjs';
@@ -15,15 +15,20 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faSlidersH, faChevronDown, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faSlidersH, faChevronDown, faCalendarAlt);
+import { SpeechService } from '../../../core/speech/speech.service';
+import { AccessibilityService } from '../../../core/Accessibility/accessibility.service';
+import { A11yModule } from 'app/shared/a11y/a11y.module';
 
 @Component({
   standalone: true,
   selector: 'jhi-matches-list',
   templateUrl: './matches-list.component.html',
   styleUrls: ['./matches-list.component.scss'],
-  imports: [FormsModule, SharedModule, RouterLink],
+  imports: [FormsModule, SharedModule, RouterLink, A11yModule],
 })
 export class MatchesListComponent implements OnInit, OnDestroy {
+  @ViewChildren('readMatchBtn', { read: ElementRef })
+  readButtons!: QueryList<ElementRef<HTMLButtonElement>>;
   account = signal<Account | null>(null);
   upcomingMatches: IActivityMatch[] = [];
   activityTypes = Object.values(ActivityType);
@@ -36,6 +41,7 @@ export class MatchesListComponent implements OnInit, OnDestroy {
   private activityMatchService = inject(ActivityMatchService);
   private profileService = inject(ProfileService);
   private destroy$ = new Subject<void>();
+  private speechService = inject(SpeechService);
 
   ngOnInit(): void {
     this.accountService
@@ -78,6 +84,7 @@ export class MatchesListComponent implements OnInit, OnDestroy {
                 return sameMonth && typeMatch;
               });
               this.isLoading = false;
+              this.focusFirstReadButton();
             },
             error: () => {
               this.isLoading = false;
@@ -92,5 +99,22 @@ export class MatchesListComponent implements OnInit, OnDestroy {
 
   onFilterChange(): void {
     this.loadUpcomingMatches();
+  }
+
+  /** Read out the key details of a displayed match */
+  readMatch(match: IActivityMatch): void {
+    const partner = match.userDetails;
+    const dateStr = match.matchDate ? dayjs(match.matchDate).format('DD MMMM YYYY') : 'unknown date';
+    const timeStr = match.matchTime ? dayjs(match.matchTime).format('HH:mm') : 'unknown time';
+    const activity = match.activityType?.toLowerCase();
+    const loc = match.location ?? 'TBD';
+    const text = `Upcoming ${activity} with ${partner?.firstName} ${partner?.lastName}, ` + `on ${dateStr} at ${timeStr}, location ${loc}.`;
+    this.speechService.speak(text);
+  }
+  private focusFirstReadButton(): void {
+    setTimeout(() => {
+      const first = this.readButtons.first;
+      first.nativeElement.focus();
+    }, 0);
   }
 }

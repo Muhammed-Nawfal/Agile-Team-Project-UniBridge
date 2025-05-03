@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
@@ -44,34 +43,7 @@ export class ProfileService {
   }
 
   findMyProfile(): Observable<EntityResponseType> {
-    return this.accountService.identity().pipe(
-      mergeMap(account => {
-        if (!account?.login) {
-          return throwError(() => new Error('No valid account login found.'));
-        }
-        const accountLogin = account.login;
-        console.log(`🔄 Fetching user with login=${accountLogin}`);
-        return this.findUserByLogin(accountLogin).pipe(
-          mergeMap(userResponse => {
-            if (!userResponse.body) {
-              return throwError(() => new Error(`No user found for login=${accountLogin}`));
-            }
-            const user = userResponse.body;
-            console.log('✅ Found user:', user);
-            // Now fetch the profile by user.id
-            return this.find(user.id).pipe(
-              mergeMap(profileResponse => {
-                if (!profileResponse.body) {
-                  return throwError(() => new Error(`No profile found for user id=${user.id}`));
-                }
-                console.log('✅ Profile Data Loaded:', profileResponse.body);
-                return of(profileResponse);
-              }),
-            );
-          }),
-        );
-      }),
-    );
+    return this.http.get<IProfile>(`${this.resourceUrl}/my`, { observe: 'response' });
   }
 
   find(id: number): Observable<EntityResponseType> {

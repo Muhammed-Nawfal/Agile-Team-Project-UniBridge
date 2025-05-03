@@ -1,0 +1,182 @@
+<div>
+  <h2 id="page-heading" data-cy="ChallengeHeading">
+    <span>Challenges</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span>Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-challenge"
+        [routerLink]="['/challenge/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span>Create a new Challenge</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (challenges?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span>No Challenges found</span>
+    </div>
+  }
+
+  @if (challenges && challenges.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span>ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="title">
+              <div class="d-flex">
+                <span>Title</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="description">
+              <div class="d-flex">
+                <span>Description</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="category">
+              <div class="d-flex">
+                <span>Category</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="date">
+              <div class="d-flex">
+                <span>Date</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="points">
+              <div class="d-flex">
+                <span>Points</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="badge">
+              <div class="d-flex">
+                <span>Badge</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="completed">
+              <div class="d-flex">
+                <span>Completed</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="assignedTo.id">
+              <div class="d-flex">
+                <span>Assigned To</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="createdBy.id">
+              <div class="d-flex">
+                <span>Created By</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (challenge of challenges; track trackId(challenge)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/challenge', challenge.id, 'view']">{{ challenge.id }}</a>
+              </td>
+              <td>{{ challenge.title }}</td>
+              <td>{{ challenge.description }}</td>
+              <td>
+                {{
+                  {
+                    null: '',
+                    STUDY: 'STUDY',
+                    SPORTS: 'SPORTS',
+                    COMMUNITY: 'COMMUNITY',
+                    PERSONAL_GROWTH: 'PERSONAL_GROWTH',
+                    SOCIAL: 'SOCIAL',
+                  }[challenge.category ?? 'null']
+                }}
+              </td>
+              <td>{{ challenge.date | formatMediumDate }}</td>
+              <td>{{ challenge.points }}</td>
+              <td>
+                @if (challenge.badge) {
+                  <a (click)="openFile(challenge.badge, challenge.badgeContentType)">
+                    <img
+                      [src]="'data:' + challenge.badgeContentType + ';base64,' + challenge.badge"
+                      style="max-height: 30px"
+                      alt="challenge"
+                    />
+                  </a>
+                  <span>{{ challenge.badgeContentType }}, {{ byteSize(challenge.badge) }}</span>
+                }
+              </td>
+              <td>{{ challenge.completed }}</td>
+              <td>
+                @if (challenge.assignedTo) {
+                  <div>
+                    <a [routerLink]="['/profile', challenge.assignedTo.id, 'view']">{{ challenge.assignedTo.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (challenge.createdBy) {
+                  <div>
+                    <a [routerLink]="['/profile', challenge.createdBy.id, 'view']">{{ challenge.createdBy.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/challenge', challenge.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline">View</span>
+                  </a>
+
+                  <a [routerLink]="['/challenge', challenge.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(challenge)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

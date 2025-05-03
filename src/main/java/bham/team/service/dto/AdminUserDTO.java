@@ -3,6 +3,7 @@ package bham.team.service.dto;
 import bham.team.config.Constants;
 import bham.team.domain.Authority;
 import bham.team.domain.User;
+import bham.team.service.dto.UserDTO;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * A DTO representing a user, with his authorities.
  */
-public class AdminUserDTO implements Serializable {
+public class AdminUserDTO extends UserDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

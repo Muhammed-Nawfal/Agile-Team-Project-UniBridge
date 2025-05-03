@@ -24,6 +24,7 @@ import { ActivityFormGroup, ActivityFormService } from './activity-form.service'
   standalone: true,
   selector: 'jhi-activity-update',
   templateUrl: './activity-update.component.html',
+  styleUrl: 'activity-update.component.scss',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class ActivityUpdateComponent implements OnInit {
@@ -49,7 +50,7 @@ export class ActivityUpdateComponent implements OnInit {
 
   compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
 
-  compareChallenge = (o1: IChallenge | null, o2: IChallenge | null): boolean => this.challengeService.compareChallenges(o1, o2);
+  compareChallenge = (o1: IChallenge | null, o2: IChallenge | null): boolean => this.challengeService.compareChallenge(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ activity }) => {
