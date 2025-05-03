@@ -1,16 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { SpeechService } from '../../../core/speech/speech.service';
+import { A11yModule } from 'app/shared/a11y/a11y.module';
 
 @Component({
   standalone: true,
   selector: 'jhi-match-request-dialog',
   templateUrl: './match-request-dialog.component.html',
   styleUrls: ['./match-request-dialog.component.scss'],
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, A11yModule],
 })
 export class MatchRequestDialogComponent {
   form: FormGroup;
+  private speechService = inject(SpeechService);
 
   constructor(
     private fb: FormBuilder,
@@ -34,5 +37,16 @@ export class MatchRequestDialogComponent {
   /** Called when the user clicks “Cancel” or the × */
   cancel(): void {
     this.activeModal.dismiss();
+  }
+
+  /** Read out the current form values */
+  readForm(): void {
+    const { date, time, location, notes } = this.form.value;
+    const text =
+      `Date: ${date || 'not set'}, ` +
+      `Time: ${time || 'not set'}, ` +
+      `Location: ${location || 'not set'}, ` +
+      `Notes: ${notes || 'none'}.`;
+    this.speechService.speak(text);
   }
 }

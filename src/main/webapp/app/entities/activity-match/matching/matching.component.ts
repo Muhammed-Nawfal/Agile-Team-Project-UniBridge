@@ -1,4 +1,4 @@
-import { Component, inject, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, NgZone, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { combineLatest, Subscription, switchMap } from 'rxjs';
 
@@ -27,15 +27,23 @@ import { MatchRequestDialogComponent } from '../match-request-dialog/match-reque
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { firstValueFrom } from 'rxjs';
 import { Decision } from '../../enumerations/decision.model';
+import { SpeechService } from 'app/core/speech/speech.service';
+import { A11yModule } from 'app/shared/a11y/a11y.module';
+import { AccessibilityService } from '../../../core/Accessibility/accessibility.service';
 
 @Component({
   standalone: true,
   selector: 'jhi-matching',
   templateUrl: './matching.component.html',
   styleUrl: 'matching.component.scss',
-  imports: [RouterModule, FormsModule, SharedModule, MatchRequestDialogComponent],
+  imports: [RouterModule, FormsModule, SharedModule, MatchRequestDialogComponent, A11yModule],
 })
 export class MatchingComponent implements OnInit, OnDestroy {
+  liveMessage = '';
+
+  @ViewChild('readProfileBtn', { static: false })
+  readProfileBtn!: ElementRef<HTMLButtonElement>;
+
   subscription: Subscription | null = null;
   activityMatch?: IActivityMatch | null;
   isLoading = false;
@@ -74,6 +82,10 @@ export class MatchingComponent implements OnInit, OnDestroy {
   private accountService = inject(AccountService);
   private profileService = inject(ProfileService);
   private modalService = inject(NgbModal);
+  constructor(
+    private a11y: AccessibilityService, // ← add this
+    private speechService: SpeechService, // ← keep your existing injections
+  ) {}
 
   ngOnInit(): void {
     // 1) First resolve my profile ID
@@ -521,6 +533,11 @@ export class MatchingComponent implements OnInit, OnDestroy {
     }
 
     this.isLoading = false;
+
+    setTimeout(() => {
+      this.readProfileBtn.nativeElement.focus();
+    }, 0);
+    this.isLoading = false;
   }
 
   // Method to follow a profile
@@ -611,6 +628,20 @@ export class MatchingComponent implements OnInit, OnDestroy {
     return name ? name.charAt(0).toUpperCase() : '?';
   }
 
+  /** Read out the current profile summary via TTS */
+  readProfile(): void {
+    if (!this.currentProfile) {
+      return;
+    }
+    const p = this.currentProfile;
+    // build a concise summary
+    const summary =
+      `Matched buddy: ${p.firstName} ${p.lastName}, ` +
+      `studying ${p.course}, year ${p.courseYear}, ` +
+      `interested in ${this.buddyType.toLowerCase()}.`;
+    this.speechService.speak(summary, { rate: 1, pitch: 1 });
+  }
+
   // Helper method to convert enum to options for select input
   private enumToOptions(enumObj: Record<string, string>, defaultLabel: string): { value: string; label: string }[] {
     const options = Object.values(enumObj).map(value => ({ value, label: value }));
@@ -618,11 +649,31 @@ export class MatchingComponent implements OnInit, OnDestroy {
     return options;
   }
 
+  private announce(msg: string): void {
+    if (!this.a11y.isEnabled()) {
+      return;
+    }
+    this.liveMessage = msg;
+  }
+
   private resetCursor(): void {
     if (this.profiles.length > 0) {
       this.currentProfileIndex = 0;
       this.currentProfile = this.profiles[0];
       this.noMoreProfiles = false;
+
+      // Build the live-region text
+      this.announce(
+        `Profile ${this.currentProfileIndex + 1} of ${this.profiles.length}: ${this.currentProfile.firstName} ${this.currentProfile.lastName}.`,
+      );
+
+      // Give Angular time to update the DOM…
+      setTimeout(() => {
+        // 1) Move focus into the live-region/button
+        this.readProfileBtn.nativeElement.focus();
+        // 2) Optionally trigger TTS automatically
+        this.readProfile();
+      }, 0);
     } else {
       this.currentProfile = null;
       this.noMoreProfiles = true;
