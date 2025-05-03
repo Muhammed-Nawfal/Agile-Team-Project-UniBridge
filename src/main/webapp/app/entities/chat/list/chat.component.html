@@ -1,203 +1,70 @@
-<div class="chat-container" [class.dark-theme]="darkMode">
-  <!-- Dark Mode Toggle -->
-  <button class="dark-mode-toggle" (click)="toggleDarkMode()" aria-label="Toggle dark mode">
-    <span *ngIf="!darkMode">🌙</span>
-    <span *ngIf="darkMode">☀️</span>
-  </button>
-
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading-indicator" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%)">
-    <span class="spinner-border text-primary" role="status"></span>
-    <span class="sr-only">Loading...</span>
+<div class="chat-container">
+  <div class="chat-header d-flex align-items-center p-3 border-bottom">
+    <button class="btn btn-link" (click)="goBack()">
+      <fa-icon icon="arrow-left"></fa-icon>
+    </button>
+    <h3 class="mb-0 ms-2">Conversation</h3>
   </div>
 
-  <!-- Empty State -->
-  <div
-    *ngIf="!isLoading && Object.keys(contacts).length === 0"
-    class="empty-state"
-    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center"
-  >
-    <div style="font-size: 24px; margin-bottom: 15px">No contacts yet</div>
-    <p>Make friends or join activities to start chatting!</p>
-  </div>
-
-  <!-- Contact List -->
-  <div
-    *ngIf="!isLoading && Object.keys(contacts).length > 0"
-    class="contact-list"
-    style="width: 20%; overflow-y: auto; padding: 10px; border-right: 1px solid"
-  >
-    <ng-container *ngFor="let contact of contacts | keyvalue">
-      <button
-        class="contact-item"
-        [class.selected]="selectedContact === contact.key"
-        (click)="selectContact(contact.key)"
-        style="
-          display: flex;
-          align-items: center;
-          padding: 10px;
-          border: none;
-          background: none;
-          width: 100%;
-          text-align: left;
-          cursor: pointer;
-        "
-      >
-        <div
-          class="contact-avatar"
-          [style.background-color]="contact.value.avatar"
-          style="
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-          "
-        >
-          {{ contact.value.firstName[0] }}
-        </div>
-        <div class="contact-info" style="margin-left: 10px; overflow: hidden; text-overflow: ellipsis">
-          <div class="contact-name" style="font-size: 16px; font-weight: 500">
-            {{ contact.value.firstName }} {{ contact.value.lastName }}
-          </div>
-          <div class="contact-login" style="font-size: 12px">{{ contact.value.login }}</div>
-        </div>
-      </button>
-    </ng-container>
-  </div>
-
-  <!-- Chat Area -->
-  <div *ngIf="selectedContact" class="chat-area" style="flex: 1; display: flex; flex-direction: column">
-    <div class="chat-header" style="display: flex; align-items: center; padding: 10px; border-bottom: 1px solid">
-      <div
-        class="contact-avatar"
-        [style.background-color]="contacts[selectedContact].avatar"
-        style="
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: bold;
-          color: white;
-        "
-      >
-        {{ contacts[selectedContact].firstName[0] }}
+  <div class="messages-container p-3" #messageContainer>
+    @if (isLoading) {
+      <div class="text-center">
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Loading messages...
       </div>
-      <div class="contact-info" style="margin-left: 10px">
-        <div class="contact-name" style="font-size: 16px; font-weight: bold">
-          {{ contacts[selectedContact].firstName }} {{ contacts[selectedContact].lastName }}
-        </div>
-        <div class="contact-login" style="font-size: 12px">{{ contacts[selectedContact].login }}</div>
-      </div>
-    </div>
+    }
 
-    <div class="messages-container" #messagesContainer style="flex: 1; padding: 10px; overflow-y: auto">
-      <!-- No messages placeholder -->
-      <div *ngIf="messages[selectedContact]?.length === 0" class="no-messages-placeholder" style="text-align: center; margin-top: 30px">
-        <p>No messages yet. Say hello!</p>
-      </div>
-
-      <!-- Messages -->
-      <ng-container *ngFor="let message of messages[selectedContact]">
-        <div
-          class="message-row"
-          [class.sent]="message.type === 'sent'"
-          [class.received]="message.type === 'received'"
-          [class.profanity-filtered]="message.containsProfanity"
-          style="display: flex; align-items: center; margin-bottom: 10px"
-        >
-          <ng-container *ngIf="message.type === 'received'">
-            <div
-              class="contact-avatar"
-              [style.background-color]="contacts[selectedContact].avatar"
-              style="
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                color: white;
-              "
-            >
-              {{ contacts[selectedContact].firstName[0] }}
-            </div>
-          </ng-container>
-          <span class="message-time" style="margin-left: auto; font-size: 12px">{{ message.time }}</span>
+    @if (chats && chats.length > 0) {
+      @for (chat of chats; track chat.id) {
+        <div class="message mb-3" [ngClass]="{ 'text-end': isOwnMessage(chat) }">
           <div
-            class="message"
-            [ngClass]="{ sent: message.type === 'sent', received: message.type === 'received' }"
-            style="margin-left: 10px; padding: 10px; border-radius: 8px"
+            class="message-bubble d-inline-block p-2 rounded"
+            [ngClass]="{ 'bg-primary text-white': isOwnMessage(chat), 'bg-light': !isOwnMessage(chat) }"
           >
-            {{ message.text }}
-          </div>
-          <div *ngIf="message.type === 'sent'" class="message-status" style="font-size: 12px; margin-left: 5px">
-            <ng-container [ngSwitch]="message.status">
-              <span *ngSwitchCase="'SENT'">✓</span>
-              <span *ngSwitchCase="'DELIVERED'">✓✓</span>
-              <span *ngSwitchCase="'READ'" class="read-status">✓✓</span>
-            </ng-container>
+            <div>{{ chat.message }}</div>
+            <small class="text-muted">
+              {{ chat.timestamp | formatMediumDatetime }}
+            </small>
           </div>
         </div>
-        <div *ngIf="message.containsProfanity" class="profanity-warning" style="font-size: 12px; margin-left: 50px; margin-bottom: 10px">
-          Message contained inappropriate language and was filtered.
-        </div>
-      </ng-container>
-    </div>
+      }
+    } @else if (!isLoading) {
+      <div class="text-center text-muted">No messages yet. Start the conversation!</div>
+    }
+  </div>
 
-    <div class="message-input-container" style="display: flex; padding: 10px; border-top: 1px solid">
+  <div class="message-input-container p-3 border-top">
+    <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="d-flex">
       <input
         type="text"
-        class="message-input"
-        [(ngModel)]="newMessage"
+        class="form-control me-2"
+        formControlName="message"
         placeholder="Type a message..."
-        (keyup.enter)="sendMessage()"
-        style="flex: 1; padding: 10px; border: 1px solid; border-radius: 8px"
+        (keypress.enter)="sendMessage()"
       />
-      <button
-        class="send-button"
-        (click)="sendMessage()"
-        [disabled]="!newMessage.trim()"
-        style="margin-left: 10px; padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer"
-      >
-        Send
-      </button>
-    </div>
-  </div>
-
-  <!-- Profile Info -->
-  <div *ngIf="selectedContact" class="profile-info" style="width: 20%; padding: 10px; border-left: 1px solid">
-    <div
-      class="profile-avatar"
-      [style.background-color]="contacts[selectedContact].avatar"
-      style="
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        font-weight: bold;
-        color: white;
-      "
-    >
-      {{ contacts[selectedContact].firstName[0] }}
-    </div>
-    <div class="profile-details" style="margin-top: 10px">
-      <h3 style="font-size: 18px">{{ contacts[selectedContact].firstName }} {{ contacts[selectedContact].lastName }}</h3>
-      <p style="font-size: 14px">{{ contacts[selectedContact].login }}</p>
-
-      <!-- We can add more user details here as needed -->
-      <div *ngIf="selectedContactId" class="view-profile-btn" style="margin-top: 20px">
-        <a [routerLink]="['/profile', selectedContactId, 'view']" class="btn btn-outline-primary btn-sm"> View Full Profile </a>
-      </div>
-    </div>
+      <button type="submit" class="btn btn-primary" [disabled]="!messageForm.valid || isLoading">Send</button>
+    </form>
   </div>
 </div>
+
+<style>
+  .chat-container {
+    height: calc(100vh - 200px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .messages-container {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .message-bubble {
+    max-width: 70%;
+    word-wrap: break-word;
+  }
+
+  .message-input-container {
+    background-color: #f8f9fa;
+  }
+</style>
