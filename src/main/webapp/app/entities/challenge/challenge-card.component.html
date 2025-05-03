@@ -20,7 +20,7 @@
 
     <p class="card-text text-muted small mb-2" *ngIf="challenge.createdBy">
       <fa-icon icon="user" class="me-1"></fa-icon>
-      Created by: {{ challenge.createdBy?.login || '—' }}
+      Created by: {{ getCreatorName(challenge.createdBy) }}
     </p>
 
     <p class="card-text mb-3" *ngIf="challenge.description">{{ challenge.description }}</p>

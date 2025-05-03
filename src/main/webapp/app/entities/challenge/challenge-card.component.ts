@@ -5,6 +5,7 @@ import { NgIf, NgClass, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Router } from '@angular/router';
+import { IProfile } from 'app/entities/profile/profile.model';
 
 @Component({
   selector: 'jhi-challenge-card',
@@ -19,6 +20,19 @@ export class ChallengeCardComponent {
   @Output() complete = new EventEmitter<number>();
 
   constructor(private router: Router) {}
+
+  // Get the creator's name from profile
+  getCreatorName(profile: IProfile | null | undefined): string {
+    if (!profile) {
+      return 'Unknown';
+    }
+    // Return the name if available or default to profile ID
+    if (profile.firstName && profile.lastName) {
+      return `${profile.firstName} ${profile.lastName}`;
+    } else {
+      return `User ${profile.id}`;
+    }
+  }
 
   // Map category names to Bootstrap contextual classes
   getCategoryClass(category: string | null | undefined): string {
