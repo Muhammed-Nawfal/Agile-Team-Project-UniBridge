@@ -69,6 +69,26 @@ export class ChatService {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
+  // Add this method for getting messages by thread
+  getMessagesByThread(threadId: number): Observable<EntityArrayResponseType> {
+    return this.http
+      .get<RestChat[]>(`${this.resourceUrl}/by-thread/${threadId}`, { observe: 'response' })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+
+  // Add this method for sending messages to a thread
+  sendMessage(threadId: number, chat: NewChat): Observable<EntityResponseType> {
+    const copy = this.convertDateFromClient(chat);
+    return this.http
+      .post<RestChat>(`${this.resourceUrl}/thread/${threadId}`, copy, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
+  }
+
+  // Add this method for marking messages as read
+  markMessagesAsRead(threadId: number): Observable<HttpResponse<{}>> {
+    return this.http.post(`${this.resourceUrl}/thread/${threadId}/mark-read`, {}, { observe: 'response' });
+  }
+
   getChatIdentifier(chat: Pick<IChat, 'id'>): number {
     return chat.id;
   }
