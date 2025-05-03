@@ -68,17 +68,14 @@
   <div class="activitySection">
     <h1>{{ translate('upcomingActivities') }}</h1>
 
-    <!-- Loading state -->
     <div *ngIf="isLoadingBookings" class="loading-indicator">
       <p>Loading bookings...</p>
     </div>
 
-    <!-- Empty state -->
     <div *ngIf="!isLoadingBookings && upcomingBookings.length === 0" class="empty-bookings">
       <p>{{ translate('noBookings') }}</p>
     </div>
 
-    <!-- Bookings list -->
     <div class="activity-list" *ngIf="!isLoadingBookings && upcomingBookings.length > 0">
       <div class="activity-card" *ngFor="let booking of upcomingBookings" (click)="openBookingDetails(booking)">
         <div class="activity-icon">{{ booking.icon }}</div>
@@ -99,35 +96,95 @@
   </div>
 </div>
 
-<!-- Booking Details Modal -->
 <div class="modal" *ngIf="selectedBooking" [class.show]="showModal">
   <div class="modal-content">
     <span class="close" (click)="closeModal()">&times;</span>
     <h2>{{ selectedBooking.name }}</h2>
     <div class="modal-details">
-      <p>
-        <strong>{{ translate('date') }}:</strong> {{ selectedBooking.date }}
-      </p>
-      <p>
-        <strong>{{ translate('time') }}:</strong> {{ selectedBooking.time }}
-      </p>
-      <p>
-        <strong>{{ translate('location') }}:</strong> {{ selectedBooking.locationName }}
-      </p>
-      <p>
-        <strong>{{ translate('partySize') }}:</strong> {{ selectedBooking.partySize }}
-      </p>
-      <p>
-        <strong>{{ translate('status') }}:</strong> {{ selectedBooking.status }}
-      </p>
-      <div class="modal-actions">
-        <button type="button" class="delete-button" (click)="confirmDelete()">{{ translate('delete') }}</button>
+      <div *ngIf="!isEditMode">
+        <p>
+          <strong>{{ translate('date') }}:</strong> {{ selectedBooking.date }}
+        </p>
+        <p>
+          <strong>{{ translate('time') }}:</strong> {{ selectedBooking.time }}
+        </p>
+        <p>
+          <strong>{{ translate('location') }}:</strong> {{ selectedBooking.locationName }}
+        </p>
+        <p>
+          <strong>{{ translate('partySize') }}:</strong> {{ selectedBooking.partySize }}
+        </p>
+        <p>
+          <strong>{{ translate('status') }}:</strong> {{ selectedBooking.status }}
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="update-button" (click)="updateBooking()">{{ translate('update') }}</button>
+          <button type="button" class="delete-button" (click)="confirmDelete()">{{ translate('delete') }}</button>
+        </div>
+      </div>
+
+      <div *ngIf="isEditMode" class="edit-form">
+        <div class="form-group">
+          <label for="editActivityType">{{ translate('event') }}</label>
+          <input
+            type="text"
+            id="editActivityType"
+            [value]="formatActivityType(selectedBooking.activityType)"
+            class="form-control"
+            disabled
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editEventName">{{ translate('activity') }}</label>
+          <input type="text" id="editEventName" [value]="selectedBooking.name" class="form-control" disabled />
+        </div>
+
+        <div class="form-group">
+          <label for="editDate">{{ translate('date') }}</label>
+          <input type="date" id="editDate" [(ngModel)]="updatedDate" class="form-control" disabled />
+        </div>
+
+        <div class="form-group">
+          <label for="editPartySize">{{ translate('partySize') }}</label>
+          <select id="editPartySize" class="form-control" [(ngModel)]="updatedPartySize" required>
+            <option *ngFor="let size of partySizes" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>{{ translate('time') }}</label>
+          <div class="time-slots">
+            <div *ngFor="let slot of updateTimeSlots; let i = index" class="time-slot-checkbox">
+              <input
+                type="checkbox"
+                [id]="'edit-slot-' + i"
+                [value]="slot"
+                (change)="onTimeSlotChange($event)"
+                [checked]="updatedTimeSlots.includes(slot)"
+                disabled
+              />
+              <label
+                [for]="'edit-slot-' + i"
+                [class.selected]="updatedTimeSlots.includes(slot)"
+                [class.disabled]="!updatedTimeSlots.includes(slot)"
+              >
+                {{ slot }}
+                <span *ngIf="timeSlotService.isTimeSlotFullyBooked(slot, fullyBookedTimeSlots)" class="capacity-info"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="cancel-button" (click)="cancelUpdate()">{{ translate('cancel') }}</button>
+          <button type="button" class="save-button" (click)="saveUpdate()">{{ translate('save') }}</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
 <div class="modal" *ngIf="showDeleteConfirmation" [class.show]="showDeleteConfirmation">
   <div class="modal-content">
     <span class="close" (click)="cancelDelete()">&times;</span>

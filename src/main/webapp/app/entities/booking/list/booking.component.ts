@@ -32,6 +32,7 @@ export class BookingComponent implements OnInit {
   events: any[] = [];
   partySizes: number[] = [];
   timeSlots: string[] = [];
+  updateTimeSlots: string[] = [];
   selectedTimeSlots: string[] = [];
   showConfirmation = false;
   selectedDate = '';
@@ -71,35 +72,47 @@ export class BookingComponent implements OnInit {
       confirmDelete: 'Confirm Delete',
       deleteConfirmationMessage: 'Are you sure you want to delete this booking?',
       cancel: 'Cancel',
+      update: 'Update',
+      save: 'Save',
+      event: 'Event',
+      activity: 'Activity',
     },
     es: {
       booking: 'RESERVA',
-      selectDate: 'FECHA',
-      selectActivity: 'ACTIVIDAD',
-      selectEvent: 'EVENTO',
-      selectPartySize: 'CAPACIDAD',
-      selectTime: 'HORA',
-      bookNow: 'RESERVA',
+      selectDate: 'ELEGIR UNA FECHA',
+      selectActivity: 'SELECCIONAR UNA ACTIVIDAD',
+      selectEvent: 'SELECCIONAR UN EVENTO',
+      selectPartySize: 'TAMAÑO DEL GRUPO',
+      selectTime: 'TIEMPO',
+      bookNow: 'RESERVAR',
       upcomingActivities: 'PRÓXIMAS',
-      time: 'HORA',
-      defaultActivity: 'ACTIVIDADES',
-      defaultEvent: 'EVENTOS',
-      defaultPartySize: 'CAPACIDAD',
-      noBookings: 'No tienes reservas próximas',
+      time: 'Hora',
+      defaultActivity: 'Seleccionar',
+      defaultEvent: 'Seleccionar',
+      defaultPartySize: 'SELECCIONAR',
+      noBookings: 'NO HAY RESERVAS, HAGA UNA AHORA',
       date: 'Fecha',
       location: 'Ubicación',
       status: 'Estado',
-      partySize: 'Capacidad',
+      partySize: 'Tamaño del Grupo',
       delete: 'Eliminar',
       confirmDelete: 'Confirmar Eliminación',
       deleteConfirmationMessage: '¿Estás seguro de que quieres eliminar esta reserva?',
       cancel: 'Cancelar',
+      update: 'Actualizar',
+      save: 'Guardar',
+      event: 'Evento',
+      activity: 'Actividad',
     },
   };
 
   selectedBooking: any = null;
   showModal = false;
   showDeleteConfirmation = false;
+  isEditMode = false;
+  updatedDate = '';
+  updatedPartySize: number | null = null;
+  updatedTimeSlots: string[] = [];
 
   constructor(
     private http: HttpClient,
@@ -133,8 +146,10 @@ export class BookingComponent implements OnInit {
   loadEvents(): void {
     this.http.get<IEvent[]>('api/events').subscribe({
       next: events => {
+        console.log('Loaded Events:', events);
         const activityGroups = this.groupEventsByActivityType(events);
         this.activities = activityGroups;
+        console.log('Grouped Activities:', this.activities);
       },
       error: error => {
         console.error('Error loading events', error);
@@ -440,7 +455,7 @@ export class BookingComponent implements OnInit {
             eventType: this.selectedEvent.toUpperCase() as keyof typeof EventType,
             bookingDate,
             partySize: this.selectedPartySize ?? 1,
-            bookingStatus: 'CONFIRMED' as keyof typeof BookingStatus,
+            bookingStatus: 'CONFIRMED' as const,
             createdAt: dayjs(),
             timeSlot: timeSlots[0],
             assignedAt: null,
@@ -675,6 +690,15 @@ export class BookingComponent implements OnInit {
   }
 
   openBookingDetails(booking: any): void {
+    this.updatedDate = '';
+    this.updatedPartySize = null;
+    this.updatedTimeSlots = [];
+    this.partySizes = [];
+    this.updateTimeSlots = [];
+    this.availableTimeSlots = [];
+    this.fullyBookedTimeSlots = [];
+    this.isEditMode = false;
+
     this.selectedBooking = booking;
     this.showModal = true;
   }
@@ -696,23 +720,138 @@ export class BookingComponent implements OnInit {
   deleteBooking(): void {
     if (!this.selectedBooking) return;
 
-    console.log('Starting deletion process for booking:', this.selectedBooking);
-    console.log('Booking ID:', this.selectedBooking.id);
-
     this.bookingService.deleteBooking(this.selectedBooking.id).subscribe({
       next: () => {
-        console.log('Booking deleted successfully');
         this.loadUserBookings();
         this.closeModal();
       },
       error: (error: unknown) => {
-        console.error('Error deleting booking:', error);
-        if (error instanceof Error) {
-          console.error('Error details:', error.message);
-        }
         this.bookingError = 'Failed to delete booking. Please try again.';
       },
     });
+  }
+
+  updateBooking(): void {
+    this.updatedDate = '';
+    this.updatedPartySize = null;
+    this.updatedTimeSlots = [];
+    this.partySizes = [];
+    this.updateTimeSlots = [];
+    this.availableTimeSlots = [];
+    this.fullyBookedTimeSlots = [];
+
+    this.isEditMode = true;
+    this.updatedDate = dayjs(this.selectedBooking.date).format('YYYY-MM-DD');
+    this.updatedPartySize = this.selectedBooking.partySize;
+
+    const timeRange = this.selectedBooking.time.split(' - ');
+    if (timeRange.length === 2) {
+      const startTime = timeRange[0];
+      const endTime = timeRange[1];
+
+      let selectedEventObj = null;
+      for (const activity of this.activities) {
+        if (activity.value === this.selectedBooking.activityType) {
+          const foundEvent = activity.events.find((e: { name: string }) => {
+            const eventName: string = e.name.toLowerCase();
+            const bookingName: string = this.selectedBooking.name.toLowerCase();
+            return eventName === bookingName || eventName === `${bookingName}s` || `${eventName}s` === bookingName;
+          });
+          if (foundEvent) {
+            selectedEventObj = foundEvent;
+            this.updateTimeSlots = this.timeSlotService.generateTimeSlots(selectedEventObj.startTime, selectedEventObj.endTime);
+
+            const startHour = parseInt(startTime.split(':')[0], 10);
+            const endHour = parseInt(endTime.split(':')[0], 10);
+
+            for (let hour = startHour; hour < endHour; hour++) {
+              const slotStart = hour.toString().padStart(2, '0') + ':00';
+              const slotEnd = (hour + 1).toString().padStart(2, '0') + ':00';
+              const slot = `${slotStart} - ${slotEnd}`;
+              if (this.updateTimeSlots.includes(slot)) {
+                this.updatedTimeSlots.push(slot);
+              }
+            }
+
+            this.fetchAvailableTimeSlots();
+            break;
+          }
+        }
+      }
+
+      if (selectedEventObj) {
+        this.partySizes = [];
+        for (let i = selectedEventObj.min; i <= selectedEventObj.max; i++) {
+          this.partySizes.push(i);
+        }
+      }
+    }
+  }
+
+  saveUpdate(): void {
+    if (!this.selectedBooking) return;
+
+    const partySize = Number(this.updatedPartySize);
+    if (isNaN(partySize)) {
+      this.bookingError = 'Invalid party size';
+      return;
+    }
+
+    let eventType = this.selectedBooking.eventType;
+    if (!eventType) {
+      for (const activity of this.activities) {
+        if (activity.value === this.selectedBooking.activityType) {
+          const foundEvent = activity.events.find((e: { name: string }) => {
+            const eventName: string = e.name.toLowerCase();
+            const bookingName: string = this.selectedBooking.name.toLowerCase();
+            return eventName === bookingName || eventName === `${bookingName}s` || `${eventName}s` === bookingName;
+          });
+          if (foundEvent) {
+            eventType = foundEvent.value.toUpperCase();
+            break;
+          }
+        }
+      }
+    }
+
+    if (!eventType) {
+      this.bookingError = 'Could not determine event type';
+      return;
+    }
+
+    const updatedBooking = {
+      id: this.selectedBooking.id,
+      activityType: this.selectedBooking.activityType,
+      eventType: eventType as keyof typeof EventType,
+      bookingDate: dayjs(this.selectedBooking.date),
+      partySize,
+      timeSlot: this.selectedBooking.timeSlot,
+      bookingStatus: 'CONFIRMED' as const,
+      createdAt: dayjs(),
+      bookingLocation: this.selectedBooking.bookingLocation || null,
+      creator: this.selectedBooking.creator || null,
+      activity: this.selectedBooking.activity || null,
+      bookedActivity: this.selectedBooking.bookedActivity || null,
+      assignedAt: this.selectedBooking.assignedAt || null,
+    };
+
+    this.bookingService.update(updatedBooking).subscribe({
+      next: () => {
+        this.loadUserBookings();
+        this.isEditMode = false;
+        this.closeModal();
+      },
+      error: (error: unknown) => {
+        this.bookingError = 'Failed to update booking. Please try again.';
+      },
+    });
+  }
+
+  cancelUpdate(): void {
+    this.isEditMode = false;
+    this.updatedDate = '';
+    this.updatedPartySize = null;
+    this.updatedTimeSlots = [];
   }
 
   private deleteBookingOnly(): void {
@@ -720,15 +859,10 @@ export class BookingComponent implements OnInit {
 
     this.bookingService.deleteBookingOnly(this.selectedBooking.id).subscribe({
       next: () => {
-        console.log('Booking deleted successfully');
         this.loadUserBookings();
         this.closeModal();
       },
       error: (error: unknown) => {
-        console.error('Error deleting booking:', error);
-        if (error instanceof Error) {
-          console.error('Error details:', error.message);
-        }
         this.bookingError = 'Failed to delete booking. Please try again.';
       },
     });

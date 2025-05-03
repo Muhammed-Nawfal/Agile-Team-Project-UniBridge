@@ -126,11 +126,14 @@ export class BookingService {
 
                   return {
                     id: booking.id,
-                    name: booking.eventType ? booking.eventType.replace(/_/g, ' ') : 'Booking',
-                    time: timeInfo,
+                    name: booking.eventType ? this.getLocationTypeFromEvent(booking.eventType) : 'Unknown Event',
                     date: formattedDate,
-                    status: booking.bookingStatus,
+                    time: timeInfo,
                     locationName,
+                    partySize: booking.partySize,
+                    status: booking.bookingStatus,
+                    activityType: booking.activityType,
+                    timeSlot: firstTimeSlot,
                   };
                 });
 
