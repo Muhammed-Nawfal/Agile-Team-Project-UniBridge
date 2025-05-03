@@ -9,8 +9,11 @@ import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'ap
 import { FormsModule } from '@angular/forms';
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
 import { IReview } from '../review.model';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
+import { IProfile } from 'app/entities/profile/profile.model';
 import { EntityArrayResponseType, ReviewService } from '../service/review.service';
 import { ReviewDeleteDialogComponent } from '../delete/review-delete-dialog.component';
+import { AccountService } from '../../../core/auth/account.service';
 
 @Component({
   standalone: true,
@@ -30,7 +33,11 @@ import { ReviewDeleteDialogComponent } from '../delete/review-delete-dialog.comp
 export class ReviewComponent implements OnInit {
   subscription: Subscription | null = null;
   reviews?: IReview[];
+  profiles: IProfile[] = [];
   isLoading = false;
+  profileToReviewsMap = new Map<number, IReview>();
+  currentUsername: string | null | undefined = '';
+  currentProfileId?: number;
 
   sortState = sortStateSignal({});
 
@@ -40,10 +47,53 @@ export class ReviewComponent implements OnInit {
   protected readonly sortService = inject(SortService);
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
+  protected readonly profileService = inject(ProfileService);
+  protected readonly accountService = inject(AccountService);
+
+  getCurrentUserInfo(): void {
+    this.accountService.identity().subscribe(account => {
+      if (account) {
+        this.currentUsername = account.login;
+        this.findCurrentProfileId();
+      }
+    });
+  }
+
+  findCurrentProfileId(): void {
+    this.profileService.query().subscribe({
+      next: res => {
+        const profiles = res.body ?? [];
+        const currentProfile = profiles.find(profile => profile.login === this.currentUsername);
+        if (currentProfile) {
+          this.currentProfileId = currentProfile.id;
+        }
+      },
+    });
+  }
+
+  getDataForReview(reviewId: number): IReview | undefined {
+    return this.profileToReviewsMap.get(reviewId);
+  }
+
+  loadAllProfiles(): void {
+    this.profileService.query().subscribe({
+      next: res => {
+        this.profiles = res.body ?? [];
+      },
+    });
+  }
+
+  changeUserView(selectedProfile: IProfile): void {
+    this.currentUsername = selectedProfile.login;
+  }
+
+  trackProfileId = (item: IProfile): number => this.profileService.getProfileIdentifier(item);
 
   trackId = (item: IReview): number => this.reviewService.getReviewIdentifier(item);
 
   ngOnInit(): void {
+    this.getCurrentUserInfo();
+    this.loadAllProfiles();
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
       .pipe(
         tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
