@@ -43,7 +43,7 @@ a {
 
 .secondDiv {
   margin: 45px 15px;
-  min-height: 700px;
+  min-height: 850px;
   display: flex;
   gap: 20px;
 }
@@ -192,24 +192,16 @@ select.form-control {
 
 .bookBtn {
   position: absolute;
+  padding: 0;
   right: 20px;
   bottom: 20px;
-  padding: 10px 25px;
-  text-align: center;
-  font-size: 20px;
-  background-color: #0d6097;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-weight: 700;
 }
 
 button[type='button'] {
   position: absolute;
-  padding: 10px 25px;
+  padding: 10px 20px;
   text-align: center;
-  font-size: 20px;
+  font-size: 15px;
   background-color: #0d6097;
   color: white;
   border-radius: 8px;
@@ -461,39 +453,37 @@ button[type='button'] {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
 
   &.show {
     display: flex;
   }
 
   .modal-content {
-    background-color: white;
-    padding: 25px;
+    padding: 15px;
     border-radius: 12px;
-    width: 80%;
-    max-width: 800px;
+    width: 700px;
     position: relative;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    min-height: 200px;
-    margin: 0;
-    transform: none;
-    top: auto;
-    left: auto;
+    box-sizing: border-box;
 
     h2 {
       color: #0d6097;
-      margin-bottom: 20px;
-      font-size: 24px;
+      margin-bottom: 15px;
+      font-size: 20px;
+      padding-right: 30px;
     }
 
     .close {
       position: absolute;
-      right: 20px;
-      top: 10px;
-      font-size: 28px;
+      right: 15px;
+      top: 15px;
+      font-size: 24px;
       font-weight: bold;
       cursor: pointer;
       color: #666;
+      z-index: 1;
 
       &:hover {
         color: #0d6097;
@@ -501,10 +491,10 @@ button[type='button'] {
     }
 
     .modal-details {
-      margin: 20px 0;
+      margin: 0;
       p {
-        margin: 10px 0;
-        font-size: 16px;
+        margin: 8px 0;
+        font-size: 14px;
       }
 
       .modal-actions {
@@ -516,23 +506,21 @@ button[type='button'] {
         padding: 0;
         width: 100%;
         clear: both;
-        position: absolute;
-        margin-top: 40px;
-        bottom: 20px;
-        right: 20px;
+        margin-top: 15px;
+        padding-top: 15px;
 
         button {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          padding: 10px 12px;
+          padding: 8px 12px;
           border: none;
           border-radius: 6px;
           font-weight: 600;
-          font-size: 16px;
+          font-size: 14px;
           cursor: pointer;
           transition: background-color 0.3s;
-          min-width: 80px;
+          min-width: 70px;
           margin: 0;
           float: none;
           position: relative;
@@ -582,7 +570,7 @@ button[type='button'] {
       .form-group {
         input:disabled {
           background-color: #f8f9fa;
-          color: #333;
+          color: #6c757d;
           opacity: 1;
           border: 1px solid #ced4da;
           cursor: not-allowed;
@@ -651,5 +639,96 @@ button[type='button'] {
 
   &:hover {
     transform: scale(1.02);
+  }
+}
+
+.edit-form {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+  .form-group {
+    margin-bottom: 15px;
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #333;
+      font-size: 14px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+
+      &:focus {
+        outline: none;
+        border-color: #277998;
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+      }
+
+      &:disabled {
+        background-color: #f8f9fa;
+        color: #6c757d;
+        opacity: 1;
+        border: 1px solid #ced4da;
+        cursor: not-allowed;
+      }
+    }
+
+    .time-slots {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+
+      .time-slot-checkbox {
+        margin: 0;
+      }
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &.cancel-button {
+        background-color: #6c757d;
+        color: white;
+
+        &:hover {
+          background-color: #5a6268;
+        }
+      }
+
+      &.save-button {
+        background-color: #277998;
+        color: white;
+
+        &:hover {
+          background-color: #1e5f7a;
+        }
+      }
+    }
   }
 }

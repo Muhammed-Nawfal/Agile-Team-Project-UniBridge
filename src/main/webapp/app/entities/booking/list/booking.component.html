@@ -18,6 +18,16 @@
         <option *ngFor="let activity of activities" [value]="activity.value">{{ activity.name }}</option>
       </select>
 
+      <h2>{{ translate('socialActivities') }}</h2>
+      <select name="SocialActivity" class="form-control" (change)="onSocialActivityChange($event)">
+        <option value="" selected disabled>{{ translate('socialActivities') }}</option>
+        <option value="none">{{ translate('none') }}</option>
+        <option *ngFor="let activity of loadedActivities" [value]="'activity-' + activity.id" [disabled]="!isActivitySelectable(activity)">
+          {{ activity.activityName }}
+          <span *ngIf="!isActivitySelectable(activity)">({{ translate('selected') }})</span>
+        </option>
+      </select>
+
       <h2>{{ translate('selectEvent') }}</h2>
       <select name="Events" class="form-control" (change)="onEventChange($event)" required>
         <option value="" selected disabled>{{ translate('defaultEvent') }}</option>
@@ -114,9 +124,7 @@
         <p>
           <strong>{{ translate('partySize') }}:</strong> {{ selectedBooking.partySize }}
         </p>
-        <p>
-          <strong>{{ translate('status') }}:</strong> {{ selectedBooking.status }}
-        </p>
+        <p><strong>Social Activity:</strong> {{ selectedBooking.bookedActivity?.activityName || 'None' }}</p>
         <div class="modal-actions">
           <button type="button" class="update-button" (click)="updateBooking()">{{ translate('update') }}</button>
           <button type="button" class="delete-button" (click)="confirmDelete()">{{ translate('delete') }}</button>
@@ -149,6 +157,25 @@
           <label for="editPartySize">{{ translate('partySize') }}</label>
           <select id="editPartySize" class="form-control" [(ngModel)]="updatedPartySize" required>
             <option *ngFor="let size of partySizes" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="editSocialActivity">{{ translate('socialActivities') }}</label>
+          <select id="editSocialActivity" class="form-control" (change)="onSocialActivityChange($event)">
+            <option value="" selected disabled>{{ translate('socialActivities') }}</option>
+            <option value="none">{{ translate('none') }}</option>
+            <option
+              *ngFor="let activity of loadedActivities"
+              [value]="'activity-' + activity.id"
+              [disabled]="!isActivitySelectable(activity, true)"
+              [selected]="selectedBooking.bookedActivity?.id === activity.id"
+            >
+              {{ activity.activityName }}
+              <span *ngIf="!isActivitySelectable(activity, true) && selectedBooking.bookedActivity?.id !== activity.id"
+                >({{ translate('selected') }})</span
+              >
+            </option>
           </select>
         </div>
 
