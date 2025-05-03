@@ -8,6 +8,7 @@ import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IActivityParticipant, NewActivityParticipant } from '../activity-participant.model';
+import { IActivity } from '../../activity/activity.model';
 
 export type PartialUpdateActivityParticipant = Partial<IActivityParticipant> & Pick<IActivityParticipant, 'id'>;
 
@@ -140,6 +141,12 @@ export class ActivityParticipantService {
    */
   getUserActivities(): Observable<IActivityParticipant[]> {
     return this.http.get<IActivityParticipant[]>(`${this.resourceUrl}/profiles/activities`);
+  }
+
+  // New method to get activity details including status
+  getActivityDetails(activityId: number): Observable<HttpResponse<IActivity>> {
+    // This endpoint should return the activity details from your activity API
+    return this.http.get<IActivity>(`api/activities/${activityId}`, { observe: 'response' });
   }
 
   protected convertDateFromClient<T extends IActivityParticipant | NewActivityParticipant | PartialUpdateActivityParticipant>(

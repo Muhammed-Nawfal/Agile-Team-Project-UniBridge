@@ -1,7 +1,7 @@
 <button
   [class]="cssClass"
   (click)="joinActivity()"
-  [disabled]="hasJoined || isLoading || isFull"
+  [disabled]="hasJoined || isLoading || isFull || !isJoinable"
   [ngClass]="{ 'btn-success': hasJoined, 'btn-secondary': isFull }"
 >
   @if (isLoading) {
@@ -10,6 +10,8 @@
     <span>{{ joinedText }}</span>
   } @else if (isFull) {
     <span>{{ fullText }}</span>
+  } @else if (!isJoinable) {
+    <span>{{ notJoinableText }}</span>
   } @else {
     <span>{{ buttonText }}</span>
   }

@@ -4,6 +4,8 @@ import { ApplicationConfigService } from '../../../core/config/application-confi
 import { ActivityParticipantService } from '../../activity-participant/service/activity-participant.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgClass } from '@angular/common';
+import { Status } from '../../enumerations/status.model';
+import { IActivity } from '../activity.model';
 
 @Component({
   selector: 'jhi-join-activity-button',
@@ -18,11 +20,14 @@ export class JoinActivityButtonComponent implements OnInit {
   @Input() joinedText = 'Joined';
   @Input() fullText = 'Activity Full';
   @Input() cssClass = 'btn btn-primary';
+  @Input() notJoinableText = 'Not Available';
 
   hasJoined = false;
   isLoading = false;
   errorMessage: string | null = null;
   isFull = false;
+  isJoinable = true;
+  activity: IActivity | null = null;
 
   private apiUrl: string;
 
@@ -36,10 +41,35 @@ export class JoinActivityButtonComponent implements OnInit {
 
   ngOnInit(): void {
     this.checkIfJoined();
+    this.loadActivity();
+  }
+  // Load activity details to check status and capacity
+  loadActivity(): void {
+    this.activityParticipantService.getActivityDetails(this.activityId).subscribe({
+      next: response => {
+        this.activity = response.body;
+        this.updateActivityState();
+      },
+      error: error => {
+        console.error('Error loading activity', error);
+        this.errorMessage = 'Error loading activity details';
+      },
+    });
+  }
+
+  // Update the component state based on activity data
+  updateActivityState(): void {
+    if (this.activity) {
+      // Check if activity is joinable based on status
+      this.isJoinable = this.activity.status === Status.ANNOUNCED || this.activity.status === Status.CURRENTLY_HAPPENING;
+
+      // Check if activity is full
+      // this.isFull = this.activity.maxNumberOfParticipants <= this.activity.numberOfParticipants;
+    }
   }
   // method to join activity
   joinActivity(): void {
-    if (this.hasJoined || this.isLoading || this.isFull) {
+    if (this.hasJoined || this.isLoading || this.isFull || !this.isJoinable) {
       return;
     }
 
@@ -62,9 +92,8 @@ export class JoinActivityButtonComponent implements OnInit {
           this.hasJoined = true;
           this.errorMessage = null;
         } else if (error.error?.title === 'Activity is not open for joining') {
+          this.isJoinable = false;
           this.errorMessage = 'This activity is not open for joining';
-        } else if (error.error?.title === 'Activity not found') {
-          this.errorMessage = 'Activity not found';
         } else {
           this.errorMessage = `Error joining activity: ${error.status ? `${error.status} - ` : ''}${error.message || 'Unknown error'}`;
         }
