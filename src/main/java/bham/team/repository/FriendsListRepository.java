@@ -50,4 +50,31 @@ public interface FriendsListRepository extends JpaRepository<FriendsList, Long> 
         "(f.requestedByProfile = :profile2 AND f.requestedToProfile = :profile1)"
     )
     Optional<FriendsList> findExistingFriendRequest(@Param("profile1") Profile profile1, @Param("profile2") Profile profile2);
+
+    /**
+     * Get the login of a friend (requestedToProfile) for a given FriendsList entity
+     */
+    @Query("SELECT f.requestedToProfile.login FROM FriendsList f WHERE f.id = :friendsListId")
+    String getFriendLoginById(@Param("friendsListId") Long friendsListId);
+
+    /**
+     * Get the logins of all friends who accepted a user's request
+     */
+    @Query("SELECT f.requestedToProfile.login FROM FriendsList f WHERE f.requestedByProfile = :profile AND f.requestStatus = 'ACCEPT'")
+    List<String> getFriendLoginsForRequestedByProfile(@Param("profile") Profile profile);
+
+    /**
+     * Get the logins of all friends who sent requests to a user and were accepted
+     */
+    @Query("SELECT f.requestedByProfile.login FROM FriendsList f WHERE f.requestedToProfile = :profile AND f.requestStatus = 'ACCEPT'")
+    List<String> getFriendLoginsForRequestedToProfile(@Param("profile") Profile profile);
+
+    /**
+     * Get all accepted friend logins for a profile (both directions)
+     */
+    @Query(
+        "SELECT CASE WHEN f.requestedByProfile = :profile THEN f.requestedToProfile.login ELSE f.requestedByProfile.login END " +
+        "FROM FriendsList f WHERE (f.requestedByProfile = :profile OR f.requestedToProfile = :profile) AND f.requestStatus = 'ACCEPT'"
+    )
+    List<String> getAllAcceptedFriendLogins(@Param("profile") Profile profile);
 }

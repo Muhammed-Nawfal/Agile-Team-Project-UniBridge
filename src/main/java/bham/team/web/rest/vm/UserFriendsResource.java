@@ -12,10 +12,7 @@ import bham.team.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -408,5 +405,48 @@ public class UserFriendsResource {
         }
 
         return null;
+    }
+
+    /**
+     * Add this endpoint to your UserFriendsResource class
+     */
+
+    /**
+     * {@code GET /followed-profiles} : Get profiles that the current user is following.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of profiles in body.
+     */
+    @GetMapping("/followed-profiles")
+    public ResponseEntity<List<Profile>> getFollowedProfiles() {
+        log.debug("REST request to get profiles the current user follows");
+
+        // Get current username
+        String currentUsername = getCurrentUsername();
+        if (currentUsername == null) {
+            throw new BadRequestAlertException("No authenticated user found", "friendsList", "noauthentication");
+        }
+
+        // Get current user's profile
+        Profile currentUserProfile = profileRepository
+            .findByUserLogin(currentUsername)
+            .orElseThrow(() -> new BadRequestAlertException("Current user has no profile", "friendsList", "noprofile"));
+
+        // Get accepted friends lists
+        List<FriendsList> acceptedFriendships = friendsListService.getAcceptedFriendsByProfileId(currentUserProfile.getId());
+
+        // Extract profiles the user is following
+        List<Profile> followedProfiles = new ArrayList<>();
+
+        for (FriendsList friendship : acceptedFriendships) {
+            if (friendship.getRequestedByProfile().getId().equals(currentUserProfile.getId())) {
+                // User sent the request, so they're following requestedToProfile
+                followedProfiles.add(friendship.getRequestedToProfile());
+            } else if (friendship.getRequestedToProfile().getId().equals(currentUserProfile.getId())) {
+                // User received and accepted the request, so they're following requestedByProfile
+                followedProfiles.add(friendship.getRequestedByProfile());
+            }
+        }
+
+        return ResponseEntity.ok().body(followedProfiles);
     }
 }
