@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import { IChallenge, NewChallenge } from '../challenge.model';
 
@@ -34,6 +34,52 @@ export type ChallengeFormGroup = FormGroup<ChallengeFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class ChallengeFormService {
+  // Custom validator to check minimum word count
+  minWordCount(minCount: number): (control: AbstractControl) => ValidationErrors | null {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null; // Let required validator handle empty values
+      }
+
+      const wordCount = control.value
+        .trim()
+        .split(/\s+/)
+        .filter((word: string) => word.length > 0).length;
+      return wordCount < minCount ? { minWordCount: { required: minCount, actual: wordCount } } : null;
+    };
+  }
+
+  // Custom validator to check maximum word count
+  maxWordCount(maxCount: number): (control: AbstractControl) => ValidationErrors | null {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null;
+      }
+
+      const wordCount = control.value
+        .trim()
+        .split(/\s+/)
+        .filter((word: string) => word.length > 0).length;
+
+      if (wordCount > maxCount) {
+        return { maxWordCount: { required: maxCount, actual: wordCount } };
+      }
+
+      return null;
+    };
+  }
+
+  // Custom validator to check if points value is in allowed values
+  allowedPointValues(allowedValues: number[]): (control: AbstractControl) => ValidationErrors | null {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null; // Let required validator handle empty values
+      }
+
+      return allowedValues.includes(control.value) ? null : { allowedPointValues: { allowedValues, actual: control.value } };
+    };
+  }
+
   createChallengeFormGroup(challenge: ChallengeFormGroupInput = { id: null }): ChallengeFormGroup {
     const challengeRawValue = {
       ...this.getFormDefaults(),
@@ -48,10 +94,10 @@ export class ChallengeFormService {
         },
       ),
       title: new FormControl(challengeRawValue.title, {
-        validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)],
+        validators: [Validators.required],
       }),
       description: new FormControl(challengeRawValue.description, {
-        validators: [Validators.required],
+        validators: [Validators.required, this.maxWordCount(1000)],
       }),
       category: new FormControl(challengeRawValue.category, {
         validators: [Validators.required],
@@ -60,7 +106,7 @@ export class ChallengeFormService {
         validators: [Validators.required],
       }),
       points: new FormControl(challengeRawValue.points, {
-        validators: [Validators.required, Validators.min(1), Validators.max(100)],
+        validators: [Validators.required],
       }),
       badge: new FormControl(challengeRawValue.badge, {
         validators: [Validators.required],

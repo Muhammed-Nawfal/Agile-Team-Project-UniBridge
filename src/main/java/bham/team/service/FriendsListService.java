@@ -161,6 +161,52 @@ public class FriendsListService {
     }
 
     /**
+     * Get the login of a friend from a FriendsList entity
+     *
+     * @param friendsListId the ID of the FriendsList entity
+     * @return the login of the requested friend profile
+     */
+    @Transactional(readOnly = true)
+    public String getFriendLoginById(Long friendsListId) {
+        log.debug("Request to get friend login for FriendsList ID: {}", friendsListId);
+        return friendsListRepository.getFriendLoginById(friendsListId);
+    }
+
+    /**
+     * Get all accepted friend logins for a profile
+     *
+     * @param profileId the ID of the profile
+     * @return list of friend logins
+     */
+    @Transactional(readOnly = true)
+    public List<String> getAllAcceptedFriendLogins(Long profileId) {
+        log.debug("Request to get all accepted friend logins for profile ID: {}", profileId);
+
+        Profile profile = profileRepository
+            .findById(profileId)
+            .orElseThrow(() -> new IllegalArgumentException("Profile not found with ID: " + profileId));
+
+        return friendsListRepository.getAllAcceptedFriendLogins(profile);
+    }
+
+    /**
+     * Get all accepted friend logins for the current user
+     *
+     * @param currentUsername the current user's username
+     * @return list of friend logins
+     */
+    @Transactional(readOnly = true)
+    public List<String> getCurrentUserFriendLogins(String currentUsername) {
+        log.debug("Request to get accepted friend logins for current user: {}", currentUsername);
+
+        Profile profile = profileRepository
+            .findByUserLogin(currentUsername)
+            .orElseThrow(() -> new IllegalArgumentException("Profile not found for username: " + currentUsername));
+
+        return friendsListRepository.getAllAcceptedFriendLogins(profile);
+    }
+
+    /**
      * Delete a friends list.
      *
      * @param id the id of the entity.

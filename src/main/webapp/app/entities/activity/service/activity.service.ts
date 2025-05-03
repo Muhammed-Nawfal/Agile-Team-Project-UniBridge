@@ -8,6 +8,7 @@ import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IActivity, NewActivity } from '../activity.model';
+import { IActivityParticipant } from '../../activity-participant/activity-participant.model';
 
 export type PartialUpdateActivity = Partial<IActivity> & Pick<IActivity, 'id'>;
 
@@ -108,6 +109,10 @@ export class ActivityService {
       params: options,
       observe: 'response',
     });
+  }
+
+  joinActivity(id: number): Observable<HttpResponse<IActivityParticipant>> {
+    return this.http.post<IActivityParticipant>(`${this.resourceUrl}/${id}/join`, {}, { observe: 'response' });
   }
 
   protected convertDateFromClient<T extends IActivity | NewActivity | PartialUpdateActivity>(activity: T): RestOf<T> {

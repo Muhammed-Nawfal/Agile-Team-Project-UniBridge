@@ -1,232 +1,198 @@
-<div>
-  <h2 id="page-heading" data-cy="BookingHeading">
-    <span>Bookings</span>
+<div class="header">
+  <select class="language-select" (change)="changeLanguage($event)">
+    <option value="en">English</option>
+    <option value="es">Español</option>
+  </select>
+</div>
 
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span>Refresh list</span>
-      </button>
+<div class="secondDiv">
+  <form action="submit" class="bookSection">
+    <h1>{{ translate('booking') }}</h1>
+    <div class="bookDetails">
+      <h2>{{ translate('selectDate') }}</h2>
+      <input type="date" name="date" class="form-control" (change)="onDateChange($event)" required />
 
-      <button
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-booking"
-        [routerLink]="['/booking/new']"
-      >
-        <fa-icon icon="plus"></fa-icon>
-        <span>Create a new Booking</span>
-      </button>
+      <h2>{{ translate('selectActivity') }}</h2>
+      <select name="Activity" class="form-control" (change)="onActivityChange($event)" required>
+        <option value="" selected disabled>{{ translate('defaultActivity') }}</option>
+        <option *ngFor="let activity of activities" [value]="activity.value">{{ activity.name }}</option>
+      </select>
+
+      <h2>{{ translate('selectEvent') }}</h2>
+      <select name="Events" class="form-control" (change)="onEventChange($event)" required>
+        <option value="" selected disabled>{{ translate('defaultEvent') }}</option>
+        <option *ngFor="let event of events" [value]="event.value">{{ event.name }}</option>
+      </select>
+
+      <h2>{{ translate('selectPartySize') }}</h2>
+      <select name="partySize" class="form-control" (change)="onPartySizeChange($event)" required>
+        <option value="" selected disabled>{{ translate('defaultPartySize') }}</option>
+        <option *ngFor="let size of partySizes" [value]="size">{{ size }}</option>
+      </select>
+
+      <h2>{{ translate('selectTime') }}</h2>
+      <div *ngIf="timeSlots.length > 0" class="time-slots">
+        <div *ngFor="let slot of timeSlots; let i = index" class="time-slot-checkbox">
+          <input
+            type="checkbox"
+            [id]="'slot-' + i"
+            [value]="slot"
+            (change)="onTimeSlotChange($event)"
+            [disabled]="
+              timeSlotService.isTimeSlotDisabled(slot, selectedTimeSlots, MAX_SLOTS) ||
+              timeSlotService.isTimeSlotFullyBooked(slot, fullyBookedTimeSlots)
+            "
+            [checked]="selectedTimeSlots.includes(slot)"
+          />
+          <label
+            [for]="'slot-' + i"
+            [class.disabled]="
+              timeSlotService.isTimeSlotDisabled(slot, selectedTimeSlots, MAX_SLOTS) ||
+              timeSlotService.isTimeSlotFullyBooked(slot, fullyBookedTimeSlots)
+            "
+          >
+            {{ slot }}
+            <span *ngIf="timeSlotService.isTimeSlotFullyBooked(slot, fullyBookedTimeSlots)" class="capacity-info"></span>
+          </label>
+        </div>
+      </div>
+
+      <div *ngIf="bookingError" class="alert alert-danger mt-2">
+        {{ bookingError }}
+      </div>
+
+      <button type="button" class="bookBtn" (click)="onSubmit()">{{ translate('bookNow') }}</button>
     </div>
-  </h2>
+  </form>
 
-  <jhi-alert-error></jhi-alert-error>
+  <div class="activitySection">
+    <h1>{{ translate('upcomingActivities') }}</h1>
 
-  <jhi-alert></jhi-alert>
-
-  @if (bookings?.length === 0) {
-    <div class="alert alert-warning" id="no-result">
-      <span>No Bookings found</span>
+    <div *ngIf="isLoadingBookings" class="loading-indicator">
+      <p>Loading bookings...</p>
     </div>
-  }
 
-  @if (bookings && bookings.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
-        <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="activityType">
-              <div class="d-flex">
-                <span>Activity Type</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="eventType">
-              <div class="d-flex">
-                <span>Event Type</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="bookingDate">
-              <div class="d-flex">
-                <span>Booking Date</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="partySize">
-              <div class="d-flex">
-                <span>Party Size</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="bookingStatus">
-              <div class="d-flex">
-                <span>Booking Status</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="createdAt">
-              <div class="d-flex">
-                <span>Created At</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="assignedAt">
-              <div class="d-flex">
-                <span>Assigned At</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="timeSlots.id">
-              <div class="d-flex">
-                <span>Time Slots</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="bookedActivity.id">
-              <div class="d-flex">
-                <span>Booked Activity</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="bookingLocation.id">
-              <div class="d-flex">
-                <span>Booking Location</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="creator.id">
-              <div class="d-flex">
-                <span>Creator</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="activity.id">
-              <div class="d-flex">
-                <span>Activity</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="timeSlot.id">
-              <div class="d-flex">
-                <span>Time Slot</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (booking of bookings; track trackId(booking)) {
-            <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/booking', booking.id, 'view']">{{ booking.id }}</a>
-              </td>
-              <td>
-                {{
-                  { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[
-                    booking.activityType ?? 'null'
-                  ]
-                }}
-              </td>
-              <td>
-                {{
-                  {
-                    null: '',
-                    STUDY_SPACES: 'STUDY_SPACES',
-                    EVENT_ROOMS: 'EVENT_ROOMS',
-                    FOOTBALL_PITCH: 'FOOTBALL_PITCH',
-                    TENNIS_COURT: 'TENNIS_COURT',
-                    BASKETBALL_COURT: 'BASKETBALL_COURT',
-                    DOJO: 'DOJO',
-                    SWIMMING_POOL: 'SWIMMING_POOL',
-                    SQUASH_COURT: 'SQUASH_COURT',
-                  }[booking.eventType ?? 'null']
-                }}
-              </td>
-              <td>{{ booking.bookingDate | formatMediumDate }}</td>
-              <td>{{ booking.partySize }}</td>
-              <td>{{ { null: '', CONFIRMED: 'CONFIRMED', CANCELLED: 'CANCELLED' }[booking.bookingStatus ?? 'null'] }}</td>
-              <td>{{ booking.createdAt | formatMediumDatetime }}</td>
-              <td>{{ booking.assignedAt | formatMediumDatetime }}</td>
-              <td>
-                @if (booking.timeSlots) {
-                  <div>
-                    <a [routerLink]="['/time-slot', booking.timeSlots.id, 'view']">{{ booking.timeSlots.id }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                @if (booking.bookedActivity) {
-                  <div>
-                    <a [routerLink]="['/activity', booking.bookedActivity.id, 'view']">{{ booking.bookedActivity.id }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                @if (booking.bookingLocation) {
-                  <div>
-                    <a [routerLink]="['/location', booking.bookingLocation.id, 'view']">{{ booking.bookingLocation.id }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                @if (booking.creator) {
-                  <div>
-                    <a [routerLink]="['/profile', booking.creator.id, 'view']">{{ booking.creator.id }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                @if (booking.activity) {
-                  <div>
-                    <a [routerLink]="['/activity', booking.activity.id, 'view']">{{ booking.activity.id }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                @if (booking.timeSlot) {
-                  <div>
-                    <a [routerLink]="['/time-slot', booking.timeSlot.id, 'view']">{{ booking.timeSlot.id }}</a>
-                  </div>
-                }
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
-                  <a [routerLink]="['/booking', booking.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                    <fa-icon icon="eye"></fa-icon>
-                    <span class="d-none d-md-inline">View</span>
-                  </a>
-
-                  <a [routerLink]="['/booking', booking.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline">Edit</span>
-                  </a>
-
-                  <button type="submit" (click)="delete(booking)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline">Delete</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+    <div *ngIf="!isLoadingBookings && upcomingBookings.length === 0" class="empty-bookings">
+      <p>{{ translate('noBookings') }}</p>
     </div>
-  }
+
+    <div class="activity-list" *ngIf="!isLoadingBookings && upcomingBookings.length > 0">
+      <div class="activity-card" *ngFor="let booking of upcomingBookings" (click)="openBookingDetails(booking)">
+        <div class="activity-icon">{{ booking.icon }}</div>
+        <div class="booking-info">
+          <div class="event-name">
+            <h3>{{ booking.name.split(' ')[0] }}</h3>
+            <h3>{{ booking.name.split(' ').slice(1).join(' ') }}</h3>
+          </div>
+          <div class="booking-details">
+            <p class="date-time">
+              {{ booking.date }} | <span>{{ booking.time }}</span>
+            </p>
+            <p class="location">{{ booking.locationName }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" *ngIf="selectedBooking" [class.show]="showModal">
+  <div class="modal-content">
+    <span class="close" (click)="closeModal()">&times;</span>
+    <h2>{{ selectedBooking.name }}</h2>
+    <div class="modal-details">
+      <div *ngIf="!isEditMode">
+        <p>
+          <strong>{{ translate('date') }}:</strong> {{ selectedBooking.date }}
+        </p>
+        <p>
+          <strong>{{ translate('time') }}:</strong> {{ selectedBooking.time }}
+        </p>
+        <p>
+          <strong>{{ translate('location') }}:</strong> {{ selectedBooking.locationName }}
+        </p>
+        <p>
+          <strong>{{ translate('partySize') }}:</strong> {{ selectedBooking.partySize }}
+        </p>
+        <p>
+          <strong>{{ translate('status') }}:</strong> {{ selectedBooking.status }}
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="update-button" (click)="updateBooking()">{{ translate('update') }}</button>
+          <button type="button" class="delete-button" (click)="confirmDelete()">{{ translate('delete') }}</button>
+        </div>
+      </div>
+
+      <div *ngIf="isEditMode" class="edit-form">
+        <div class="form-group">
+          <label for="editActivityType">{{ translate('event') }}</label>
+          <input
+            type="text"
+            id="editActivityType"
+            [value]="formatActivityType(selectedBooking.activityType)"
+            class="form-control"
+            disabled
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editEventName">{{ translate('activity') }}</label>
+          <input type="text" id="editEventName" [value]="selectedBooking.name" class="form-control" disabled />
+        </div>
+
+        <div class="form-group">
+          <label for="editDate">{{ translate('date') }}</label>
+          <input type="date" id="editDate" [(ngModel)]="updatedDate" class="form-control" disabled />
+        </div>
+
+        <div class="form-group">
+          <label for="editPartySize">{{ translate('partySize') }}</label>
+          <select id="editPartySize" class="form-control" [(ngModel)]="updatedPartySize" required>
+            <option *ngFor="let size of partySizes" [value]="size">{{ size }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>{{ translate('time') }}</label>
+          <div class="time-slots">
+            <div *ngFor="let slot of updateTimeSlots; let i = index" class="time-slot-checkbox">
+              <input
+                type="checkbox"
+                [id]="'edit-slot-' + i"
+                [value]="slot"
+                (change)="onTimeSlotChange($event)"
+                [checked]="updatedTimeSlots.includes(slot)"
+                disabled
+              />
+              <label
+                [for]="'edit-slot-' + i"
+                [class.selected]="updatedTimeSlots.includes(slot)"
+                [class.disabled]="!updatedTimeSlots.includes(slot)"
+              >
+                {{ slot }}
+                <span *ngIf="timeSlotService.isTimeSlotFullyBooked(slot, fullyBookedTimeSlots)" class="capacity-info"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="cancel-button" (click)="cancelUpdate()">{{ translate('cancel') }}</button>
+          <button type="button" class="save-button" (click)="saveUpdate()">{{ translate('save') }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" *ngIf="showDeleteConfirmation" [class.show]="showDeleteConfirmation">
+  <div class="modal-content">
+    <span class="close" (click)="cancelDelete()">&times;</span>
+    <h2>{{ translate('confirmDelete') }}</h2>
+    <p>{{ translate('deleteConfirmationMessage') }}</p>
+    <div class="modal-actions">
+      <button type="button" class="cancel-button" (click)="cancelDelete()">{{ translate('cancel') }}</button>
+      <button type="button" class="delete-button" (click)="deleteBooking()">{{ translate('delete') }}</button>
+    </div>
+  </div>
 </div>

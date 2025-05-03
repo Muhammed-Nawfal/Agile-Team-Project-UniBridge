@@ -29,7 +29,7 @@ public class Event implements Serializable {
     private String name;
 
     @NotNull
-    @Column(name = "value", nullable = false)
+    @Column(name = "event_value", nullable = false) // Changed from "value" to "event_value"
     private String value;
 
     @NotNull

@@ -1,11 +1,9 @@
 id;name;value;activity_type;min_size;max_size;start_time;end_time;capacity
-1;pish;hence positively;OTHER;12932;3460;22618;13919;27401
-2;upon;upon wildly;SOCIAL;18070;2743;10688;4669;21536
-3;gastropod abaft;scoff psst beneath;OTHER;25754;32339;19273;710;8195
-4;abaft cross put;requite er;OTHER;30396;4614;3111;15421;6080
-5;refer;through notwithstanding;SOCIAL;17961;2744;27756;7782;12730
-6;till brochure soon;fisherman who once;OTHER;20454;14580;3472;27021;15892
-7;mothball;incidentally;ACADEMIC;14827;2133;20721;7918;15236
-8;amongst;furlough stingy;SPORTS;18001;13088;20236;13169;21392
-9;whine completion whoever;what efface denitrify;SPORTS;2475;7948;22478;23883;9832
-10;burgeon within pfft;promptly;OTHER;1199;25440;2259;2821;21997
+1;Study Spaces;Study_Spaces;SOCIAL;2;8;9;22;15
+2;Event Rooms;Event_Rooms;SOCIAL;10;30;9;23;12
+3;Football Pitch;Football_Pitch;SPORTS;11;25;8;24;2
+4;Tennis Court;Tennis_Court;SPORTS;2;4;8;22;4
+5;Basketball Court;Basketball_Court;SPORTS;5;10;8;24;2
+6;DOJO;DOJO;SPORTS;1;20;8;22;12
+7;Swimming Pool;Swimming_Pool;SPORTS;1;35;8;24;1
+8;Squash Court;Squash_Court;SPORTS;2;4;8;24;4
