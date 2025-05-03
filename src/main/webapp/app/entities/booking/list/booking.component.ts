@@ -62,6 +62,10 @@ export class BookingComponent implements OnInit {
       defaultEvent: 'Select',
       defaultPartySize: 'SELECT',
       noBookings: 'NO BOOKINGS, MAKE ONE NOW',
+      date: 'Date',
+      location: 'Location',
+      status: 'Status',
+      partySize: 'Party Size',
     },
     es: {
       booking: 'RESERVA',
@@ -77,8 +81,15 @@ export class BookingComponent implements OnInit {
       defaultEvent: 'EVENTOS',
       defaultPartySize: 'CAPACIDAD',
       noBookings: 'No tienes reservas próximas',
+      date: 'Fecha',
+      location: 'Ubicación',
+      status: 'Estado',
+      partySize: 'Capacidad',
     },
   };
+
+  selectedBooking: any = null;
+  showModal = false;
 
   constructor(
     private http: HttpClient,
@@ -651,5 +662,15 @@ export class BookingComponent implements OnInit {
     };
 
     createNextTimeSlot(0);
+  }
+
+  openBookingDetails(booking: any): void {
+    this.selectedBooking = booking;
+    this.showModal = true;
+  }
+
+  closeModal(): void {
+    this.showModal = false;
+    this.selectedBooking = null;
   }
 }

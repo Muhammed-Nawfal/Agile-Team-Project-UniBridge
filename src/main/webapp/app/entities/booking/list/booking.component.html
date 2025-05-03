@@ -80,7 +80,7 @@
 
     <!-- Bookings list -->
     <div class="activity-list" *ngIf="!isLoadingBookings && upcomingBookings.length > 0">
-      <div class="activity-card" *ngFor="let booking of upcomingBookings">
+      <div class="activity-card" *ngFor="let booking of upcomingBookings" (click)="openBookingDetails(booking)">
         <div class="activity-icon">{{ booking.icon }}</div>
         <div class="booking-info">
           <div class="event-name">
@@ -95,6 +95,31 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Booking Details Modal -->
+<div class="modal" *ngIf="selectedBooking" [class.show]="showModal">
+  <div class="modal-content">
+    <span class="close" (click)="closeModal()">&times;</span>
+    <h2>{{ selectedBooking.name }}</h2>
+    <div class="modal-details">
+      <p>
+        <strong>{{ translate('date') }}:</strong> {{ selectedBooking.date }}
+      </p>
+      <p>
+        <strong>{{ translate('time') }}:</strong> {{ selectedBooking.time }}
+      </p>
+      <p>
+        <strong>{{ translate('location') }}:</strong> {{ selectedBooking.locationName }}
+      </p>
+      <p>
+        <strong>{{ translate('partySize') }}:</strong> {{ selectedBooking.partySize }}
+      </p>
+      <p>
+        <strong>{{ translate('status') }}:</strong> {{ selectedBooking.status }}
+      </p>
     </div>
   </div>
 </div>

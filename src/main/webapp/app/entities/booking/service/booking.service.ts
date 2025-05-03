@@ -131,6 +131,7 @@ export class BookingService {
                     date: formattedDate,
                     status: booking.bookingStatus,
                     locationName,
+                    partySize: booking.partySize,
                   };
                 });
 
