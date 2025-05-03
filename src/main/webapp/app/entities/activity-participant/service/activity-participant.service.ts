@@ -8,6 +8,7 @@ import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IActivityParticipant, NewActivityParticipant } from '../activity-participant.model';
+import { IActivity } from '../../activity/activity.model';
 
 export type PartialUpdateActivityParticipant = Partial<IActivityParticipant> & Pick<IActivityParticipant, 'id'>;
 
@@ -101,6 +102,51 @@ export class ActivityParticipantService {
       return [...activityParticipantsToAdd, ...activityParticipantCollection];
     }
     return activityParticipantCollection;
+  }
+
+  /**
+   * Join an activity for the current logged-in user
+   *
+   * @param activityId the ID of the activity to join
+   * @returns the created ActivityParticipant entity
+   */
+  joinActivity(activityId: number): Observable<IActivityParticipant> {
+    return this.http.post<IActivityParticipant>(`${this.resourceUrl}/activities/${activityId}/join`, {});
+  }
+
+  /**
+   * checks if the current user has joined an activity
+   *
+   * @param activityId the ID of the activity to check
+   * @returns true if the user has joined, false otherwise
+   */
+  hasUserJoinedActivity(activityId: number): Observable<boolean> {
+    return this.http.get<boolean>(`${this.resourceUrl}/activities/${activityId}/has-joined`);
+  }
+
+  /**
+   * gets all participants for an activity
+   *
+   * @param activityId the ID of the activity
+   * @returns the list of activity participants
+   */
+  getActivityParticipants(activityId: number): Observable<IActivityParticipant[]> {
+    return this.http.get<IActivityParticipant[]>(`${this.resourceUrl}/activities/${activityId}/participants`);
+  }
+
+  /**
+   * gets all activities joined by the current user
+   *
+   * @returns the list of activity participants
+   */
+  getUserActivities(): Observable<IActivityParticipant[]> {
+    return this.http.get<IActivityParticipant[]>(`${this.resourceUrl}/profiles/activities`);
+  }
+
+  // New method to get activity details including status
+  getActivityDetails(activityId: number): Observable<HttpResponse<IActivity>> {
+    // This endpoint should return the activity details from your activity API
+    return this.http.get<IActivity>(`api/activities/${activityId}`, { observe: 'response' });
   }
 
   protected convertDateFromClient<T extends IActivityParticipant | NewActivityParticipant | PartialUpdateActivityParticipant>(

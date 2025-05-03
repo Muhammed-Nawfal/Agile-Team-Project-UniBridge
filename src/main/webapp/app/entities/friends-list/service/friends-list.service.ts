@@ -9,6 +9,7 @@ import { ApplicationConfigService } from 'app/core/config/application-config.ser
 import { createRequestOption } from 'app/core/request/request-util';
 import { IFriendsList, NewFriendsList } from '../friends-list.model';
 import { Decision } from 'app/entities/enumerations/decision.model';
+import { IProfile } from '../../profile/profile.model';
 
 export type PartialUpdateFriendsList = Partial<IFriendsList> & Pick<IFriendsList, 'id'>;
 
@@ -127,6 +128,15 @@ export class FriendsListService {
     return this.http
       .get<RestFriendsList[]>(`${this.userFriendsUrl}/sent`, { observe: 'response' })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+
+  // Add this method to your FriendsListService class
+  /**
+   * Get profiles that the current user is following (has accepted friendship with)
+   * @returns Observable with array of profile objects
+   */
+  getFollowedProfiles(): Observable<HttpResponse<IProfile[]>> {
+    return this.http.get<IProfile[]>(`${this.userFriendsUrl}/followed-profiles`, { observe: 'response' });
   }
 
   /**

@@ -1,4 +1,5 @@
 import { Component, NgZone, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
 import { Observable, Subscription, Subject, combineLatest, filter, tap, takeUntil } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -17,6 +18,8 @@ import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { IProfile } from '../../profile/profile.model';
 import { ActivityType } from '../../enumerations/activity-type.model';
+import { AccessibilityService } from '../../../core/Accessibility/accessibility.service';
+import { A11yModule } from 'app/shared/a11y/a11y.module';
 
 @Component({
   standalone: true,
@@ -33,6 +36,7 @@ import { ActivityType } from '../../enumerations/activity-type.model';
     FormatMediumDatetimePipe,
     FormatMediumDatePipe,
     MatchingComponent,
+    A11yModule,
   ],
 })
 export class ActivityMatchComponent implements OnInit, OnDestroy {
@@ -62,6 +66,15 @@ export class ActivityMatchComponent implements OnInit, OnDestroy {
 
   // Private properties
   private readonly destroy$ = new Subject<void>();
+
+  constructor(
+    public a11y: AccessibilityService, // ← public, not private
+    /* …other injections… */
+  ) {}
+
+  toggleA11y(on: boolean): void {
+    this.a11y.setEnabled(on);
+  }
 
   // Class methods
   trackId = (item: IActivityMatch): number => this.activityMatchService.getActivityMatchIdentifier(item);

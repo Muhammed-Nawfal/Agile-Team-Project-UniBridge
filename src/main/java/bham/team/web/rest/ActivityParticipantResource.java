@@ -2,6 +2,7 @@ package bham.team.web.rest;
 
 import bham.team.domain.ActivityParticipant;
 import bham.team.repository.ActivityParticipantRepository;
+import bham.team.service.ActivityParticipantService;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -35,9 +36,14 @@ public class ActivityParticipantResource {
     private String applicationName;
 
     private final ActivityParticipantRepository activityParticipantRepository;
+    private final ActivityParticipantService activityParticipantService;
 
-    public ActivityParticipantResource(ActivityParticipantRepository activityParticipantRepository) {
+    public ActivityParticipantResource(
+        ActivityParticipantRepository activityParticipantRepository,
+        ActivityParticipantService activityParticipantService
+    ) {
         this.activityParticipantRepository = activityParticipantRepository;
+        this.activityParticipantService = activityParticipantService;
     }
 
     /**
@@ -178,5 +184,61 @@ public class ActivityParticipantResource {
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
+    }
+
+    /**
+     * {@code POST  /activities/:id/join} : Join an activity.
+     *
+     * @param id the id of the activity to join
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new activityParticipant
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PostMapping("/activities/{id}/join")
+    public ResponseEntity<ActivityParticipant> joinActivity(@PathVariable Long id) throws URISyntaxException {
+        LOG.debug("REST request to join Activity : {}", id);
+
+        ActivityParticipant result = activityParticipantService.joinActivity(id);
+
+        return ResponseEntity.created(new URI("/api/activity-participants/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
+
+    /**
+     * {@code GET  /activities/:id/has-joined} : Check if current user has joined an activity.
+     *
+     * @param id the id of the activity to check
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the boolean result
+     */
+    @GetMapping("/activities/{id}/has-joined")
+    public ResponseEntity<Boolean> hasJoinedActivity(@PathVariable Long id) {
+        LOG.debug("REST request to check if user has joined Activity : {}", id);
+
+        boolean hasJoined = activityParticipantService.hasUserJoinedActivity(id);
+
+        return ResponseEntity.ok(hasJoined);
+    }
+
+    /**
+     * {@code GET  /activities/:id/participants} : Get all participants for an activity.
+     *
+     * @param id the id of the activity
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of participants in body.
+     */
+    @GetMapping("/activities/{id}/participants")
+    public List<ActivityParticipant> getActivityParticipants(@PathVariable Long id) {
+        LOG.debug("REST request to get all Participants for Activity : {}", id);
+        return activityParticipantService.findParticipantsByActivityId(id);
+    }
+
+    /**
+     * {@code GET  /profiles/activities} : Get all activities joined by the current user.
+     *
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of activities in body.
+     */
+    @GetMapping("/profiles/activities")
+    public List<ActivityParticipant> getUserActivities() {
+        LOG.debug("REST request to get all Activities for current user");
+        return activityParticipantService.findActivitiesByCurrentUser();
     }
 }

@@ -37,7 +37,7 @@
                   {{ request.requestedByProfile?.firstName }} {{ request.requestedByProfile?.lastName }}
                 </a>
               </h5>
-              <small>Received: {{ request.requestTime | formatMediumDatetime }}</small>
+              <small>Received By: {{ request.requestedByProfile?.login }} {{ request.requestTime | formatMediumDatetime }}</small>
             </div>
             <div>
               <button class="btn btn-success me-2" (click)="acceptRequest(request.id)">
@@ -69,7 +69,7 @@
                   {{ request.requestedToProfile?.firstName }} {{ request.requestedToProfile?.lastName }}
                 </a>
               </h5>
-              <small>Sent: {{ request.requestTime | formatMediumDatetime }}</small>
+              <small>Sent: by {{ request.requestTime | formatMediumDatetime }}</small>
               <div>
                 <span
                   class="badge"

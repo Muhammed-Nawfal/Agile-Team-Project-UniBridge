@@ -1,207 +1,175 @@
-<div>
-  <h2 id="page-heading" data-cy="FriendsListHeading">
-    <span>Friends Lists</span>
+<div class="container-fluid">
+  <!-- People You Follow Section -->
+  <div class="page-header d-flex align-items-center mb-4">
+    <div class="d-flex align-items-center">
+      <h1 class="m-0">People You Follow</h1>
 
-    <button class="btn btn-primary me-2" [routerLink]="['/friends-list/requests']">
-      <fa-icon icon="bell"></fa-icon>
-      <span>Friend Requests</span>
-      <span class="badge bg-danger ms-1" *ngIf="pendingRequestCount > 0">{{ pendingRequestCount }}</span>
-    </button>
-
-    //add
-
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span>Refresh list</span>
-      </button>
-
-      <button
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-friends-list"
-        [routerLink]="['/friends-list/new']"
-      >
-        <fa-icon icon="plus"></fa-icon>
-        <span>Create a new Friends List</span>
-      </button>
-    </div>
-  </h2>
-
-  <jhi-alert-error></jhi-alert-error>
-
-  <jhi-alert></jhi-alert>
-
-  <!-- Test Follow Button Section -->
-  <div class="card mb-4">
-    <div class="card-header">
-      <h3>Test Follow Button</h3>
-    </div>
-    <div class="card-body">
-      <p>Click the follow buttons below to test the friend request functionality.</p>
-
-      <button class="btn btn-secondary mb-3" (click)="loadProfiles()" [disabled]="isLoadingProfiles">
-        <fa-icon icon="sync" [animation]="isLoadingProfiles ? 'spin' : undefined"></fa-icon>
-        <span>Refresh Profiles</span>
-      </button>
-
-      @if (profiles && profiles.length > 0) {
-        <div class="row">
-          @for (profile of profiles; track trackProfileId($index, profile)) {
-            <div class="col-md-4 mb-3">
-              <div class="card">
-                <div class="card-header">
-                  <h5>Profile #{{ profile.id }}</h5>
-                </div>
-                <div class="card-body">
-                  @if (profile.firstName || profile.lastName) {
-                    <p>{{ profile.firstName }} {{ profile.lastName }}</p>
-                  } @else {
-                    <p>Anonymous User</p>
-                  }
-
-                  <div class="d-flex justify-content-between align-items-center mt-3">
-                    <a [routerLink]="['/profile', profile.id, 'view']" class="btn btn-sm btn-outline-info">
-                      <fa-icon icon="eye"></fa-icon>
-                      <span class="ms-1">View</span>
-                    </a>
-
-                    <jhi-follow-button
-                      [targetProfileId]="profile.id!"
-                      (friendshipChanged)="onFriendshipChanged($event, profile.id!)"
-                    ></jhi-follow-button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          }
-        </div>
-      } @else if (isLoadingProfiles) {
-        <div class="alert alert-info">
-          <span>Loading profiles...</span>
-        </div>
-      } @else {
-        <div class="alert alert-warning">
-          <span>No profiles found to test follow functionality</span>
-        </div>
-      }
+      <a [routerLink]="['/friends-list/requests']" class="btn btn-primary friend-request-btn ms-3">
+        <fa-icon icon="bell"></fa-icon>
+        <span>FRIEND REQUESTS</span>
+        <span class="badge bg-danger ms-1" *ngIf="pendingRequestCount > 0">{{ pendingRequestCount }}</span>
+      </a>
     </div>
   </div>
 
-  <!-- Friends List Table -->
-  @if (friendsLists?.length === 0) {
-    <div class="alert alert-warning" id="no-result">
-      <span>No Friends Lists found</span>
+  <!-- No followed profiles found message -->
+  <div *ngIf="!isLoadingProfiles && (!profiles || profiles.length === 0)">
+    <span>You aren't following anyone yet</span>
+  </div>
+
+  <!-- Followed Profiles Cards -->
+  <div *ngIf="profiles && profiles.length > 0" class="row">
+    <div *ngFor="let profile of profiles; trackBy: trackProfileId" class="col-md-4 mb-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-img-top profile-header">
+          <div *ngIf="profile.profilePicture" class="profile-img-container">
+            <img [src]="'data:' + profile.profilePictureContentType + ';base64,' + profile.profilePicture" alt="Profile picture" />
+          </div>
+          <div *ngIf="!profile.profilePicture" class="profile-img-placeholder">
+            <fa-icon icon="user" size="4x" class="text-white"></fa-icon>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="username">{{ profile.login }}</span>
+            <span class="text-muted small friends-since">
+              <fa-icon icon="clock" class="me-1"></fa-icon>
+              Since: {{ getFriendshipForProfile(profile.id)?.friendSince }}
+            </span>
+          </div>
+
+          <!-- Display name with nickname preference -->
+          <div class="card-title-container d-flex justify-content-between align-items-center">
+            <h5 class="card-title">
+              <span *ngIf="getFriendshipForProfile(profile.id)?.nickname">{{ getFriendshipForProfile(profile.id)?.nickname }}</span>
+              <span *ngIf="!getFriendshipForProfile(profile.id)?.nickname">
+                {{ profile.firstName || '' }} {{ profile.lastName || '' }}
+                <span *ngIf="!profile.firstName && !profile.lastName">Anonymous User</span>
+              </span>
+            </h5>
+            <a href="javascript:void(0)" class="nickname-link" (click)="editNickname(getFriendshipForProfile(profile.id))">
+              <span *ngIf="getFriendshipForProfile(profile.id)?.nickname">Edit nickname</span>
+              <span *ngIf="!getFriendshipForProfile(profile.id)?.nickname">Create a nickname</span>
+            </a>
+          </div>
+
+          <div class="button-group">
+            <div class="action-buttons">
+              <a [routerLink]="['/profile', profile.id, 'view']" class="btn btn-view">
+                <fa-icon icon="eye"></fa-icon>
+                <span class="ms-1">View</span>
+              </a>
+
+              <a [routerLink]="['/chat']" [queryParams]="{ receiver: profile.login }" class="btn btn-message">
+                <fa-icon icon="comment"></fa-icon>
+                <span class="ms-1">Message</span>
+              </a>
+            </div>
+
+            <div class="follow-button-container">
+              <jhi-follow-button
+                [targetProfileId]="profile.id"
+                (friendshipChanged)="onFriendshipChanged($event, profile.id)"
+              ></jhi-follow-button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  }
+  </div>
 
-  @if (friendsLists && friendsLists.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
-        <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="requestTime">
-              <div class="d-flex">
-                <span>Request Time</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="requestStatus">
-              <div class="d-flex">
-                <span>Request Status</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="friendSince">
-              <div class="d-flex">
-                <span>Friend Since</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="nickname">
-              <div class="d-flex">
-                <span>Nickname</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="requestedByProfile.id">
-              <div class="d-flex">
-                <span>Requested By Profile</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="requestedToProfile.id">
-              <div class="d-flex">
-                <span>Requested To Profile</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (friendsList of friendsLists; track trackId($index, friendsList)) {
-            <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/friends-list', friendsList.id, 'view']">{{ friendsList.id }}</a>
-              </td>
-              <td>{{ friendsList.requestTime | formatMediumDatetime }}</td>
-              <td>
-                <span
-                  class="badge"
-                  [ngClass]="{
-                    'bg-success': friendsList.requestStatus === 'ACCEPT',
-                    'bg-info': friendsList.requestStatus === 'PENDING',
-                    'bg-danger': friendsList.requestStatus === 'DECLINED',
-                  }"
-                >
-                  {{ friendsList.requestStatus }}
-                </span>
-              </td>
-              <td>{{ friendsList.friendSince | formatMediumDatetime }}</td>
-              <td>{{ friendsList.nickname }}</td>
-              <td>
-                @if (friendsList.requestedByProfile) {
-                  <div>
-                    <a [routerLink]="['/profile', friendsList.requestedByProfile.id, 'view']">{{ friendsList.requestedByProfile.id }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                @if (friendsList.requestedToProfile) {
-                  <div>
-                    <a [routerLink]="['/profile', friendsList.requestedToProfile.id, 'view']">{{ friendsList.requestedToProfile.id }}</a>
-                  </div>
-                }
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
-                  <a [routerLink]="['/friends-list', friendsList.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                    <fa-icon icon="eye"></fa-icon>
-                    <span class="d-none d-md-inline">View</span>
-                  </a>
-
-                  <a [routerLink]="['/friends-list', friendsList.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline">Edit</span>
-                  </a>
-
-                  <button type="submit" (click)="delete(friendsList)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline">Delete</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+  <!-- People You May Know Section -->
+  <div class="page-header mt-5 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <h2 class="m-0">People You May Know</h2>
     </div>
-  }
+    <hr />
+  </div>
+
+  <!-- Search bar positioned as a separate section -->
+  <div class="d-flex justify-content-end mb-4">
+    <div class="search-container">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Search people to add..." [(ngModel)]="searchTerm" (keyup)="searchProfiles()" />
+        <button class="btn btn-outline-secondary clear-btn" type="button" *ngIf="searchTerm" (click)="clearSearch()">
+          <fa-icon icon="times"></fa-icon>
+        </button>
+        <button class="btn btn-outline-secondary search-btn" type="button" (click)="searchProfiles()">
+          <fa-icon icon="search"></fa-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- No suggestions found message -->
+  <div *ngIf="!isLoadingSuggestions && (!filteredSuggestedProfiles || filteredSuggestedProfiles.length === 0)" class="alert alert-info">
+    <span *ngIf="searchTerm">No profiles found matching "{{ searchTerm }}"</span>
+    <span *ngIf="!searchTerm">No suggestions available at this time</span>
+  </div>
+
+  <!-- Suggested Profiles Cards -->
+  <div *ngIf="filteredSuggestedProfiles && filteredSuggestedProfiles.length > 0" class="row">
+    <div *ngFor="let profile of filteredSuggestedProfiles; trackBy: trackProfileId" class="col-md-4 mb-4">
+      <div class="card border-0 shadow-sm suggestion-card">
+        <div class="card-img-top profile-header suggestion-header">
+          <div *ngIf="profile.profilePicture" class="profile-img-container">
+            <img [src]="'data:' + profile.profilePictureContentType + ';base64,' + profile.profilePicture" alt="Profile picture" />
+          </div>
+          <div *ngIf="!profile.profilePicture" class="profile-img-placeholder suggestion-placeholder">
+            <fa-icon icon="user" size="4x" class="text-secondary"></fa-icon>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="badge suggestion-badge">SUGGESTED</span>
+            <span class="username">{{ profile.login }}</span>
+          </div>
+
+          <h5 class="card-title">
+            {{ profile.firstName || '' }} {{ profile.lastName || '' }}
+            <span *ngIf="!profile.firstName && !profile.lastName">Anonymous User</span>
+          </h5>
+
+          <div class="button-group">
+            <div class="action-buttons">
+              <a [routerLink]="['/profile', profile.id, 'view']" class="btn btn-view">
+                <fa-icon icon="eye"></fa-icon>
+                <span class="ms-1">View</span>
+              </a>
+            </div>
+
+            <div class="follow-button-container">
+              <jhi-follow-button
+                [targetProfileId]="profile.id"
+                (friendshipChanged)="onFriendshipChanged($event, profile.id)"
+              ></jhi-follow-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Nickname Edit Modal -->
+<ng-template #nicknameModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">
+      <span *ngIf="currentEditingFriendship?.nickname">Edit Nickname</span>
+      <span *ngIf="!currentEditingFriendship?.nickname">Create a Nickname</span>
+    </h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="nickname">Nickname</label>
+      <input type="text" class="form-control" id="nickname" [(ngModel)]="editingNickname" placeholder="Enter nickname" />
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="saveNickname()">Save</button>
+  </div>
+</ng-template>

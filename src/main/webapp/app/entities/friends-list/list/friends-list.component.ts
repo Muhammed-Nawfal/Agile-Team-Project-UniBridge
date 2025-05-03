@@ -1,77 +1,209 @@
-import { Component, NgZone, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
-import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
-import SharedModule from 'app/shared/shared.module';
-import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
-import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
+import { Component, OnInit, ViewChild, TemplateRef, inject } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
-import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
-import { IFriendsList } from '../friends-list.model';
-import { EntityArrayResponseType, FriendsListService } from '../service/friends-list.service';
-import { FriendsListDeleteDialogComponent } from '../delete/friends-list-delete-dialog.component';
 import { FollowButtonComponent } from '../follow-button/follow-button.component';
+import { FriendsListService } from '../service/friends-list.service';
 import { ProfileService } from 'app/entities/profile/service/profile.service';
 import { IProfile } from 'app/entities/profile/profile.model';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { CommonModule } from '@angular/common';
+import { IFriendsList } from '../friends-list.model';
+import SharedModule from 'app/shared/shared.module';
+import { AccountService } from 'app/core/auth/account.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   standalone: true,
   selector: 'jhi-friends-list',
   templateUrl: './friends-list.component.html',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    SortDirective,
-    SortByDirective,
-    DurationPipe,
-    FormatMediumDatetimePipe,
-    FormatMediumDatePipe,
-    FollowButtonComponent,
-    FontAwesomeModule,
-    CommonModule,
-  ],
+  styleUrls: ['./friends-list.component.scss'],
+  imports: [RouterModule, CommonModule, FormsModule, FontAwesomeModule, SharedModule, FollowButtonComponent],
 })
 export class FriendsListComponent implements OnInit {
-  subscription: Subscription | null = null;
-  friendsLists?: IFriendsList[];
-  profiles?: IProfile[];
-  isLoading = false;
+  // Friends you follow
+  profiles: IProfile[] = [];
+  friendsLists: IFriendsList[] = [];
+
+  // People you may know
+  suggestedProfiles: IProfile[] = [];
+  filteredSuggestedProfiles: IProfile[] = [];
+
+  // Search
+  searchTerm = '';
+
+  // Nickname editing
+  currentEditingFriendship?: IFriendsList;
+  editingNickname = '';
+
+  @ViewChild('nicknameModal') nicknameModal!: TemplateRef<any>;
+
   isLoadingProfiles = false;
-  pendingRequestCount = 0; // Add this property
+  isLoadingSuggestions = false;
+  pendingRequestCount = 0;
+  profileToFriendshipMap = new Map<number, IFriendsList>();
+  followedProfileIds = new Set<number>();
+  currentUsername = '';
+  currentProfileId?: number;
 
-  sortState = sortStateSignal({});
-
-  public readonly router = inject(Router);
   protected readonly friendsListService = inject(FriendsListService);
   protected readonly profileService = inject(ProfileService);
-  protected readonly activatedRoute = inject(ActivatedRoute);
-  protected readonly sortService = inject(SortService);
-  protected modalService = inject(NgbModal);
-  protected ngZone = inject(NgZone);
-
-  trackId = (index: number, item: IFriendsList): number => this.friendsListService.getFriendsListIdentifier(item);
-  trackProfileId = (index: number, item: IProfile): number => item.id;
+  protected readonly accountService = inject(AccountService);
+  protected readonly modalService = inject(NgbModal);
+  protected readonly router = inject(Router);
 
   ngOnInit(): void {
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => {
-          if (!this.friendsLists || this.friendsLists.length === 0) {
-            this.load();
-          }
-        }),
-      )
-      .subscribe();
-
-    // Load profiles for testing the follow button
-    this.loadProfiles();
-    // Add this line to get the pending request count
+    this.getCurrentUserInfo();
+    this.loadAcceptedFriends();
     this.getPendingRequestCount();
+  }
+
+  getCurrentUserInfo(): void {
+    this.accountService.identity().subscribe(account => {
+      if (account) {
+        this.currentUsername = account.login;
+        this.findCurrentProfileId();
+      }
+    });
+  }
+
+  findCurrentProfileId(): void {
+    this.profileService.query().subscribe({
+      next: res => {
+        const profiles = res.body ?? [];
+        const currentProfile = profiles.find(profile => profile.login === this.currentUsername);
+        if (currentProfile) {
+          this.currentProfileId = currentProfile.id;
+        }
+      },
+    });
+  }
+
+  trackProfileId = (index: number, item: IProfile): number => item.id;
+
+  loadAcceptedFriends(): void {
+    this.isLoadingProfiles = true;
+
+    this.friendsListService.getCurrentUserAcceptedFriends().subscribe({
+      next: res => {
+        this.isLoadingProfiles = false;
+        this.friendsLists = res.body ?? [];
+
+        if (this.friendsLists.length > 0) {
+          this.extractProfilesFromFriendships();
+        } else {
+          // If no friendships, load suggestions directly
+          this.loadSuggestedProfiles();
+        }
+      },
+      error: () => {
+        this.isLoadingProfiles = false;
+        this.loadSuggestedProfiles();
+      },
+    });
+  }
+
+  extractProfilesFromFriendships(): void {
+    // Load all profile IDs we need to fetch
+    const profileIds: number[] = [];
+    this.profileToFriendshipMap.clear();
+    this.followedProfileIds.clear();
+
+    this.friendsLists.forEach(friendship => {
+      if (friendship.requestedByProfile && friendship.requestedToProfile) {
+        // Add both profiles
+        profileIds.push(friendship.requestedByProfile.id);
+        profileIds.push(friendship.requestedToProfile.id);
+
+        // Map both profiles to this friendship for easy lookup
+        this.profileToFriendshipMap.set(friendship.requestedByProfile.id, friendship);
+        this.profileToFriendshipMap.set(friendship.requestedToProfile.id, friendship);
+
+        // Keep track of followed profiles
+        this.followedProfileIds.add(friendship.requestedByProfile.id);
+        this.followedProfileIds.add(friendship.requestedToProfile.id);
+      }
+    });
+
+    // Remove duplicates
+    const uniqueProfileIds = [...new Set(profileIds)];
+
+    // Fetch all these profiles
+    if (uniqueProfileIds.length > 0) {
+      this.loadProfiles(uniqueProfileIds);
+    }
+
+    // After loading followed profiles, load suggested ones
+    this.loadSuggestedProfiles();
+  }
+
+  loadProfiles(profileIds: number[]): void {
+    // Using query to fetch specific profiles
+    this.profileService.query().subscribe({
+      next: res => {
+        const allProfiles = res.body ?? [];
+
+        // Filter to only include the profiles in our list AND exclude the current user's profile
+        this.profiles = allProfiles.filter(profile => profileIds.includes(profile.id) && profile.id !== this.currentProfileId);
+      },
+      error() {
+        // Handle error
+      },
+    });
+  }
+
+  loadSuggestedProfiles(): void {
+    this.isLoadingSuggestions = true;
+
+    // Get all profiles
+    this.profileService.query().subscribe({
+      next: res => {
+        const allProfiles = res.body ?? [];
+        this.isLoadingSuggestions = false;
+
+        // Filter out profiles the user is already following AND the current user's own profile
+        this.suggestedProfiles = allProfiles.filter(
+          profile => !this.followedProfileIds.has(profile.id) && profile.id !== this.currentProfileId,
+        );
+
+        // Initialize filtered suggestions with all suggestions
+        this.filteredSuggestedProfiles = [...this.suggestedProfiles];
+      },
+      error: () => {
+        this.isLoadingSuggestions = false;
+      },
+    });
+  }
+
+  searchProfiles(): void {
+    if (!this.searchTerm || this.searchTerm.trim() === '') {
+      // If search is empty, show all suggested profiles
+      this.filteredSuggestedProfiles = [...this.suggestedProfiles];
+      return;
+    }
+
+    const searchTermLower = this.searchTerm.toLowerCase().trim();
+
+    // Filter profiles based on search term
+    this.filteredSuggestedProfiles = this.suggestedProfiles.filter(profile => {
+      const firstName = (profile.firstName ?? '').toLowerCase();
+      const lastName = (profile.lastName ?? '').toLowerCase();
+      const fullName = `${firstName} ${lastName}`.trim();
+      const id = profile.id.toString() || '';
+      const login = (profile.login ?? '').toLowerCase();
+
+      // Search in first name, last name, full name, login, or ID
+      return (
+        firstName.includes(searchTermLower) ||
+        lastName.includes(searchTermLower) ||
+        fullName.includes(searchTermLower) ||
+        login.includes(searchTermLower) ||
+        id === searchTermLower
+      );
+    });
+  }
+
+  getFriendshipForProfile(profileId: number): IFriendsList | undefined {
+    return this.profileToFriendshipMap.get(profileId);
   }
 
   getPendingRequestCount(): void {
@@ -80,92 +212,58 @@ export class FriendsListComponent implements OnInit {
         this.pendingRequestCount = (res.body ?? []).length;
       },
       error: () => {
-        // Handle any errors if needed
         this.pendingRequestCount = 0;
       },
     });
   }
 
-  delete(friendsList: IFriendsList): void {
-    const modalRef = this.modalService.open(FriendsListDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
-    modalRef.componentInstance.friendsList = friendsList;
-    // unsubscribe not needed because closed completes on modal close
-    modalRef.closed
-      .pipe(
-        filter(reason => reason === ITEM_DELETED_EVENT),
-        tap(() => this.load()),
-      )
-      .subscribe();
-  }
-
-  load(): void {
-    this.queryBackend().subscribe({
-      next: (res: EntityArrayResponseType) => {
-        this.onResponseSuccess(res);
-        this.getPendingRequestCount(); // Add this line
-      },
-    });
-  }
-
-  loadProfiles(): void {
-    this.isLoadingProfiles = true;
-    this.profileService.query().subscribe({
-      next: res => {
-        this.isLoadingProfiles = false;
-        this.profiles = res.body ?? [];
-      },
-      error: () => {
-        this.isLoadingProfiles = false;
-      },
-    });
+  refreshList(): void {
+    this.loadAcceptedFriends();
   }
 
   onFriendshipChanged(event: string, profileId: number): void {
-    // Log is removed to avoid eslint error
-    // Instead of using console.log, we'll just perform the action
-    this.load();
+    // Reload profiles after friendship status changes
+    this.loadAcceptedFriends();
   }
 
-  navigateToWithComponentValues(event: SortState): void {
-    this.handleNavigation(event);
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.searchProfiles();
   }
 
-  protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
-    this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
+  // Nickname editing functionality
+  editNickname(friendship?: IFriendsList): void {
+    if (!friendship) {
+      return;
+    }
+
+    this.currentEditingFriendship = friendship;
+    this.editingNickname = friendship.nickname ?? '';
+
+    // Open the nickname modal
+    this.modalService.open(this.nicknameModal, { centered: true });
   }
 
-  protected onResponseSuccess(response: EntityArrayResponseType): void {
-    const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
-    this.friendsLists = this.refineData(dataFromBody);
-  }
+  saveNickname(): void {
+    if (!this.currentEditingFriendship) {
+      return;
+    }
 
-  protected refineData(data: IFriendsList[]): IFriendsList[] {
-    const { predicate, order } = this.sortState();
-    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
-  }
+    // Update the friendship with the new nickname
+    this.currentEditingFriendship.nickname = this.editingNickname;
 
-  protected fillComponentAttributesFromResponseBody(data: IFriendsList[] | null): IFriendsList[] {
-    return data ?? [];
-  }
-
-  protected queryBackend(): Observable<EntityArrayResponseType> {
-    this.isLoading = true;
-    const queryObject: any = {
-      sort: this.sortService.buildSortParam(this.sortState()),
-    };
-    return this.friendsListService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
-  }
-
-  protected handleNavigation(sortState: SortState): void {
-    const queryParamsObj = {
-      sort: this.sortService.buildSortParam(sortState),
-    };
-
-    this.ngZone.run(() => {
-      this.router.navigate(['./'], {
-        relativeTo: this.activatedRoute,
-        queryParams: queryParamsObj,
-      });
+    // Save to backend
+    this.friendsListService.update(this.currentEditingFriendship).subscribe({
+      next: () => {
+        // Close the modal
+        this.modalService.dismissAll();
+        // Refresh the list to show updated nickname
+        this.loadAcceptedFriends();
+      },
+      error: () => {
+        // Handle error
+        this.modalService.dismissAll();
+      },
     });
   }
 }
