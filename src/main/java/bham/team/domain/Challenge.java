@@ -28,8 +28,8 @@ public class Challenge implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @NotNull
-    @Size(min = 3, max = 100)
+    @NotNull(message = "Title is required")
+    @Size(min = 3, max = 100, message = "Title must be between 3 and 100 characters")
     @Column(name = "title", length = 100, nullable = false)
     private String title;
 

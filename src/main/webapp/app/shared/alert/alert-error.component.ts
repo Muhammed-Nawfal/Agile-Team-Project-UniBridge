@@ -106,13 +106,13 @@ export class AlertErrorComponent implements OnDestroy {
   private handleFieldsError(httpErrorResponse: HttpErrorResponse): void {
     const { fieldErrors } = httpErrorResponse.error;
     for (const fieldError of fieldErrors) {
-      if (['Min', 'Max', 'DecimalMin', 'DecimalMax'].includes(fieldError.message)) {
-        fieldError.message = 'Size';
-      }
-      // convert 'something[14].other[4].id' to 'something[].other[].id' so translations can be written to it
+      // Display the server-provided message if available
+      const errorMessage = fieldError.message;
       const convertedField: string = fieldError.field.replace(/\[\d*\]/g, '[]');
       const fieldName: string = convertedField.charAt(0).toUpperCase() + convertedField.slice(1);
-      this.addErrorAlert(`Error on field "${fieldName}"`);
+
+      // Use the custom message from the server if it exists
+      this.addErrorAlert(`${fieldName}: ${errorMessage}`);
     }
   }
 }

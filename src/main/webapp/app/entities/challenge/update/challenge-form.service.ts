@@ -94,7 +94,7 @@ export class ChallengeFormService {
         },
       ),
       title: new FormControl(challengeRawValue.title, {
-        validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100), this.minWordCount(3)],
+        validators: [Validators.required],
       }),
       description: new FormControl(challengeRawValue.description, {
         validators: [Validators.required, this.maxWordCount(1000)],

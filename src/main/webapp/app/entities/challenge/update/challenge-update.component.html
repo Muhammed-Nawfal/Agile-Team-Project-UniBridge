@@ -24,15 +24,6 @@
               @if (editForm.get('title')?.errors?.required) {
                 <small class="form-text text-danger">This field is required.</small>
               }
-              @if (editForm.get('title')?.errors?.minlength) {
-                <small class="form-text text-danger">This field is required to be at least 3 characters.</small>
-              }
-              @if (editForm.get('title')?.errors?.maxlength) {
-                <small class="form-text text-danger">This field cannot be longer than 100 characters.</small>
-              }
-              @if (editForm.get('title')?.errors?.minWordCount) {
-                <small class="form-text text-danger">Title must contain at least 3 words.</small>
-              }
             </div>
           }
         </div>
