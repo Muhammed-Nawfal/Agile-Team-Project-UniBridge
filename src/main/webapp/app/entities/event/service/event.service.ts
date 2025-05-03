@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -70,5 +72,68 @@ export class EventService {
       return [...eventsToAdd, ...eventCollection];
     }
     return eventCollection;
+  }
+
+  findEventIdByValue(eventValue: string, activities: any[]): number | undefined {
+    console.log('Looking for event:', eventValue);
+    console.log('Available activities:', activities);
+
+    const allEventValues: string[] = [];
+    activities.forEach(activity => {
+      activity.events.forEach((event: any) => {
+        allEventValues.push(event.value);
+        console.log(`Event: ${event.value}, ID: ${event.id}, Name: ${event.name}`);
+      });
+    });
+    console.log('All available event values:', allEventValues);
+
+    for (const activity of activities) {
+      const foundEvent = activity.events.find((e: any) => e.value === eventValue);
+      if (foundEvent?.id) {
+        console.log('Found exact match for event:', eventValue, 'with ID:', foundEvent.id);
+        return foundEvent.id as number;
+      }
+    }
+
+    for (const activity of activities) {
+      const foundEvent = activity.events.find((e: any) => {
+        return e.value.toLowerCase() === eventValue.toLowerCase();
+      });
+
+      if (foundEvent?.id) {
+        console.log('Found case-insensitive match for event:', eventValue, 'with value:', foundEvent.value, 'and ID:', foundEvent.id);
+        return foundEvent.id as number;
+      }
+    }
+
+    for (const activity of activities) {
+      const foundEvent = activity.events.find((e: any) => {
+        return e.name.replace(/\s+/g, '_') === eventValue;
+      });
+
+      if (foundEvent?.id) {
+        console.log('Found match by converted name for event:', eventValue, 'with ID:', foundEvent.id);
+        return foundEvent.id as number;
+      }
+    }
+
+    const seedDataMap: Record<string, number> = {
+      Study_Spaces: 1,
+      Event_Rooms: 2,
+      Football_Pitch: 3,
+      Tennis_Court: 4,
+      Basketball_Court: 5,
+      DOJO: 6,
+      Swimming_Pool: 7,
+      Squash_Court: 8,
+    };
+
+    if (seedDataMap[eventValue]) {
+      console.log('Using hardcoded ID mapping for:', eventValue, 'ID:', seedDataMap[eventValue]);
+      return seedDataMap[eventValue];
+    }
+
+    console.error('Could not find event ID for:', eventValue, 'in available events');
+    return undefined;
   }
 }

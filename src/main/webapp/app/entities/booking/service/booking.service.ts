@@ -1,14 +1,19 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
-
+import { Observable, map, switchMap } from 'rxjs';
+import { HttpParams } from '@angular/common/http';
 import dayjs from 'dayjs/esm';
-
 import { isPresent } from 'app/core/util/operators';
 import { DATE_FORMAT } from 'app/config/input.constants';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IBooking, NewBooking } from '../booking.model';
+import { EventService } from 'app/entities/event/service/event.service';
+import { ITimeSlot } from 'app/entities/time-slot/time-slot.model';
+import { TimeSlotService } from 'app/entities/time-slot/service/time-slot.service';
+import { ActivityType } from 'app/entities/enumerations/activity-type.model';
+import { EventType } from 'app/entities/enumerations/event-type.model';
+import { BookingStatus } from 'app/entities/enumerations/booking-status.model';
 
 export type PartialUpdateBooking = Partial<IBooking> & Pick<IBooking, 'id'>;
 
@@ -31,8 +36,97 @@ export type EntityArrayResponseType = HttpResponse<IBooking[]>;
 export class BookingService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
+  protected readonly eventService = inject(EventService);
+  protected readonly timeSlotService = inject(TimeSlotService);
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/bookings');
+
+  getLocationTypeFromEvent(event: string): string {
+    const upperEvent = event.toUpperCase();
+
+    switch (upperEvent) {
+      case 'EVENT_ROOMS':
+        return 'Event Room';
+      case 'STUDY_SPACES':
+        return 'Study Space';
+      case 'FOOTBALL_PITCH':
+        return 'Football Pitch';
+      case 'BASKETBALL_COURT':
+        return 'Basketball Court';
+      case 'TENNIS_COURT':
+        return 'Tennis Court';
+      case 'SWIMMING_POOL':
+        return 'Swimming Pool';
+      case 'SQUASH_COURT':
+        return 'Squash Court';
+      case 'DOJO':
+        return 'DOJO';
+      default:
+        return event.replace(/_/g, ' ');
+    }
+  }
+
+  loadUserBookings(): Observable<any[]> {
+    const locations$ = this.http.get<any[]>('api/locations');
+    const bookings$ = this.http.get<IBooking[]>('api/bookings', {
+      params: new HttpParams().set('bookingDate.greaterThanOrEqual', dayjs().format('YYYY-MM-DD')).set('sort', 'bookingDate,asc'),
+    });
+
+    return locations$.pipe(
+      switchMap(locations =>
+        bookings$.pipe(
+          map(bookings => {
+            const processedBookings = bookings.map(booking => {
+              let timeInfo = 'TBD';
+              if (booking.timeSlot?.startHour !== undefined && booking.timeSlot.endHour !== undefined) {
+                const startHour = booking.timeSlot.startHour!.toString().padStart(2, '0');
+                const endHour = booking.timeSlot.endHour!.toString().padStart(2, '0');
+                timeInfo = `${startHour}:00 - ${endHour}:00`;
+              }
+
+              const formattedDate = booking.bookingDate ? dayjs(booking.bookingDate).format('MMM DD') : '';
+              let locationName = '';
+
+              if (booking.bookingLocation?.id) {
+                const matchedLocation = locations.find(loc => loc.id === booking.bookingLocation?.id);
+                if (matchedLocation?.name) {
+                  locationName = matchedLocation.name;
+                }
+              } else if (booking.timeSlot?.location?.id) {
+                const matchedLocation = locations.find(loc => loc.id === booking.timeSlot?.location?.id);
+                if (matchedLocation?.name) {
+                  locationName = matchedLocation.name;
+                }
+              } else if (booking.eventType) {
+                const locationType = this.getLocationTypeFromEvent(booking.eventType);
+                const matchingLocations = locations.filter(loc => loc.name?.startsWith(locationType));
+                if (matchingLocations.length > 0) {
+                  locationName = matchingLocations[0].name;
+                } else {
+                  locationName = locationType + ' 1';
+                }
+              }
+
+              if (!locationName) {
+                locationName = 'Venue';
+              }
+
+              return {
+                id: booking.id,
+                name: booking.eventType ?? 'Booking',
+                time: timeInfo,
+                date: formattedDate,
+                status: booking.bookingStatus,
+                locationName,
+              };
+            });
+
+            return processedBookings.slice(0, 8);
+          }),
+        ),
+      ),
+    );
+  }
 
   create(booking: NewBooking): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(booking);
