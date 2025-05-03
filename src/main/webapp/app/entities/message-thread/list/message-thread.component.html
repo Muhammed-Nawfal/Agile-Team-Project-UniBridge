@@ -1,150 +1,48 @@
 <div>
   <h2 id="page-heading" data-cy="MessageThreadHeading">
-    <span>Message Threads</span>
+    <span>Messages</span>
 
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span>Refresh list</span>
-      </button>
-
-      <button
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-message-thread"
-        [routerLink]="['/message-thread/new']"
-      >
-        <fa-icon icon="plus"></fa-icon>
-        <span>Create a new Message Thread</span>
+        <span>Refresh</span>
       </button>
     </div>
   </h2>
 
   <jhi-alert-error></jhi-alert-error>
-
   <jhi-alert></jhi-alert>
 
   @if (messageThreads?.length === 0) {
     <div class="alert alert-warning" id="no-result">
-      <span>No Message Threads found</span>
+      <span>No conversations found. Start chatting with your friends!</span>
     </div>
   }
 
   @if (messageThreads && messageThreads.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
-        <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="isGroup">
-              <div class="d-flex">
-                <span>Is Group</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="name">
-              <div class="d-flex">
-                <span>Name</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="createdOn">
-              <div class="d-flex">
-                <span>Created On</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="updatedOn">
-              <div class="d-flex">
-                <span>Updated On</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="friendChat.id">
-              <div class="d-flex">
-                <span>Friend Chat</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="matchChat.id">
-              <div class="d-flex">
-                <span>Match Chat</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="participants.id">
-              <div class="d-flex">
-                <span>Participants</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (messageThread of messageThreads; track trackId(messageThread)) {
-            <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/message-thread', messageThread.id, 'view']">{{ messageThread.id }}</a>
-              </td>
-              <td>{{ messageThread.isGroup }}</td>
-              <td>{{ messageThread.name }}</td>
-              <td>{{ messageThread.createdOn | formatMediumDatetime }}</td>
-              <td>{{ messageThread.updatedOn | formatMediumDatetime }}</td>
-              <td>
-                @if (messageThread.friendChat) {
-                  <div>
-                    <a [routerLink]="['/friends-list', messageThread.friendChat.id, 'view']">{{ messageThread.friendChat.id }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                @if (messageThread.matchChat) {
-                  <div>
-                    <a [routerLink]="['/activity-match', messageThread.matchChat.id, 'view']">{{ messageThread.matchChat.id }}</a>
-                  </div>
-                }
-              </td>
-              <td>
-                @for (participants of messageThread.participants; track $index; let last = $last) {
-                  <span>
-                    <a class="form-control-static" [routerLink]="['/profile', participants.id, 'view']">{{ participants.id }}</a
-                    >{{ last ? '' : ', ' }}
-                  </span>
-                }
-              </td>
-              <td class="text-end">
-                <div class="btn-group">
-                  <a [routerLink]="['/message-thread', messageThread.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                    <fa-icon icon="eye"></fa-icon>
-                    <span class="d-none d-md-inline">View</span>
-                  </a>
-
-                  <a [routerLink]="['/message-thread', messageThread.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline">Edit</span>
-                  </a>
-
-                  <button type="submit" (click)="delete(messageThread)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline">Delete</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+    <div class="list-group">
+      @for (messageThread of messageThreads; track trackId($index, messageThread)) {
+        <div class="list-group-item list-group-item-action" (click)="openChat(messageThread)" style="cursor: pointer">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ getOtherParticipant(messageThread) }}</h5>
+            <small>{{ messageThread.updatedOn | formatMediumDatetime }}</small>
+          </div>
+          <p class="mb-1">Click to open conversation</p>
+          <div class="d-flex justify-content-between">
+            <small>
+              @if (messageThread.isGroup) {
+                <span class="badge bg-info">Group</span>
+              } @else {
+                <span class="badge bg-primary">Direct</span>
+              }
+            </small>
+            <button type="button" class="btn btn-danger btn-sm" (click)="delete(messageThread); $event.stopPropagation()">
+              <fa-icon icon="times"></fa-icon>
+              <span class="d-none d-md-inline">Delete</span>
+            </button>
+          </div>
+        </div>
+      }
     </div>
   }
 </div>

@@ -14,6 +14,11 @@ const routes: Routes = [
     loadChildren: () => import('./profile/profile.routes'),
   },
   {
+    path: 'trophy',
+    data: { pageTitle: 'My Trophies' },
+    loadChildren: () => import('./trophy/trophy.routes'),
+  },
+  {
     path: 'activity',
     data: { pageTitle: 'Activities' },
     loadChildren: () => import('./activity/activity.routes'),

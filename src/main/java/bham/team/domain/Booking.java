@@ -9,6 +9,8 @@ import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -58,9 +60,14 @@ public class Booking implements Serializable {
     @Column(name = "assigned_at")
     private Instant assignedAt;
 
+    @OneToMany(mappedBy = "booking", fetch = FetchType.LAZY)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "bookingsLists", "event", "booking" }, allowSetters = true)
+    private Set<TimeSlot> timeSlots = new HashSet<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "bookingsLists", "event" }, allowSetters = true)
-    private TimeSlot timeSlots;
+    private TimeSlot timeSlot;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "bookings", "creator", "challenge" }, allowSetters = true)
@@ -76,10 +83,6 @@ public class Booking implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "bookings", "creator", "challenge" }, allowSetters = true)
     private Activity activity;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "bookingsLists", "event" }, allowSetters = true)
-    private TimeSlot timeSlot;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -187,16 +190,47 @@ public class Booking implements Serializable {
         this.assignedAt = assignedAt;
     }
 
-    public TimeSlot getTimeSlots() {
+    public Set<TimeSlot> getTimeSlots() {
         return this.timeSlots;
     }
 
-    public void setTimeSlots(TimeSlot timeSlot) {
-        this.timeSlots = timeSlot;
+    public void setTimeSlots(Set<TimeSlot> timeSlots) {
+        if (this.timeSlots != null) {
+            this.timeSlots.forEach(i -> i.setBooking(null));
+        }
+        if (timeSlots != null) {
+            timeSlots.forEach(i -> i.setBooking(this));
+        }
+        this.timeSlots = timeSlots;
     }
 
-    public Booking timeSlots(TimeSlot timeSlot) {
-        this.setTimeSlots(timeSlot);
+    public Booking timeSlots(Set<TimeSlot> timeSlots) {
+        this.setTimeSlots(timeSlots);
+        return this;
+    }
+
+    public Booking addTimeSlot(TimeSlot timeSlot) {
+        this.timeSlots.add(timeSlot);
+        timeSlot.setBooking(this);
+        return this;
+    }
+
+    public Booking removeTimeSlot(TimeSlot timeSlot) {
+        this.timeSlots.remove(timeSlot);
+        timeSlot.setBooking(null);
+        return this;
+    }
+
+    public TimeSlot getTimeSlot() {
+        return this.timeSlot;
+    }
+
+    public void setTimeSlot(TimeSlot timeSlot) {
+        this.timeSlot = timeSlot;
+    }
+
+    public Booking timeSlot(TimeSlot timeSlot) {
+        this.setTimeSlot(timeSlot);
         return this;
     }
 
@@ -249,19 +283,6 @@ public class Booking implements Serializable {
 
     public Booking activity(Activity activity) {
         this.setActivity(activity);
-        return this;
-    }
-
-    public TimeSlot getTimeSlot() {
-        return this.timeSlot;
-    }
-
-    public void setTimeSlot(TimeSlot timeSlot) {
-        this.timeSlot = timeSlot;
-    }
-
-    public Booking timeSlot(TimeSlot timeSlot) {
-        this.setTimeSlot(timeSlot);
         return this;
     }
 

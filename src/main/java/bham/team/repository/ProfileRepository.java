@@ -13,7 +13,10 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface ProfileRepository extends JpaRepository<Profile, Long> {
+public interface ProfileRepository extends JpaRepository<Profile, Long>, JpaSpecificationExecutor<Profile> {
+    /**
+     * Find profiles with a specific preferred activity type
+     */
     @Query("SELECT DISTINCT profile FROM Profile profile " + "WHERE profile.preferredActivities = :activityType")
     List<Profile> findByPreferredActivity(@Param("activityType") ActivityType activityType);
 

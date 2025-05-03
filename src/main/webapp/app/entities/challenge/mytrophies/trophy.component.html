@@ -1,0 +1,54 @@
+<div class="container-fluid">
+  <h2 class="text-center my-4">My Trophies</h2>
+
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <!-- Loading State -->
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Loading your trophies...</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error" class="alert alert-danger text-center" role="alert">
+        <fa-icon icon="exclamation-circle"></fa-icon>
+        <span class="ms-1">Failed to load trophies. Please try again later.</span>
+      </div>
+
+      <!-- Trophy Display -->
+      <div *ngIf="!loading && !error">
+        <div class="text-center mb-4">
+          <h4>You have earned {{ getTotalPoints() }} points!</h4>
+        </div>
+
+        <!-- Trophy Grid -->
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 mb-4">
+          <div *ngFor="let trophy of trophyCounts" class="col">
+            <div class="card h-100 shadow-sm trophy-card">
+              <div class="card-body text-center">
+                <div class="trophy-icon mb-3">
+                  <fa-icon [icon]="trophy.icon" [style.color]="trophy.color" size="3x"></fa-icon>
+                </div>
+                <h5 class="card-title">{{ trophy.type }} Trophy</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ trophy.points }} points each</h6>
+                <div class="trophy-count mt-3">
+                  <span class="fs-4 fw-bold">x {{ trophy.count }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- No trophies message -->
+        <div *ngIf="getTotalTrophies() === 0" class="text-center py-5">
+          <fa-icon icon="trophy" size="3x" class="text-muted mb-3"></fa-icon>
+          <h4>No trophies yet</h4>
+          <p>Complete challenges to earn trophies!</p>
+          <a routerLink="/challenge" class="btn btn-primary mt-2"> <fa-icon icon="tasks"></fa-icon> View Challenges </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

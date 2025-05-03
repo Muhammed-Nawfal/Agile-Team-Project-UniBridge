@@ -1,125 +1,215 @@
-<div class="container py-4">
-  <!-- Header & Filters -->
-  <h1 class="text-center mb-4">WHO IS YOUR {{ buddyType.toUpperCase() }} BUDDY?</h1>
-
-  <form class="row g-3 align-items-end mb-5" (submit)="applyFilters($event)" #f="ngForm">
-    <div class="col-sm-4">
-      <label class="form-label">{{ getFirstFilterLabel() }}</label>
-      <select class="form-select" name="filter1" [(ngModel)]="filter1Value" required>
-        <option *ngFor="let o of filter1Options" [value]="o.value">{{ o.label }}</option>
-      </select>
-    </div>
-    <div class="col-sm-4">
-      <label class="form-label">{{ getSecondFilterLabel() }}</label>
-      <select class="form-select" name="filter2" [(ngModel)]="filter2Value" required>
-        <option *ngFor="let o of filter2Options" [value]="o.value">{{ o.label }}</option>
-      </select>
-    </div>
-    <div class="col-sm-4">
-      <label class="form-label">{{ getTimingLabel() }}</label>
-      <select class="form-select" name="filter3" [(ngModel)]="filter3Value" required>
-        <option *ngFor="let o of filter3Options" [value]="o.value">{{ o.label }}</option>
-      </select>
-    </div>
-
-    <div class="col-12 text-center mt-3">
-      <button type="submit" class="btn btn-primary me-2">Apply Filters</button>
-      <button type="button" class="btn btn-outline-secondary" (click)="resetFilters()">Reset</button>
-    </div>
-  </form>
-
-  <!-- Loading / Empty / Error States -->
-  <div *ngIf="isLoading" class="text-center my-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading…</span>
-    </div>
-    <p class="mt-2 text-muted">Loading buddies…</p>
+<main id="main-content" role="main" jhiFocusAnnouncer jhiHoverAnnouncer jhiOptionAnnouncer>
+  <div *ngIf="a11y.isEnabled$ | async" aria-live="polite" aria-atomic="true" class="sr-only">
+    {{ liveMessage }}
   </div>
+  <div class="container py-4">
+    <!-- Header & Filters -->
+    <h1 class="text-center mb-4">WHO IS YOUR {{ buddyType.toUpperCase() }} BUDDY?</h1>
 
-  <div *ngIf="errorMessage" class="alert alert-danger text-center">
-    {{ errorMessage }}
-  </div>
+    <form class="row g-3 align-items-end mb-5" (submit)="applyFilters($event)" #f="ngForm">
+      <div class="col-sm-4">
+        <label for="filter1" class="form-label">{{ getFirstFilterLabel() }}</label>
+        <select
+          id="filter1"
+          class="form-select"
+          name="filter1"
+          [attr.aria-label]="getFirstFilterLabel()"
+          [(ngModel)]="filter1Value"
+          required
+          jhiOptionAnnouncer
+        >
+          <option *ngFor="let o of filter1Options" [value]="o.value">{{ o.label }}</option>
+        </select>
+      </div>
+      <div class="col-sm-4">
+        <label for="filter2" class="form-label">{{ getSecondFilterLabel() }}</label>
+        <select
+          id="filter2"
+          class="form-select"
+          name="filter2"
+          [attr.aria-label]="getSecondFilterLabel()"
+          [(ngModel)]="filter2Value"
+          required
+          jhiOptionAnnouncer
+        >
+          <option *ngFor="let o of filter2Options" [value]="o.value">{{ o.label }}</option>
+        </select>
+      </div>
 
-  <div *ngIf="noMoreProfiles && !isLoading" class="alert alert-secondary text-center">
-    <h5>Nothing more here!</h5>
-    <p>Try different filters or check back later.</p>
-  </div>
+      <div class="col-sm-4">
+        <label for="filter3" class="form-label">{{ getTimingLabel() }}</label>
+        <select
+          id="filter3"
+          class="form-select"
+          name="filter3"
+          [attr.aria-label]="getTimingLabel()"
+          [(ngModel)]="filter3Value"
+          required
+          jhiOptionAnnouncer
+        >
+          <option *ngFor="let o of filter3Options" [value]="o.value">{{ o.label }}</option>
+        </select>
+      </div>
 
-  <!-- Swipe‐style Profile Card -->
-  <div *ngIf="currentProfile && !isLoading && !noMoreProfiles" class="swipe-container">
-    <div class="card-wrapper">
-      <!-- Reject button -->
-      <button class="btn-swipe reject" (click)="rejectProfile()" aria-label="Reject">
-        <i class="fas fa-times fa-lg"></i>
-      </button>
+      <div class="col-12 text-center mt-3">
+        <button type="submit" class="btn btn-primary me-2">Apply Filters</button>
+        <button type="button" class="btn btn-outline-secondary" (click)="resetFilters()">Reset</button>
+      </div>
+    </form>
 
-      <!-- Main card -->
-      <div class="card card-large shadow">
-        <div class="card-body text-center d-flex flex-column align-items-center justify-content-center">
-          <!-- Avatar or Initials -->
-          <ng-container *ngIf="currentProfile.profilePicture; else initials">
-            <img [src]="currentProfile.profilePicture" alt="avatar" class="avatar-lg rounded-circle border" />
-          </ng-container>
-          <ng-template #initials>
-            <div class="avatar-lg initials rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center">
-              {{ getInitials(currentProfile.firstName || ' ') }}
+    <!-- Loading / Empty / Error States -->
+    <div *ngIf="isLoading" class="text-center my-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading…</span>
+      </div>
+      <p class="mt-2 text-muted">Loading buddies…</p>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger text-center">
+      {{ errorMessage }}
+    </div>
+
+    <div *ngIf="noMoreProfiles && !isLoading" class="alert alert-secondary text-center">
+      <h5>Nothing more here!</h5>
+      <p>Try different filters or check back later.</p>
+    </div>
+
+    <!-- Swipe‐style Profile Card -->
+    <div
+      *ngIf="currentProfile && !isLoading && !noMoreProfiles"
+      class="swipe-container"
+      role="region"
+      [attr.aria-label]="'Profile card ' + (currentProfileIndex + 1) + ' of ' + profiles.length"
+    >
+      <!-- Read‐aloud control -->
+      <div class="text-center mb-2">
+        <button
+          #readProfileBtn
+          type="button"
+          class="btn btn-sm btn-outline-secondary"
+          (click)="readProfile()"
+          aria-label="Read profile summary"
+        >
+          🔊 Read Profile
+        </button>
+      </div>
+      <div class="card-wrapper">
+        <!-- Reject button -->
+        <button class="btn-swipe reject" role="button" aria-label="Reject this profile" (click)="rejectProfile()">
+          <i class="fas fa-times fa-lg" aria-hidden="true"></i>
+        </button>
+
+        <!-- Main card -->
+        <div class="card card-large shadow">
+          <div class="card-body text-center d-flex flex-column align-items-center justify-content-center">
+            <!-- Avatar or Initials -->
+            <ng-container *ngIf="currentProfile.profilePicture; else initials">
+              <img [src]="currentProfile.profilePicture" alt="avatar" class="avatar-lg rounded-circle border" />
+            </ng-container>
+            <ng-template #initials>
+              <div class="avatar-lg initials rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center">
+                {{ getInitials(currentProfile.firstName || ' ') }}
+              </div>
+            </ng-template>
+
+            <!-- Name & Meta -->
+            <h5 class="mt-3 mb-1">{{ currentProfile.firstName }}</h5>
+            <p class="text-muted small mb-2">{{ currentProfile.course }} · Year {{ currentProfile.courseYear }}</p>
+
+            <!-- Badges -->
+            <div class="badges mb-2" [ngSwitch]="buddyType">
+              <!-- GYM -->
+              <ng-container *ngSwitchCase="ActivityType.GYM">
+                <span class="badge bg-light text-dark me-1" *ngIf="currentProfile?.gymLocation">
+                  {{ currentProfile.gymLocation }}
+                </span>
+                <span class="badge bg-light text-dark me-1" *ngIf="currentProfile?.gymSkill">
+                  {{ currentProfile.gymSkill }}
+                </span>
+                <span class="badge bg-light text-dark" *ngIf="currentProfile?.gymTime">
+                  {{ currentProfile.gymTime }}
+                </span>
+              </ng-container>
+
+              <!-- ACADEMIC -->
+              <ng-container *ngSwitchCase="ActivityType.ACADEMIC">
+                <span class="badge bg-light text-dark me-1" *ngIf="currentProfile?.university">
+                  {{ currentProfile.university }}
+                </span>
+                <span class="badge bg-light text-dark" *ngIf="currentProfile?.studyTime">
+                  {{ currentProfile.studyTime }}
+                </span>
+              </ng-container>
+
+              <!-- SPORTS -->
+              <ng-container *ngSwitchCase="ActivityType.SPORTS">
+                <span class="badge bg-light text-dark me-1" *ngIf="currentProfile?.sports">
+                  {{ currentProfile.sports }}
+                </span>
+                <span class="badge bg-light text-dark me-1" *ngIf="currentProfile?.sportsSkill">
+                  {{ currentProfile.sportsSkill }}
+                </span>
+                <span class="badge bg-light text-dark" *ngIf="currentProfile?.sportsTime">
+                  {{ currentProfile.sportsTime }}
+                </span>
+              </ng-container>
+
+              <!-- SOCIAL -->
+              <ng-container *ngSwitchCase="ActivityType.SOCIAL">
+                <span class="badge bg-light text-dark me-1" *ngIf="currentProfile?.preferredSociety">
+                  {{ currentProfile.preferredSociety }}
+                </span>
+                <span class="badge bg-light text-dark me-1" *ngIf="currentProfile?.preferredEvents">
+                  {{ currentProfile.preferredEvents }}
+                </span>
+                <span class="badge bg-light text-dark" *ngIf="currentProfile?.eventsTime">
+                  {{ currentProfile.eventsTime }}
+                </span>
+              </ng-container>
+
+              <!-- fallback, if you ever need it -->
+              <ng-container *ngSwitchDefault>
+                <!-- nothing or a default message -->
+              </ng-container>
             </div>
-          </ng-template>
+          </div>
+        </div>
 
-          <!-- Name & Meta -->
-          <h5 class="mt-3 mb-1">{{ currentProfile.firstName }}</h5>
-          <p class="text-muted small mb-2">{{ currentProfile.course }} · Year {{ currentProfile.courseYear }}</p>
+        <!-- Accept button -->
+        <button class="btn-swipe accept" role="button" aria-label="Accept this profile" (click)="acceptProfile()">
+          <i class="fas fa-check fa-lg" aria-hidden="true"></i>
+        </button>
 
-          <!-- Badges -->
-          <div class="badges mb-2">
-            <span class="badge bg-light text-dark me-1" *ngIf="buddyType === ActivityType.SOCIAL">
-              {{ currentProfile.preferredSociety }}
-            </span>
-            <span class="badge bg-light text-dark me-1" *ngIf="buddyType === ActivityType.SOCIAL">
-              {{ currentProfile.preferredEvents }}
-            </span>
-            <span class="badge bg-light text-dark" *ngIf="buddyType === ActivityType.SOCIAL">
-              {{ currentProfile.eventsTime }}
-            </span>
-            <!-- add other buddyType badges here -->
+        <!-- Ratings & Actions (outside the card) -->
+        <div class="card-details d-flex justify-content-between align-items-center">
+          <div class="rating">
+            <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
+              <i class="fas fa-star" [class.text-warning]="star <= 4" [class.text-secondary]="star > 4"></i>
+            </ng-container>
+            <a routerLink="/ranking" class="ms-2 small text-decoration-underline"> View detailed ratings </a>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary btn-sm me-1" (click)="navigateToProfile()">View Profile</button>
+            <button class="btn btn-outline-primary btn-sm" (click)="followUser()">Follow</button>
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- Accept button -->
-      <button class="btn-swipe accept" (click)="acceptProfile()" aria-label="Accept">
-        <i class="fas fa-check fa-lg"></i>
-      </button>
-
-      <!-- Ratings & Actions (outside the card) -->
-      <div class="card-details d-flex justify-content-between align-items-center">
-        <div class="rating">
-          <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
-            <i class="fas fa-star" [class.text-warning]="star <= 4" [class.text-secondary]="star > 4"></i>
-          </ng-container>
-          <a routerLink="/ranking" class="ms-2 small text-decoration-underline"> View detailed ratings </a>
-        </div>
-        <div class="actions">
-          <button class="btn btn-primary btn-sm me-1" (click)="navigateToProfile()">View Profile</button>
-          <button class="btn btn-outline-primary btn-sm" (click)="followUser()">Follow</button>
-        </div>
+  <!-- Bootstrap Toast for “Follow request sent” -->
+  <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3">
+    <div
+      class="toast align-items-center text-white bg-success border-0"
+      role="alert"
+      [class.show]="showFollowPopup"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="d-flex">
+        <div class="toast-body">Follow request sent!</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="showFollowPopup = false" aria-label="Close"></button>
       </div>
     </div>
   </div>
-</div>
-
-<!-- Bootstrap Toast for “Follow request sent” -->
-<div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3">
-  <div
-    class="toast align-items-center text-white bg-success border-0"
-    role="alert"
-    [class.show]="showFollowPopup"
-    aria-live="assertive"
-    aria-atomic="true"
-  >
-    <div class="d-flex">
-      <div class="toast-body">Follow request sent!</div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="showFollowPopup = false" aria-label="Close"></button>
-    </div>
-  </div>
-</div>
+</main>

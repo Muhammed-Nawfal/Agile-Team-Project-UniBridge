@@ -8,6 +8,8 @@ import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IFriendsList, NewFriendsList } from '../friends-list.model';
+import { Decision } from 'app/entities/enumerations/decision.model';
+import { IProfile } from '../../profile/profile.model';
 
 export type PartialUpdateFriendsList = Partial<IFriendsList> & Pick<IFriendsList, 'id'>;
 
@@ -31,6 +33,7 @@ export class FriendsListService {
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/friends-lists');
+  protected userFriendsUrl = this.applicationConfigService.getEndpointFor('api/user-friends');
 
   create(friendsList: NewFriendsList): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(friendsList);
@@ -68,6 +71,81 @@ export class FriendsListService {
 
   delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  }
+
+  // New methods for friend requests
+
+  /**
+   * Send a friend request from the current user to another profile
+   * @param requestedProfileId The ID of the profile to send the request to
+   * @returns An observable with the created friend request
+   */
+  sendFriendRequest(requestedProfileId: number): Observable<EntityResponseType> {
+    // Fix: Include the request body as empty object and ensure proper URL format
+    return this.http
+      .post<RestFriendsList>(`${this.userFriendsUrl}/send-request/${requestedProfileId}`, {}, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
+  }
+
+  /**
+   * Respond to a friend request
+   * @param friendsListId The ID of the friends list to respond to
+   * @param decision The decision (ACCEPT or DECLINED)
+   * @returns An observable with the updated friend request
+   */
+  respondToFriendRequest(friendsListId: number, decision: Decision): Observable<EntityResponseType> {
+    // Updated to match the backend API expecting a query parameter instead of request body
+    return this.http
+      .put<RestFriendsList>(`${this.userFriendsUrl}/respond/${friendsListId}?decision=${decision}`, {}, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
+  }
+
+  /**
+   * Get all accepted friends for the current user
+   * @returns An observable with the list of accepted friends
+   */
+  getCurrentUserAcceptedFriends(): Observable<EntityArrayResponseType> {
+    return this.http
+      .get<RestFriendsList[]>(`${this.userFriendsUrl}/accepted`, { observe: 'response' })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+
+  /**
+   * Get all pending friend requests for the current user
+   * @returns An observable with the list of pending friend requests
+   */
+  getCurrentUserPendingFriendRequests(): Observable<EntityArrayResponseType> {
+    return this.http
+      .get<RestFriendsList[]>(`${this.userFriendsUrl}/pending`, { observe: 'response' })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+
+  /**
+   * Get all friend requests sent by the current user
+   * @returns An observable with the list of sent friend requests
+   */
+  getCurrentUserSentFriendRequests(): Observable<EntityArrayResponseType> {
+    return this.http
+      .get<RestFriendsList[]>(`${this.userFriendsUrl}/sent`, { observe: 'response' })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+
+  // Add this method to your FriendsListService class
+  /**
+   * Get profiles that the current user is following (has accepted friendship with)
+   * @returns Observable with array of profile objects
+   */
+  getFollowedProfiles(): Observable<HttpResponse<IProfile[]>> {
+    return this.http.get<IProfile[]>(`${this.userFriendsUrl}/followed-profiles`, { observe: 'response' });
+  }
+
+  /**
+   * Check if the current user has a pending or accepted friend request with another profile
+   * @param profileId The ID of the profile to check
+   * @returns An observable that returns the friendship status and ID if applicable
+   */
+  checkFriendshipStatus(profileId: number): Observable<{ status: string; friendsListId?: number }> {
+    return this.http.get<{ status: string; friendsListId?: number }>(`${this.userFriendsUrl}/check-status/${profileId}`);
   }
 
   getFriendsListIdentifier(friendsList: Pick<IFriendsList, 'id'>): number {

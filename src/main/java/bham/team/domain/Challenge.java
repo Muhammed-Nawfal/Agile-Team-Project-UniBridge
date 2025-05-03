@@ -28,8 +28,8 @@ public class Challenge implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @NotNull
-    @Size(min = 3, max = 100)
+    @NotNull(message = "Title is required")
+    @Size(min = 3, max = 100, message = "Title must be between 3 and 100 characters")
     @Column(name = "title", length = 100, nullable = false)
     private String title;
 
@@ -254,6 +254,22 @@ public class Challenge implements Serializable {
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+
+    /**
+     * Validates that a user cannot assign a challenge to themselves.
+     * This method is used by Bean Validation to check if assignedTo and createdBy are different profiles.
+     * @return true if assignedTo and createdBy profiles are different or either one is null, false otherwise
+     */
+    @AssertTrue(message = "You cannot assign a challenge to yourself")
+    public boolean isDifferentAssigneeAndCreator() {
+        // If either profile is null, the validation passes (other validators will catch required fields)
+        if (assignedTo == null || createdBy == null) {
+            return true;
+        }
+
+        // Compare IDs to ensure they are different users
+        return !assignedTo.getId().equals(createdBy.getId());
+    }
 
     @Override
     public boolean equals(Object o) {

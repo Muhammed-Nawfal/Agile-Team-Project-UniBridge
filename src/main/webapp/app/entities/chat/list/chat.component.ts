@@ -1,131 +1,163 @@
-import { Component, NgZone, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
-import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, NgZone, OnInit, inject, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Observable, Subscription, interval, switchMap, takeUntil, Subject, take } from 'rxjs';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 
 import SharedModule from 'app/shared/shared.module';
-import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
 import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
-import { FormsModule } from '@angular/forms';
-import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
 import { DataUtils } from 'app/core/util/data-util.service';
-import { IChat } from '../chat.model';
+import { IChat, NewChat } from '../chat.model';
 import { ChatService, EntityArrayResponseType } from '../service/chat.service';
-import { ChatDeleteDialogComponent } from '../delete/chat-delete-dialog.component';
+import { AccountService } from 'app/core/auth/account.service';
+import { ProfileService, EntityArrayResponseType as ProfileResponseType } from 'app/entities/profile/service/profile.service';
+import { MessageType } from 'app/entities/enumerations/message-type.model';
 
 @Component({
   standalone: true,
   selector: 'jhi-chat',
   templateUrl: './chat.component.html',
-  imports: [
-    RouterModule,
-    FormsModule,
-    SharedModule,
-    SortDirective,
-    SortByDirective,
-    DurationPipe,
-    FormatMediumDatetimePipe,
-    FormatMediumDatePipe,
-  ],
+  imports: [RouterModule, ReactiveFormsModule, SharedModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
 })
-export class ChatComponent implements OnInit {
-  subscription: Subscription | null = null;
+export class ChatComponent implements OnInit, OnDestroy {
   chats?: IChat[];
   isLoading = false;
-
-  sortState = sortStateSignal({});
+  threadId?: number;
+  currentUserProfileId?: number;
+  messageForm: FormGroup;
 
   public readonly router = inject(Router);
   protected readonly chatService = inject(ChatService);
   protected readonly activatedRoute = inject(ActivatedRoute);
-  protected readonly sortService = inject(SortService);
   protected dataUtils = inject(DataUtils);
-  protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
+  protected accountService = inject(AccountService);
+  protected profileService = inject(ProfileService);
+  protected fb = inject(FormBuilder);
+  @ViewChild('messageContainer') private messageContainer!: ElementRef;
 
-  trackId = (item: IChat): number => this.chatService.getChatIdentifier(item);
+  private destroy$ = new Subject<void>();
+
+  constructor() {
+    this.messageForm = this.fb.group({
+      message: ['', [Validators.required, Validators.minLength(1)]],
+    });
+  }
 
   ngOnInit(): void {
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
+    // 1) First resolve my profile ID
+    this.accountService
+      .identity()
       .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => {
-          if (!this.chats || this.chats.length === 0) {
-            this.load();
-          }
-        }),
+        take(1),
+        switchMap(account => this.profileService.query({ 'userLogin.equals': account?.login }).pipe(take(1))),
       )
-      .subscribe();
+      .subscribe(resp => {
+        const me = resp.body?.[0];
+        if (me?.id) {
+          this.currentUserProfileId = me.id;
+
+          // 2) Now that we have my profile ID, listen to query params
+          this.activatedRoute.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
+            const threadIdParam = params['threadId'];
+            if (threadIdParam) {
+              this.threadId = parseInt(threadIdParam, 10);
+              this.load();
+              // Set up polling for new messages
+              this.startMessagePolling();
+            }
+          });
+        } else {
+          console.error('Could not find my profile');
+        }
+      });
   }
 
-  byteSize(base64String: string): string {
-    return this.dataUtils.byteSize(base64String);
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  openFile(base64String: string, contentType: string | null | undefined): void {
-    return this.dataUtils.openFile(base64String, contentType);
-  }
-
-  delete(chat: IChat): void {
-    const modalRef = this.modalService.open(ChatDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
-    modalRef.componentInstance.chat = chat;
-    // unsubscribe not needed because closed completes on modal close
-    modalRef.closed
+  startMessagePolling(): void {
+    interval(5000)
       .pipe(
-        filter(reason => reason === ITEM_DELETED_EVENT),
-        tap(() => this.load()),
+        takeUntil(this.destroy$),
+        switchMap(() => this.loadMessages()),
       )
       .subscribe();
   }
 
   load(): void {
-    this.queryBackend().subscribe({
-      next: (res: EntityArrayResponseType) => {
-        this.onResponseSuccess(res);
-      },
-    });
+    if (this.threadId) {
+      this.loadMessages().subscribe({
+        next: (res: EntityArrayResponseType) => {
+          this.onResponseSuccess(res);
+          this.scrollToBottom();
+        },
+      });
+    }
   }
 
-  navigateToWithComponentValues(event: SortState): void {
-    this.handleNavigation(event);
+  loadMessages(): Observable<EntityArrayResponseType> {
+    if (!this.threadId) {
+      throw new Error('Thread ID is required');
+    }
+    this.isLoading = true;
+    return this.chatService.getMessagesByThread(this.threadId);
   }
 
-  protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
-    this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
+  sendMessage(): void {
+    if (this.messageForm.valid && this.threadId) {
+      const newChat: NewChat = {
+        id: null,
+        message: this.messageForm.get('message')?.value,
+        type: MessageType.TEXT,
+        isDeleted: false,
+        timestamp: null,
+        status: null,
+        media: null,
+        mediaContentType: null,
+        createdOn: null,
+        updatedOn: null,
+        thread: null,
+        sender: null,
+        receiver: null,
+        messageThread: null,
+      };
+
+      this.chatService.sendMessage(this.threadId, newChat).subscribe({
+        next: () => {
+          this.messageForm.reset();
+          this.load();
+        },
+        error(error) {
+          console.error('Error sending message:', error);
+        },
+      });
+    }
+  }
+
+  isOwnMessage(chat: IChat): boolean {
+    return chat.sender?.id === this.currentUserProfileId;
+  }
+
+  scrollToBottom(): void {
+    try {
+      setTimeout(() => {
+        if (this.messageContainer.nativeElement) {
+          this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
+        }
+      }, 100);
+    } catch (err) {
+      /* empty */
+    }
+  }
+
+  goBack(): void {
+    this.router.navigate(['/message-thread']);
   }
 
   protected onResponseSuccess(response: EntityArrayResponseType): void {
-    const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
-    this.chats = this.refineData(dataFromBody);
-  }
-
-  protected refineData(data: IChat[]): IChat[] {
-    const { predicate, order } = this.sortState();
-    return predicate && order ? data.sort(this.sortService.startSort({ predicate, order })) : data;
-  }
-
-  protected fillComponentAttributesFromResponseBody(data: IChat[] | null): IChat[] {
-    return data ?? [];
-  }
-
-  protected queryBackend(): Observable<EntityArrayResponseType> {
-    this.isLoading = true;
-    const queryObject: any = {
-      sort: this.sortService.buildSortParam(this.sortState()),
-    };
-    return this.chatService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
-  }
-
-  protected handleNavigation(sortState: SortState): void {
-    const queryParamsObj = {
-      sort: this.sortService.buildSortParam(sortState),
-    };
-
-    this.ngZone.run(() => {
-      this.router.navigate(['./'], {
-        relativeTo: this.activatedRoute,
-        queryParams: queryParamsObj,
-      });
-    });
+    this.chats = response.body ?? [];
+    this.isLoading = false;
   }
 }

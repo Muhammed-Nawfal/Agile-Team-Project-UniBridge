@@ -76,12 +76,16 @@
           </dd>
         </dl>
 
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <button type="submit" (click)="previousState()" class="btn btn-info me-2" data-cy="entityDetailsBackButton">
           <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
         </button>
 
-        <button type="button" [routerLink]="['/challenge', challengeRef.id, 'edit']" class="btn btn-primary">
+        <button type="button" [routerLink]="['/challenge', challengeRef.id, 'edit']" class="btn btn-primary me-2">
           <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+
+        <button type="button" (click)="delete(challengeRef)" class="btn btn-danger" data-cy="entityDeleteButton">
+          <fa-icon icon="trash"></fa-icon>&nbsp;<span>Delete</span>
         </button>
       </div>
     }
