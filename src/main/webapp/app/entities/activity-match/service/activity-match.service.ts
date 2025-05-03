@@ -58,7 +58,7 @@ export class ActivityMatchService {
     const declineCutoff = dayjs().subtract(14, 'day');
 
     // 1) get raw candidates
-    return this.getProfilesByPreferredActivity(activityType).pipe(
+    return this.getProfilesByActivity(activityType).pipe(
       switchMap(res => {
         const profiles = res.body ?? [];
 
@@ -122,9 +122,18 @@ export class ActivityMatchService {
     );
   }
 
-  getProfilesByPreferredActivity(activityType: ActivityType): Observable<HttpResponse<IProfile[]>> {
-    return this.http.get<IProfile[]>(`${this.profileUrl}/preferred-activity`, {
-      params: { activityType },
+  // getProfilesByPreferredActivity(activityType: ActivityType): Observable<HttpResponse<IProfile[]>> {
+  //   return this.http.get<IProfile[]>(`${this.profileUrl}/preferred-activity`, {
+  //     params: { activityType },
+  //     observe: 'response',
+  //   });
+  // }
+
+  /**
+   * Fetch all Profiles that have any non-null fields for the given ActivityType
+   */
+  getProfilesByActivity(type: ActivityType): Observable<HttpResponse<IProfile[]>> {
+    return this.http.get<IProfile[]>(`${this.profileUrl}/buddies/${type}`, {
       observe: 'response',
     });
   }
