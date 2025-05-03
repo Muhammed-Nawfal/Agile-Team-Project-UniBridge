@@ -1,7 +1,9 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
     <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="jhi-challenge-heading" data-cy="ChallengeCreateUpdateHeading">Create or edit a Challenge</h2>
+      <h2 id="jhi-challenge-heading" data-cy="ChallengeCreateUpdateHeading">
+        {{ isEditMode ? 'Edit Challenge' : 'Create a new Challenge' }}
+      </h2>
 
       <div>
         <jhi-alert-error></jhi-alert-error>
@@ -22,12 +24,6 @@
               @if (editForm.get('title')?.errors?.required) {
                 <small class="form-text text-danger">This field is required.</small>
               }
-              @if (editForm.get('title')?.errors?.minlength) {
-                <small class="form-text text-danger">This field is required to be at least 3 characters.</small>
-              }
-              @if (editForm.get('title')?.errors?.maxlength) {
-                <small class="form-text text-danger">This field cannot be longer than 100 characters.</small>
-              }
             </div>
           }
         </div>
@@ -35,19 +31,36 @@
         @let descriptionRef = editForm.get('description')!;
         <div class="mb-3">
           <label class="form-label" for="field_description">Description</label>
-          <textarea
-            class="form-control"
-            name="description"
-            id="field_description"
-            data-cy="description"
-            formControlName="description"
-          ></textarea>
+          <div class="position-relative">
+            <textarea
+              class="form-control"
+              name="description"
+              id="field_description"
+              data-cy="description"
+              formControlName="description"
+              rows="5"
+              [ngClass]="{ 'is-invalid': currentWordCount > maxWordCount }"
+            ></textarea>
+            <div class="word-count mt-1 d-flex justify-content-between">
+              <small [ngClass]="{ 'text-danger': currentWordCount > maxWordCount, 'text-muted': currentWordCount <= maxWordCount }">
+                {{ currentWordCount }}/{{ maxWordCount }} words
+              </small>
+            </div>
+          </div>
           @if (descriptionRef.invalid && (descriptionRef.dirty || descriptionRef.touched)) {
             <div>
-              @if (editForm.get('description')?.errors?.required) {
+              @if (descriptionRef.errors?.required) {
                 <small class="form-text text-danger">This field is required.</small>
               }
+              @if (descriptionRef.errors?.maxWordCount) {
+                <small class="form-text text-danger">
+                  Description cannot exceed 1000 words. Current count: {{ descriptionRef.errors?.maxWordCount.actual }} words.
+                </small>
+              }
             </div>
+          }
+          @if (currentWordCount > maxWordCount) {
+            <small class="form-text text-danger"> Description exceeds the 1000 word limit. Please shorten your text. </small>
           }
         </div>
 
@@ -93,9 +106,16 @@
               ngbDatepicker
               #dateDp="ngbDatepicker"
               formControlName="date"
+              [readonly]="!isEditMode"
             />
-            <button type="button" class="btn btn-secondary" (click)="dateDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+            <button type="button" class="btn btn-secondary" (click)="dateDp.toggle()" *ngIf="isEditMode">
+              <fa-icon icon="calendar-alt"></fa-icon>
+            </button>
+            <div class="input-group-append" *ngIf="!isEditMode">
+              <span class="input-group-text"><fa-icon icon="calendar-check"></fa-icon></span>
+            </div>
           </div>
+          <small class="form-text text-muted" *ngIf="!isEditMode"> Today's date will be used for this challenge </small>
           @if (dateRef.invalid && (dateRef.dirty || dateRef.touched)) {
             <div>
               @if (editForm.get('date')?.errors?.required) {
@@ -105,70 +125,52 @@
           }
         </div>
 
-        @let pointsRef = editForm.get('points')!;
+        <!-- Points field as a dropdown with values 5, 10, 15, 20, 25 -->
         <div class="mb-3">
           <label class="form-label" for="field_points">Points</label>
-          <input type="number" class="form-control" name="points" id="field_points" data-cy="points" formControlName="points" />
-          @if (pointsRef.invalid && (pointsRef.dirty || pointsRef.touched)) {
-            <div>
-              @if (editForm.get('points')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-              @if (editForm.get('points')?.errors?.min) {
-                <small class="form-text text-danger">This field should be at least 1.</small>
-              }
-              @if (editForm.get('points')?.errors?.max) {
-                <small class="form-text text-danger">This field cannot be more than 100.</small>
-              }
-              <small class="form-text text-danger" [hidden]="!editForm.get('points')?.errors?.number">This field should be a number.</small>
-            </div>
-          }
+          <select class="form-control" name="points" id="field_points" data-cy="points" formControlName="points" required>
+            <option value="" disabled selected>-- Select points --</option>
+            <option [ngValue]="5">5 points</option>
+            <option [ngValue]="10">10 points</option>
+            <option [ngValue]="15">15 points</option>
+            <option [ngValue]="20">20 points</option>
+            <option [ngValue]="25">25 points</option>
+          </select>
+          <small class="form-text text-muted">Select point value</small>
+          <div *ngIf="editForm.get('points')?.invalid && (editForm.get('points')?.dirty || editForm.get('points')?.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('points')?.errors?.required"> This field is required. </small>
+          </div>
         </div>
 
-        @let badgeRef = editForm.get('badge')!;
+        <!-- Badge upload field -->
         <div class="mb-3">
-          <label class="form-label" for="field_badge">Badge</label>
+          <label class="form-label" for="file_badge">Badge</label>
           <div>
-            @if (badgeRef.value) {
-              <img
-                [src]="'data:' + editForm.get('badgeContentType')!.value + ';base64,' + badgeRef.value"
-                style="max-height: 100px"
-                alt="challenge"
-              />
-            }
-            @if (badgeRef.value) {
-              <div class="form-text text-danger clearfix">
-                <span class="pull-start">{{ editForm.get('badgeContentType')!.value }}, {{ byteSize(badgeRef.value!) }}</span>
+            @if (editForm.get('badge')!.value) {
+              <div>
+                <img
+                  [src]="'data:' + editForm.get('badgeContentType')!.value + ';base64,' + editForm.get('badge')!.value"
+                  style="max-height: 100px"
+                  alt="challenge image"
+                />
+              </div>
+              <div>
                 <button
                   type="button"
-                  (click)="clearInputImage('badge', 'badgeContentType', 'file_badge')"
-                  class="btn btn-secondary btn-xs pull-end"
+                  class="btn btn-secondary btn-sm"
+                  (click)="clearInputImage('badge', 'badgeContentType', 'file_badge_input')"
                 >
-                  <fa-icon icon="times"></fa-icon>
+                  <fa-icon icon="times"></fa-icon><span class="ms-1">Clear</span>
                 </button>
               </div>
             }
-            <input type="file" id="file_badge" data-cy="badge" (change)="setFileData($event, 'badge', true)" accept="image/*" />
+            <input type="file" id="file_badge_input" data-cy="badge" accept="image/*" (change)="setFileData($event, 'badge', true)" />
           </div>
-          <input type="hidden" class="form-control" name="badge" id="field_badge" data-cy="badge" formControlName="badge" />
-          <input
-            type="hidden"
-            class="form-control"
-            name="badgeContentType"
-            id="field_badgeContentType"
-            formControlName="badgeContentType"
-          />
-          @if (badgeRef.invalid && (badgeRef.dirty || badgeRef.touched)) {
-            <div>
-              @if (editForm.get('badge')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-            </div>
-          }
+          <small class="form-text text-danger" *ngIf="!editForm.get('badge')!.value">Badge image is required</small>
         </div>
 
         @let completedRef = editForm.get('completed')!;
-        <div class="mb-3">
+        <div class="mb-3" *ngIf="isEditMode">
           <label class="form-label" for="field_completed">Completed</label>
           <input type="checkbox" class="form-check" name="completed" id="field_completed" data-cy="completed" formControlName="completed" />
           @if (completedRef.invalid && (completedRef.dirty || completedRef.touched)) {
