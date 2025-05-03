@@ -1,0 +1,83 @@
+<main id="main-content" role="main" xmlns="http://www.w3.org/1999/html" jhiFocusAnnouncer jhiHoverAnnouncer jhiOptionAnnouncer>
+  <!-- Announce the total count to screen‐readers -->
+  <div aria-live="polite" aria-atomic="true" class="sr-only">
+    You have {{ matchRequests.length }} pending match request <span *ngIf="matchRequests.length !== 1">s</span>.
+  </div>
+  <div class="requests-container">
+    <h2 class="text-center mb-4">Match Requests</h2>
+    <div class="row g-4">
+      <div class="col-12 col-md-6 col-lg-4" *ngFor="let req of matchRequests">
+        <section class="card match-card h-100" role="region" [attr.aria-labelledby]="'req-' + req.id + '-label'">
+          <h5 id="req-{{ req.id }}-label" class="sr-only">
+            Request {{ req.id }} from {{ req.matchRequestor?.firstName }} {{ req.matchRequestor?.lastName }}
+          </h5>
+          <!-- Activity‐type badge -->
+          <span class="activity-badge" [ngClass]="'badge--' + (req.activityType?.toLowerCase() || 'other')">
+            {{ req.activityType?.toString() | titlecase }}
+          </span>
+
+          <img
+            [src]="req.matchRequestor?.profilePicture || 'content/images/avatar-placeholder.jpg'"
+            class="card-img-top avatar-banner"
+            alt="Requester avatar"
+          />
+
+          <div class="card-body d-flex flex-column">
+            <!-- Name -->
+            <h5 class="card-title mb-2">{{ req.matchRequestor?.firstName }} {{ req.matchRequestor?.lastName }}</h5>
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title mb-2">{{ req.matchRequestor?.firstName }} {{ req.matchRequestor?.lastName }}</h5>
+
+              <!-- Read‐aloud for this request -->
+              <button
+                #readReqBtn
+                type="button"
+                class="btn btn-sm btn-outline-secondary mb-2"
+                (click)="readRequest(req)"
+                aria-label="Read match request details"
+              >
+                🔊 Read Request
+              </button>
+
+              <!-- Date & Time -->
+              <p class="card-text text-muted small mb-1">
+                <!-- …existing icons & bindings… -->
+              </p>
+              <!-- …rest of card… -->
+            </div>
+
+            <!-- Date & Time -->
+            <p class="card-text text-muted small mb-1">
+              <fa-icon [icon]="['fas', 'calendar-alt']"></fa-icon>
+              {{ req.matchDate?.format('DD-MM-YYYY') }}
+              &nbsp;
+              <fa-icon [icon]="['fas', 'clock']"></fa-icon>
+              {{ req.matchTime }}
+            </p>
+
+            <!-- Location -->
+            <p class="card-text text-muted small mb-3">
+              <fa-icon [icon]="['fas', 'map-marker-alt']"></fa-icon>
+              {{ req.location || 'TBD' }}
+            </p>
+
+            <!-- Actions at bottom -->
+            <div class="mt-auto d-flex gap-2">
+              <button type="button" class="btn btn-light flex-fill" (click)="onRespond(req, Decision.ACCEPT)" [disabled]="isLoading">
+                Accept
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-danger flex-fill"
+                (click)="onRespond(req, Decision.DECLINED)"
+                [disabled]="isLoading"
+              >
+                Decline
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>

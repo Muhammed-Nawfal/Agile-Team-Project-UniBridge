@@ -14,6 +14,11 @@ const friendsListRoute: Routes = [
     canActivate: [UserRouteAccessService],
   },
   {
+    path: 'requests',
+    loadComponent: () => import('./friend-requests/friend-requests.component').then(m => m.FriendRequestsComponent),
+    canActivate: [UserRouteAccessService],
+  },
+  {
     path: ':id/view',
     loadComponent: () => import('./detail/friends-list-detail.component').then(m => m.FriendsListDetailComponent),
     resolve: {

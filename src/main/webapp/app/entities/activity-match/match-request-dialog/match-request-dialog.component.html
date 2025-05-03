@@ -1,0 +1,44 @@
+<main id="main-content" role="main" jhiFocusAnnouncer jhiHoverAnnouncer jhiOptionAnnouncer>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content shadow-lg rounded">
+      <div class="modal-header">
+        <h5 class="modal-title">📅 Send Match Request</h5>
+        <button type="button" class="btn btn-sm btn-outline-secondary ms-2" (click)="readForm()" aria-label="Read form values">
+          🔊 Read Form
+        </button>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="cancel()"></button>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="cancel()"></button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="date" class="form-label">Date</label>
+              <input id="date" type="date" class="form-control" formControlName="date" placeholder="Select a date" required />
+            </div>
+            <div class="col-md-6">
+              <label for="time" class="form-label">Time</label>
+              <input id="time" type="time" class="form-control" formControlName="time" placeholder="Select a time" required />
+            </div>
+          </div>
+
+          <div class="mb-3 mt-4">
+            <label for="location" class="form-label">Location</label>
+            <input id="location" type="text" class="form-control" formControlName="location" placeholder="e.g. Gym A, Library" required />
+          </div>
+
+          <div class="mb-3">
+            <label for="notes" class="form-label">Notes</label>
+            <textarea id="notes" class="form-control" formControlName="notes" rows="3" placeholder="Add any extra details..."></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" (click)="cancel()">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Send Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>

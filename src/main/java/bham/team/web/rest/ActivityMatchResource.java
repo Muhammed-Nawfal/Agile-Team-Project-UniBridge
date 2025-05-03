@@ -4,6 +4,7 @@ import bham.team.domain.ActivityMatch;
 import bham.team.domain.Profile;
 import bham.team.domain.enumeration.ActivityType;
 import bham.team.repository.ActivityMatchRepository;
+import bham.team.repository.ProfileRepository;
 import bham.team.service.ActivityMatchService;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -35,6 +36,8 @@ public class ActivityMatchResource {
 
     private final ActivityMatchService activityMatchService;
 
+    private final ProfileRepository profileRepository;
+
     private static final String ENTITY_NAME = "activityMatch";
 
     @Value("${jhipster.clientApp.name}")
@@ -42,9 +45,14 @@ public class ActivityMatchResource {
 
     private final ActivityMatchRepository activityMatchRepository;
 
-    public ActivityMatchResource(ActivityMatchRepository activityMatchRepository, ActivityMatchService activityMatchService) {
+    public ActivityMatchResource(
+        ActivityMatchRepository activityMatchRepository,
+        ActivityMatchService activityMatchService,
+        ProfileRepository profileRepository
+    ) {
         this.activityMatchRepository = activityMatchRepository;
         this.activityMatchService = activityMatchService;
+        this.profileRepository = profileRepository;
     }
 
     /**
@@ -60,6 +68,16 @@ public class ActivityMatchResource {
         if (activityMatch.getId() != null) {
             throw new BadRequestAlertException("A new activityMatch cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        // Load the two profiles (ensure the requestor and buddy IDs were sent in the JSON payload)
+        Long reqId = activityMatch.getMatchRequestor().getId();
+        Long buddyId = activityMatch.getUserDetails().getId();
+        Profile requestor = profileRepository.getById(reqId);
+        Profile buddy = profileRepository.getById(buddyId);
+
+        activityMatch.setMatchRequestor(requestor);
+        activityMatch.setUserDetails(buddy);
+
         activityMatch = activityMatchRepository.save(activityMatch);
         return ResponseEntity.created(new URI("/api/activity-matches/" + activityMatch.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, activityMatch.getId().toString()))
@@ -223,5 +241,19 @@ public class ActivityMatchResource {
         List<Profile> profiles = activityMatchService.getProfilesByPreferredActivity(activityType);
         LOG.debug("Found {} profiles for activity type {}", profiles.size(), activityType);
         return ResponseEntity.ok(profiles);
+    }
+
+    /**
+     * {@code GET  /activity-matches/for-user/{userId}} :
+     *   Get all matches where userId is involved (either requestor or buddy),
+     *   with both Profile objects eagerly loaded.
+     *
+     * @param userId the ID of the Profile (logged-in user)
+     * @return the list of ActivityMatch
+     */
+    @GetMapping("/for-user/{userId}")
+    public List<ActivityMatch> getMatchesForUser(@PathVariable Long userId) {
+        LOG.debug("REST request to get ActivityMatches for user : {}", userId);
+        return activityMatchRepository.findByUserInvolved(userId);
     }
 }

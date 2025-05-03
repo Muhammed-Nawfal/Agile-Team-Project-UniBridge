@@ -1,6 +1,17 @@
-<div class="page" id="page-activity-match">
-  <h1 id="page-heading" class="title" data-cy="ActivityMatchHeading">
-    <span>Welcome to UNIBRIDGE</span>
+<div class="page" id="page-activity-match" jhiFocusAnnouncer jhiHoverAnnouncer>
+  <div class="accessibility-toggle mb-3">
+    <label for="a11y-toggle">Enable Accessibility</label>
+    <input
+      id="a11y-toggle"
+      #toggle
+      type="checkbox"
+      [checked]="a11y.isEnabled$ | async"
+      aria-label="Enable Accessibility"
+      (change)="toggleA11y(toggle.checked)"
+    />
+  </div>
+  <h1 id="page-heading" class="title" data-cy="ActivityMatchHeading" tabindex="0" aria-label="Welcome to UNIBRIDGE">
+    Welcome to UNIBRIDGE
   </h1>
 
   <jhi-alert-error></jhi-alert-error>
@@ -8,29 +19,25 @@
 
   <h2>Match With a Buddy</h2>
   <div class="buddy-buttons">
-    <!--    @if (account() !== null) {-->
-    <button (click)="navigateToBuddy(ActivityType.ACADEMIC)">STUDY BUDDY</button>
+    <button (click)="navigateToBuddy(ActivityType.ACADEMIC)">ACADEMIC BUDDY</button>
     <button (click)="navigateToBuddy(ActivityType.GYM)">GYM BUDDY</button>
     <button (click)="navigateToBuddy(ActivityType.SPORTS)">SPORTS BUDDY</button>
-    <button (click)="navigateToBuddy(ActivityType.SOCIAL)">EVENTS BUDDY</button>
-    <!--    } @else {-->
-    <!--      <button (click)="onButtonClicktoLogin()">STUDY BUDDY</button>-->
-    <!--      <button (click)="onButtonClicktoLogin()">GYM BUDDY</button>-->
-    <!--      <button (click)="onButtonClicktoLogin()">SPORTS BUDDY</button>-->
-    <!--      <button (click)="onButtonClicktoLogin()">EVENTS BUDDY</button>-->
-    <!--    }-->
+    <button (click)="navigateToBuddy(ActivityType.SOCIAL)">SOCIALS BUDDY</button>
   </div>
 
   <h2>Create/Join</h2>
   <div class="activity-buttons">
-    <!--    @if (account() !== null) {-->
     <button (click)="navigateToBooking()">CREATE A BOOKING</button>
     <button (click)="navigateToActivity()">JOIN AN ACTIVITY</button>
-    <!--    } @else {-->
-    <!--      <button (click)="onButtonClicktoLogin()">CREATE A BOOKING</button>-->
-    <!--      <button (click)="navigateToActivity()">JOIN AN ACTIVITY</button>-->
-    <!--    }-->
   </div>
 
-  <router-outlet></router-outlet>
+  <h2>View Your Upcoming Matches</h2>
+  <div class="activity-buttons">
+    <button (click)="navigateToUpcomingMatches()">UPCOMING MATCHES</button>
+    <button (click)="navigateToMatchRequests()">MATCH REQUESTS</button>
+  </div>
+  <div class="form-text">
+    <span *ngIf="a11y.isEnabled$ | async" class="text-success">🟢 Accessibility ON</span>
+    <span *ngIf="!(a11y.isEnabled$ | async)" class="text-muted">⚪ Accessibility OFF</span>
+  </div>
 </div>

@@ -1,334 +1,63 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
-    @if (profile(); as profileRef) {
-      <div>
-        <h2 data-cy="profileDetailsHeading"><span>Profile</span></h2>
+<div class="container mt-4" *ngIf="profile">
+  <!-- One-time Tip -->
+  <div *ngIf="showFollowTip" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+    💡 <strong>Tip:</strong> Follow this user to be able to send them messages.
+    <button type="button" class="btn-close" aria-label="Close" (click)="dismissTip()"></button>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body text-center">
+          <!-- Profile Picture -->
+          <img
+            *ngIf="profile?.profilePicture && profile?.profilePictureContentType"
+            [src]="'data:' + profile?.profilePictureContentType + ';base64,' + profile?.profilePicture"
+            class="rounded-circle mb-3"
+            alt="Profile Picture"
+            style="width: 120px; height: 120px; object-fit: cover"
+          />
 
-        <hr />
+          <!-- Full name or fallback to @username -->
+          <h3>{{ fullName || '@' + (profile?.login || 'Unknown User') }}</h3>
 
-        <jhi-alert-error></jhi-alert-error>
+          <!-- Bio -->
+          <p *ngIf="profile?.bio?.trim()" class="fst-italic">{{ profile?.bio }}</p>
 
-        <jhi-alert></jhi-alert>
+          <!-- Course Info -->
+          <p><strong>Course:</strong> {{ profile?.course || 'Not specified' }} - Year {{ profile?.courseYear || 'N/A' }}</p>
 
-        <dl class="row-md jh-entity-details">
-          <dt><span>ID</span></dt>
-          <dd>
-            <span>{{ profileRef.id }}</span>
-          </dd>
-          <dt><span>Login</span></dt>
-          <dd>
-            <span>{{ profileRef.login }}</span>
-          </dd>
-          <dt><span>First Name</span></dt>
-          <dd>
-            <span>{{ profileRef.firstName }}</span>
-          </dd>
-          <dt><span>Last Name</span></dt>
-          <dd>
-            <span>{{ profileRef.lastName }}</span>
-          </dd>
-          <dt><span>Bio</span></dt>
-          <dd>
-            <span>{{ profileRef.bio }}</span>
-          </dd>
-          <dt><span>Profile Picture</span></dt>
-          <dd>
-            @if (profileRef.profilePicture) {
-              <div>
-                <a (click)="openFile(profileRef.profilePicture ?? '', profileRef.profilePictureContentType)">
-                  <img
-                    [src]="'data:' + profileRef.profilePictureContentType + ';base64,' + profileRef.profilePicture"
-                    style="max-width: 100%"
-                    alt="profile"
-                  />
-                </a>
-                {{ profileRef.profilePictureContentType }}, {{ byteSize(profileRef.profilePicture ?? '') }}
-              </div>
-            }
-          </dd>
-          <dt><span>Course</span></dt>
-          <dd>
-            <span>{{
-              {
-                null: '',
-                COMPUTER_SCIENCE: 'COMPUTER_SCIENCE',
-                ECONOMICS: 'ECONOMICS',
-                PSYCHOLOGY: 'PSYCHOLOGY',
-                MATHS: 'MATHS',
-                ENGLISH: 'ENGLISH',
-                ENGINEERING: 'ENGINEERING',
-                PHYSICS: 'PHYSICS',
-                CHEMISTRY: 'CHEMISTRY',
-                BIOLOGY: 'BIOLOGY',
-                MEDICINE: 'MEDICINE',
-                LAW: 'LAW',
-                BUSINESS: 'BUSINESS',
-                ART: 'ART',
-                MUSIC: 'MUSIC',
-                HISTORY: 'HISTORY',
-                GEOGRAPHY: 'GEOGRAPHY',
-                PHILOSOPHY: 'PHILOSOPHY',
-                LINGUISTICS: 'LINGUISTICS',
-                SOCIOLOGY: 'SOCIOLOGY',
-                POLITICAL_SCIENCE: 'POLITICAL_SCIENCE',
-                ARCHITECTURE: 'ARCHITECTURE',
-                EDUCATION: 'EDUCATION',
-              }[profileRef.course ?? 'null']
-            }}</span>
-          </dd>
-          <dt><span>Course Year</span></dt>
-          <dd>
-            <span>{{ profileRef.courseYear }}</span>
-          </dd>
-          <dt><span>University</span></dt>
-          <dd>
-            <span>{{
-              {
-                null: '',
-                UNIVERSITY_OF_BIRMINGHAM: 'UNIVERSITY_OF_BIRMINGHAM',
-                ASTON_UNIVERSITY: 'ASTON_UNIVERSITY',
-                BIRMINGHAM_CITY_UNIVERSITY: 'BIRMINGHAM_CITY_UNIVERSITY',
-                UNIVERSITY_OF_NOTTINGHAM: 'UNIVERSITY_OF_NOTTINGHAM',
-              }[profileRef.university ?? 'null']
-            }}</span>
-          </dd>
-          <dt><span>Gym Skill</span></dt>
-          <dd>
-            <span>{{
-              { null: '', NOVICE: 'NOVICE', INTERMEDIATE: 'INTERMEDIATE', CONFIDENT: 'CONFIDENT', PROFESSIONAL: 'PROFESSIONAL' }[
-                profileRef.gymSkill ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>Gym Location</span></dt>
-          <dd>
-            <span>{{
-              { null: '', THE_GYM_SELLY_OAK: 'THE_GYM_SELLY_OAK', TIVERTON: 'TIVERTON', PUREGYM_FIVE_WAYS: 'PUREGYM_FIVE_WAYS' }[
-                profileRef.gymLocation ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>Gym Time</span></dt>
-          <dd>
-            <span>{{
-              {
-                null: '',
-                EARLY_MORNING: 'EARLY_MORNING',
-                MORNING: 'MORNING',
-                AFTERNOON: 'AFTERNOON',
-                EVENING: 'EVENING',
-                NIGHT: 'NIGHT',
-                LATE_NIGHT: 'LATE_NIGHT',
-              }[profileRef.gymTime ?? 'null']
-            }}</span>
-          </dd>
-          <dt><span>Study Time</span></dt>
-          <dd>
-            <span>{{
-              {
-                null: '',
-                EARLY_MORNING: 'EARLY_MORNING',
-                MORNING: 'MORNING',
-                AFTERNOON: 'AFTERNOON',
-                EVENING: 'EVENING',
-                NIGHT: 'NIGHT',
-                LATE_NIGHT: 'LATE_NIGHT',
-              }[profileRef.studyTime ?? 'null']
-            }}</span>
-          </dd>
-          <dt><span>Sports</span></dt>
-          <dd>
-            <span>{{
-              {
-                null: '',
-                FOOTBALL: 'FOOTBALL',
-                CRICKET: 'CRICKET',
-                BADMINTON: 'BADMINTON',
-                TENNIS: 'TENNIS',
-                NETBALL: 'NETBALL',
-                BASKETBALL: 'BASKETBALL',
-                VOLLEYBALL: 'VOLLEYBALL',
-                TABLE_TENNIS: 'TABLE_TENNIS',
-                BASEBALL: 'BASEBALL',
-                RUGBY: 'RUGBY',
-                HOCKEY: 'HOCKEY',
-                SWIMMING: 'SWIMMING',
-                ATHLETICS: 'ATHLETICS',
-                GOLF: 'GOLF',
-                BOXING: 'BOXING',
-                MARTIAL_ARTS: 'MARTIAL_ARTS',
-                CYCLING: 'CYCLING',
-                SKIING: 'SKIING',
-                SKATEBOARDING: 'SKATEBOARDING',
-                ESPORTS: 'ESPORTS',
-              }[profileRef.sports ?? 'null']
-            }}</span>
-          </dd>
-          <dt><span>Sports Skill</span></dt>
-          <dd>
-            <span>{{
-              { null: '', NOVICE: 'NOVICE', INTERMEDIATE: 'INTERMEDIATE', CONFIDENT: 'CONFIDENT', PROFESSIONAL: 'PROFESSIONAL' }[
-                profileRef.sportsSkill ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>Sports Time</span></dt>
-          <dd>
-            <span>{{
-              {
-                null: '',
-                EARLY_MORNING: 'EARLY_MORNING',
-                MORNING: 'MORNING',
-                AFTERNOON: 'AFTERNOON',
-                EVENING: 'EVENING',
-                NIGHT: 'NIGHT',
-                LATE_NIGHT: 'LATE_NIGHT',
-              }[profileRef.sportsTime ?? 'null']
-            }}</span>
-          </dd>
-          <dt><span>Preferred Society</span></dt>
-          <dd>
-            <span>{{
-              {
-                null: '',
-                ABACUS: 'ABACUS',
-                ACCOUNTING_AND_FINANCE: 'ACCOUNTING_AND_FINANCE',
-                AFRICAN_AND_CARIBBEAN: 'AFRICAN_AND_CARIBBEAN',
-                ALGOSOC: 'ALGOSOC',
-                ARAB: 'ARAB',
-                AZERBAIJANI: 'AZERBAIJANI',
-                BAKING: 'BAKING',
-                BALADS: 'BALADS',
-                BENGALI: 'BENGALI',
-                BIOSOC: 'BIOSOC',
-                BIRMINGHAM_BLACK_AND_ETHNIC_MINORITY_SCIENTISTS: 'BIRMINGHAM_BLACK_AND_ETHNIC_MINORITY_SCIENTISTS',
-                BLACK_LAW_STUDENTS_SOCIETY: 'BLACK_LAW_STUDENTS_SOCIETY',
-                CANADIAN_SOCIETY: 'CANADIAN_SOCIETY',
-                CARIBBEAN_UNION: 'CARIBBEAN_UNION',
-                CATHOLIC: 'CATHOLIC',
-                CHESS: 'CHESS',
-                CIVIL_ENGINEERING: 'CIVIL_ENGINEERING',
-                COMPUTER_SCIENCE_SOCIETY: 'COMPUTER_SCIENCE_SOCIETY',
-                CRAFT: 'CRAFT',
-                CRIMINOLOGY: 'CRIMINOLOGY',
-                CULTURAL_ARTS: 'CULTURAL_ARTS',
-                DARTS_SOCIETY: 'DARTS_SOCIETY',
-                DEBATING: 'DEBATING',
-                DENTAL_SOCIETY: 'DENTAL_SOCIETY',
-                EAST_AFRICAN: 'EAST_AFRICAN',
-                EGYPTIAN: 'EGYPTIAN',
-                ELECTRONIC_AND_ELECTRICAL_ENGINEERING: 'ELECTRONIC_AND_ELECTRICAL_ENGINEERING',
-                ESPORTS: 'ESPORTS',
-                FILIPINO: 'FILIPINO',
-                FILMSOC: 'FILMSOC',
-                FINTECH: 'FINTECH',
-                FRIENDS_OF_PALESTINE: 'FRIENDS_OF_PALESTINE',
-                GAMES_DEVELOPMENT: 'GAMES_DEVELOPMENT',
-                GERMAN: 'GERMAN',
-                HENNA_SOCIETY: 'HENNA_SOCIETY',
-                HIDE_AND_SEEK_SOCIETY: 'HIDE_AND_SEEK_SOCIETY',
-                HINDU: 'HINDU',
-                ICE_SKATING_SOCIETY: 'ICE_SKATING_SOCIETY',
-                INDIAN: 'INDIAN',
-                IRAQI: 'IRAQI',
-                ISLAMIC: 'ISLAMIC',
-                ITALIAN: 'ITALIAN',
-                JAIN_SOCIETY: 'JAIN_SOCIETY',
-                JAPAN_SOCIETY: 'JAPAN_SOCIETY',
-                KICKBOXING: 'KICKBOXING',
-                KOREA: 'KOREA',
-                MALAYALEE: 'MALAYALEE',
-                MALAYSIAN: 'MALAYSIAN',
-                MATHSOC: 'MATHSOC',
-                MEDTEC: 'MEDTEC',
-                MIXED_MARTIAL_ARTS: 'MIXED_MARTIAL_ARTS',
-                MUAY_THAI_BOXING: 'MUAY_THAI_BOXING',
-                NEPALESE: 'NEPALESE',
-                NERDSOC: 'NERDSOC',
-                NORTH_AFRICAN: 'NORTH_AFRICAN',
-                OMANI_SOCIETY: 'OMANI_SOCIETY',
-                PAKISTAN: 'PAKISTAN',
-                POWERLIFTING: 'POWERLIFTING',
-                PSYCHOLOGY: 'PSYCHOLOGY',
-                PUNJABI: 'PUNJABI',
-                SAUDI: 'SAUDI',
-                SHOOTING: 'SHOOTING',
-                SIKH: 'SIKH',
-                SINGAPORE_SOCIETY: 'SINGAPORE_SOCIETY',
-                SRI_LANKAN_SOCIETY: 'SRI_LANKAN_SOCIETY',
-                SUDANESE_SOCIETY: 'SUDANESE_SOCIETY',
-                TAMIL: 'TAMIL',
-                TURKISH: 'TURKISH',
-                UKRAINIAN_SOCIETY: 'UKRAINIAN_SOCIETY',
-                VIDEO_GAMES_SOCIETY: 'VIDEO_GAMES_SOCIETY',
-                VIETNAMESE: 'VIETNAMESE',
-                WAYFARERS_HIKING_SOCIETY: 'WAYFARERS_HIKING_SOCIETY',
-                WELSH: 'WELSH',
-                WOMEN_IN_LAW: 'WOMEN_IN_LAW',
-                WOMEN_IN_MEDICINE: 'WOMEN_IN_MEDICINE',
-                OTHER: 'OTHER',
-              }[profileRef.preferredSociety ?? 'null']
-            }}</span>
-          </dd>
-          <dt><span>Preferred Events</span></dt>
-          <dd>
-            <span>{{
-              {
-                null: '',
-                GAMES_NIGHT: 'GAMES_NIGHT',
-                MEET_AND_GREET: 'MEET_AND_GREET',
-                SPORTS_NIGHT: 'SPORTS_NIGHT',
-                CLUBBING: 'CLUBBING',
-                RELIGIOUS: 'RELIGIOUS',
-                ACADEMIC: 'ACADEMIC',
-              }[profileRef.preferredEvents ?? 'null']
-            }}</span>
-          </dd>
-          <dt><span>Events Time</span></dt>
-          <dd>
-            <span>{{
-              {
-                null: '',
-                EARLY_MORNING: 'EARLY_MORNING',
-                MORNING: 'MORNING',
-                AFTERNOON: 'AFTERNOON',
-                EVENING: 'EVENING',
-                NIGHT: 'NIGHT',
-                LATE_NIGHT: 'LATE_NIGHT',
-              }[profileRef.eventsTime ?? 'null']
-            }}</span>
-          </dd>
-          <dt><span>Preferred Activities</span></dt>
-          <dd>
-            <span>{{
-              { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[
-                profileRef.preferredActivities ?? 'null'
-              ]
-            }}</span>
-          </dd>
-          <dt><span>User</span></dt>
-          <dd>
-            <span>{{ profileRef.user?.id }}</span>
-          </dd>
-          <dt><span>Message Thread</span></dt>
-          <dd>
-            @for (messageThread of profileRef.messageThreads; track $index; let last = $last) {
-              <span>
-                <a [routerLink]="['/message-thread', messageThread.id, 'view']">{{ messageThread?.id }}</a
-                >{{ last ? '' : ', ' }}
-              </span>
-            }
-          </dd>
-        </dl>
+          <!-- Detail Tiles -->
+          <div class="d-flex flex-wrap justify-content-center mt-3 gap-2">
+            <ng-container *ngIf="profile?.studyTime">
+              <span class="badge bg-success p-2">Study Time: {{ profile?.studyTime }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.gymSkill">
+              <span class="badge bg-primary p-2">Gym Skill: {{ profile?.gymSkill }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.gymTime">
+              <span class="badge bg-primary p-2">Gym Time: {{ profile?.gymTime }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.gymLocation">
+              <span class="badge bg-primary p-2">Gym Location: {{ profile?.gymLocation }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.sports">
+              <span class="badge bg-dark p-2">Sports: {{ profile?.sports }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.sportsSkill">
+              <span class="badge bg-dark p-2">Sports Skill: {{ profile?.sportsSkill }}</span>
+            </ng-container>
+          </div>
 
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
-          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
-        </button>
+          <!-- Follow/Message -->
+          <div class="mt-4">
+            <button class="btn me-2" [ngClass]="isFollowing ? 'btn-danger' : 'btn-outline-success'" (click)="toggleFollow()">
+              {{ isFollowing ? 'Unfollow' : 'Follow' }}
+            </button>
 
-        <button type="button" [routerLink]="['/profile', profileRef.id, 'edit']" class="btn btn-primary">
-          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
-        </button>
+            <button class="btn btn-primary" (click)="onMessage()">Message</button>
+          </div>
+        </div>
       </div>
-    }
+    </div>
   </div>
 </div>
