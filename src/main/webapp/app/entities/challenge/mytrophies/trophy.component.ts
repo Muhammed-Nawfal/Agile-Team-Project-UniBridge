@@ -108,7 +108,8 @@ export class TrophyComponent implements OnInit {
       })
       .subscribe({
         next: (res: HttpResponse<IChallenge[]>) => {
-          this.challenges = res.body ?? [];
+          // Filter to ensure we only get completed challenges
+          this.challenges = (res.body ?? []).filter(challenge => challenge.completed === true);
           this.calculateTrophyCounts();
           this.loading = false;
         },
@@ -131,9 +132,12 @@ export class TrophyComponent implements OnInit {
 
     // Count completed challenges by points
     this.challenges.forEach(challenge => {
-      const trophy = trophies.find(t => t.points === challenge.points);
-      if (trophy) {
-        trophy.count++;
+      // Double-check that we're only counting completed challenges
+      if (challenge.completed) {
+        const trophy = trophies.find(t => t.points === challenge.points);
+        if (trophy) {
+          trophy.count++;
+        }
       }
     });
 
