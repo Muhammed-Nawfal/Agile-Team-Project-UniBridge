@@ -1,6 +1,22 @@
 <div class="container-fluid">
   <h2 id="page-heading" class="mb-4">My Challenges</h2>
 
+  <!-- Add Created By filter -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="creatorFilter" class="form-label"><strong>Created by:</strong></label>
+        <select id="creatorFilter" class="form-select" [(ngModel)]="selectedCreatorId" (change)="onCreatorChange()">
+          <option [ngValue]="null">All Creators</option>
+          <option *ngFor="let creator of creatorProfiles" [ngValue]="creator.id">
+            {{ creator.firstName || 'Profile' }} {{ creator.lastName || creator.id }}
+          </option>
+        </select>
+        <small class="form-text text-muted">This filter will be removed once user profiles are fully implemented.</small>
+      </div>
+    </div>
+  </div>
+
   <div class="d-flex justify-content-end mb-3">
     <button class="btn btn-primary me-2" routerLink="/challenge/new">
       <fa-icon icon="plus"></fa-icon>
@@ -39,7 +55,12 @@
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-start mb-2">
             <h5 class="card-title mb-0">{{ challenge.title }}</h5>
-            <span class="badge bg-primary">{{ getCategoryLabel(challenge.category) }}</span>
+            <div>
+              <button class="btn btn-sm btn-outline-info me-1" (click)="onViewDetails(challenge.id)" title="View details">
+                <fa-icon icon="eye"></fa-icon>
+              </button>
+              <span class="badge bg-primary">{{ getCategoryLabel(challenge.category) }}</span>
+            </div>
           </div>
 
           <p class="card-text text-muted small mb-2">
@@ -55,7 +76,7 @@
               {{ challenge.points }} points
             </span>
 
-            <span class="text-muted small" *ngIf="challenge.createdBy"> Created by: {{ challenge.createdBy?.login || 'Unknown' }} </span>
+            <span class="text-muted small" *ngIf="challenge.createdBy"> Created by: {{ getCreatorName(challenge.createdBy) }} </span>
           </div>
         </div>
 

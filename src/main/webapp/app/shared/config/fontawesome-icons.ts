@@ -12,6 +12,8 @@ import {
   // Add any additional icons your app is using
   faTasks,
   faExclamationCircle,
+  faCalendar,
+  faStar,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Function to initialize the Font Awesome library
@@ -28,5 +30,7 @@ export function initFontAwesomeLibrary(library: FaIconLibrary): void {
     // Additional icons
     faTasks,
     faExclamationCircle,
+    faCalendar,
+    faStar,
   );
 }
