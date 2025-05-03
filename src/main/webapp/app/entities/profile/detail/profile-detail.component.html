@@ -46,6 +46,15 @@
             <ng-container *ngIf="profile?.sportsSkill">
               <span class="badge bg-dark p-2">Sports Skill: {{ profile?.sportsSkill }}</span>
             </ng-container>
+            <ng-container *ngIf="profile?.sportsTime">
+              <span class="badge bg-dark p-2">Sports Time: {{ profile?.sportsTime }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.preferredSociety">
+              <span class="badge bg-warning text-dark p-2">Society: {{ profile?.preferredSociety }}</span>
+            </ng-container>
+            <ng-container *ngIf="profile?.preferredEvents">
+              <span class="badge bg-warning text-dark p-2">Events: {{ profile?.preferredEvents }}</span>
+            </ng-container>
           </div>
 
           <!-- Follow/Message -->
