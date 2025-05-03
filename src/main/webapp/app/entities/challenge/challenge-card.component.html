@@ -1,49 +1,50 @@
 <!-- src/main/webapp/app/entities/challenge/challenge-card.component.html -->
-<div class="card mb-4 shadow-sm">
+<div class="card shadow-sm h-100">
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-start mb-2">
       <h5 class="card-title mb-0">{{ challenge.title }}</h5>
-      <button class="btn btn-sm btn-outline-info" (click)="onViewDetailsClick()">
-        <fa-icon icon="eye"></fa-icon>
-      </button>
-    </div>
-    <h6 class="card-subtitle mb-2 text-muted">From: {{ challenge.createdBy?.login || '—' }}</h6>
-    <p class="card-text" *ngIf="challenge.description">{{ challenge.description }}</p>
-
-    <ul class="list-inline mb-2">
-      <li class="list-inline-item" *ngIf="challenge.date">
-        <fa-icon icon="clock"></fa-icon>
-        {{ challenge.date.toDate() | date: 'dd/MM/yyyy' }}
-      </li>
-      <li class="list-inline-item" *ngIf="challenge.category">
+      <div>
+        <button class="btn btn-sm btn-outline-info me-1" (click)="onViewDetailsClick()" title="View details">
+          <fa-icon icon="eye"></fa-icon>
+        </button>
         <span class="badge bg-{{ getCategoryClass(challenge.category) }}">
-          {{ challenge.category }}
+          {{ getCategoryLabel(challenge.category) }}
         </span>
-      </li>
-      <li class="list-inline-item text-primary" *ngIf="challenge.points">{{ challenge.points }} points</li>
-    </ul>
+      </div>
+    </div>
+
+    <p class="card-text text-muted small mb-1">
+      <fa-icon icon="calendar" class="me-1"></fa-icon>
+      {{ challenge.date?.toDate() | date: 'dd/MM/yyyy' }}
+    </p>
+
+    <p class="card-text text-muted small mb-2" *ngIf="challenge.createdBy">
+      <fa-icon icon="user" class="me-1"></fa-icon>
+      Created by: {{ challenge.createdBy?.login || '—' }}
+    </p>
+
+    <p class="card-text mb-3" *ngIf="challenge.description">{{ challenge.description }}</p>
 
     <div class="d-flex justify-content-between">
-      <div>
-        <!-- Placeholder to maintain layout structure -->
-      </div>
+      <span class="badge bg-secondary p-2">
+        <fa-icon icon="star" class="me-1"></fa-icon>
+        {{ challenge.points }} points
+      </span>
+    </div>
+  </div>
 
-      <div>
-        <!-- Show based on completed status -->
-        <ng-container *ngIf="!challenge.completed">
-          <button class="btn btn-danger mx-1" (click)="onRejectClick()"><fa-icon icon="times"></fa-icon> Reject</button>
-        </ng-container>
+  <div class="card-footer d-flex justify-content-end bg-white border-0 pt-0">
+    <div>
+      <!-- For uncompeleted challenges -->
+      <ng-container *ngIf="!challenge.completed">
+        <button class="btn btn-danger mx-1" (click)="onRejectClick()"><fa-icon icon="times"></fa-icon> Reject</button>
+        <button class="btn btn-primary" (click)="onCompleteClick()"><fa-icon icon="check-circle"></fa-icon> Complete</button>
+      </ng-container>
 
-        <!-- For completion -->
-        <ng-container *ngIf="!challenge.completed">
-          <button class="btn btn-primary" (click)="onCompleteClick()"><fa-icon icon="check-circle"></fa-icon> Complete</button>
-        </ng-container>
-
-        <!-- Completed: show badge -->
-        <ng-container *ngIf="challenge.completed">
-          <span class="badge bg-success">Completed</span>
-        </ng-container>
-      </div>
+      <!-- For completed challenges -->
+      <ng-container *ngIf="challenge.completed">
+        <span class="badge bg-success">Completed</span>
+      </ng-container>
     </div>
   </div>
 </div>

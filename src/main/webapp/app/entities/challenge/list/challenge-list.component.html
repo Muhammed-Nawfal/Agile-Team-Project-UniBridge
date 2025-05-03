@@ -1,32 +1,34 @@
 <!-- src/main/webapp/app/entities/challenge/list/challenge-list.component.html -->
-<h2 id="page-heading" class="mb-4">Challenges</h2>
-<div class="d-flex justify-content-end mb-3">
-  <button class="btn btn-primary me-2" routerLink="new">
-    <fa-icon icon="plus"></fa-icon>
-    Create Challenge
-  </button>
-  <button class="btn btn-secondary me-2" routerLink="my">
-    <fa-icon icon="list"></fa-icon>
-    My Challenges
-  </button>
-  <button class="btn btn-success me-2" routerLink="mytrophies">
-    <fa-icon icon="trophy"></fa-icon>
-    My Trophies
-  </button>
-  <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-    <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-    Refresh
-  </button>
-</div>
+<div class="container-fluid">
+  <h2 id="page-heading" class="mb-4">Challenges</h2>
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-primary me-2" routerLink="new">
+      <fa-icon icon="plus"></fa-icon>
+      Create Challenge
+    </button>
+    <button class="btn btn-secondary me-2" routerLink="my">
+      <fa-icon icon="list"></fa-icon>
+      My Challenges
+    </button>
+    <button class="btn btn-success me-2" routerLink="mytrophies">
+      <fa-icon icon="trophy"></fa-icon>
+      My Trophies
+    </button>
+    <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+      <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+      Refresh
+    </button>
+  </div>
 
-<div *ngIf="isLoading" class="text-center">
-  <div class="spinner-border" role="status"><span class="visually-hidden">Loading…</span></div>
-</div>
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border" role="status"><span class="visually-hidden">Loading…</span></div>
+  </div>
 
-<div *ngIf="challenges.length === 0 && !isLoading" class="alert alert-warning">No Challenges found</div>
+  <div *ngIf="challenges.length === 0 && !isLoading" class="alert alert-warning">No Challenges found</div>
 
-<div class="row g-3">
-  <div class="col-12 col-sm-6 col-md-4" *ngFor="let c of challenges; trackBy: trackId">
-    <jhi-challenge-card [challenge]="c" (reject)="onReject(c.id)" (complete)="onComplete(c.id)"></jhi-challenge-card>
+  <div class="row g-3">
+    <div class="col-12 col-md-6 col-lg-4" *ngFor="let c of challenges; trackBy: trackId">
+      <jhi-challenge-card [challenge]="c" (reject)="onReject(c.id)" (complete)="onComplete(c.id)"></jhi-challenge-card>
+    </div>
   </div>
 </div>

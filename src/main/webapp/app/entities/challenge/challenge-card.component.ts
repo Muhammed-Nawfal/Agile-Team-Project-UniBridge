@@ -35,6 +35,17 @@ export class ChallengeCardComponent {
     return categoryMap[category.toUpperCase()] || 'secondary';
   }
 
+  // Get a formatted label for the category
+  getCategoryLabel(category: string | null | undefined): string {
+    if (!category) return 'Other';
+
+    // Convert from UPPERCASE_WITH_UNDERSCORES to Title Case
+    return category
+      .toLowerCase()
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, char => char.toUpperCase());
+  }
+
   onRejectClick(): void {
     // Add confirmation dialog before rejecting/deleting the challenge
     if (confirm(`Are you sure you want to reject and delete this challenge: "${this.challenge.title}"? This action cannot be undone.`)) {
