@@ -120,6 +120,22 @@
       <p>
         <strong>{{ translate('status') }}:</strong> {{ selectedBooking.status }}
       </p>
+      <div class="modal-actions">
+        <button type="button" class="delete-button" (click)="confirmDelete()">{{ translate('delete') }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal" *ngIf="showDeleteConfirmation" [class.show]="showDeleteConfirmation">
+  <div class="modal-content">
+    <span class="close" (click)="cancelDelete()">&times;</span>
+    <h2>{{ translate('confirmDelete') }}</h2>
+    <p>{{ translate('deleteConfirmationMessage') }}</p>
+    <div class="modal-actions">
+      <button type="button" class="cancel-button" (click)="cancelDelete()">{{ translate('cancel') }}</button>
+      <button type="button" class="delete-button" (click)="deleteBooking()">{{ translate('delete') }}</button>
     </div>
   </div>
 </div>

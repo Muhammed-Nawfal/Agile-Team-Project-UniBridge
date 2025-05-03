@@ -131,7 +131,6 @@ export class BookingService {
                     date: formattedDate,
                     status: booking.bookingStatus,
                     locationName,
-                    partySize: booking.partySize,
                   };
                 });
 
@@ -180,6 +179,72 @@ export class BookingService {
 
   delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  }
+
+  deleteBooking(bookingId: number): Observable<void> {
+    return new Observable<void>(subscriber => {
+      // First, get the full booking details
+      this.find(bookingId).subscribe({
+        next: response => {
+          const fullBooking = response.body;
+          if (!fullBooking) {
+            subscriber.error('Could not find booking details');
+            return;
+          }
+
+          // Create updated booking with timeSlot set to null
+          const updatedBooking = {
+            ...fullBooking,
+            timeSlot: null,
+            bookingStatus: 'CANCELLED' as keyof typeof BookingStatus,
+          };
+
+          // Update the booking
+          this.update(updatedBooking).subscribe({
+            next: () => {
+              // Now we can delete the time slots
+              this.timeSlotService.deleteTimeSlotsForBooking(bookingId).subscribe({
+                next: () => {
+                  // After time slots are deleted, delete the booking
+                  this.delete(bookingId).subscribe({
+                    next() {
+                      subscriber.next();
+                      subscriber.complete();
+                    },
+                    error(error) {
+                      subscriber.error(error);
+                    },
+                  });
+                },
+                error(error) {
+                  subscriber.error(error);
+                },
+              });
+            },
+            error(error) {
+              subscriber.error(error);
+            },
+          });
+        },
+        error(error) {
+          subscriber.error(error);
+        },
+      });
+    });
+  }
+
+  deleteBookingOnly(bookingId: number): Observable<void> {
+    return new Observable<void>(subscriber => {
+      this.delete(bookingId).subscribe({
+        next() {
+          subscriber.next();
+          subscriber.complete();
+        },
+        error(error) {
+          subscriber.error(error);
+        },
+      });
+    });
   }
 
   getBookingIdentifier(booking: Pick<IBooking, 'id'>): number {

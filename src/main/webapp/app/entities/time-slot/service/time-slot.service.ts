@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
+import { Observable, map, firstValueFrom } from 'rxjs';
 
 import dayjs from 'dayjs/esm';
 
@@ -72,6 +72,43 @@ export class TimeSlotService {
 
   delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  }
+
+  deleteTimeSlotsForBooking(bookingId: number): Observable<void> {
+    return new Observable<void>(subscriber => {
+      this.http
+        .get<any[]>(`api/time-slots`, {
+          params: new HttpParams().set('booking.id.equals', bookingId.toString()),
+        })
+        .subscribe({
+          next: timeSlots => {
+            // Filter time slots to only those that actually belong to this booking
+            const validTimeSlots = timeSlots.filter(ts => ts.booking?.id === bookingId);
+
+            if (validTimeSlots.length === 0) {
+              subscriber.next();
+              subscriber.complete();
+              return;
+            }
+
+            // Delete each time slot
+            const deleteTimeSlots$ = validTimeSlots.map(timeSlot => this.delete(timeSlot.id));
+
+            // Wait for all time slots to be deleted
+            Promise.all(deleteTimeSlots$.map(obs => firstValueFrom(obs)))
+              .then(() => {
+                subscriber.next();
+                subscriber.complete();
+              })
+              .catch((error: unknown) => {
+                subscriber.error(error);
+              });
+          },
+          error(error) {
+            subscriber.error(error);
+          },
+        });
+    });
   }
 
   getTimeSlotIdentifier(timeSlot: Pick<ITimeSlot, 'id'>): number {

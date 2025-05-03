@@ -18,6 +18,7 @@ import { ITimeSlot } from 'app/entities/time-slot/time-slot.model';
 import { Observable } from 'rxjs';
 import { AccountService } from 'app/core/auth/account.service';
 import { TimeSlotService } from 'app/entities/time-slot/service/time-slot.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -66,6 +67,10 @@ export class BookingComponent implements OnInit {
       location: 'Location',
       status: 'Status',
       partySize: 'Party Size',
+      delete: 'Delete',
+      confirmDelete: 'Confirm Delete',
+      deleteConfirmationMessage: 'Are you sure you want to delete this booking?',
+      cancel: 'Cancel',
     },
     es: {
       booking: 'RESERVA',
@@ -85,11 +90,16 @@ export class BookingComponent implements OnInit {
       location: 'Ubicación',
       status: 'Estado',
       partySize: 'Capacidad',
+      delete: 'Eliminar',
+      confirmDelete: 'Confirmar Eliminación',
+      deleteConfirmationMessage: '¿Estás seguro de que quieres eliminar esta reserva?',
+      cancel: 'Cancelar',
     },
   };
 
   selectedBooking: any = null;
   showModal = false;
+  showDeleteConfirmation = false;
 
   constructor(
     private http: HttpClient,
@@ -670,7 +680,57 @@ export class BookingComponent implements OnInit {
   }
 
   closeModal(): void {
-    this.showModal = false;
     this.selectedBooking = null;
+    this.showModal = false;
+    this.showDeleteConfirmation = false;
+  }
+
+  confirmDelete(): void {
+    this.showDeleteConfirmation = true;
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirmation = false;
+  }
+
+  deleteBooking(): void {
+    if (!this.selectedBooking) return;
+
+    console.log('Starting deletion process for booking:', this.selectedBooking);
+    console.log('Booking ID:', this.selectedBooking.id);
+
+    this.bookingService.deleteBooking(this.selectedBooking.id).subscribe({
+      next: () => {
+        console.log('Booking deleted successfully');
+        this.loadUserBookings();
+        this.closeModal();
+      },
+      error: (error: unknown) => {
+        console.error('Error deleting booking:', error);
+        if (error instanceof Error) {
+          console.error('Error details:', error.message);
+        }
+        this.bookingError = 'Failed to delete booking. Please try again.';
+      },
+    });
+  }
+
+  private deleteBookingOnly(): void {
+    if (!this.selectedBooking) return;
+
+    this.bookingService.deleteBookingOnly(this.selectedBooking.id).subscribe({
+      next: () => {
+        console.log('Booking deleted successfully');
+        this.loadUserBookings();
+        this.closeModal();
+      },
+      error: (error: unknown) => {
+        console.error('Error deleting booking:', error);
+        if (error instanceof Error) {
+          console.error('Error details:', error.message);
+        }
+        this.bookingError = 'Failed to delete booking. Please try again.';
+      },
+    });
   }
 }
