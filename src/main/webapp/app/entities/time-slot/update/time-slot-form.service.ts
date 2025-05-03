@@ -25,6 +25,7 @@ type TimeSlotFormGroupContent = {
   remainingCapacity: FormControl<ITimeSlot['remainingCapacity']>;
   status: FormControl<ITimeSlot['status']>;
   event: FormControl<ITimeSlot['event']>;
+  location: FormControl<ITimeSlot['location']>;
 };
 
 export type TimeSlotFormGroup = FormGroup<TimeSlotFormGroupContent>;
@@ -61,6 +62,7 @@ export class TimeSlotFormService {
         validators: [Validators.required],
       }),
       event: new FormControl(timeSlotRawValue.event),
+      location: new FormControl(timeSlotRawValue.location),
     });
   }
 
