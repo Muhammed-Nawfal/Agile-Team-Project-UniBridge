@@ -169,6 +169,21 @@ export class MyChallengesComponent implements OnInit {
     this.challengeService.complete(id).subscribe(() => this.loadUserChallenges());
   }
 
+  // Map category names to Bootstrap contextual classes
+  getCategoryClass(category: string | null | undefined): string {
+    if (!category) return 'secondary';
+
+    const categoryMap: Record<string, string> = {
+      ACADEMIC: 'primary',
+      SOCIAL: 'info',
+      SPORTS: 'success',
+      CREATIVE: 'warning',
+      OTHER: 'secondary',
+    };
+
+    return categoryMap[category.toUpperCase()] || 'secondary';
+  }
+
   getCategoryLabel(category: string | null | undefined): string {
     if (!category) return 'Unknown';
     return category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
