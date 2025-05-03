@@ -2,7 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable, map, switchMap } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
+
 import dayjs from 'dayjs/esm';
+
 import { isPresent } from 'app/core/util/operators';
 import { DATE_FORMAT } from 'app/config/input.constants';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
@@ -75,53 +77,66 @@ export class BookingService {
     return locations$.pipe(
       switchMap(locations =>
         bookings$.pipe(
-          map(bookings => {
-            const processedBookings = bookings.map(booking => {
-              let timeInfo = 'TBD';
-              if (booking.timeSlot?.startHour !== undefined && booking.timeSlot.endHour !== undefined) {
-                const startHour = booking.timeSlot.startHour!.toString().padStart(2, '0');
-                const endHour = booking.timeSlot.endHour!.toString().padStart(2, '0');
-                timeInfo = `${startHour}:00 - ${endHour}:00`;
-              }
-
-              const formattedDate = booking.bookingDate ? dayjs(booking.bookingDate).format('MMM DD') : '';
-              let locationName = '';
-
-              if (booking.bookingLocation?.id) {
-                const matchedLocation = locations.find(loc => loc.id === booking.bookingLocation?.id);
-                if (matchedLocation?.name) {
-                  locationName = matchedLocation.name;
-                }
-              } else if (booking.timeSlot?.location?.id) {
-                const matchedLocation = locations.find(loc => loc.id === booking.timeSlot?.location?.id);
-                if (matchedLocation?.name) {
-                  locationName = matchedLocation.name;
-                }
-              } else if (booking.eventType) {
-                const locationType = this.getLocationTypeFromEvent(booking.eventType);
-                const matchingLocations = locations.filter(loc => loc.name?.startsWith(locationType));
-                if (matchingLocations.length > 0) {
-                  locationName = matchingLocations[0].name;
-                } else {
-                  locationName = locationType + ' 1';
-                }
-              }
-
-              if (!locationName) {
-                locationName = 'Venue';
-              }
-
-              return {
-                id: booking.id,
-                name: booking.eventType ?? 'Booking',
-                time: timeInfo,
-                date: formattedDate,
-                status: booking.bookingStatus,
-                locationName,
-              };
+          switchMap(bookings => {
+            const timeSlotIds = bookings.map(booking => booking.timeSlot?.id).filter(Boolean);
+            const timeSlots$ = this.http.get<any[]>(`api/time-slots`, {
+              params: new HttpParams().set('id.in', timeSlotIds.join(',')),
             });
 
-            return processedBookings.slice(0, 8);
+            return timeSlots$.pipe(
+              map(timeSlots => {
+                const processedBookings = bookings.map(booking => {
+                  const bookingTimeSlots = timeSlots.filter(ts => ts.booking?.id === booking.id);
+                  const firstTimeSlot = bookingTimeSlots[0];
+                  const lastTimeSlot = bookingTimeSlots[bookingTimeSlots.length - 1];
+
+                  let timeInfo = 'TBD';
+                  if (firstTimeSlot?.startHour !== undefined && lastTimeSlot?.endHour !== undefined) {
+                    const startHour = firstTimeSlot.startHour.toString().padStart(2, '0');
+                    const endHour = lastTimeSlot.endHour.toString().padStart(2, '0');
+                    timeInfo = `${startHour}:00 - ${endHour}:00`;
+                  }
+
+                  const formattedDate = booking.bookingDate ? dayjs(booking.bookingDate).format('MMM DD') : '';
+                  let locationName = '';
+
+                  if (booking.bookingLocation?.id) {
+                    const matchedLocation = locations.find(loc => loc.id === booking.bookingLocation?.id);
+                    if (matchedLocation?.name) {
+                      locationName = matchedLocation.name;
+                    }
+                  } else if (booking.timeSlot?.location?.id) {
+                    const matchedLocation = locations.find(loc => loc.id === booking.timeSlot?.location?.id);
+                    if (matchedLocation?.name) {
+                      locationName = matchedLocation.name;
+                    }
+                  } else if (booking.eventType) {
+                    const locationType = this.getLocationTypeFromEvent(booking.eventType);
+                    const matchingLocations = locations.filter(loc => loc.name?.startsWith(locationType));
+                    if (matchingLocations.length > 0) {
+                      locationName = matchingLocations[0].name;
+                    } else {
+                      locationName = locationType + ' 1';
+                    }
+                  }
+
+                  if (!locationName) {
+                    locationName = 'Venue';
+                  }
+
+                  return {
+                    id: booking.id,
+                    name: booking.eventType ? booking.eventType.replace(/_/g, ' ') : 'Booking',
+                    time: timeInfo,
+                    date: formattedDate,
+                    status: booking.bookingStatus,
+                    locationName,
+                  };
+                });
+
+                return processedBookings.slice(0, 8);
+              }),
+            );
           }),
         ),
       ),
@@ -192,6 +207,49 @@ export class BookingService {
       return [...bookingsToAdd, ...bookingCollection];
     }
     return bookingCollection;
+  }
+
+  createBookingWithNewTimeSlot(
+    selectedTimeSlots: string[],
+    selectedDate: string,
+    selectedEvent: string,
+    selectedActivity: string,
+    selectedPartySize: number | null,
+    eventService: EventService,
+    activities: any[],
+  ): NewBooking {
+    const firstSelectedSlot = selectedTimeSlots.length > 0 ? selectedTimeSlots[0] : null;
+    const parsedSlot = this.timeSlotService.parseTimeSlot(firstSelectedSlot!);
+
+    const selectedEventId = eventService.findEventIdByValue(selectedEvent, activities);
+
+    const newTimeSlot: Omit<ITimeSlot, 'id'> = {
+      date: dayjs(selectedDate),
+      startHour: parsedSlot.start,
+      endHour: parsedSlot.end,
+      capacity: null,
+      remainingCapacity: null,
+      status: null,
+      event: { id: selectedEventId } as any,
+    };
+
+    const booking: NewBooking = {
+      id: null,
+      activityType: selectedActivity as ActivityType,
+      eventType: selectedEvent.toUpperCase() as EventType,
+      bookingDate: dayjs(selectedDate),
+      partySize: selectedPartySize ?? 1,
+      bookingStatus: 'CONFIRMED' as BookingStatus,
+      createdAt: dayjs(),
+      timeSlot: newTimeSlot as ITimeSlot,
+      assignedAt: null,
+      bookedActivity: null,
+      bookingLocation: null,
+      creator: null,
+      activity: null,
+    };
+
+    return booking;
   }
 
   protected convertDateFromClient<T extends IBooking | NewBooking | PartialUpdateBooking>(booking: T): RestOf<T> {

@@ -82,12 +82,18 @@
     <div class="activity-list" *ngIf="!isLoadingBookings && upcomingBookings.length > 0">
       <div class="activity-card" *ngFor="let booking of upcomingBookings">
         <div class="activity-icon">{{ booking.icon }}</div>
-        <h3>{{ booking.name }}</h3>
-
-        <p>
-          {{ booking.date }} |
-          <span>{{ booking.locationName }}</span>
-        </p>
+        <div class="booking-info">
+          <div class="event-name">
+            <h3>{{ booking.name.split(' ')[0] }}</h3>
+            <h3>{{ booking.name.split(' ').slice(1).join(' ') }}</h3>
+          </div>
+          <div class="booking-details">
+            <p class="date-time">
+              {{ booking.date }} | <span>{{ booking.time }}</span>
+            </p>
+            <p class="location">{{ booking.locationName }}</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
