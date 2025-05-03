@@ -10,6 +10,19 @@
         <span class="badge bg-danger ms-1" *ngIf="pendingRequestCount > 0">{{ pendingRequestCount }}</span>
       </a>
     </div>
+
+    <!-- Font Size Accessibility Toggle -->
+    <div class="accessibility-toggle ms-3">
+      <button
+        class="btn btn-outline-secondary btn-sm"
+        [class.active]="isFontSizeLarge"
+        (click)="toggleFontSize()"
+        aria-label="Toggle large text mode"
+      >
+        <fa-icon icon="text-height"></fa-icon>
+        <span class="ms-1">Big Text</span>
+      </button>
+    </div>
   </div>
 
   <!-- No followed profiles found message -->
