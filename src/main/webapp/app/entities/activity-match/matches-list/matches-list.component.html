@@ -1,79 +1,105 @@
-<div class="matches-list-container">
-  <div class="header-row">
-    <h2>Upcoming Matches</h2>
-    <div class="filters">
-      <div class="filters d-flex align-items-center gap-2">
-        <!-- funnel icon -->
-        <button class="btn btn-link p-2 text-dark" aria-label="Open filters">
-          <i class="fas fa-sliders-h"></i>
-        </button>
+<main id="main-content" role="main" xmlns="http://www.w3.org/1999/html" jhiFocusAnnouncer jhiHoverAnnouncer jhiOptionAnnouncer>
+  <!-- Announce total matches & current filter -->
+  <div aria-live="polite" aria-atomic="true" class="sr-only">
+    Showing {{ upcomingMatches.length }} upcoming match
+    <span *ngIf="upcomingMatches.length !== 1">es</span>
+    for {{ selectedMonth | date: 'MMMM yyyy' }}.
+  </div>
+  <div class="matches-list-container">
+    <div class="header-row">
+      <h2>Upcoming Matches</h2>
+      <div class="filters">
+        <div class="filters d-flex align-items-center gap-2">
+          <!-- funnel icon -->
+          <button class="btn btn-link p-2 text-dark" aria-label="Open filters">
+            <i class="fas fa-sliders-h"></i>
+          </button>
 
-        <!-- month picker pill -->
-        <div class="input-group input-group-sm border rounded-pill overflow-hidden" (click)="monthInput.showPicker()">
-          <span class="input-group-text bg-white border-0">
-            <i class="far fa-calendar-alt"></i>
-          </span>
-          <!-- the native month control -->
-          <input
-            #monthInput
-            type="month"
-            class="form-control border-0 bg-white"
-            [(ngModel)]="selectedMonth"
-            (change)="onFilterChange()"
-            (click)="$event.stopPropagation()"
-          />
-        </div>
+          <!-- month picker pill -->
+          <div class="input-group input-group-sm border rounded-pill overflow-hidden" (click)="monthInput.showPicker()">
+            <span class="input-group-text bg-white border-0">
+              <i class="far fa-calendar-alt"></i>
+            </span>
+            <!-- the native month control -->
+            <input
+              #monthInput
+              type="month"
+              class="form-control border-0 bg-white"
+              [(ngModel)]="selectedMonth"
+              (change)="onFilterChange()"
+              (click)="$event.stopPropagation()"
+            />
+          </div>
 
-        <!-- activity-type pill -->
-        <div class="input-group input-group-sm border rounded-pill overflow-hidden curved-select">
-          <span class="input-group-text bg-white border-0">
-            <i class="fas fa-list"></i>
-            <!-- optional icon, or drop this span entirely -->
-          </span>
-          <select class="form-select border-0 bg-white" [(ngModel)]="selectedType" (change)="onFilterChange()">
-            <option value="">All Activities</option>
-            <option *ngFor="let type of activityTypes" [value]="type">{{ type }}</option>
-          </select>
+          <!-- activity-type pill -->
+          <div class="input-group input-group-sm border rounded-pill overflow-hidden curved-select">
+            <span class="input-group-text bg-white border-0">
+              <i class="fas fa-list"></i>
+              <!-- optional icon, or drop this span entirely -->
+            </span>
+            <select class="form-select border-0 bg-white" [(ngModel)]="selectedType" (change)="onFilterChange()">
+              <option value="">All Activities</option>
+              <option *ngFor="let type of activityTypes" [value]="type">{{ type }}</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div *ngIf="isLoading" class="loading-spinner">Loading upcoming matches...</div>
-  <div *ngIf="!isLoading && upcomingMatches.length === 0" class="no-matches">No upcoming matches found.</div>
+    <div *ngIf="isLoading" class="loading-spinner">Loading upcoming matches...</div>
+    <div *ngIf="!isLoading && upcomingMatches.length === 0" class="no-matches">No upcoming matches found.</div>
 
-  <div *ngIf="!isLoading && upcomingMatches.length > 0" class="cards-grid">
-    <div *ngFor="let match of upcomingMatches" class="match-card">
-      <div class="cover-image">
-        <img
-          [src]="
-            match.userDetails?.profilePictureContentType && match.userDetails?.profilePicture
-              ? 'data:' + match.userDetails?.profilePictureContentType + ';base64,' + match.userDetails?.profilePicture
-              : 'assets/placeholder.jpg'
-          "
-          alt="Cover"
-        />
-      </div>
-      <div class="card-body">
-        <h3>{{ match.activityType }} activity with {{ match.userDetails?.firstName }} {{ match.userDetails?.lastName }}</h3>
-        <div class="date-time">📅 {{ match.matchDate }} &bull; ⏰ {{ match.matchTime }}</div>
-        <div class="location">📍 {{ match.location || 'TBD' }}</div>
-        <div class="avatars">
+    <div *ngIf="!isLoading && upcomingMatches.length > 0" class="cards-grid">
+      <section
+        *ngFor="let match of upcomingMatches"
+        class="match-card"
+        role="region"
+        [attr.aria-labelledby]="'match-' + match.id + '-title'"
+      >
+        <h3 id="match-{{ match.id }}-title" class="sr-only">
+          {{ match.activityType }} activity with {{ match.userDetails?.firstName }} {{ match.userDetails?.lastName }}
+        </h3>
+        <div class="cover-image">
           <img
-            *ngFor="let p of [match.matchRequestor, match.userDetails]"
             [src]="
-              p?.profilePictureContentType && p?.profilePicture
-                ? 'data:' + p?.profilePictureContentType + ';base64,' + p?.profilePicture
-                : 'assets/avatar-placeholder.png'
+              match.userDetails?.profilePictureContentType && match.userDetails?.profilePicture
+                ? 'data:' + match.userDetails?.profilePictureContentType + ';base64,' + match.userDetails?.profilePicture
+                : 'assets/placeholder.jpg'
             "
-            alt="Avatar"
+            alt="Cover"
           />
         </div>
-        <div class="match-actions">
-          <button class="btn btn-primary" [routerLink]="['/activity-match', match.id, 'view']">View Details</button>
-          <button class="btn btn-primary" [routerLink]="['/activity-match', match.id, 'edit']">Edit Your Match</button>
+        <div class="card-body">
+          <!-- Read‐aloud for this match -->
+          <button
+            #readMatchBtn
+            type="button"
+            class="btn btn-sm btn-outline-secondary mb-2"
+            (click)="readMatch(match)"
+            aria-label="Read match details"
+          >
+            🔊 Read Match
+          </button>
+          <h3>{{ match.activityType }} activity with {{ match.userDetails?.firstName }} {{ match.userDetails?.lastName }}</h3>
+          <div class="date-time">📅 {{ match.matchDate }} &bull; ⏰ {{ match.matchTime }}</div>
+          <div class="location">📍 {{ match.location || 'TBD' }}</div>
+          <div class="avatars">
+            <img
+              *ngFor="let p of [match.matchRequestor, match.userDetails]"
+              [src]="
+                p?.profilePictureContentType && p?.profilePicture
+                  ? 'data:' + p?.profilePictureContentType + ';base64,' + p?.profilePicture
+                  : 'assets/avatar-placeholder.png'
+              "
+              alt="Avatar"
+            />
+          </div>
+          <div class="match-actions">
+            <button class="btn btn-primary" [routerLink]="['/activity-match', match.id, 'view']">View Details</button>
+            <button class="btn btn-primary" [routerLink]="['/activity-match', match.id, 'edit']">Edit Your Match</button>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
-</div>
+</main>
