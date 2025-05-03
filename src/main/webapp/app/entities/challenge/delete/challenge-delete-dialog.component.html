@@ -9,8 +9,14 @@
       <p id="jhi-delete-challenge-heading">Are you sure you want to delete Challenge {{ challenge.id }}?</p>
     </div>
 
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancel()">
+    <div class="modal-footer d-flex justify-content-between">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        style="color: #fff !important; background-color: #6c757d !important; border-color: #6c757d !important"
+        data-dismiss="modal"
+        (click)="cancel()"
+      >
         <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
       </button>
 

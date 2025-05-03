@@ -1,9 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Balsamiq+Sans:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
 
 * {
   box-sizing: border-box;
-  font-family: 'Balsamiq Sans';
-  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
 }
 
 body {
@@ -12,122 +11,95 @@ body {
   background-color: #f8f9fa;
 }
 
-.nbUL {
-  list-style-type: none;
-  margin: 0;
-  display: flex;
-  gap: 15px;
-}
+// Variables
+$primary: #0d6097;
+$secondary: #4361ee;
+$radius: 8px;
 
+// Common styles
 a {
   text-decoration: none;
   color: white;
-
   &:hover {
     color: #ffca3a;
-    transition: 0.2s;
   }
 }
 
-#set,
-#UB {
-  padding: 15px 0;
-  margin: 0 15px;
+// Layout
+.header {
   display: flex;
-  align-items: center;
-  list-style-type: none;
+  padding: 20px 20px 0;
+  background: white;
 }
 
 .secondDiv {
-  margin: 30px 15px;
+  margin: 45px 15px;
   min-height: 700px;
   display: flex;
   gap: 20px;
 }
 
-.bookSection {
+// Section containers
+.section-container {
   width: 50%;
-  border: 3px solid #4361ee;
-  border-radius: 12px;
+  border: 3px solid $primary;
+  border-radius: $radius;
   position: relative;
-  background-color: white;
+  background: white;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  padding-bottom: 80px;
+  padding: 10px;
 
   h1 {
+    font-weight: 900;
     position: absolute;
-    top: -25px;
-    background-color: white;
-    padding: 0 20px;
-    color: #4361ee;
-    font-size: 28px;
+    top: -32px;
+    background: white;
+    padding: 10px;
+    color: $primary;
+    font-size: 40px;
     margin: 0;
+  }
+}
+
+.bookSection {
+  @extend .section-container;
+  h1 {
     left: 30px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
 }
 
 .activitySection {
-  width: 50%;
-  border: 3px solid #4361ee;
-  border-radius: 12px;
-  position: relative;
-  background-color: white;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  @extend .section-container;
   padding: 20px;
-
   h1 {
-    position: absolute;
-    top: -25px;
     right: 30px;
-    background-color: white;
-    padding: 0 20px;
-    color: #4361ee;
-    font-size: 28px;
-    margin: 0;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
 }
 
-.bookDetails {
-  margin-top: 30px;
-  padding: 0 20px;
-
-  h2 {
-    margin: 0 0 10px 0;
-    font-size: 20px;
-    color: #333;
-  }
-}
-
+// Form elements
 .form-control {
   width: 100%;
   padding: 10px 15px;
   border: 2px solid #ddd;
-  border-radius: 8px;
+  border-radius: $radius;
   font-size: 16px;
   margin-bottom: 20px;
-  transition: border-color 0.3s;
-  font-family: 'Balsamiq Sans';
   font-weight: 700;
 
   &:focus {
     outline: none;
-    border-color: #4361ee;
+    border-color: $primary;
     box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
   }
 }
 
 select.form-control {
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 15px center;
-  background-size: 15px;
+  background: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")
+    no-repeat right 15px center/15px;
 }
 
+// Time slots
 .time-slots {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -136,27 +108,18 @@ select.form-control {
 }
 
 .time-slot-checkbox {
-  position: relative;
+  margin: 5px 0;
 
   input[type='checkbox'] {
     position: absolute;
     opacity: 0;
-    cursor: pointer;
     height: 0;
     width: 0;
 
     &:checked + label {
-      background-color: #4361ee;
+      background: $secondary;
       color: white;
-      border-color: #4361ee;
-    }
-
-    &:disabled + label {
-      background-color: #f5f5f5;
-      color: #999;
-      cursor: not-allowed;
-      border-color: #ddd;
-      text-decoration: line-through;
+      border-color: $secondary;
     }
   }
 
@@ -165,66 +128,194 @@ select.form-control {
     align-items: center;
     justify-content: center;
     padding: 10px;
-    background-color: #f0f2ff;
+    background: #f0f2ff;
     border: 2px solid #ddd;
-    border-radius: 8px;
+    border-radius: $radius;
     cursor: pointer;
-    transition: all 0.3s;
     font-size: 14px;
     font-weight: 700;
     text-align: center;
 
-    &.booked {
+    &.selected {
+      background: $secondary;
+      color: white;
+      border-color: $secondary;
+    }
+
+    &.disabled {
+      background: #f5f5f5;
       color: #999;
+      cursor: not-allowed;
+      border-color: #ddd;
       text-decoration: line-through;
     }
   }
-
-  .capacity-info {
-    font-size: 0.8em;
-    color: #666;
-    margin-top: 2px;
-  }
 }
 
-button {
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
+// Buttons
+.btn {
   padding: 10px 25px;
   text-align: center;
   font-size: 20px;
-  background-color: #4361ee;
+  background: $primary;
   color: white;
-  border: 2px solid #4361ee;
-  border-radius: 8px;
+  border-radius: $radius;
   cursor: pointer;
-  transition: all 0.3s;
-  font-family: 'Balsamiq Sans';
   font-weight: 700;
+  border: 2px solid $primary;
 
   &:hover {
-    background-color: white;
-    color: #4361ee;
-    border-color: #4361ee;
-    transition: 0.2s;
+    background: white;
+    color: $primary;
   }
 }
 
+.bookBtn {
+  @extend .btn;
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+}
+
+// Activity cards
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.activity-card {
+  display: flex;
+  align-items: center;
+  background: #dbe1ec;
+  border-radius: $radius;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  position: relative;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.02);
+    border: 2px solid $secondary;
+  }
+
+  .booking-info {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  h3 {
+    font-weight: 900;
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+  }
+
+  .booking-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-left: 20px;
+  }
+
+  .date-time,
+  p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .location {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #535353;
+    font-weight: 800;
+    text-align: right;
+  }
+
+  .booking-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+
+    &.confirmed {
+      background: #e6f7ee;
+      color: #1fa865;
+    }
+    &.pending {
+      background: #fff8e6;
+      color: #e6b000;
+    }
+    &.cancelled {
+      background: #ffe6e6;
+      color: #e63946;
+    }
+  }
+}
+
+// Modal
+.modal {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    width: 80%;
+    max-width: 800px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    min-height: 200px;
+
+    h2 {
+      color: $primary;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .close {
+      position: absolute;
+      right: 20px;
+      top: 10px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #666;
+
+      &:hover {
+        color: $primary;
+      }
+    }
+  }
+}
+
+// Utility classes
 .confirmation-message {
   position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #4caf50;
+  background: #4caf50;
   color: white;
   padding: 15px 30px;
-  border-radius: 8px;
+  border-radius: $radius;
   font-size: 18px;
-  font-weight: bold;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  animation: fadeIn 0.5s ease-in;
+  animation: fadeIn 0.5s;
 }
 
 @keyframes fadeIn {
@@ -238,35 +329,33 @@ button {
   }
 }
 
-.activity-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-top: 40px;
+.alert {
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 4px;
+
+  &-danger {
+    color: #721c24;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+  }
 }
 
-.activity-card {
-  display: flex;
-  align-items: center;
-  padding: 15px;
-  border-radius: 8px;
-  background-color: #f0f2ff;
-  transition: all 0.3s;
+// Language selector
+.language-select {
+  margin: 0 30px 20px 0;
+  padding: 5px 16px;
+  border: 2px solid $primary;
+  border-radius: $radius;
+  background: white;
+  color: $primary;
+  font-size: 16px;
+  cursor: pointer;
+  min-width: 120px;
+  text-align: center;
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-
-  h3 {
-    margin: 0 0 5px 0;
-    font-size: 18px;
-    color: #333;
-  }
-
-  p {
-    margin: 0;
-    font-size: 14px;
-    color: #666;
+    background: $primary;
+    color: white;
   }
 }
