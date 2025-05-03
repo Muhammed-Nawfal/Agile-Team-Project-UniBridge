@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, inject, ElementRef, Renderer2 } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -44,6 +44,9 @@ export class FriendsListComponent implements OnInit {
   followedProfileIds = new Set<number>();
   currentUsername = '';
   currentProfileId?: number;
+  isFontSizeLarge = false;
+  protected readonly renderer = inject(Renderer2);
+  protected readonly elementRef = inject(ElementRef);
 
   protected readonly friendsListService = inject(FriendsListService);
   protected readonly profileService = inject(ProfileService);
@@ -55,6 +58,13 @@ export class FriendsListComponent implements OnInit {
     this.getCurrentUserInfo();
     this.loadAcceptedFriends();
     this.getPendingRequestCount();
+
+    // Check for saved font size preference specifically for this component
+    const savedFontPreference = localStorage.getItem('friendsListFontPreference');
+    if (savedFontPreference === 'true') {
+      this.isFontSizeLarge = true;
+      this.renderer.addClass(this.elementRef.nativeElement, 'large-font-mode');
+    }
   }
 
   getCurrentUserInfo(): void {
@@ -76,6 +86,18 @@ export class FriendsListComponent implements OnInit {
         }
       },
     });
+  }
+
+  toggleFontSize(): void {
+    this.isFontSizeLarge = !this.isFontSizeLarge;
+
+    if (this.isFontSizeLarge) {
+      this.renderer.addClass(this.elementRef.nativeElement, 'large-font-mode');
+      localStorage.setItem('friendsListFontPreference', 'true');
+    } else {
+      this.renderer.removeClass(this.elementRef.nativeElement, 'large-font-mode');
+      localStorage.setItem('friendsListFontPreference', 'false');
+    }
   }
 
   trackProfileId = (index: number, item: IProfile): number => item.id;
