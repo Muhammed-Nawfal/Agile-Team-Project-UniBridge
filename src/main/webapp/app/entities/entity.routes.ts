@@ -10,30 +10,8 @@ const routes: Routes = [
   },
   {
     path: 'profile',
-    data: { pageTitle: 'Profiles' },
-    children: [
-      // list
-      {
-        path: '',
-        loadComponent: () => import('./profile/list/profile.component').then(m => m.ProfileComponent),
-      },
-      // detail
-      {
-        path: ':id/view',
-        loadComponent: () => import('./profile/detail/profile-detail.component').then(m => m.ProfileDetailComponent),
-      },
-      // update
-      {
-        path: ':id/edit', // Fixed: removed the redundant 'profile/' prefix
-        resolve: { profile: profileResolve },
-        loadComponent: () => import('./profile/update/profile-update.component').then(m => m.ProfileUpdateComponent),
-      },
-      {
-        path: ':id/deleteForm', // Fixed: removed the redundant 'profile/' prefix
-        resolve: { profile: profileResolve },
-        loadComponent: () => import('./profile/delete/profile-delete-dialog.component').then(m => m.ProfileDeleteDialogComponent),
-      },
-    ],
+    data: { pageTitle: 'Profile' },
+    loadChildren: () => import('./profile/profile.routes'),
   },
   {
     path: 'trophy',
