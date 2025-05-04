@@ -1,70 +1,56 @@
 <div class="chat-container">
-  <div class="chat-header d-flex align-items-center p-3 border-bottom">
-    <button class="btn btn-link" (click)="goBack()">
-      <fa-icon icon="arrow-left"></fa-icon>
-    </button>
-    <h3 class="mb-0 ms-2">Conversation</h3>
+  <div class="chat-header">
+    <button (click)="router.navigate(['/message-thread'])">← Back</button>
+    <h3>Conversation</h3>
   </div>
-
-  <div class="messages-container p-3" #messageContainer>
-    @if (isLoading) {
-      <div class="text-center">
-        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        Loading messages...
+  <div class="messages" #messageContainer>
+    <div *ngFor="let c of chats" [class.own]="isOwn(c)">
+      <div class="bubble">
+        {{ c.message }}
+        <small>{{ c.timestamp }}</small>
       </div>
-    }
-
-    @if (chats && chats.length > 0) {
-      @for (chat of chats; track chat.id) {
-        <div class="message mb-3" [ngClass]="{ 'text-end': isOwnMessage(chat) }">
-          <div
-            class="message-bubble d-inline-block p-2 rounded"
-            [ngClass]="{ 'bg-primary text-white': isOwnMessage(chat), 'bg-light': !isOwnMessage(chat) }"
-          >
-            <div>{{ chat.message }}</div>
-            <small class="text-muted">
-              {{ chat.timestamp | formatMediumDatetime }}
-            </small>
-          </div>
-        </div>
-      }
-    } @else if (!isLoading) {
-      <div class="text-center text-muted">No messages yet. Start the conversation!</div>
-    }
+    </div>
   </div>
-
-  <div class="message-input-container p-3 border-top">
-    <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="d-flex">
-      <input
-        type="text"
-        class="form-control me-2"
-        formControlName="message"
-        placeholder="Type a message..."
-        (keypress.enter)="sendMessage()"
-      />
-      <button type="submit" class="btn btn-primary" [disabled]="!messageForm.valid || isLoading">Send</button>
-    </form>
-  </div>
+  <form [formGroup]="messageForm" (ngSubmit)="send()" class="input-row">
+    <input formControlName="message" placeholder="Type…" />
+    <button type="submit" [disabled]="!messageForm.valid">Send</button>
+  </form>
 </div>
 
 <style>
   .chat-container {
-    height: calc(100vh - 200px);
     display: flex;
     flex-direction: column;
+    height: 100%;
   }
-
-  .messages-container {
+  .chat-header {
+    padding: 1rem;
+    border-bottom: 1px solid #ccc;
+  }
+  .messages {
     flex: 1;
-    overflow-y: auto;
+    overflow: auto;
+    padding: 1rem;
   }
-
-  .message-bubble {
-    max-width: 70%;
-    word-wrap: break-word;
+  .bubble {
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    margin: 0.5rem 0;
+    background: #eee;
   }
-
-  .message-input-container {
-    background-color: #f8f9fa;
+  .own .bubble {
+    background: #3f51b5;
+    color: #fff;
+    margin-left: auto;
+  }
+  .input-row {
+    display: flex;
+    padding: 1rem;
+    border-top: 1px solid #ccc;
+  }
+  .input-row input {
+    flex: 1;
+    padding: 0.5rem;
+    margin-right: 0.5rem;
   }
 </style>

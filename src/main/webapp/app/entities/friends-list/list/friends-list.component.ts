@@ -12,6 +12,7 @@ import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ChangeDetectorRef } from '@angular/core';
+import { MessageThreadService } from 'app/entities/message-thread/service/message-thread.service';
 
 @Component({
   standalone: true,
@@ -55,6 +56,7 @@ export class FriendsListComponent implements OnInit {
   protected readonly modalService = inject(NgbModal);
   protected readonly router = inject(Router);
   protected readonly cdr = inject(ChangeDetectorRef);
+  protected readonly messageThreadService = inject(MessageThreadService);
 
   ngOnInit(): void {
     this.getCurrentUserInfo();
@@ -306,4 +308,27 @@ export class FriendsListComponent implements OnInit {
       },
     });
   }
+
+  /**
+   * 1-on-1 chat: fetch-or-create the thread for this friendship,
+   * then navigate into the ChatComponent for that thread.
+   */
+  startConversation(friendship: IFriendsList): void {
+    this.messageThreadService.getOrCreateThreadForFriends(friendship.id).subscribe({
+      next: res => {
+        const thread = res.body!;
+        // now that we have a real threadId, go to chat/thread/:id
+        this.router.navigate(['/chat', 'thread', thread.id]);
+      },
+      error(err) {
+        console.error('Could not open thread', err);
+      },
+    });
+  }
+  //   this.messageThreadService
+  // .getOrCreateThreadForFriends(friendship.id!)
+  // .subscribe(res => {
+  //   const thread = res.body!;
+  //   this.router.navigate(['/chat', 'thread', thread.id]);
+  // });
 }
