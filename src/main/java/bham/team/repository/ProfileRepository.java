@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface ProfileRepository extends JpaRepository<Profile, Long> {
+public interface ProfileRepository extends JpaRepository<Profile, Long>, JpaSpecificationExecutor<Profile> {
     /**
      * Find profiles with a specific preferred activity type
      */
