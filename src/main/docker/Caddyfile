@@ -48,7 +48,7 @@ DEPLOY_IP:80 {
 # 3) make a tagged commit
 unibridge.bham.team {
   handle_errors {
-    respond "CUSTOMURL not working check DOMAIN is up"
+    respond "unibridge.bham.team not working check DOMAIN is up"
   }
   reverse_proxy http://teamproject-prd:8080
 }
