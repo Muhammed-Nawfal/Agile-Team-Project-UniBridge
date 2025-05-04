@@ -1,48 +1,9 @@
-<div>
-  <h2 id="page-heading" data-cy="MessageThreadHeading">
-    <span>Messages</span>
-
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span>Refresh</span>
-      </button>
-    </div>
-  </h2>
-
-  <jhi-alert-error></jhi-alert-error>
-  <jhi-alert></jhi-alert>
-
-  @if (messageThreads?.length === 0) {
-    <div class="alert alert-warning" id="no-result">
-      <span>No conversations found. Start chatting with your friends!</span>
-    </div>
-  }
-
-  @if (messageThreads && messageThreads.length > 0) {
-    <div class="list-group">
-      @for (messageThread of messageThreads; track trackId($index, messageThread)) {
-        <div class="list-group-item list-group-item-action" (click)="openChat(messageThread)" style="cursor: pointer">
-          <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">{{ getOtherParticipant(messageThread) }}</h5>
-            <small>{{ messageThread.updatedOn | formatMediumDatetime }}</small>
-          </div>
-          <p class="mb-1">Click to open conversation</p>
-          <div class="d-flex justify-content-between">
-            <small>
-              @if (messageThread.isGroup) {
-                <span class="badge bg-info">Group</span>
-              } @else {
-                <span class="badge bg-primary">Direct</span>
-              }
-            </small>
-            <button type="button" class="btn btn-danger btn-sm" (click)="delete(messageThread); $event.stopPropagation()">
-              <fa-icon icon="times"></fa-icon>
-              <span class="d-none d-md-inline">Delete</span>
-            </button>
-          </div>
-        </div>
-      }
-    </div>
-  }
-</div>
+<h2>Conversations</h2>
+<button (click)="load()">Refresh</button>
+<div *ngIf="threads.length === 0">No conversations.</div>
+<ul>
+  <li *ngFor="let th of threads" (click)="open(th)" style="cursor: pointer">
+    <strong>{{ getName(th) }}</strong>
+    <span>{{ th.updatedOn }}</span>
+  </li>
+</ul>

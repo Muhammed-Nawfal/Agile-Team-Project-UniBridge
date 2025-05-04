@@ -1,75 +1,121 @@
-import { Component, NgZone, OnInit, inject, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Observable, Subscription, interval, switchMap, takeUntil, Subject, take } from 'rxjs';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+// src/main/webapp/app/entities/chat/list/chat.component.ts
 
-import SharedModule from 'app/shared/shared.module';
-import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
-import { DataUtils } from 'app/core/util/data-util.service';
-import { IChat, NewChat } from '../chat.model';
-import { ChatService, EntityArrayResponseType } from '../service/chat.service';
-import { AccountService } from 'app/core/auth/account.service';
-import { ProfileService, EntityArrayResponseType as ProfileResponseType } from 'app/entities/profile/service/profile.service';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subject, interval, switchMap, takeUntil } from 'rxjs';
+
+import dayjs from 'dayjs/esm';
+
 import { MessageType } from 'app/entities/enumerations/message-type.model';
+import { MessageStatus } from 'app/entities/enumerations/message-status.model';
+import { IChat, NewChat } from '../chat.model';
+import { ChatService } from '../service/chat.service';
+import { MessageThreadService } from 'app/entities/message-thread/service/message-thread.service';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
+import { AccountService } from 'app/core/auth/account.service';
 
 @Component({
   standalone: true,
   selector: 'jhi-chat',
   templateUrl: './chat.component.html',
-  imports: [RouterModule, ReactiveFormsModule, SharedModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
 })
 export class ChatComponent implements OnInit, OnDestroy {
-  chats?: IChat[];
-  isLoading = false;
-  threadId?: number;
-  currentUserProfileId?: number;
-  messageForm: FormGroup;
+  @ViewChild('messageContainer', { static: true }) messageContainer!: ElementRef<HTMLElement>;
 
-  public readonly router = inject(Router);
-  protected readonly chatService = inject(ChatService);
-  protected readonly activatedRoute = inject(ActivatedRoute);
-  protected dataUtils = inject(DataUtils);
-  protected ngZone = inject(NgZone);
-  protected accountService = inject(AccountService);
-  protected profileService = inject(ProfileService);
-  protected fb = inject(FormBuilder);
-  @ViewChild('messageContainer') private messageContainer!: ElementRef;
+  messageForm: FormGroup;
+  chats: IChat[] = [];
+  threadId!: number;
+  meId!: number;
+  otherId!: number;
+  protected router = inject(Router);
 
   private destroy$ = new Subject<void>();
+  private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
+  private chatService = inject(ChatService);
+  private threadService = inject(MessageThreadService);
+  private accountService = inject(AccountService);
+  private profileService = inject(ProfileService);
 
   constructor() {
     this.messageForm = this.fb.group({
-      message: ['', [Validators.required, Validators.minLength(1)]],
+      message: ['', [Validators.required]],
     });
   }
 
   ngOnInit(): void {
-    // 1) First resolve my profile ID
+    // 1) resolve current user profile
     this.accountService
       .identity()
       .pipe(
-        take(1),
-        switchMap(account => this.profileService.query({ 'userLogin.equals': account?.login }).pipe(take(1))),
+        switchMap(acc => this.profileService.query({ 'userLogin.equals': acc!.login })),
+        takeUntil(this.destroy$),
       )
       .subscribe(resp => {
-        const me = resp.body?.[0];
-        if (me?.id) {
-          this.currentUserProfileId = me.id;
-
-          // 2) Now that we have my profile ID, listen to query params
-          this.activatedRoute.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
-            const threadIdParam = params['threadId'];
-            if (threadIdParam) {
-              this.threadId = parseInt(threadIdParam, 10);
-              this.load();
-              // Set up polling for new messages
-              this.startMessagePolling();
-            }
-          });
-        } else {
-          console.error('Could not find my profile');
-        }
+        this.meId = resp.body![0].id!;
+        // 2) read threadId from route
+        this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
+          const id = Number(params['threadId']);
+          if (!id) {
+            this.router.navigate(['/message-thread']);
+            return;
+          }
+          this.threadId = id;
+          this.loadThreadDetails();
+          this.loadMessages();
+          this.startPolling();
+        });
       });
+  }
+
+  send(): void {
+    if (this.messageForm.invalid) {
+      return;
+    }
+
+    const now = dayjs();
+    const dto: NewChat = {
+      id: null,
+      message: this.messageForm.value.message,
+      type: MessageType.TEXT,
+      status: MessageStatus.SENT,
+      isDeleted: false,
+      timestamp: now,
+      createdOn: now,
+      updatedOn: null,
+      media: null,
+      mediaContentType: null,
+      sender: null,
+      receiver: null,
+      thread: null,
+      messageThread: null,
+    };
+
+    this.chatService.sendMessage(this.threadId, dto).subscribe({
+      next: () => {
+        this.messageForm.reset();
+        this.loadMessages();
+      },
+      error(err) {
+        // 🎯 DEBUGGING: it will log status, headers, and the full error payload
+        console.error('❌ sendMessage failed:', err);
+        alert(`Failed to send message.\n` + `Status: ${err.status} ${err.statusText}\n` + `Response body: ${JSON.stringify(err.error)}`);
+      },
+    });
+  }
+
+  loadMessages(): void {
+    this.chatService.getMessagesByThread(this.threadId).subscribe(res => {
+      this.chats = res.body ?? [];
+      this.scrollToBottom();
+    });
+  }
+
+  isOwn(chat: IChat): boolean {
+    return chat.sender?.id === this.meId;
   }
 
   ngOnDestroy(): void {
@@ -77,87 +123,39 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  startMessagePolling(): void {
+  private loadThreadDetails(): void {
+    // Use the /message-threads?filter endpoint since GET /message-threads/{id} isn't exposed
+    this.threadService
+      .query({ 'id.equals': this.threadId, eagerload: true })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => {
+        const thread = res.body?.[0];
+        if (!thread) {
+          this.router.navigate(['/message-thread']);
+          return;
+        }
+        // In a 1-on-1 chat, pick the “other” participant
+        const others = (thread.participants ?? []).filter(p => p.id !== this.meId);
+        this.otherId = others[0]?.id;
+      });
+  }
+
+  private startPolling(): void {
     interval(5000)
       .pipe(
         takeUntil(this.destroy$),
-        switchMap(() => this.loadMessages()),
+        switchMap(() => this.chatService.getMessagesByThread(this.threadId)),
       )
-      .subscribe();
-  }
-
-  load(): void {
-    if (this.threadId) {
-      this.loadMessages().subscribe({
-        next: (res: EntityArrayResponseType) => {
-          this.onResponseSuccess(res);
-          this.scrollToBottom();
-        },
+      .subscribe(res => {
+        this.chats = res.body ?? [];
+        this.scrollToBottom();
       });
-    }
   }
 
-  loadMessages(): Observable<EntityArrayResponseType> {
-    if (!this.threadId) {
-      throw new Error('Thread ID is required');
-    }
-    this.isLoading = true;
-    return this.chatService.getMessagesByThread(this.threadId);
-  }
-
-  sendMessage(): void {
-    if (this.messageForm.valid && this.threadId) {
-      const newChat: NewChat = {
-        id: null,
-        message: this.messageForm.get('message')?.value,
-        type: MessageType.TEXT,
-        isDeleted: false,
-        timestamp: null,
-        status: null,
-        media: null,
-        mediaContentType: null,
-        createdOn: null,
-        updatedOn: null,
-        thread: null,
-        sender: null,
-        receiver: null,
-        messageThread: null,
-      };
-
-      this.chatService.sendMessage(this.threadId, newChat).subscribe({
-        next: () => {
-          this.messageForm.reset();
-          this.load();
-        },
-        error(error) {
-          console.error('Error sending message:', error);
-        },
-      });
-    }
-  }
-
-  isOwnMessage(chat: IChat): boolean {
-    return chat.sender?.id === this.currentUserProfileId;
-  }
-
-  scrollToBottom(): void {
-    try {
-      setTimeout(() => {
-        if (this.messageContainer.nativeElement) {
-          this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
-        }
-      }, 100);
-    } catch (err) {
-      /* empty */
-    }
-  }
-
-  goBack(): void {
-    this.router.navigate(['/message-thread']);
-  }
-
-  protected onResponseSuccess(response: EntityArrayResponseType): void {
-    this.chats = response.body ?? [];
-    this.isLoading = false;
+  private scrollToBottom(): void {
+    setTimeout(() => {
+      const el = this.messageContainer.nativeElement;
+      el.scrollTop = el.scrollHeight;
+    }, 100);
   }
 }
