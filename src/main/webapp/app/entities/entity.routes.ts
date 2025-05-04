@@ -36,11 +36,6 @@ const routes: Routes = [
     ],
   },
   {
-    path: 'trophy',
-    data: { pageTitle: 'My Trophies' },
-    loadChildren: () => import('./trophy/trophy.routes'),
-  },
-  {
     path: 'activity',
     data: { pageTitle: 'Activities' },
     loadChildren: () => import('./activity/activity.routes'),
