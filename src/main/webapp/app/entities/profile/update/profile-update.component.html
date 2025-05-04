@@ -90,6 +90,30 @@
             </option>
           </select>
         </div>
+
+        <!-- COLUMN 4: Social Details -->
+        <h4>Social Details</h4>
+        <!-- Society-->
+        <div class="mb-3">
+          <label class="form-label" for="field_preferredSociety">Society</label>
+          <select id="field_preferredSociety" class="form-control" formControlName="preferredSociety">
+            <option [ngValue]="null"></option>
+            <option *ngFor="let society of societyValues" [value]="society">
+              {{ society }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Events-->
+        <div class="mb-3">
+          <label class="form-label" for="field_preferredEvents">Events</label>
+          <select id="field_preferredEvents" class="form-control" formControlName="preferredEvents">
+            <option [ngValue]="null"></option>
+            <option *ngFor="let events of preferredEventsValues" [value]="events">
+              {{ events }}
+            </option>
+          </select>
+        </div>
       </div>
 
       <!-- COLUMN 3: Gym & Sports Details -->
@@ -147,6 +171,17 @@
             <option [ngValue]="null"></option>
             <option *ngFor="let skill of skillValues" [value]="skill">
               {{ skill }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Sports Time-->
+        <div class="mb-3">
+          <label class="form-label" for="field_sportsTime">Sports Time</label>
+          <select id="field_sportsTime" class="form-control" formControlName="sportsTime">
+            <option [ngValue]="null"></option>
+            <option *ngFor="let time of preferredTimeValues" [value]="time">
+              {{ time }}
             </option>
           </select>
         </div>

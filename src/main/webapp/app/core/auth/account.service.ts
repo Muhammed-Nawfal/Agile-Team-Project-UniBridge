@@ -72,6 +72,10 @@ export class AccountService {
     return this.authenticationState.asObservable();
   }
 
+  deleteAccount(): Observable<null> {
+    return this.http.delete<null>('api/account');
+  }
+
   private fetch(): Observable<Account> {
     return this.http.get<Account>(this.applicationConfigService.getEndpointFor('api/account'));
   }
