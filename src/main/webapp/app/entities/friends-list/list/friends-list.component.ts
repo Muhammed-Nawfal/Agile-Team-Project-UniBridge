@@ -11,6 +11,8 @@ import { IFriendsList } from '../friends-list.model';
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ChangeDetectorRef } from '@angular/core';
+import { MessageThreadService } from 'app/entities/message-thread/service/message-thread.service';
 
 @Component({
   standalone: true,
@@ -53,17 +55,19 @@ export class FriendsListComponent implements OnInit {
   protected readonly accountService = inject(AccountService);
   protected readonly modalService = inject(NgbModal);
   protected readonly router = inject(Router);
+  protected readonly cdr = inject(ChangeDetectorRef);
+  protected readonly messageThreadService = inject(MessageThreadService);
 
   ngOnInit(): void {
     this.getCurrentUserInfo();
     this.loadAcceptedFriends();
     this.getPendingRequestCount();
 
-    // Check for saved font size preference specifically for this component
-    const savedFontPreference = localStorage.getItem('friendsListFontPreference');
+    // Check for saved font size preference
+    const savedFontPreference = localStorage.getItem('largeFontPreference');
     if (savedFontPreference === 'true') {
       this.isFontSizeLarge = true;
-      this.renderer.addClass(this.elementRef.nativeElement, 'large-font-mode');
+      document.documentElement.classList.add('large-font-mode');
     }
   }
 
@@ -92,6 +96,7 @@ export class FriendsListComponent implements OnInit {
     this.isFontSizeLarge = !this.isFontSizeLarge;
 
     if (this.isFontSizeLarge) {
+      // Apply the class to the component's host element
       this.renderer.addClass(this.elementRef.nativeElement, 'large-font-mode');
       localStorage.setItem('friendsListFontPreference', 'true');
     } else {
@@ -244,8 +249,23 @@ export class FriendsListComponent implements OnInit {
   }
 
   onFriendshipChanged(event: string, profileId: number): void {
-    // Reload profiles after friendship status changes
-    this.loadAcceptedFriends();
+    if (event === 'FRIENDSHIP_REMOVED') {
+      // Manually remove the unfollowed profile from the display list
+      this.profiles = this.profiles.filter(profile => profile.id !== profileId);
+
+      // Remove from the maps and sets
+      this.followedProfileIds.delete(profileId);
+      this.profileToFriendshipMap.delete(profileId);
+
+      // Force change detection to update the UI
+      this.cdr.detectChanges();
+
+      // Reload suggested profiles to include the newly unfollowed profile
+      this.loadSuggestedProfiles();
+    } else {
+      // For other friendship changes, reload all data
+      this.loadAcceptedFriends();
+    }
   }
 
   clearSearch(): void {
@@ -288,4 +308,27 @@ export class FriendsListComponent implements OnInit {
       },
     });
   }
+
+  /**
+   * 1-on-1 chat: fetch-or-create the thread for this friendship,
+   * then navigate into the ChatComponent for that thread.
+   */
+  startConversation(friendship: IFriendsList): void {
+    this.messageThreadService.getOrCreateThreadForFriends(friendship.id).subscribe({
+      next: res => {
+        const thread = res.body!;
+        // now that we have a real threadId, go to chat/thread/:id
+        this.router.navigate(['/chat', 'thread', thread.id]);
+      },
+      error(err) {
+        console.error('Could not open thread', err);
+      },
+    });
+  }
+  //   this.messageThreadService
+  // .getOrCreateThreadForFriends(friendship.id!)
+  // .subscribe(res => {
+  //   const thread = res.body!;
+  //   this.router.navigate(['/chat', 'thread', thread.id]);
+  // });
 }
