@@ -65,6 +65,7 @@ export class BookingComponent implements OnInit {
       selectActivity: 'SELECT AN ACTIVITY',
       selectEvent: 'SELECT AN EVENT',
       selectPartySize: 'PARTY SIZE',
+      selectSActivity: 'PICK A SOCIAL ACTIVITY',
       selectTime: 'TIME',
       bookNow: 'BOOK',
       upcomingActivities: 'UPCOMING',

@@ -257,20 +257,6 @@ export class BookingService {
     });
   }
 
-  deleteBookingOnly(bookingId: number): Observable<void> {
-    return new Observable<void>(subscriber => {
-      this.delete(bookingId).subscribe({
-        next() {
-          subscriber.next();
-          subscriber.complete();
-        },
-        error(error) {
-          subscriber.error(error);
-        },
-      });
-    });
-  }
-
   getBookingIdentifier(booking: Pick<IBooking, 'id'>): number {
     return booking.id;
   }
