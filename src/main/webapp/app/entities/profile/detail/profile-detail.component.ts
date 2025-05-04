@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { ProfileService } from '../service/profile.service';
 import { IProfile } from '../profile.model';
 import { Account } from 'app/core/auth/account.model';
@@ -11,7 +11,7 @@ type FollowState = 'none' | 'pending' | 'friends';
 @Component({
   standalone: true,
   selector: 'jhi-profile-detail',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './profile-detail.component.html',
 })
 export class ProfileDetailComponent implements OnInit {
@@ -26,6 +26,7 @@ export class ProfileDetailComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private profileService: ProfileService,
     private friendsListService: FriendsListService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -41,6 +42,10 @@ export class ProfileDetailComponent implements OnInit {
 
           const myId = myProfile.id;
           const otherId = this.profile!.id;
+          // check the profile doesnt belong to this user
+          if (myId === otherId) {
+            this.router.navigate(['/profile']);
+          }
 
           // 1. Check if they are already friends
           this.friendsListService.getCurrentUserAcceptedFriends().subscribe(friendsRes => {
