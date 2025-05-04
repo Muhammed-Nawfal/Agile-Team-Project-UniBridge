@@ -8,6 +8,7 @@ import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IEvent, NewEvent } from '../event.model';
+import { ActivityType } from 'app/entities/enumerations/activity-type.model';
 
 export type PartialUpdateEvent = Partial<IEvent> & Pick<IEvent, 'id'>;
 
@@ -135,5 +136,41 @@ export class EventService {
 
     console.error('Could not find event ID for:', eventValue, 'in available events');
     return undefined;
+  }
+
+  groupEventsByActivityType(events: IEvent[]): any[] {
+    const activityMap = new Map<string, any>();
+
+    (Object.values(ActivityType) as string[]).forEach(type => {
+      activityMap.set(type, {
+        name: this.formatActivityType(type),
+        value: type,
+        events: [],
+      });
+    });
+
+    events.forEach(event => {
+      const activityType = event.activityType ?? '';
+      const group = activityMap.get(activityType);
+
+      if (group) {
+        group.events.push({
+          id: event.id,
+          name: event.name,
+          value: event.value,
+          min: event.minSize,
+          max: event.maxSize,
+          startTime: event.startTime,
+          endTime: event.endTime,
+          capacity: event.capacity,
+        });
+      }
+    });
+
+    return Array.from(activityMap.values()).filter(group => group.events.length > 0);
+  }
+
+  formatActivityType(type: string): string {
+    return type.charAt(0) + type.slice(1).toLowerCase().replace('_', ' ');
   }
 }
