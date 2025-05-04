@@ -1,8 +1,9 @@
 import { Component, ElementRef, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
+import dayjs from 'dayjs/esm';
 
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -27,6 +28,10 @@ export class ChallengeUpdateComponent implements OnInit {
   isSaving = false;
   challenge: IChallenge | null = null;
   categoryValues = Object.keys(Category);
+  pointValues = [5, 10, 15, 20, 25]; // Updated point values
+  currentWordCount = 0;
+  maxWordCount = 1000;
+  isEditMode = false; // Flag to check if we're editing an existing challenge
 
   profilesSharedCollection: IProfile[] = [];
 
@@ -37,6 +42,7 @@ export class ChallengeUpdateComponent implements OnInit {
   protected profileService = inject(ProfileService);
   protected elementRef = inject(ElementRef);
   protected activatedRoute = inject(ActivatedRoute);
+  protected router = inject(Router);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: ChallengeFormGroup = this.challengeFormService.createChallengeFormGroup();
@@ -46,12 +52,47 @@ export class ChallengeUpdateComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ challenge }) => {
       this.challenge = challenge;
+      // If challenge has an ID, we're in edit mode
+      this.isEditMode = challenge && challenge.id !== null;
+
       if (challenge) {
         this.updateForm(challenge);
       }
 
       this.loadRelationshipsOptions();
+
+      // Add a listener to update word count in real time
+      this.editForm.get('description')?.valueChanges.subscribe(value => {
+        if (value !== undefined) {
+          this.updateWordCount(value);
+        }
+      });
+
+      // If creating a new challenge, set default values
+      if (!this.isEditMode) {
+        this.setDefaultValues();
+      }
     });
+  }
+
+  // Set default values for a new challenge
+  setDefaultValues(): void {
+    // Set current date as default using dayjs
+    this.editForm.patchValue({
+      date: dayjs(), // Use dayjs for today's date
+      completed: false, // Default to not completed
+    });
+  }
+
+  updateWordCount(text: string | null): void {
+    if (!text) {
+      this.currentWordCount = 0;
+      return;
+    }
+    this.currentWordCount = text
+      .trim()
+      .split(/\s+/)
+      .filter(word => word.length > 0).length;
   }
 
   byteSize(base64String: string): string {
@@ -101,7 +142,9 @@ export class ChallengeUpdateComponent implements OnInit {
   }
 
   protected onSaveSuccess(): void {
-    this.previousState();
+    // Navigate to the challenge list page instead of just going back
+    // This ensures the list is refreshed with the new challenge
+    this.router.navigate(['/challenge']);
   }
 
   protected onSaveError(): void {

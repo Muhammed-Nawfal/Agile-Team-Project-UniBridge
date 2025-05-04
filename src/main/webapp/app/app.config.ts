@@ -22,6 +22,8 @@ import routes from './app.routes';
 // jhipster-needle-angular-add-module-import JHipster will add new module here
 import { NgbDateDayjsAdapter } from './config/datepicker-adapter';
 import { AppPageTitleStrategy } from './app-page-title-strategy';
+import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { initFontAwesomeLibrary } from './shared/config/fontawesome-icons';
 
 const routerFeatures: RouterFeatures[] = [
   withComponentInputBinding(),
@@ -46,6 +48,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes, ...routerFeatures),
     importProvidersFrom(BrowserModule),
+    importProvidersFrom(FontAwesomeModule),
     // Set this to true to enable service worker (PWA)
     importProvidersFrom(ServiceWorkerModule.register('ngsw-worker.js', { enabled: false })),
     provideHttpClient(withInterceptorsFromDi()),
@@ -54,6 +57,15 @@ export const appConfig: ApplicationConfig = {
     { provide: NgbDateAdapter, useClass: NgbDateDayjsAdapter },
     httpInterceptorProviders,
     { provide: TitleStrategy, useClass: AppPageTitleStrategy },
+    // Initialize Font Awesome icons
+    {
+      provide: FaIconLibrary,
+      useFactory() {
+        const library = new FaIconLibrary();
+        initFontAwesomeLibrary(library);
+        return library;
+      },
+    },
     // jhipster-needle-angular-add-module JHipster will add new module here
   ],
 };

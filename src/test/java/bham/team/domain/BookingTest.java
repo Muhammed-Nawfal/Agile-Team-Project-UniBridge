@@ -8,6 +8,8 @@ import static bham.team.domain.TimeSlotTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import bham.team.web.rest.TestUtil;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class BookingTest {
@@ -31,8 +33,11 @@ class BookingTest {
         Booking booking = getBookingRandomSampleGenerator();
         TimeSlot timeSlotBack = getTimeSlotRandomSampleGenerator();
 
-        booking.setTimeSlots(timeSlotBack);
-        assertThat(booking.getTimeSlots()).isEqualTo(timeSlotBack);
+        Set<TimeSlot> timeSlotSet = new HashSet<>();
+        timeSlotSet.add(timeSlotBack);
+
+        booking.setTimeSlots(timeSlotSet);
+        assertThat(booking.getTimeSlots()).isEqualTo(timeSlotSet);
 
         booking.timeSlots(null);
         assertThat(booking.getTimeSlots()).isNull();

@@ -1,5 +1,6 @@
 import dayjs from 'dayjs/esm';
 import { IEvent } from 'app/entities/event/event.model';
+import { ILocation } from 'app/entities/location/location.model';
 import { AvailabilityStatus } from 'app/entities/enumerations/availability-status.model';
 
 export interface ITimeSlot {
@@ -11,6 +12,7 @@ export interface ITimeSlot {
   remainingCapacity?: number | null;
   status?: keyof typeof AvailabilityStatus | null;
   event?: IEvent | null;
+  location?: ILocation | null;
 }
 
 export type NewTimeSlot = Omit<ITimeSlot, 'id'> & { id: null };

@@ -133,6 +133,120 @@
   }
 }
 
+/* Accessibility Toggle */
+.accessibility-toggle {
+  .btn {
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+
+    &.active {
+      background-color: #5e72e4;
+      color: white;
+      box-shadow: 0 4px 8px rgba(94, 114, 228, 0.2);
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+/* Large Font Mode Styles - slightly reduced from previous version */
+:host.large-font-mode {
+  /* Main headings */
+  .page-header h1 {
+    font-size: 2.5rem !important;
+  }
+
+  .page-header h2 {
+    font-size: 2.2rem !important;
+  }
+
+  /* Card and content */
+  .card-title {
+    font-size: 1.7rem !important;
+    line-height: 1.3 !important;
+  }
+
+  .username {
+    font-size: 1.2rem !important;
+  }
+
+  .friends-since,
+  .nickname-link {
+    font-size: 1.1rem !important;
+  }
+
+  /* Buttons and elements */
+  .btn {
+    font-size: 1.2rem !important;
+    padding: 0.4rem 1rem !important;
+  }
+
+  .btn-sm {
+    font-size: 1.1rem !important;
+    padding: 0.35rem 0.9rem !important;
+  }
+
+  .btn-view,
+  .btn-message {
+    padding: 0.4rem 1rem !important;
+    font-size: 1.1rem !important;
+  }
+
+  .badge {
+    font-size: 1.1rem !important;
+    padding: 0.4em 0.7em !important;
+  }
+
+  /* Form elements */
+  input.form-control,
+  label {
+    font-size: 1.3rem !important;
+    padding: 0.5rem 0.9rem !important;
+  }
+
+  .modal-title {
+    font-size: 1.8rem !important;
+  }
+
+  /* All text content */
+  span,
+  p,
+  div {
+    font-size: 1.3rem !important;
+  }
+
+  /* Card body and other containers - increase spacing */
+  .card-body {
+    padding: 1.3rem !important;
+  }
+
+  /* Adjust spacing for better readability with larger text */
+  .mb-2 {
+    margin-bottom: 0.7rem !important;
+  }
+
+  .mb-4 {
+    margin-bottom: 1.8rem !important;
+  }
+
+  /* Increase profile image size for better proportions */
+  .profile-img-container,
+  .profile-img-placeholder {
+    width: 110px !important;
+    height: 110px !important;
+  }
+
+  /* Increase header height to accommodate larger elements */
+  .profile-header {
+    height: 180px !important;
+  }
+}
+
 /* Responsive */
 @media (max-width: 767px) {
   .page-header {
@@ -144,5 +258,37 @@
   .button-group {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  /* Additional responsive adjustments for large font mode */
+  :host.large-font-mode {
+    .page-header {
+      h1 {
+        font-size: 2.2rem !important;
+      }
+
+      h2 {
+        font-size: 1.9rem !important;
+      }
+    }
+
+    .card {
+      margin-bottom: 1.8rem !important;
+    }
+
+    .btn-view,
+    .btn-message {
+      padding: 0.4rem 0.8rem !important;
+    }
+
+    .action-buttons {
+      margin-bottom: 1rem !important;
+      width: 100% !important;
+      justify-content: space-between !important;
+    }
+
+    .button-group {
+      gap: 1rem !important;
+    }
   }
 }

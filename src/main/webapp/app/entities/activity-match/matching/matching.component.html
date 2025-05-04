@@ -1,5 +1,5 @@
 <main id="main-content" role="main" jhiFocusAnnouncer jhiHoverAnnouncer jhiOptionAnnouncer>
-  <div aria-live="polite" aria-atomic="true" class="sr-only">
+  <div *ngIf="a11y.isEnabled$ | async" aria-live="polite" aria-atomic="true" class="sr-only">
     {{ liveMessage }}
   </div>
   <div class="container py-4">
@@ -117,17 +117,60 @@
             <p class="text-muted small mb-2">{{ currentProfile.course }} · Year {{ currentProfile.courseYear }}</p>
 
             <!-- Badges -->
-            <div class="badges mb-2">
-              <span class="badge bg-light text-dark me-1" *ngIf="buddyType === ActivityType.SOCIAL">
-                {{ currentProfile.preferredSociety }}
-              </span>
-              <span class="badge bg-light text-dark me-1" *ngIf="buddyType === ActivityType.SOCIAL">
-                {{ currentProfile.preferredEvents }}
-              </span>
-              <span class="badge bg-light text-dark" *ngIf="buddyType === ActivityType.SOCIAL">
-                {{ currentProfile.eventsTime }}
-              </span>
-              <!-- add other buddyType badges here -->
+            <div class="badges mb-2" [ngSwitch]="buddyType">
+              <!-- GYM -->
+              <ng-container *ngSwitchCase="ActivityType.GYM">
+                <span class="badge bg-light text-dark me-1" *ngIf="currentProfile?.gymLocation">
+                  {{ currentProfile.gymLocation }}
+                </span>
+                <span class="badge bg-light text-dark me-1" *ngIf="currentProfile?.gymSkill">
+                  {{ currentProfile.gymSkill }}
+                </span>
+                <span class="badge bg-light text-dark" *ngIf="currentProfile?.gymTime">
+                  {{ currentProfile.gymTime }}
+                </span>
+              </ng-container>
+
+              <!-- ACADEMIC -->
+              <ng-container *ngSwitchCase="ActivityType.ACADEMIC">
+                <span class="badge bg-light text-dark me-1" *ngIf="currentProfile?.university">
+                  {{ currentProfile.university }}
+                </span>
+                <span class="badge bg-light text-dark" *ngIf="currentProfile?.studyTime">
+                  {{ currentProfile.studyTime }}
+                </span>
+              </ng-container>
+
+              <!-- SPORTS -->
+              <ng-container *ngSwitchCase="ActivityType.SPORTS">
+                <span class="badge bg-light text-dark me-1" *ngIf="currentProfile?.sports">
+                  {{ currentProfile.sports }}
+                </span>
+                <span class="badge bg-light text-dark me-1" *ngIf="currentProfile?.sportsSkill">
+                  {{ currentProfile.sportsSkill }}
+                </span>
+                <span class="badge bg-light text-dark" *ngIf="currentProfile?.sportsTime">
+                  {{ currentProfile.sportsTime }}
+                </span>
+              </ng-container>
+
+              <!-- SOCIAL -->
+              <ng-container *ngSwitchCase="ActivityType.SOCIAL">
+                <span class="badge bg-light text-dark me-1" *ngIf="currentProfile?.preferredSociety">
+                  {{ currentProfile.preferredSociety }}
+                </span>
+                <span class="badge bg-light text-dark me-1" *ngIf="currentProfile?.preferredEvents">
+                  {{ currentProfile.preferredEvents }}
+                </span>
+                <span class="badge bg-light text-dark" *ngIf="currentProfile?.eventsTime">
+                  {{ currentProfile.eventsTime }}
+                </span>
+              </ng-container>
+
+              <!-- fallback, if you ever need it -->
+              <ng-container *ngSwitchDefault>
+                <!-- nothing or a default message -->
+              </ng-container>
             </div>
           </div>
         </div>
