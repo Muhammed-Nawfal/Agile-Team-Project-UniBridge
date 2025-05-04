@@ -37,6 +37,11 @@ const activityRoute: Routes = [
     },
     canActivate: [UserRouteAccessService],
   },
+  // {
+  //   path: 'my-activities',
+  //   data: { pageTitle: 'My Activities' },
+  //   loadChildren: () => import('./my-activities/my-activities.routes'),
+  // },
 ];
 
 export default activityRoute;

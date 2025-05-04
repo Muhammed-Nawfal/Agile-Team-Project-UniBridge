@@ -65,6 +65,18 @@
                 <span>Booking</span>
               </a>
             </li>
+            <li>
+              <a
+                class="dropdown-item"
+                routerLink="/my-activities"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+                (click)="collapseNavbar()"
+              >
+                <fa-icon icon="bullhorn" [fixedWidth]="true"></fa-icon>
+                <span>My Activities</span>
+              </a>
+            </li>
           </ul>
         </li>
 
