@@ -102,36 +102,42 @@
           </tr>
         </thead>
         <tbody>
-          @for (review of reviews; track trackId(review)) {
-            <tr data-cy="entityTable">
-              <td width="15%">{{ getDataForReview(review.id)?.datePublished | formatMediumDatetime }}</td>
-              <td>
-                <tr>
-                  ({{
-                    getDataForReview(review.id)?.star
-                  }})
-                </tr>
-                <tr height="90px">
-                  {{
-                    getDataForReview(review.id)?.text
-                  }}
-                </tr>
-                <tr>
-                  {{
-                    getDataForReview(review.id)?.fromUser
-                  }}
-                </tr>
-              </td>
-              <td class="text-end" width="8%">
-                <div class="btn-group">
-                  <button type="submit" (click)="delete(review)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <!--if user = fromUser then delete else not your review. actually else button not shown-->
-                    <fa-icon icon="times"></fa-icon>
-                    <span class="d-none d-md-inline">Delete</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
+          @if (getReviewsForID(this.currentProfileId)) {
+            @for (review of getReviewsForID(this.currentProfileId); track trackId(review)) {
+              <tr data-cy="entityTable">
+                <td width="15%">{{ review.datePublished }}</td>
+                <td>
+                  <tr>
+                    ({{
+                      review.star
+                    }})
+                  </tr>
+                  <tr height="90px">
+                    {{
+                      review.text
+                    }}
+                  </tr>
+                  <tr>
+                    {{
+                      review.fromUser?.login
+                    }}
+                  </tr>
+                </td>
+                <td class="text-end" width="8%">
+                  <div class="btn-group">
+                    @if (review.fromUser?.id == this.currentProfileId) {
+                      <button type="submit" (click)="delete(review)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                        <!--if user = fromUser then delete else not your review. actually else button not shown-->
+                        <fa-icon icon="times"></fa-icon>
+                        <span class="d-none d-md-inline">Delete</span>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          } @else {
+            <span>No reviews for this user yet!</span>
           }
         </tbody>
       </table>

@@ -83,6 +83,43 @@ export class ReviewComponent implements OnInit {
     });
   }
 
+  getReviewsForID(profileID: number | undefined): IReview[] | undefined {
+    this.reviewService.getUserReviews(profileID).subscribe({
+      next: res => {
+        this.reviews = res.body ?? [];
+      },
+    });
+    return this.reviews;
+  }
+
+  loadUserReviews(): void {
+    this.reviewService.getUserReviews(this.currentProfileId).subscribe({
+      next: res => {
+        this.reviews = res.body ?? [];
+
+        if (this.reviews.length > 0) {
+          this.extractIDsFromReviews();
+        }
+      },
+    });
+  }
+
+  extractIDsFromReviews(): void {
+    // Load all review IDs we need to fetch
+    const reviewIds: number[] = [];
+    this.profileToReviewsMap.clear();
+    if (this.reviews) {
+      this.reviews.forEach(review => {
+        reviewIds.push(review.id);
+        if (review.aboutUser) {
+          this.profileToReviewsMap.set(review.aboutUser.id, review);
+        } else {
+          this.profileToReviewsMap.set(-1, review);
+        }
+      });
+    }
+  }
+
   changeUserView(selectedProfile: IProfile): void {
     this.currentUsername = selectedProfile.login;
   }
@@ -94,6 +131,8 @@ export class ReviewComponent implements OnInit {
   ngOnInit(): void {
     this.getCurrentUserInfo();
     this.loadAllProfiles();
+    this.loadUserReviews();
+    this.getReviewsForID(this.currentProfileId);
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
       .pipe(
         tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
