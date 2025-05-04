@@ -76,10 +76,15 @@
                 <span class="ms-1">View</span>
               </a>
 
-              <a [routerLink]="['/chat']" [queryParams]="{ receiver: profile.login }" class="btn btn-message">
+              <button
+                type="button"
+                class="btn btn-message"
+                (click)="startConversation(getFriendshipForProfile(profile.id)!)"
+                [disabled]="!getFriendshipForProfile(profile.id)"
+              >
                 <fa-icon icon="comment"></fa-icon>
                 <span class="ms-1">Message</span>
-              </a>
+              </button>
             </div>
 
             <div class="follow-button-container">
