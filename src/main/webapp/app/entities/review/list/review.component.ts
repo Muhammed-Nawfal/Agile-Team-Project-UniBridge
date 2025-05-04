@@ -38,6 +38,7 @@ export class ReviewComponent implements OnInit {
   profileToReviewsMap = new Map<number, IReview>();
   currentUsername: string | null | undefined = '';
   currentProfileId?: number;
+  public selectedReviews: IReview[] | undefined;
 
   sortState = sortStateSignal({});
 
@@ -92,18 +93,6 @@ export class ReviewComponent implements OnInit {
     return this.reviews;
   }
 
-  loadUserReviews(): void {
-    this.reviewService.getUserReviews(this.currentProfileId).subscribe({
-      next: res => {
-        this.reviews = res.body ?? [];
-
-        if (this.reviews.length > 0) {
-          this.extractIDsFromReviews();
-        }
-      },
-    });
-  }
-
   extractIDsFromReviews(): void {
     // Load all review IDs we need to fetch
     const reviewIds: number[] = [];
@@ -131,18 +120,8 @@ export class ReviewComponent implements OnInit {
   ngOnInit(): void {
     this.getCurrentUserInfo();
     this.loadAllProfiles();
-    this.loadUserReviews();
-    this.getReviewsForID(this.currentProfileId);
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => {
-          if (!this.reviews || this.reviews.length === 0) {
-            this.load();
-          }
-        }),
-      )
-      .subscribe();
+    this.selectedReviews = this.getReviewsForID(this.currentProfileId);
+    this.load();
   }
 
   delete(review: IReview): void {
