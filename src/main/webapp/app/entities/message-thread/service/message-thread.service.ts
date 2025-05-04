@@ -100,6 +100,14 @@ export class MessageThreadService {
     return messageThreadCollection;
   }
 
+  /**
+   * Fetches—or creates if missing—a 1-on-1 thread for the given friendship.
+   */
+  getOrCreateThreadForFriends(friendsListId: number): Observable<EntityResponseType> {
+    const url = this.applicationConfigService.getEndpointFor(`api/friends-list/${friendsListId}/thread`);
+    return this.http.get<RestMessageThread>(url, { observe: 'response' }).pipe(map(res => this.convertResponseFromServer(res)));
+  }
+
   protected convertDateFromClient<T extends IMessageThread | NewMessageThread | PartialUpdateMessageThread>(messageThread: T): RestOf<T> {
     return {
       ...messageThread,
