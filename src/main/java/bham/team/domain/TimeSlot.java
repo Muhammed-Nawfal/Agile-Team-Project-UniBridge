@@ -54,14 +54,19 @@ public class TimeSlot implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "timeSlot")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(
-        value = { "timeSlots", "bookedActivity", "bookingLocation", "creator", "activity", "timeSlot" },
-        allowSetters = true
-    )
+    @JsonIgnoreProperties(value = { "bookedActivity", "bookingLocation", "creator", "activity", "timeSlot" }, allowSetters = true)
     private Set<Booking> bookingsLists = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Event event;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "timeSlots", "bookedActivity", "bookingLocation", "creator", "activity" }, allowSetters = true)
+    private Booking booking;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "timeSlots" }, allowSetters = true)
+    private Location location;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -200,6 +205,32 @@ public class TimeSlot implements Serializable {
         return this;
     }
 
+    public Booking getBooking() {
+        return this.booking;
+    }
+
+    public void setBooking(Booking booking) {
+        this.booking = booking;
+    }
+
+    public TimeSlot booking(Booking booking) {
+        this.setBooking(booking);
+        return this;
+    }
+
+    public Location getLocation() {
+        return this.location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public TimeSlot location(Location location) {
+        this.setLocation(location);
+        return this;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -230,6 +261,7 @@ public class TimeSlot implements Serializable {
             ", capacity=" + getCapacity() +
             ", remainingCapacity=" + getRemainingCapacity() +
             ", status='" + getStatus() + "'" +
+            ", locationId=" + (getLocation() != null ? getLocation().getId() : "null") +
             "}";
     }
 }

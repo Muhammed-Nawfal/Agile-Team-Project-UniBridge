@@ -76,7 +76,7 @@
                   tableName="booking"
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
-            <column name="activity_type" type="string"/>
+            <column name="activity_type" type="string" />
             <column name="event_type" type="string"/>
             <column name="booking_date" type="date"/>
             <column name="party_size" type="numeric"/>
