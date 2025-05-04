@@ -5,6 +5,7 @@ import { IProfile } from '../profile.model';
 import { Account } from 'app/core/auth/account.model';
 import { CommonModule } from '@angular/common';
 import { FriendsListService } from 'app/entities/friends-list/service/friends-list.service';
+import { MessageThreadService } from 'app/entities/message-thread/service/message-thread.service';
 
 type FollowState = 'none' | 'pending' | 'friends';
 
@@ -21,12 +22,14 @@ export class ProfileDetailComponent implements OnInit {
   account: Account | null = null;
   fullName = '';
   followState: FollowState = 'none';
+  canMessage = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private profileService: ProfileService,
     private friendsListService: FriendsListService,
     private router: Router,
+    private messageThreadService: MessageThreadService,
   ) {}
 
   ngOnInit(): void {
@@ -58,6 +61,7 @@ export class ProfileDetailComponent implements OnInit {
 
             if (isFriend) {
               this.followState = 'friends';
+              this.canMessage = true;
               return;
             }
 
@@ -68,6 +72,7 @@ export class ProfileDetailComponent implements OnInit {
 
               if (pending) {
                 this.followState = 'pending';
+                this.canMessage = false;
                 return;
               }
 
@@ -78,8 +83,10 @@ export class ProfileDetailComponent implements OnInit {
 
                 if (reversePending) {
                   this.followState = 'pending';
+                  this.canMessage = false;
                 } else {
                   this.followState = 'none';
+                  this.canMessage = false;
                 }
               });
             });
@@ -112,10 +119,31 @@ export class ProfileDetailComponent implements OnInit {
   }
 
   onMessage(): void {
-    if (!this.isFollowing) {
-      alert('⚠️ You must follow this user to message them.');
-    } else {
-      alert('📬 Opening message interface...');
-    }
+    const profileId = Number(this.activatedRoute.snapshot.params['id']);
+
+    this.friendsListService.checkFriendshipStatus(profileId).subscribe({
+      next: res => {
+        const status = res.status;
+        const friendsListId = res.friendsListId;
+
+        if (status !== 'ACCEPTED' || !friendsListId) {
+          alert('You must be friends to send a message.');
+          return;
+        }
+
+        this.messageThreadService.getOrCreateThreadForFriends(friendsListId).subscribe({
+          next: threadRes => {
+            const thread = threadRes.body!;
+            this.router.navigate(['/chat', 'thread', thread.id]);
+          },
+          error(err) {
+            console.error('Could not open thread', err);
+          },
+        });
+      },
+      error(err) {
+        console.error('Failed to check friendship status', err);
+      },
+    });
   }
 }
