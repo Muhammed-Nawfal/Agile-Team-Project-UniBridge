@@ -52,6 +52,11 @@ export class RankingService {
     return o1 && o2 ? this.getRankingIdentifier(o1) === this.getRankingIdentifier(o2) : o1 === o2;
   }
 
+  getRankingsByProfile(profileId: number): Observable<EntityArrayResponseType> {
+    const url = `${this.resourceUrl}/by-rankGiven/${profileId}`;
+    return this.http.get<IRanking[]>(url, { observe: 'response' });
+  }
+
   addRankingToCollectionIfMissing<Type extends Pick<IRanking, 'id'>>(
     rankingCollection: Type[],
     ...rankingsToCheck: (Type | null | undefined)[]

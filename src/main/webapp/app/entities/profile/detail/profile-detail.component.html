@@ -8,6 +8,12 @@
     <div class="col-md-8">
       <div class="card">
         <div class="card-body text-center">
+          <div *ngIf="starAverage !== null" class="mb-2">
+            <span class="clickable fs-4 text-warning" (click)="goToRanking()">
+              {{ '★'.repeat(starAverage) }}{{ '☆'.repeat(5 - starAverage) }}
+              <span class="fs-6 text-muted">({{ starAverage }}/5)</span>
+            </span>
+          </div>
           <!-- Profile Picture -->
           <img
             *ngIf="profile?.profilePicture && profile?.profilePictureContentType"
@@ -61,7 +67,7 @@
           <!-- Follow/Message -->
           <!-- Badge for friends -->
           <div class="mt-4">
-            <div *ngIf="followState === 'friends'" class="badge bg-success">Friends</div>
+            <div *ngIf="followState === 'friends'" class="badge bg-success fs-5 px-3 py-2">Friends</div>
 
             <!-- Button if not friends -->
             <button
