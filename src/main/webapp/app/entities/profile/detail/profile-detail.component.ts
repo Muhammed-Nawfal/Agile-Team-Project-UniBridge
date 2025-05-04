@@ -6,6 +6,7 @@ import { Account } from 'app/core/auth/account.model';
 import { CommonModule } from '@angular/common';
 import { FriendsListService } from 'app/entities/friends-list/service/friends-list.service';
 import { MessageThreadService } from 'app/entities/message-thread/service/message-thread.service';
+import { RankingService } from 'app/entities/ranking/service/ranking.service';
 
 type FollowState = 'none' | 'pending' | 'friends';
 
@@ -23,6 +24,7 @@ export class ProfileDetailComponent implements OnInit {
   fullName = '';
   followState: FollowState = 'none';
   canMessage = false;
+  starAverage: number | null = null;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -30,6 +32,7 @@ export class ProfileDetailComponent implements OnInit {
     private friendsListService: FriendsListService,
     private router: Router,
     private messageThreadService: MessageThreadService,
+    private rankingService: RankingService,
   ) {}
 
   ngOnInit(): void {
@@ -38,6 +41,23 @@ export class ProfileDetailComponent implements OnInit {
       this.profileService.find(id).subscribe(profileRes => {
         this.profile = profileRes.body ?? null;
         if (!this.profile) return;
+        if (this.profile.id) {
+          this.rankingService.getRankingsByProfile(this.profile.id).subscribe(response => {
+            const rankings = response.body ?? [];
+
+            if (rankings.length === 0) {
+              console.error('No rankings found for profile ID:', this.profile?.id);
+              return;
+            }
+
+            const ranking = rankings[0];
+            if (ranking.starAverage != null) {
+              this.starAverage = Math.round(ranking.starAverage);
+            } else {
+              console.warn('Ranking found, but starAverage is null');
+            }
+          });
+        }
 
         this.profileService.findMyProfile().subscribe(myProfileRes => {
           const myProfile = myProfileRes.body;
@@ -94,6 +114,10 @@ export class ProfileDetailComponent implements OnInit {
         });
       });
     });
+  }
+
+  goToRanking(): void {
+    this.router.navigate(['/ranking']);
   }
 
   dismissTip(): void {

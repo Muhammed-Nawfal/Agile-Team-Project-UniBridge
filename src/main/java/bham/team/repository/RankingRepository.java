@@ -1,6 +1,7 @@
 package bham.team.repository;
 
 import bham.team.domain.Ranking;
+import java.util.List;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface RankingRepository extends JpaRepository<Ranking, Long> {}
+public interface RankingRepository extends JpaRepository<Ranking, Long> {
+    List<Ranking> findAllByRankGiven_Id(Long profileId);
+}
