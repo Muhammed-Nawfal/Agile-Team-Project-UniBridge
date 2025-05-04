@@ -82,8 +82,9 @@ export class MatchingComponent implements OnInit, OnDestroy {
   private accountService = inject(AccountService);
   private profileService = inject(ProfileService);
   private modalService = inject(NgbModal);
+
   constructor(
-    private a11y: AccessibilityService, // ← add this
+    protected a11y: AccessibilityService, // ← add this
     private speechService: SpeechService, // ← keep your existing injections
   ) {}
 
@@ -630,11 +631,13 @@ export class MatchingComponent implements OnInit, OnDestroy {
 
   /** Read out the current profile summary via TTS */
   readProfile(): void {
+    if (!this.a11y.isEnabled()) {
+      return;
+    }
     if (!this.currentProfile) {
       return;
     }
     const p = this.currentProfile;
-    // build a concise summary
     const summary =
       `Matched buddy: ${p.firstName} ${p.lastName}, ` +
       `studying ${p.course}, year ${p.courseYear}, ` +
@@ -657,26 +660,28 @@ export class MatchingComponent implements OnInit, OnDestroy {
   }
 
   private resetCursor(): void {
-    if (this.profiles.length > 0) {
-      this.currentProfileIndex = 0;
-      this.currentProfile = this.profiles[0];
-      this.noMoreProfiles = false;
-
-      // Build the live-region text
-      this.announce(
-        `Profile ${this.currentProfileIndex + 1} of ${this.profiles.length}: ${this.currentProfile.firstName} ${this.currentProfile.lastName}.`,
-      );
-
-      // Give Angular time to update the DOM…
-      setTimeout(() => {
-        // 1) Move focus into the live-region/button
-        this.readProfileBtn.nativeElement.focus();
-        // 2) Optionally trigger TTS automatically
-        this.readProfile();
-      }, 0);
-    } else {
+    if (!this.profiles.length) {
       this.currentProfile = null;
       this.noMoreProfiles = true;
+      return;
     }
+    this.currentProfileIndex = 0;
+    this.currentProfile = this.profiles[0];
+    this.noMoreProfiles = false;
+
+    // announce only when enabled
+    if (this.a11y.isEnabled()) {
+      this.liveMessage =
+        `Profile ${this.currentProfileIndex + 1} of ${this.profiles.length}: ` +
+        `${this.currentProfile.firstName} ${this.currentProfile.lastName}.`;
+    }
+
+    setTimeout(() => {
+      this.readProfileBtn.nativeElement.focus();
+      // only speak profile if toggled on
+      if (this.a11y.isEnabled()) {
+        this.readProfile();
+      }
+    }, 0);
   }
 }

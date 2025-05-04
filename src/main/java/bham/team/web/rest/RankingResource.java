@@ -192,4 +192,11 @@ public class RankingResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
     }
+
+    @GetMapping("/by-rankGiven/{profileId}")
+    public ResponseEntity<List<Ranking>> getRankingsByRankGiven(@PathVariable Long profileId) {
+        LOG.debug("REST request to get Rankings by rankGiven profile ID: {}", profileId);
+        List<Ranking> rankings = rankingRepository.findAllByRankGiven_Id(profileId);
+        return ResponseEntity.ok(rankings);
+    }
 }

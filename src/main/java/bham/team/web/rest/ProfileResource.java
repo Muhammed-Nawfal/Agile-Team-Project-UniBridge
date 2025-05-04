@@ -4,6 +4,7 @@ import bham.team.domain.Profile;
 import bham.team.domain.enumeration.ActivityType;
 import bham.team.repository.ProfileRepository;
 import bham.team.security.SecurityUtils;
+import bham.team.service.ProfileService;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -38,9 +39,11 @@ public class ProfileResource {
     private String applicationName;
 
     private final ProfileRepository profileRepository;
+    private final ProfileService profileService;
 
-    public ProfileResource(ProfileRepository profileRepository) {
+    public ProfileResource(ProfileRepository profileRepository, ProfileService profileService) {
         this.profileRepository = profileRepository;
+        this.profileService = profileService;
     }
 
     /**
@@ -243,12 +246,22 @@ public class ProfileResource {
             .build();
     }
 
-    @GetMapping("/preferred-activity")
-    public ResponseEntity<List<Profile>> getProfilesByPreferredActivity(@RequestParam ActivityType activityType) {
-        LOG.debug("REST request to get Profiles by activityType: {}", activityType);
+    //    @GetMapping("/preferred-activity")
+    //    public ResponseEntity<List<Profile>> getProfilesByPreferredActivity(@RequestParam ActivityType activityType) {
+    //        LOG.debug("REST request to get Profiles by activityType: {}", activityType);
+    //
+    //        List<Profile> profiles = profileRepository.findByPreferredActivity(activityType);
+    //        return ResponseEntity.ok(profiles);
+    //    }
 
-        List<Profile> profiles = profileRepository.findByPreferredActivity(activityType);
-        return ResponseEntity.ok(profiles);
+    /**
+     * GET  /profiles/buddies/{type}
+     *   Return all profiles that have any non‐null gym/sports/etc. fields for that ActivityType.
+     */
+    @GetMapping("/buddies/{type}")
+    public ResponseEntity<List<Profile>> getBuddiesByActivityType(@PathVariable ActivityType type) {
+        List<Profile> buddies = profileService.findByActivityType(type);
+        return ResponseEntity.ok(buddies);
     }
 
     @GetMapping("/my")

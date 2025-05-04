@@ -1,6 +1,7 @@
 package bham.team.web.rest;
 
 import bham.team.domain.User;
+import bham.team.repository.ProfileRepository;
 import bham.team.repository.UserRepository;
 import bham.team.security.SecurityUtils;
 import bham.team.service.MailService;
@@ -15,6 +16,7 @@ import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,11 +41,21 @@ public class AccountResource {
     private final UserService userService;
 
     private final MailService mailService;
+    private final ProfileRepository profileRepository;
+    private final CacheManager cacheManager;
 
-    public AccountResource(UserRepository userRepository, UserService userService, MailService mailService) {
+    public AccountResource(
+        UserRepository userRepository,
+        UserService userService,
+        MailService mailService,
+        ProfileRepository profileRepository,
+        CacheManager cacheManager
+    ) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.mailService = mailService;
+        this.profileRepository = profileRepository;
+        this.cacheManager = cacheManager;
     }
 
     /**
@@ -118,6 +130,30 @@ public class AccountResource {
             userDTO.getLangKey(),
             userDTO.getImageUrl()
         );
+    }
+
+    @DeleteMapping("/account")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteOwnAccount() {
+        String login = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new AccountResourceException("Current user login not found"));
+
+        userRepository
+            .findOneByLogin(login)
+            .ifPresent(user -> {
+                // Delete profile first
+                profileRepository.findById(user.getId()).ifPresent(profileRepository::delete);
+
+                // Delete user
+                userRepository.delete(user);
+
+                // Clear caches
+                if (user.getEmail() != null) {
+                    Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE)).evict(user.getEmail());
+                }
+                Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE)).evict(user.getLogin());
+
+                LOG.debug("Deleted user and profile for login: {}", login);
+            });
     }
 
     /**

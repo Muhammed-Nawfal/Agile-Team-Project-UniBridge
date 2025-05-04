@@ -1,14 +1,15 @@
-import { Routes } from '@angular/router';
+import type { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { ASC } from 'app/config/navigation.constants';
 import ChallengeResolve from './route/challenge-routing-resolve.service';
 
-const challengeRoute: Routes = [
+export const challengeRoutes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./list/challenge.component').then(m => m.ChallengeComponent),
+    loadComponent: () => import('./list/challenge-list.component').then(m => m.ChallengeListComponent),
     data: {
+      pageTitle: 'Challenges',
       defaultSort: `id,${ASC}`,
     },
     canActivate: [UserRouteAccessService],
@@ -18,6 +19,22 @@ const challengeRoute: Routes = [
     loadComponent: () => import('./detail/challenge-detail.component').then(m => m.ChallengeDetailComponent),
     resolve: {
       challenge: ChallengeResolve,
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: 'mytrophies',
+    loadComponent: () => import('./mytrophies/trophy.component').then(m => m.TrophyComponent),
+    data: {
+      pageTitle: 'My Trophies',
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: 'my',
+    loadComponent: () => import('./mychallenges/mychallenges.component').then(m => m.MyChallengesComponent),
+    data: {
+      pageTitle: 'My Challenges',
     },
     canActivate: [UserRouteAccessService],
   },
@@ -39,4 +56,4 @@ const challengeRoute: Routes = [
   },
 ];
 
-export default challengeRoute;
+export default challengeRoutes;

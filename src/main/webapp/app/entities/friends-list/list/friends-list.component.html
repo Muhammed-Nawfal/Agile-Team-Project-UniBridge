@@ -1,3 +1,4 @@
+<!-- Optimized friends-list.component.html -->
 <div class="container-fluid">
   <!-- People You Follow Section -->
   <div class="page-header d-flex align-items-center mb-4">
@@ -10,11 +11,25 @@
         <span class="badge bg-danger ms-1" *ngIf="pendingRequestCount > 0">{{ pendingRequestCount }}</span>
       </a>
     </div>
+
+    <!-- Font Size Accessibility Toggle -->
+    <div class="accessibility-toggle ms-3">
+      <button class="btn btn-outline-secondary btn-sm" [class.active]="isFontSizeLarge" (click)="toggleFontSize()">
+        <fa-icon icon="text-height"></fa-icon>
+        <span class="ms-1">Big Text</span>
+      </button>
+    </div>
   </div>
 
-  <!-- No followed profiles found message -->
-  <div *ngIf="!isLoadingProfiles && (!profiles || profiles.length === 0)">
-    <span>You aren't following anyone yet</span>
+  <!-- No followed profiles found - Improved Empty State -->
+  <div *ngIf="!isLoadingProfiles && (!profiles || profiles.length === 0)" class="content-container">
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <fa-icon icon="users" size="3x"></fa-icon>
+      </div>
+      <h3>You aren't following anyone yet</h3>
+      <p>Connect with other users to see them here.</p>
+    </div>
   </div>
 
   <!-- Followed Profiles Cards -->
@@ -61,10 +76,15 @@
                 <span class="ms-1">View</span>
               </a>
 
-              <a [routerLink]="['/chat']" [queryParams]="{ receiver: profile.login }" class="btn btn-message">
+              <button
+                type="button"
+                class="btn btn-message"
+                (click)="startConversation(getFriendshipForProfile(profile.id)!)"
+                [disabled]="!getFriendshipForProfile(profile.id)"
+              >
                 <fa-icon icon="comment"></fa-icon>
                 <span class="ms-1">Message</span>
-              </a>
+              </button>
             </div>
 
             <div class="follow-button-container">
@@ -102,10 +122,23 @@
     </div>
   </div>
 
-  <!-- No suggestions found message -->
-  <div *ngIf="!isLoadingSuggestions && (!filteredSuggestedProfiles || filteredSuggestedProfiles.length === 0)" class="alert alert-info">
-    <span *ngIf="searchTerm">No profiles found matching "{{ searchTerm }}"</span>
-    <span *ngIf="!searchTerm">No suggestions available at this time</span>
+  <!-- No suggestions found - Improved Empty State -->
+  <div *ngIf="!isLoadingSuggestions && (!filteredSuggestedProfiles || filteredSuggestedProfiles.length === 0)" class="content-container">
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <fa-icon icon="user-plus" size="3x"></fa-icon>
+      </div>
+      <h3>
+        <span *ngIf="searchTerm">No profiles found matching "{{ searchTerm }}"</span>
+        <span *ngIf="!searchTerm">No suggestions available</span>
+      </h3>
+      <p *ngIf="searchTerm">Try different search terms to find people.</p>
+      <p *ngIf="!searchTerm">Check back later for friend suggestions.</p>
+      <button *ngIf="searchTerm" class="btn btn-primary" (click)="clearSearch()">
+        <fa-icon icon="times"></fa-icon>
+        <span class="ms-1">Clear Search</span>
+      </button>
+    </div>
   </div>
 
   <!-- Suggested Profiles Cards -->

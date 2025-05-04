@@ -1,12 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Sono:wght@200..800&display=swap');
-
-// #0d6097 --- change this color.
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
 
 * {
   box-sizing: border-box;
   font-family: 'Nunito', sans-serif;
-  font-weight: 700;
 }
 
 body {
@@ -15,30 +11,25 @@ body {
   background-color: #f8f9fa;
 }
 
-.nbUL {
-  list-style-type: none;
-  margin: 0;
-  display: flex;
-  gap: 15px;
-}
+// Variables
+$primary: #0d6097;
+$secondary: #4361ee;
+$radius: 8px;
 
+// Common styles
 a {
   text-decoration: none;
   color: white;
-
   &:hover {
     color: #ffca3a;
-    transition: 0.2s;
   }
 }
 
-#set,
-#UB {
-  padding: 15px 0;
-  margin: 0 15px;
+// Layout
+.header {
   display: flex;
-  align-items: center;
-  list-style-type: none;
+  padding: 20px 20px 0;
+  background: white;
 }
 
 .secondDiv {
@@ -48,12 +39,13 @@ a {
   gap: 20px;
 }
 
-.bookSection {
+// Section containers
+.section-container {
   width: 50%;
-  border: 3px solid #0d6097;
-  border-radius: 12px;
+  border: 3px solid $primary;
+  border-radius: $radius;
   position: relative;
-  background-color: white;
+  background: white;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   padding: 10px;
 
@@ -61,73 +53,53 @@ a {
     font-weight: 900;
     position: absolute;
     top: -32px;
-    background-color: white;
+    background: white;
     padding: 10px;
-    color: #0d6097;
+    color: $primary;
     font-size: 40px;
     margin: 0;
+  }
+}
+
+.bookSection {
+  @extend .section-container;
+  h1 {
     left: 30px;
   }
 }
 
 .activitySection {
-  width: 50%;
-  border: 3px solid #0d6097;
-  border-radius: 12px;
-  position: relative;
-  background-color: white;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  @extend .section-container;
   padding: 20px;
-
   h1 {
-    font-weight: 900;
-    position: absolute;
-    top: -32px;
     right: 30px;
-    background-color: white;
-    color: #0d6097;
-    font-size: 40px;
-    margin: 0;
-    padding: 10px;
   }
 }
 
-.bookDetails {
-  margin-top: 30px;
-  padding: 0 30px;
-
-  h2 {
-    font-weight: 900;
-    font-size: 15px;
-    color: #333;
-  }
-}
-
+// Form elements
 .form-control {
   width: 100%;
   padding: 10px 15px;
   border: 2px solid #ddd;
-  border-radius: 8px;
+  border-radius: $radius;
   font-size: 16px;
   margin-bottom: 20px;
-  transition: border-color 0.3s;
   font-weight: 700;
 
   &:focus {
     outline: none;
-    border-color: #277998;
+    border-color: $primary;
     box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
   }
 }
 
 select.form-control {
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 15px center;
-  background-size: 15px;
+  background: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")
+    no-repeat right 15px center/15px;
 }
 
+// Time slots
 .time-slots {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -141,21 +113,13 @@ select.form-control {
   input[type='checkbox'] {
     position: absolute;
     opacity: 0;
-    cursor: pointer;
     height: 0;
     width: 0;
 
     &:checked + label {
-      background-color: #4361ee;
+      background: $secondary;
       color: white;
-      border-color: #4361ee;
-    }
-
-    &:disabled + label {
-      background-color: #f5f5f5;
-      color: #999;
-      cursor: not-allowed;
-      border-color: #ddd;
+      border-color: $secondary;
     }
   }
 
@@ -164,24 +128,22 @@ select.form-control {
     align-items: center;
     justify-content: center;
     padding: 10px;
-    background-color: #f0f2ff;
+    background: #f0f2ff;
     border: 2px solid #ddd;
-    border-radius: 8px;
+    border-radius: $radius;
     cursor: pointer;
-    transition: all 0.3s;
     font-size: 14px;
     font-weight: 700;
     text-align: center;
 
     &.selected {
-      background-color: #4361ee;
+      background: $secondary;
       color: white;
-      border-color: #4361ee;
-      cursor: not-allowed;
+      border-color: $secondary;
     }
 
     &.disabled {
-      background-color: #f5f5f5;
+      background: #f5f5f5;
       color: #999;
       cursor: not-allowed;
       border-color: #ddd;
@@ -189,6 +151,7 @@ select.form-control {
     }
   }
 }
+
 
 .bookBtn {
   position: absolute;
@@ -203,68 +166,55 @@ button[type='button'] {
   text-align: center;
   font-size: 15px;
   background-color: #0d6097;
+
+// Buttons
+.btn {
+  padding: 10px 25px;
+  text-align: center;
+  font-size: 20px;
+  background: $primary;
+
   color: white;
-  border-radius: 8px;
+  border-radius: $radius;
   cursor: pointer;
-  transition: all 0.3s;
   font-weight: 700;
+  border: 2px solid $primary;
 
   &:hover {
-    background-color: white;
-    color: #0d6097;
-    border-color: #0d6097;
-    transition: 0.2s;
+    background: white;
+    color: $primary;
   }
 }
 
-.confirmation-message {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #4caf50;
-  color: white;
-  padding: 15px 30px;
-  border-radius: 8px;
-  font-size: 18px;
-  font-weight: bold;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  animation: fadeIn 0.5s ease-in;
+.bookBtn {
+  @extend .btn;
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -20px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
+// Activity cards
 .activity-list {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  padding-top: 15px;
   margin-top: 15px;
-}
-
-.activity-card:hover {
-  border: 2px dodgerblue solid;
-  cursor: pointer;
 }
 
 .activity-card {
   display: flex;
   align-items: center;
-  background-color: #dbe1ec;
-  border-radius: 8px;
+  background: #dbe1ec;
+  border-radius: $radius;
   padding: 15px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   position: relative;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.02);
+    border: 2px solid $secondary;
+  }
 
   .booking-info {
     flex: 1;
@@ -281,19 +231,17 @@ button[type='button'] {
   }
 
   .booking-details {
-    font-weight: 700;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     margin-left: 20px;
   }
 
-  .date-time {
-    margin: 0;
+  .date-time,
+  p {
+    margin: 5px 0 0;
     font-size: 14px;
     color: #666;
-    font-weight: 400;
-    text-align: right;
   }
 
   .location {
@@ -304,15 +252,6 @@ button[type='button'] {
     text-align: right;
   }
 
-  p {
-    margin: 5px 0 0;
-    font-size: 14px;
-    color: #666;
-    font-weight: 400;
-    text-align: right;
-    width: 100%;
-  }
-
   .booking-status {
     position: absolute;
     top: 10px;
@@ -321,152 +260,45 @@ button[type='button'] {
     padding: 3px 8px;
     border-radius: 12px;
     font-weight: 600;
-    text-transform: lowercase;
 
     &.confirmed {
-      background-color: #e6f7ee;
+      background: #e6f7ee;
       color: #1fa865;
     }
-
     &.pending {
-      background-color: #fff8e6;
+      background: #fff8e6;
       color: #e6b000;
     }
-
     &.cancelled {
-      background-color: #ffe6e6;
+      background: #ffe6e6;
       color: #e63946;
     }
   }
 }
 
-.loading-indicator {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100px;
-
-  p {
-    color: #666;
-    font-size: 16px;
-  }
-}
-
-.empty-bookings {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100px;
-
-  p {
-    color: #666;
-    font-size: 16px;
-    font-weight: 400;
-  }
-}
-
-.language-select {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  padding: 5px 10px;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.alert {
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 4px;
-}
-
-.alert-danger {
-  color: #721c24;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-}
-
-.language-selector {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-
-  button {
-    padding: 8px 16px;
-    margin-left: 8px;
-    border-radius: 4px;
-    cursor: pointer;
-
-    &.active {
-      background-color: #0d6097;
-      color: white;
-      border-color: #0d6097;
-    }
-
-    &.active:hover {
-      background-color: #0056b3;
-    }
-  }
-}
-
-.header {
-  width: 100%;
-  display: flex;
-  padding: 20px 20px 0;
-  background-color: white;
-
-  .language-select {
-    margin: 0 30px 20px 0;
-    padding: 5px 16px;
-    border: 2px solid #0d6097;
-    border-radius: 8px;
-    background-color: white;
-    color: #0d6097;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 120px;
-    text-align: center;
-
-    &:hover {
-      background-color: #0d6097;
-      color: white;
-    }
-
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-    }
-  }
-}
-
-/* Modal Styles */
+// Modal
 .modal {
-  display: none;
   position: fixed;
   z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
   box-sizing: border-box;
 
-  &.show {
-    display: flex;
-  }
-
   .modal-content {
-    padding: 15px;
+
+    background: white;
+    padding: 25px;
+
     border-radius: 12px;
     width: 700px;
     position: relative;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     box-sizing: border-box;
+    min-height: 200px;
 
     h2 {
       color: #0d6097;
@@ -560,11 +392,21 @@ button[type='button'] {
   }
 }
 
-/* Confirmation Dialog Styles */
-.modal.show {
-  .modal-content {
-    position: relative;
-    min-height: 200px;
+// Utility classes
+.confirmation-message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #4caf50;
+  color: white;
+  padding: 15px 30px;
+  border-radius: $radius;
+  font-size: 18px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: fadeIn 0.5s;
+}
 
     .edit-form {
       .form-group {
@@ -578,67 +420,34 @@ button[type='button'] {
       }
     }
 
-    .modal-actions {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 10px;
-      margin: 40px 0 0;
-      padding: 0;
-      width: 100%;
-      clear: both;
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
+.alert {
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 4px;
 
-      button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border: none;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 14px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        min-width: 80px;
-        margin-top: 0;
-        float: none;
-        position: relative;
-        height: auto;
-        line-height: normal;
-        white-space: nowrap;
-
-        &.cancel-button {
-          background-color: #6c757d;
-          color: white;
-
-          &:hover {
-            background-color: #5a6268;
-          }
-        }
-
-        &.delete-button {
-          background-color: #dc3545;
-          color: white;
-
-          &:hover {
-            background-color: #c82333;
-          }
-        }
-      }
-    }
+  &-danger {
+    color: #721c24;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
   }
 }
 
-/* Make booking cards clickable */
-.activity-card {
+// Language selector
+.language-select {
+  margin: 0 30px 20px 0;
+  padding: 5px 16px;
+  border: 2px solid $primary;
+  border-radius: $radius;
+  background: white;
+  color: $primary;
+  font-size: 16px;
   cursor: pointer;
-  transition: transform 0.2s ease-in-out;
+  min-width: 120px;
+  text-align: center;
 
   &:hover {
-    transform: scale(1.02);
+    background: $primary;
+    color: white;
   }
 }
 
