@@ -14,11 +14,6 @@ const routes: Routes = [
     loadChildren: () => import('./profile/profile.routes'),
   },
   {
-    path: 'trophy',
-    data: { pageTitle: 'My Trophies' },
-    loadChildren: () => import('./trophy/trophy.routes'),
-  },
-  {
     path: 'activity',
     data: { pageTitle: 'Activities' },
     loadChildren: () => import('./activity/activity.routes'),
@@ -92,6 +87,11 @@ const routes: Routes = [
     path: 'location',
     data: { pageTitle: 'Locations' },
     loadChildren: () => import('./location/location.routes'),
+  },
+  {
+    path: 'my-activities',
+    data: { pageTitle: 'My Activities' },
+    loadChildren: () => import('../entities/activity/my-activities/my-activities.routes'),
   },
   /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
 ];
