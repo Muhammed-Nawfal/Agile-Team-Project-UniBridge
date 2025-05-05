@@ -60,10 +60,13 @@
                 <span class="badge bg-dark p-2">Sports Time: {{ profile?.sportsTime }}</span>
               </ng-container>
               <ng-container *ngIf="profile?.preferredSociety">
-                <span class="badge bg-warning text-dark p-2">Society: {{ profile?.preferredSociety }}</span>
+                <span class="badge bg-secondary text-dark p-2">Society: {{ profile?.preferredSociety }}</span>
               </ng-container>
               <ng-container *ngIf="profile?.preferredEvents">
                 <span class="badge bg-warning text-dark p-2">Events: {{ profile?.preferredEvents }}</span>
+              </ng-container>
+              <ng-container *ngIf="profile?.eventsTime">
+                <span class="badge bg-warning text-dark p-2">Events Time: {{ profile?.eventsTime }}</span>
               </ng-container>
             </div>
           </ng-container>
@@ -73,6 +76,9 @@
             <a class="btn btn-outline-primary" [routerLink]="['/profile/my/edit']"> Edit Profile </a>
           </div>
         </div>
+      </div>
+      <div class="text-center">
+        <button class="btn btn-danger" [routerLink]="['/profile/deleteForm']">Delete Profile</button>
       </div>
     </div>
   </div>
