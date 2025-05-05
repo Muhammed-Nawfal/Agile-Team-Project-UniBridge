@@ -2,7 +2,7 @@
 
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse, HttpParams } from '@angular/common/http';
-import { Observable, map, firstValueFrom } from 'rxjs';
+import { Observable, map, firstValueFrom, switchMap, of } from 'rxjs';
 
 import dayjs from 'dayjs/esm';
 
@@ -214,6 +214,58 @@ export class TimeSlotService {
 
   isTimeSlotFullyBooked(timeSlot: string, fullyBookedTimeSlots: string[]): boolean {
     return fullyBookedTimeSlots.includes(timeSlot);
+  }
+
+  fetchAvailableTimeSlotsForEvent(
+    date: string,
+    eventId: number | null,
+    timeSlots: string[],
+    selectedEvent: string,
+    activities: any[],
+    eventService: EventService,
+    bookingService: BookingService,
+  ): Observable<{ available: ITimeSlot[]; fullyBooked: string[] }> {
+    const params: any = { 'date.equals': date };
+    if (eventId) params['event.id.equals'] = eventId;
+
+    return this.query(params).pipe(
+      switchMap(response => {
+        const availableSlots = response.body ?? [];
+
+        if (availableSlots.length === 0 && eventId) {
+          // Fallback: try with just date
+          return this.query({ 'date.equals': date }).pipe(
+            switchMap(dateResponse => {
+              const dateSlots = dateResponse.body ?? [];
+              if (dateSlots.length === 0) {
+                return of({ available: [], fullyBooked: [] });
+              }
+              return this.checkForFullyBookedTimeSlots(
+                timeSlots,
+                dateSlots,
+                date,
+                selectedEvent,
+                activities,
+                eventService,
+                bookingService,
+                this.http,
+              ).pipe(map(fullyBookedSlots => ({ available: dateSlots, fullyBooked: fullyBookedSlots })));
+            }),
+          );
+        }
+
+        return this.checkForFullyBookedTimeSlots(
+          timeSlots,
+          availableSlots,
+          date,
+          selectedEvent,
+          activities,
+          eventService,
+          bookingService,
+          this.http,
+        ).pipe(map(fullyBookedSlots => ({ available: availableSlots, fullyBooked: fullyBookedSlots })));
+      }),
+    );
   }
 
   checkForFullyBookedTimeSlots(

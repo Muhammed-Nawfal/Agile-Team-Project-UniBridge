@@ -287,43 +287,101 @@
             </div>
           </div>
 
+          <!-- Status Field - Previously hidden but now visible -->
+          @let statusRef = editForm.get('status')!;
+          <div class="mb-3">
+            <label class="form-label" for="field_status">Status</label>
+            <select class="form-select" name="status" formControlName="status" id="field_status" data-cy="status">
+              <option [ngValue]="null" disabled selected>Select Status</option>
+              @for (status of statusValues; track $index) {
+                <option [value]="status">
+                  {{
+                    {
+                      null: '',
+                      ANNOUNCED: 'Announced',
+                      CURRENTLY_HAPPENING: 'Currently Happening',
+                      FINISHED: 'Finished',
+                      CANCELED: 'Canceled',
+                    }[status]
+                  }}
+                </option>
+              }
+            </select>
+            @if (statusRef.invalid && (statusRef.dirty || statusRef.touched)) {
+              <div class="invalid-feedback d-block">
+                @if (editForm.get('status')?.errors?.required) {
+                  <small>This field is required.</small>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Dates Section -->
+          <div class="row">
+            <div class="col-md-6">
+              @let createdOnRef = editForm.get('createdOn')!;
+              <div class="mb-3">
+                <label class="form-label" for="field_createdOn">Created On</label>
+                <input
+                  id="field_createdOn"
+                  type="datetime-local"
+                  class="form-control"
+                  name="createdOn"
+                  formControlName="createdOn"
+                  placeholder="YYYY-MM-DD HH:mm"
+                />
+                @if (createdOnRef.invalid && (createdOnRef.dirty || createdOnRef.touched)) {
+                  <div class="invalid-feedback d-block">
+                    @if (editForm.get('createdOn')?.errors?.required) {
+                      <small>This field is required.</small>
+                    }
+                    <small [hidden]="!editForm.get('createdOn')?.errors?.datetimelocal"> Invalid date/time format. </small>
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="col-md-6">
+              @let updatedOnRef = editForm.get('updatedOn')!;
+              <div class="mb-3">
+                <label class="form-label" for="field_updatedOn">Updated On</label>
+                <input
+                  id="field_updatedOn"
+                  type="datetime-local"
+                  class="form-control"
+                  name="updatedOn"
+                  formControlName="updatedOn"
+                  placeholder="YYYY-MM-DD HH:mm"
+                />
+                @if (updatedOnRef.invalid && (updatedOnRef.dirty || updatedOnRef.touched)) {
+                  <div class="invalid-feedback d-block">
+                    @if (editForm.get('updatedOn')?.errors?.required) {
+                      <small>This field is required.</small>
+                    }
+                    <small [hidden]="!editForm.get('updatedOn')?.errors?.datetimelocal"> Invalid date/time format. </small>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="field_creator">Creator</label>
+            <select
+              class="form-select"
+              id="field_creator"
+              data-cy="creator"
+              name="creator"
+              formControlName="creator"
+              [compareWith]="compareProfile"
+            >
+              <option [ngValue]="null">Select Creator</option>
+              @for (profileOption of profilesSharedCollection; track $index) {
+                <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+              }
+            </select>
+          </div>
+
           <div class="visually-hidden">
-            <div class="mb-3">
-              <label class="form-label" for="field_creator">Creator</label>
-              <select
-                class="form-control"
-                id="field_creator"
-                data-cy="creator"
-                name="creator"
-                formControlName="creator"
-                [compareWith]="compareProfile"
-              >
-                <option [ngValue]="null"></option>
-                @for (profileOption of profilesSharedCollection; track $index) {
-                  <option [ngValue]="profileOption">{{ profileOption.id }}</option>
-                }
-              </select>
-            </div>
-            @let createdOnRef = editForm.get('createdOn')!;
-            <div class="mb-3">
-              <label class="form-label" for="field_createdOn">Created On</label>
-              <input id="field_createdOn" type="datetime-local" class="form-control" name="createdOn" formControlName="createdOn" />
-            </div>
-            @let updatedOnRef = editForm.get('updatedOn')!;
-            <div class="mb-3">
-              <label class="form-label" for="field_updatedOn">Updated On</label>
-              <input id="field_updatedOn" type="datetime-local" class="form-control" name="updatedOn" formControlName="updatedOn" />
-            </div>
-            @let statusRef = editForm.get('status')!;
-            <div class="mb-3">
-              <label class="form-label" for="field_status">Status</label>
-              <select class="form-control" name="status" formControlName="status" id="field_status" data-cy="status">
-                <option [ngValue]="null"></option>
-                @for (status of statusValues; track $index) {
-                  <option [value]="status">{{ status }}</option>
-                }
-              </select>
-            </div>
             <div class="mb-3">
               <label class="form-label" for="field_challenge">Challenge</label>
               <select

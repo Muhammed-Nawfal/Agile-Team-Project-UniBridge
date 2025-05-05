@@ -46,7 +46,7 @@ export class TrophyComponent implements OnInit {
     this.loading = true;
     this.error = false;
 
-    // First get the current user's account
+    // Get the current user's account
     this.accountService.identity().subscribe({
       next: account => {
         if (!account?.login) {
@@ -55,36 +55,29 @@ export class TrophyComponent implements OnInit {
           return;
         }
 
-        // Next, find the user's profile
-        this.profileService.findUserByLogin(account.login).subscribe({
-          next: userResponse => {
-            if (!userResponse.body?.id) {
-              this.error = true;
-              this.loading = false;
-              return;
-            }
+        // Query for profiles with the current user's login
+        this.profileService
+          .query({
+            'userLogin.equals': account.login,
+          })
+          .subscribe({
+            next: profilesResponse => {
+              // This should return the current user's profile
+              if (profilesResponse.body && profilesResponse.body.length > 0) {
+                this.profile = profilesResponse.body[0];
 
-            const user = userResponse.body;
-
-            // Get the profile by user id
-            this.profileService.find(user.id).subscribe({
-              next: profileResponse => {
-                this.profile = profileResponse.body;
-
-                // Finally, get the user's completed challenges
+                // Load the completed challenges
                 this.loadCompletedChallenges();
-              },
-              error: () => {
+              } else {
                 this.error = true;
                 this.loading = false;
-              },
-            });
-          },
-          error: () => {
-            this.error = true;
-            this.loading = false;
-          },
-        });
+              }
+            },
+            error: () => {
+              this.error = true;
+              this.loading = false;
+            },
+          });
       },
       error: () => {
         this.error = true;

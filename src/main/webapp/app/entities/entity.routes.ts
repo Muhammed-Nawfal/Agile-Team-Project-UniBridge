@@ -10,35 +10,8 @@ const routes: Routes = [
   },
   {
     path: 'profile',
-    data: { pageTitle: 'Profiles' },
-    children: [
-      // list
-      {
-        path: '',
-        loadComponent: () => import('./profile/list/profile.component').then(m => m.ProfileComponent),
-      },
-      // detail
-      {
-        path: ':id/view',
-        loadComponent: () => import('./profile/detail/profile-detail.component').then(m => m.ProfileDetailComponent),
-      },
-      // update
-      {
-        path: ':id/edit', // Fixed: removed the redundant 'profile/' prefix
-        resolve: { profile: profileResolve },
-        loadComponent: () => import('./profile/update/profile-update.component').then(m => m.ProfileUpdateComponent),
-      },
-      {
-        path: ':id/deleteForm', // Fixed: removed the redundant 'profile/' prefix
-        resolve: { profile: profileResolve },
-        loadComponent: () => import('./profile/delete/profile-delete-dialog.component').then(m => m.ProfileDeleteDialogComponent),
-      },
-    ],
-  },
-  {
-    path: 'trophy',
-    data: { pageTitle: 'My Trophies' },
-    loadChildren: () => import('./trophy/trophy.routes'),
+    data: { pageTitle: 'Profile' },
+    loadChildren: () => import('./profile/profile.routes'),
   },
   {
     path: 'activity',
@@ -114,6 +87,11 @@ const routes: Routes = [
     path: 'location',
     data: { pageTitle: 'Locations' },
     loadChildren: () => import('./location/location.routes'),
+  },
+  {
+    path: 'my-activities',
+    data: { pageTitle: 'My Activities' },
+    loadChildren: () => import('../entities/activity/my-activities/my-activities.routes'),
   },
   /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
 ];

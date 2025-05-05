@@ -246,6 +246,12 @@ public class ProfileResource {
             .build();
     }
 
+    @PutMapping("/{id}/anonymize")
+    public ResponseEntity<Void> anonymizeProfile(@PathVariable Long id) {
+        profileService.anonymize(id);
+        return ResponseEntity.noContent().build();
+    }
+
     //    @GetMapping("/preferred-activity")
     //    public ResponseEntity<List<Profile>> getProfilesByPreferredActivity(@RequestParam ActivityType activityType) {
     //        LOG.debug("REST request to get Profiles by activityType: {}", activityType);

@@ -30,7 +30,7 @@ public class MessageThreadService {
         // Check if thread already exists
         Optional<MessageThread> existingThread = messageThreadRepository.findByFriendChatId(friendsListId);
         if (existingThread.isPresent()) {
-            return existingThread.get();
+            return existingThread.orElseThrow(() -> new RuntimeException("Message thread not found"));
         }
 
         // Create new thread

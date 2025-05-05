@@ -1,12 +1,14 @@
-@if (profile) {
-  <form name="deleteForm" (ngSubmit)="confirmDelete(profile.id!)">
+@if (profileId) {
+  <form name="deleteForm" (ngSubmit)="anonymizeProfile()">
     <div class="modal-header">
       <h4 class="modal-title" data-cy="profileDeleteDialogHeading">Confirm delete operation</h4>
     </div>
 
+    <div class="alert alert-warning" role="alert"><strong>Warning!</strong> Clicking <em>Delete</em> will delete your profile details.</div>
+
     <div class="modal-body">
       <jhi-alert-error></jhi-alert-error>
-      <p id="jhi-delete-profile-heading">Are you sure you want to delete Profile {{ profile.id }}?</p>
+      <p id="jhi-delete-profile-heading">Are you sure you want to delete Profile {{ profileId }}?</p>
     </div>
 
     <div class="modal-footer">
@@ -14,7 +16,13 @@
         <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
       </button>
 
-      <button id="jhi-confirm-delete-profile" data-cy="entityConfirmDeleteButton" type="submit" class="btn btn-danger">
+      <button
+        id="jhi-confirm-delete-profile"
+        data-cy="entityConfirmDeleteButton"
+        type="button"
+        class="btn btn-danger"
+        (click)="anonymizeProfile()"
+      >
         <fa-icon icon="times"></fa-icon>&nbsp;<span>Delete</span>
       </button>
     </div>

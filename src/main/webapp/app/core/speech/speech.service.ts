@@ -1,40 +1,60 @@
 import { Injectable } from '@angular/core';
+import { AccessibilityService } from '../Accessibility/accessibility.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class SpeechService {
-  // After — uses an actual runtime feature check
-  private synth: SpeechSynthesis | null = 'speechSynthesis' in window ? window.speechSynthesis : null;
+  private synth: SpeechSynthesis | null = null;
+  private voices: SpeechSynthesisVoice[] = [];
+  private preferredVoice: SpeechSynthesisVoice | null = null;
 
-  /**
-   * Speak the given text. You can optionally adjust rate (0.1–10) and pitch (0–2).
-   */
-  speak(text: string, options: { rate?: number; pitch?: number; lang?: string } = {}): void {
-    if (!this.synth) {
-      console.warn('SpeechSynthesis not supported in this browser.');
-      return;
-    }
-    // Cancel any ongoing speech
-    this.synth.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
+  constructor(private a11yService: AccessibilityService) {
+    // Initialize speech synthesis if available
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      this.synth = window.speechSynthesis;
 
-    // Apply options if provided
-    if (options.rate !== undefined) {
-      utter.rate = options.rate;
-    }
-    if (options.pitch !== undefined) {
-      utter.pitch = options.pitch;
-    }
-    if (options.lang) {
-      utter.lang = options.lang;
-    }
+      // Load voices
+      if ('getVoices' in this.synth) {
+        this.voices = this.synth.getVoices();
+      }
 
-    this.synth.speak(utter);
+      // If voices are not loaded yet, wait for them
+      if (this.voices.length === 0) {
+        window.speechSynthesis.addEventListener('voiceschanged', () => {
+          this.voices = this.synth?.getVoices() ?? [];
+          this.selectPreferredVoice();
+        });
+      } else {
+        this.selectPreferredVoice();
+      }
+    }
   }
 
-  /** Immediately stop any ongoing speech. */
-  stop(): void {
-    this.synth?.cancel();
+  speak(text: string): void {
+    // Only speak if screen reader is enabled
+    if (!this.a11yService.isScreenReaderEnabled() || !this.synth) {
+      return;
+    }
+
+    // Stop any previous speech
+    this.synth.cancel();
+
+    // Create and configure utterance
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // Use preferred voice if available
+    if (this.preferredVoice) {
+      utterance.voice = this.preferredVoice;
+    }
+
+    // Speak the text
+    this.synth.speak(utterance);
+  }
+
+  private selectPreferredVoice(): void {
+    if (!this.voices.length) return;
+
+    // Try to find an English voice
+    this.preferredVoice =
+      this.voices.find(v => v.lang.toLowerCase().includes('en-us') || v.lang.toLowerCase().includes('en-gb')) ?? this.voices[0];
   }
 }

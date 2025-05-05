@@ -27,8 +27,8 @@ services:
       - PGPORT= 5433
     # If you want to expose these ports outside your dev machine,
     # uncomment the following two lines and remove the "127.0.0.1:" prefix
-    #ports:
-    #  - 127.0.0.1:5433:5433
+    ports:
+      - 5433:5433
     networks:
       - app-network
 networks:

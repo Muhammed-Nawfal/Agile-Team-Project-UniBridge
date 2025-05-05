@@ -68,6 +68,10 @@ export class ProfileService {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
+  anonymize(id: number): Observable<HttpResponse<{}>> {
+    return this.http.put(`${this.resourceUrl}/${id}/anonymize`, {}, { observe: 'response' });
+  }
+
   getProfileIdentifier(profile: Pick<IProfile, 'id'>): number {
     return profile.id;
   }

@@ -1,10 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 import { AccountService } from 'app/core/auth/account.service';
 import { ProfileService } from '../service/profile.service';
 import { IProfile } from '../profile.model';
+import { RankingService } from 'app/entities/ranking/service/ranking.service';
 
 @Component({
   selector: 'jhi-profile',
@@ -13,12 +14,15 @@ import { IProfile } from '../profile.model';
   templateUrl: './profile.component.html',
 })
 export class ProfileComponent implements OnInit {
+  starAverage: number | null = null;
   profile: IProfile | null = null;
   showEditTip = false;
   hasBio = false;
 
   private readonly profileService = inject(ProfileService);
   private readonly accountService = inject(AccountService);
+  private readonly rankingService = inject(RankingService);
+  private readonly router = inject(Router);
 
   ngOnInit(): void {
     this.accountService.identity().subscribe(account => {
@@ -31,6 +35,24 @@ export class ProfileComponent implements OnInit {
         next: res => {
           this.profile = res.body ?? null;
           this.hasBio = !!this.profile?.bio;
+          if (this.profile?.id) {
+            this.rankingService.getRankingsByProfile(this.profile.id).subscribe(response => {
+              const rankings = response.body ?? [];
+
+              if (rankings.length === 0) {
+                console.error('No rankings found for profile ID:', this.profile?.id);
+                return;
+              }
+
+              const ranking = rankings[0];
+              if (ranking.starAverage != null) {
+                this.starAverage = Math.round(ranking.starAverage);
+              } else {
+                console.warn('Ranking found, but starAverage is null');
+              }
+            });
+          }
+
           this.checkEditTip();
         },
         error(err) {
@@ -38,6 +60,10 @@ export class ProfileComponent implements OnInit {
         },
       });
     });
+  }
+
+  goToRanking(): void {
+    this.router.navigate(['/ranking']);
   }
 
   checkEditTip(): void {
