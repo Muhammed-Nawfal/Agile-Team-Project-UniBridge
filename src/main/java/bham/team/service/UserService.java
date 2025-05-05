@@ -146,8 +146,8 @@ public class UserService {
         userRepository.save(newUser);
 
         Profile profile = new Profile();
+        profile.setId(newUser.getId()); //copy user id
         profile.setUser(newUser);
-        profile.setId(userDTO.getId()); //copy user id
         profile.setLogin(userDTO.getLogin()); //copy user login
         profile.setFirstName(userDTO.getFirstName()); //copy user first name
         profile.setLastName(userDTO.getLastName()); //copy user last name

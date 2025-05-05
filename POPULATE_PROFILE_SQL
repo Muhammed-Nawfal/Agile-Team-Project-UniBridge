@@ -1,0 +1,23 @@
+/*ssh into vm and then run  
+docker exec -it team-project-teamproject-postgresql-prd-1 psql -U teamproject24 -d teamproject24
+*/
+
+
+INSERT INTO profile (
+    id, login, first_name, last_name, bio, profile_picture, profile_picture_content_type,
+    course, course_year, university, gym_skill, gym_location, gym_time, study_time,
+    sports, sports_skill, sports_time, preferred_society, preferred_events, events_time,
+    preferred_activities, user_id
+) VALUES
+(
+    1, 'admin', 'Administrator', 'Administrator', NULL, NULL, NULL,
+    'MEDICINE', 6, 'ASTON_UNIVERSITY', 'PROFESSIONAL', 'THE_GYM_SELLY_OAK', 'NIGHT', 'NIGHT',
+    'NETBALL', 'INTERMEDIATE', 'MORNING', 'OTHER', 'MEET_AND_GREET', 'NIGHT',
+    'SOCIAL', 1
+),
+(
+    2, 'user', 'User', 'User', NULL, NULL, NULL,
+    'MUSIC', 2, 'UNIVERSITY_OF_NOTTINGHAM', 'CONFIDENT', 'PUREGYM_FIVE_WAYS', 'EARLY_MORNING', 'EARLY_MORNING',
+    'BOXING', 'NOVICE', 'MORNING', 'OTHER', 'GAMES_NIGHT', 'MORNING',
+    'ACADEMIC', 2
+);
