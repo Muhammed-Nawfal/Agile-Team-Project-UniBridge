@@ -51,7 +51,6 @@ export class ReviewComponent implements OnInit {
   protected ngZone = inject(NgZone);
   protected readonly profileService = inject(ProfileService);
   protected readonly accountService = inject(AccountService);
-  protected readonly cdr = inject(ChangeDetectorRef);
 
   getCurrentUserInfo(): void {
     this.accountService.identity().subscribe(account => {
@@ -112,9 +111,8 @@ export class ReviewComponent implements OnInit {
   }
 
   changeUserView(selectedProfile: IProfile): void {
+    this.selectedReviews = this.getReviewsForID(selectedProfile.id);
     this.currentUsername = selectedProfile.login;
-    this.cdr.detectChanges();
-    this.selectedReviews = this.getReviewsForID(this.currentProfileId);
     this.load();
   }
 
@@ -129,6 +127,7 @@ export class ReviewComponent implements OnInit {
   ngOnInit(): void {
     this.getCurrentUserInfo();
     this.loadAllProfiles();
+    this.load();
     this.selectedReviews = this.getReviewsForID(this.currentProfileId);
     this.load();
   }

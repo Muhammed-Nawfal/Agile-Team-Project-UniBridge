@@ -80,6 +80,11 @@ export class RankingComponent implements OnInit {
     });
   }
 
+  playAnimation(): void {
+    document.getElementById('animate')!.className = 'ani';
+    setTimeout(() => document.getElementById('animate')!.classList.remove('ani'), 2000);
+  }
+
   trackId = (item: IRanking): number => this.rankingService.getRankingIdentifier(item);
 
   ngOnInit(): void {
