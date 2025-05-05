@@ -7,23 +7,43 @@
   <jhi-alert></jhi-alert>
 
   <h2>Match With a Buddy</h2>
-  <div class="buddy-buttons">
-    <button (click)="navigateToBuddy(ActivityType.ACADEMIC)">ACADEMIC BUDDY</button>
-    <button (click)="navigateToBuddy(ActivityType.GYM)">GYM BUDDY</button>
-    <button (click)="navigateToBuddy(ActivityType.SPORTS)">SPORTS BUDDY</button>
-    <button (click)="navigateToBuddy(ActivityType.SOCIAL)">SOCIALS BUDDY</button>
+  <div class="row g-3">
+    <div class="col-md-6 col-lg-3">
+      <button (click)="navigateToBuddy(ActivityType.ACADEMIC)" class="w-100 btn btn-gradient">
+        <i class="fas fa-book-reader me-2"></i> Academic Buddy
+      </button>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <button (click)="navigateToBuddy(ActivityType.GYM)" class="w-100 btn btn-gradient">
+        <i class="fas fa-dumbbell me-2"></i> Gym Buddy
+      </button>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <button (click)="navigateToBuddy(ActivityType.SPORTS)" class="w-100 btn btn-gradient">
+        <i class="fas fa-medal me-2"></i> Sports Buddy
+      </button>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <button (click)="navigateToBuddy(ActivityType.SOCIAL)" class="w-100 btn btn-gradient">
+        <i class="fas fa-people-group me-2"></i> Socials Buddy
+      </button>
+    </div>
   </div>
 
   <h2>Create/Join</h2>
   <div class="activity-buttons">
-    <button (click)="navigateToBooking()">CREATE A BOOKING</button>
-    <button (click)="navigateToActivity()">JOIN AN ACTIVITY</button>
+    <button class="btn-secondary-action" (click)="navigateToBooking()"><i class="fas fa-calendar-plus me-2"></i> Create a Booking</button>
+    <button class="btn-secondary-action" (click)="navigateToActivity()"><i class="fas fa-sign-in-alt me-2"></i> Join an Activity</button>
   </div>
 
   <h2>View Your Upcoming Matches</h2>
   <div class="activity-buttons">
-    <button (click)="navigateToUpcomingMatches()">UPCOMING MATCHES</button>
-    <button (click)="navigateToMatchRequests()">MATCH REQUESTS</button>
+    <button class="btn-secondary-action" (click)="navigateToUpcomingMatches()">
+      <i class="fas fa-calendar-check me-2"></i> Upcoming Matches
+    </button>
+    <button class="btn-secondary-action" (click)="navigateToMatchRequests()">
+      <i class="fas fa-user-friends me-2"></i> Match Requests
+    </button>
   </div>
   <div class="form-text">
     <span *ngIf="a11y.isEnabled$ | async" class="text-success">🟢 Accessibility ON</span>

@@ -1,8 +1,9 @@
-@import 'bootstrap-variables';
-@import 'bootstrap/scss/functions';
 @import 'bootswatch/dist/materia/variables';
+@import 'bootstrap/scss/functions';
 @import 'bootstrap/scss/variables';
-@import '~@fortawesome/fontawesome-free/css/all.css';
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import 'aos/dist/aos.css';
+
 /* ==============================================================
 Bootstrap tweaks
 ===============================================================*/
