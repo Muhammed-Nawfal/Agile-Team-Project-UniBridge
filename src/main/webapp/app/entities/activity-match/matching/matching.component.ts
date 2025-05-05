@@ -642,7 +642,6 @@ export class MatchingComponent implements OnInit, OnDestroy {
       `Matched buddy: ${p.firstName} ${p.lastName}, ` +
       `studying ${p.course}, year ${p.courseYear}, ` +
       `interested in ${this.buddyType.toLowerCase()}.`;
-    this.speechService.speak(summary, { rate: 1, pitch: 1 });
   }
 
   // Helper method to convert enum to options for select input

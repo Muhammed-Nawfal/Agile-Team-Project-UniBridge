@@ -1,0 +1,129 @@
+<!-- src/main/webapp/app/shared/accessibility/accessibility.component.html -->
+<div class="accessibility-widget" [class.open]="isMenuOpen">
+  <button class="accessibility-toggle" (click)="toggleMenu()" aria-label="Toggle accessibility menu" [attr.aria-expanded]="isMenuOpen">
+    <fa-icon [icon]="faUniversalAccess"></fa-icon>
+  </button>
+
+  <div class="accessibility-menu" [class.visible]="isMenuOpen" role="dialog" aria-labelledby="accessibility-title">
+    <h2 id="accessibility-title">Accessibility Options</h2>
+
+    <!-- Main toggle -->
+    <div class="option-group">
+      <button
+        class="toggle-button main-toggle"
+        (click)="toggleAccessibility()"
+        [class.active]="accessibilityEnabled"
+        [attr.aria-pressed]="accessibilityEnabled"
+      >
+        <fa-icon [icon]="faUniversalAccess"></fa-icon>
+        {{ accessibilityEnabled ? 'Accessibility ON' : 'Accessibility OFF' }}
+      </button>
+    </div>
+
+    <div class="settings-container" [class.disabled]="!accessibilityEnabled">
+      <!-- Font Size Options -->
+      <div class="option-group">
+        <h3 id="font-size-heading">Font Size</h3>
+        <div class="button-group" role="radiogroup" aria-labelledby="font-size-heading">
+          <button
+            (click)="changeFontSize('small')"
+            [class.active]="fontSize === 'small' && accessibilityEnabled"
+            [disabled]="!accessibilityEnabled"
+            role="radio"
+            [attr.aria-checked]="fontSize === 'small' && accessibilityEnabled"
+            aria-label="Small font size"
+          >
+            <span class="size-s">A</span>
+          </button>
+          <button
+            (click)="changeFontSize('medium')"
+            [class.active]="fontSize === 'medium' && accessibilityEnabled"
+            [disabled]="!accessibilityEnabled"
+            role="radio"
+            [attr.aria-checked]="fontSize === 'medium' && accessibilityEnabled"
+            aria-label="Medium font size"
+          >
+            <span class="size-m">A</span>
+          </button>
+          <button
+            (click)="changeFontSize('large')"
+            [class.active]="fontSize === 'large' && accessibilityEnabled"
+            [disabled]="!accessibilityEnabled"
+            role="radio"
+            [attr.aria-checked]="fontSize === 'large' && accessibilityEnabled"
+            aria-label="Large font size"
+          >
+            <span class="size-l">A</span>
+          </button>
+          <button
+            (click)="changeFontSize('x-large')"
+            [class.active]="fontSize === 'x-large' && accessibilityEnabled"
+            [disabled]="!accessibilityEnabled"
+            role="radio"
+            [attr.aria-checked]="fontSize === 'x-large' && accessibilityEnabled"
+            aria-label="Extra large font size"
+          >
+            <span class="size-xl">A</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Contrast Toggle -->
+      <div class="option-group">
+        <h3>Contrast</h3>
+        <button
+          class="toggle-button"
+          (click)="toggleContrast()"
+          [class.active]="contrast === 'high' && accessibilityEnabled"
+          [disabled]="!accessibilityEnabled"
+          [attr.aria-pressed]="contrast === 'high' && accessibilityEnabled"
+        >
+          <fa-icon [icon]="faAdjust"></fa-icon>
+          {{ contrast === 'high' ? 'High Contrast ON' : 'High Contrast OFF' }}
+        </button>
+      </div>
+
+      <!-- Theme Toggle -->
+      <div class="option-group">
+        <h3>Color Theme</h3>
+        <button
+          class="toggle-button"
+          (click)="toggleTheme()"
+          [class.active]="theme === 'dark' && accessibilityEnabled"
+          [disabled]="!accessibilityEnabled"
+          [attr.aria-pressed]="theme === 'dark' && accessibilityEnabled"
+        >
+          <fa-icon [icon]="theme === 'light' ? faSun : faMoon"></fa-icon>
+          {{ theme === 'dark' ? 'Dark Theme' : 'Light Theme' }}
+        </button>
+      </div>
+
+      <!-- Screen Reader Toggle -->
+      <div class="option-group">
+        <h3>Screen Reader</h3>
+        <button
+          class="toggle-button"
+          (click)="toggleScreenReader()"
+          [class.active]="screenReaderActive && accessibilityEnabled"
+          [disabled]="!accessibilityEnabled"
+          [attr.aria-pressed]="screenReaderActive && accessibilityEnabled"
+        >
+          <fa-icon [icon]="faHeadphones"></fa-icon>
+          {{ screenReaderActive ? 'Screen Reader ON' : 'Screen Reader OFF' }}
+        </button>
+      </div>
+
+      <!-- Reset Button -->
+      <div class="reset-container">
+        <button
+          class="reset-button"
+          (click)="resetToDefaults()"
+          [disabled]="!accessibilityEnabled"
+          aria-label="Reset all accessibility settings to defaults"
+        >
+          Reset to Defaults
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

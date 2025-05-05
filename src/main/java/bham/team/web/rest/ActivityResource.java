@@ -73,29 +73,24 @@ public class ActivityResource {
     @PostMapping("")
     public ResponseEntity<Activity> createActivity(@Valid @RequestBody Activity activity) throws URISyntaxException {
         LOG.debug("REST request to save Activity : {}", activity);
-        // Get the current user's profile and set as creator
-        Optional<Profile> currentUserProfile = profileRepository.findByUserLogin(SecurityUtils.getCurrentUserLogin().orElse(""));
-        if (currentUserProfile.isEmpty()) {
-            throw new BadRequestAlertException("No profile found for current user", "activity", "noprofile");
-        }
-        // Get current user login
+
+        // Get current user login and profile
         String currentUserLogin = SecurityUtils.getCurrentUserLogin()
             .orElseThrow(() -> new BadRequestAlertException("Current user login not found", "activity", "userloginnotfound"));
 
-        // Find profile for current user
-        Profile creatorProfile = profileRepository
+        Profile currentUserProfile = profileRepository
             .findByUserLogin(currentUserLogin)
             .orElseThrow(() -> new BadRequestAlertException("No profile found for current user", "activity", "noprofile"));
 
         // Set creator and creation timestamps
-        activity.setCreator(creatorProfile);
+        activity.setCreator(currentUserProfile);
         activity.setCreatedOn(Instant.now());
         activity.setUpdatedOn(Instant.now());
-        activity.setCreator(currentUserProfile.get());
 
         if (activity.getId() != null) {
             throw new BadRequestAlertException("A new activity cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
         activity = activityRepository.save(activity);
         return ResponseEntity.created(new URI("/api/activities/" + activity.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, activity.getId().toString()))

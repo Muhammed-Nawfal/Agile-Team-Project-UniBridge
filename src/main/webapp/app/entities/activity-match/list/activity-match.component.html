@@ -1,15 +1,4 @@
 <div class="page" id="page-activity-match" jhiFocusAnnouncer jhiHoverAnnouncer>
-  <div class="accessibility-toggle mb-3">
-    <label for="a11y-toggle">Enable Accessibility</label>
-    <input
-      id="a11y-toggle"
-      #toggle
-      type="checkbox"
-      [checked]="a11y.isEnabled$ | async"
-      aria-label="Enable Accessibility"
-      (change)="toggleA11y(toggle.checked)"
-    />
-  </div>
   <h1 id="page-heading" class="title" data-cy="ActivityMatchHeading" tabindex="0" aria-label="Welcome to UNIBRIDGE">
     Welcome to UNIBRIDGE
   </h1>
