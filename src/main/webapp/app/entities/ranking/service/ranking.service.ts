@@ -1,11 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IRanking, NewRanking } from '../ranking.model';
+import { RestFriendsList } from '../../friends-list/service/friends-list.service';
 
 export type PartialUpdateRanking = Partial<IRanking> & Pick<IRanking, 'id'>;
 
@@ -39,6 +40,12 @@ export class RankingService {
     const options = createRequestOption(req);
     return this.http.get<IRanking[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
+
+  // getUserLogin(userID: number | undefined): Observable<EntityArrayResponseType> {
+  //   return this.http
+  //     .get<RestRanking[]>(`${this.resourceUrl}/getLogin/${userID}`, { observe: 'response' })
+  //     .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  // }
 
   delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });

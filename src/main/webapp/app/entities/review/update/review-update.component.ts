@@ -12,6 +12,7 @@ import { ProfileService } from 'app/entities/profile/service/profile.service';
 import { IReview } from '../review.model';
 import { ReviewService } from '../service/review.service';
 import { ReviewFormGroup, ReviewFormService } from './review-form.service';
+import { AccountService } from 'app/core/auth/account.service';
 
 @Component({
   standalone: true,
@@ -25,10 +26,20 @@ export class ReviewUpdateComponent implements OnInit {
 
   profilesSharedCollection: IProfile[] = [];
 
+  currentUsername = '';
   protected reviewService = inject(ReviewService);
   protected reviewFormService = inject(ReviewFormService);
   protected profileService = inject(ProfileService);
   protected activatedRoute = inject(ActivatedRoute);
+  protected readonly accountService = inject(AccountService);
+
+  getCurrentUserInfo(): void {
+    this.accountService.identity().subscribe(account => {
+      if (account) {
+        this.currentUsername = account.login;
+      }
+    });
+  }
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: ReviewFormGroup = this.reviewFormService.createReviewFormGroup();
@@ -36,6 +47,7 @@ export class ReviewUpdateComponent implements OnInit {
   compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
 
   ngOnInit(): void {
+    this.getCurrentUserInfo();
     this.activatedRoute.data.subscribe(({ review }) => {
       this.review = review;
       if (review) {

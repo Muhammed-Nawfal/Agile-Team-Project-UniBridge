@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
-import { ASC } from 'app/config/navigation.constants';
+import { ASC, DESC } from 'app/config/navigation.constants';
 import RankingResolve from './route/ranking-routing-resolve.service';
 
 const rankingRoute: Routes = [
@@ -9,7 +9,7 @@ const rankingRoute: Routes = [
     path: '',
     loadComponent: () => import('./list/ranking.component').then(m => m.RankingComponent),
     data: {
-      defaultSort: `id,${ASC}`,
+      defaultSort: `starAverage,${DESC}`,
     },
     canActivate: [UserRouteAccessService],
   },

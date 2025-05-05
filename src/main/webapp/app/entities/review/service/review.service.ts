@@ -8,6 +8,7 @@ import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IReview, NewReview } from '../review.model';
+import { RestFriendsList } from '../../friends-list/service/friends-list.service';
 
 export type PartialUpdateReview = Partial<IReview> & Pick<IReview, 'id'>;
 
@@ -62,6 +63,16 @@ export class ReviewService {
     const options = createRequestOption(req);
     return this.http
       .get<RestReview[]>(this.resourceUrl, { params: options, observe: 'response' })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+
+  /**
+   * Get all reviews for the given user
+   * @returns An observable with the list of reviews
+   */
+  getUserReviews(aboutUserID: number | undefined): Observable<EntityArrayResponseType> {
+    return this.http
+      .get<RestReview[]>(`${this.resourceUrl}/getAboutUser/${aboutUserID}`, { observe: 'response' })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 

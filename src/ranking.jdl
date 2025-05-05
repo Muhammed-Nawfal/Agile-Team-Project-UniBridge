@@ -1,8 +1,1 @@
-entity Ranking {
-  user String required
-  reviewNumber Integer required
-  activityNumber Integer required
-  globalRanking Integer required
-  friendRanking Integer required
-  unreliable Boolean required
-}
+
