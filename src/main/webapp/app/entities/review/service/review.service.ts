@@ -72,7 +72,7 @@ export class ReviewService {
    */
   getUserReviews(aboutUserID: number | undefined): Observable<EntityArrayResponseType> {
     return this.http
-      .get<RestFriendsList[]>(`${this.resourceUrl}/getAboutUser/${aboutUserID}`, { observe: 'response' })
+      .get<RestReview[]>(`${this.resourceUrl}/getAboutUser/${aboutUserID}`, { observe: 'response' })
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 

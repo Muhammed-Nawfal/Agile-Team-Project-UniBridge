@@ -14,6 +14,7 @@ import { IProfile } from 'app/entities/profile/profile.model';
 import { EntityArrayResponseType, ReviewService } from '../service/review.service';
 import { ReviewDeleteDialogComponent } from '../delete/review-delete-dialog.component';
 import { AccountService } from '../../../core/auth/account.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   standalone: true,
@@ -50,6 +51,7 @@ export class ReviewComponent implements OnInit {
   protected ngZone = inject(NgZone);
   protected readonly profileService = inject(ProfileService);
   protected readonly accountService = inject(AccountService);
+  protected readonly cdr = inject(ChangeDetectorRef);
 
   getCurrentUserInfo(): void {
     this.accountService.identity().subscribe(account => {
@@ -111,9 +113,16 @@ export class ReviewComponent implements OnInit {
 
   changeUserView(selectedProfile: IProfile): void {
     this.currentUsername = selectedProfile.login;
+    this.cdr.detectChanges();
+    this.selectedReviews = this.getReviewsForID(this.currentProfileId);
+    this.load();
   }
 
   trackProfileId = (item: IProfile): number => this.profileService.getProfileIdentifier(item);
+
+  trackReviewId = (index: number, item: IReview): number => item.id;
+
+  trackProfiles = (index: number, item: IProfile): number => item.id;
 
   trackId = (item: IReview): number => this.reviewService.getReviewIdentifier(item);
 

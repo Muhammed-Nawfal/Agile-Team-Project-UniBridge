@@ -21,11 +21,33 @@
   .mybutton:hover {
     border: 3px groove #7bc0ff;
   }
+  .mybutton:active {
+    background-color: #2c3eae;
+  }
   .btn-group-vertical {
     margin-top: 50px;
     margin-bottom: 40px;
     margin-left: 70px;
     gap: 50px;
+  }
+  :root {
+    --play-state: paused;
+  }
+  @keyframes highlight {
+    0% {
+      background-color: white;
+    }
+    50% {
+      background-color: #7b1fa2;
+    }
+    100% {
+      background-color: white;
+    }
+  }
+  animate {
+    animation-name: highlight;
+    animation-duration: 2s;
+    animation-play-state: var(--play-state);
   }
 </style>
 
@@ -54,7 +76,7 @@
                 <span>User</span>
               </div>
             </th>
-            <th scope="col" jhiSortBy="user.id">
+            <th scope="col">
               <div class="d-flex">
                 <span>Stars</span>
               </div>
@@ -64,9 +86,13 @@
         <tbody>
           @for (ranking of rankings; track trackId(ranking)) {
             <tr data-cy="entityTable">
-              <td>{{ ranking.starAverage }}</td>
+              @if (ranking.id == this.currentProfileId) {
+                <td id="animate">{{ profiles[ranking.id - 1].login }}</td>
+              } @else {
+                <td>{{ profiles[ranking.id - 1].login }}</td>
+              }
               <td>
-                {{ ranking.reviewNumber }}
+                {{ ranking.starAverage }}
               </td>
             </tr>
           }
@@ -74,7 +100,7 @@
       </table>
       <div class="btn-group-vertical">
         <a class="mybutton" role="button" href="../review" style="float: left">Submit a review</a>
-        <button class="mybutton" style="float: left">Find my ranking</button>
+        <button onClick="playAnimation()" class="mybutton" id="changeAni" style="float: left">Find my ranking</button>
         <p style="float: left">
           Rankings are based on user reviews. <br />
           Star rating and number of reviews both <br />
@@ -82,32 +108,19 @@
           as you like, but make sure to attend them!
         </p>
       </div>
-      <table class="table table-striped" aria-describedby="page-heading" style="float: right">
-        <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="starAverage">
-              <div class="d-flex">
-                <span>User</span>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="user.id">
-              <div class="d-flex">
-                <span>Stars</span>
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (ranking of rankings; track trackId(ranking)) {
-            <tr data-cy="entityTable">
-              <td>{{ ranking.starAverage }}</td>
-              <td>
-                {{ ranking.reviewNumber }}
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
     </div>
   }
 </div>
+
+<script>
+  import { root } from 'wait-on/.eslintrc';
+
+  const animateButton = document.getElementById('changeAni');
+  animateButton.addEventListener('click', () => {
+    root.style.setProperty('--play-state', 'running');
+  });
+
+  function playAnimation() {
+    document.getElementById('animate').animationPlayState = 'running';
+  }
+</script>

@@ -87,10 +87,10 @@
           <img class="pfp" src="../../../content/images/pfp.jpg" alt="profile picture" style="float: left" />
         </div>
         <div class="dropdown">
-          <button class="dropbtn">Dropdown</button>
+          <button class="dropbtn">Select User</button>
           <div class="dropdown-content">
             @for (profile of profiles; track trackProfileId(profile)) {
-              <button onClick="changeUserView(item.id)">{{ profile.login }}</button>
+              <button (click)="changeUserView(profile)">{{ profile.login }}</button>
             }
           </div>
         </div>
@@ -104,6 +104,27 @@
         <tbody>
           @for (review of getReviewsForID(this.currentProfileId); track trackId(review)) {
             <tr data-cy="entityTable">
+              <td width="15%">
+                {{ review.datePublished }}
+              </td>
+              <td>
+                <tr>
+                  ({{
+                    review.star
+                  }})
+                </tr>
+                <tr height="90px">
+                  {{
+                    review.text
+                  }}
+                </tr>
+                <tr>
+                  {{
+                    review.fromUser?.login
+                  }}
+                </tr>
+              </td>
+              <td class="text-end" width="8%"></td>
               <td width="15%">{{ review.datePublished }}</td>
               <td>
                 <tr>

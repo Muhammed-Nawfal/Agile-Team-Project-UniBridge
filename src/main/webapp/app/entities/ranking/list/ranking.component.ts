@@ -14,6 +14,7 @@ import { IProfile } from 'app/entities/profile/profile.model';
 import { EntityArrayResponseType, RankingService } from '../service/ranking.service';
 import { RankingDeleteDialogComponent } from '../delete/ranking-delete-dialog.component';
 import { AccountService } from '../../../core/auth/account.service';
+import { IReview } from '../../review/review.model';
 
 @Component({
   standalone: true,
@@ -36,6 +37,8 @@ export class RankingComponent implements OnInit {
   isLoading = false;
   currentUsername = '';
   currentProfileId?: number;
+  profiles: IProfile[] = [];
+  selectedProfile?: IProfile;
 
   sortState = sortStateSignal({});
 
@@ -69,10 +72,19 @@ export class RankingComponent implements OnInit {
     });
   }
 
+  loadAllProfiles(): void {
+    this.profileService.query().subscribe({
+      next: res => {
+        this.profiles = res.body ?? [];
+      },
+    });
+  }
+
   trackId = (item: IRanking): number => this.rankingService.getRankingIdentifier(item);
 
   ngOnInit(): void {
     this.getCurrentUserInfo();
+    this.loadAllProfiles();
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
       .pipe(
         tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
