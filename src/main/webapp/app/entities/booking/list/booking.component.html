@@ -13,14 +13,9 @@
       <input type="date" name="date" class="form-control" (change)="onDateChange($event)" required />
 
       <h2>{{ translate('selectActivity') }}</h2>
-      <select name="Activity" class="form-control" (change)="onActivityChange($event)" required>
-        <option value="" selected disabled>{{ translate('defaultActivity') }}</option>
-        <option *ngFor="let activity of activities" [value]="activity.value">{{ activity.name }}</option>
-      </select>
-
-      <h2>{{ translate('socialActivities') }}</h2>
+      <!-- Updated title -->
       <select name="SocialActivity" class="form-control" (change)="onSocialActivityChange($event)">
-        <option value="" selected disabled>{{ translate('socialActivities') }}</option>
+        <option value="" selected disabled>{{ translate('selectActivity') }}</option>
         <option value="none">{{ translate('none') }}</option>
         <option *ngFor="let activity of loadedActivities" [value]="'activity-' + activity.id" [disabled]="!isActivitySelectable(activity)">
           {{ activity.activityName }}
