@@ -38,7 +38,7 @@ export class ReviewComponent implements OnInit {
   isLoading = false;
   profileToReviewsMap = new Map<number, IReview>();
   currentUsername: string | null | undefined = '';
-  currentProfileId?: number;
+  currentProfileId = 1;
   public selectedReviews: IReview[] | undefined;
 
   sortState = sortStateSignal({});
@@ -95,7 +95,6 @@ export class ReviewComponent implements OnInit {
   }
 
   extractIDsFromReviews(): void {
-    // Load all review IDs we need to fetch
     const reviewIds: number[] = [];
     this.profileToReviewsMap.clear();
     if (this.reviews) {
@@ -111,9 +110,9 @@ export class ReviewComponent implements OnInit {
   }
 
   changeUserView(selectedProfile: IProfile): void {
+    // reviews always needs double click???
     this.selectedReviews = this.getReviewsForID(selectedProfile.id);
     this.currentUsername = selectedProfile.login;
-    this.load();
   }
 
   trackProfileId = (item: IProfile): number => this.profileService.getProfileIdentifier(item);
@@ -127,7 +126,6 @@ export class ReviewComponent implements OnInit {
   ngOnInit(): void {
     this.getCurrentUserInfo();
     this.loadAllProfiles();
-    this.load();
     this.selectedReviews = this.getReviewsForID(this.currentProfileId);
     this.load();
   }
