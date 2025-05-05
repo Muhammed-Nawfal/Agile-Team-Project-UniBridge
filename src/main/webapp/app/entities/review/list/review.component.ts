@@ -9,8 +9,12 @@ import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'ap
 import { FormsModule } from '@angular/forms';
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
 import { IReview } from '../review.model';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
+import { IProfile } from 'app/entities/profile/profile.model';
 import { EntityArrayResponseType, ReviewService } from '../service/review.service';
 import { ReviewDeleteDialogComponent } from '../delete/review-delete-dialog.component';
+import { AccountService } from '../../../core/auth/account.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   standalone: true,
@@ -30,7 +34,12 @@ import { ReviewDeleteDialogComponent } from '../delete/review-delete-dialog.comp
 export class ReviewComponent implements OnInit {
   subscription: Subscription | null = null;
   reviews?: IReview[];
+  profiles: IProfile[] = [];
   isLoading = false;
+  profileToReviewsMap = new Map<number, IReview>();
+  currentUsername: string | null | undefined = '';
+  currentProfileId = 1;
+  public selectedReviews: IReview[] | undefined;
 
   sortState = sortStateSignal({});
 
@@ -40,20 +49,85 @@ export class ReviewComponent implements OnInit {
   protected readonly sortService = inject(SortService);
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
+  protected readonly profileService = inject(ProfileService);
+  protected readonly accountService = inject(AccountService);
+
+  getCurrentUserInfo(): void {
+    this.accountService.identity().subscribe(account => {
+      if (account) {
+        this.currentUsername = account.login;
+        this.findCurrentProfileId();
+      }
+    });
+  }
+
+  findCurrentProfileId(): void {
+    this.profileService.query().subscribe({
+      next: res => {
+        const profiles = res.body ?? [];
+        const currentProfile = profiles.find(profile => profile.login === this.currentUsername);
+        if (currentProfile) {
+          this.currentProfileId = currentProfile.id;
+        }
+      },
+    });
+  }
+
+  getDataForReview(reviewId: number): IReview | undefined {
+    return this.profileToReviewsMap.get(reviewId);
+  }
+
+  loadAllProfiles(): void {
+    this.profileService.query().subscribe({
+      next: res => {
+        this.profiles = res.body ?? [];
+      },
+    });
+  }
+
+  getReviewsForID(profileID: number | undefined): IReview[] | undefined {
+    this.reviewService.getUserReviews(profileID).subscribe({
+      next: res => {
+        this.reviews = res.body ?? [];
+      },
+    });
+    return this.reviews;
+  }
+
+  extractIDsFromReviews(): void {
+    const reviewIds: number[] = [];
+    this.profileToReviewsMap.clear();
+    if (this.reviews) {
+      this.reviews.forEach(review => {
+        reviewIds.push(review.id);
+        if (review.aboutUser) {
+          this.profileToReviewsMap.set(review.aboutUser.id, review);
+        } else {
+          this.profileToReviewsMap.set(-1, review);
+        }
+      });
+    }
+  }
+
+  changeUserView(selectedProfile: IProfile): void {
+    // reviews always needs double click???
+    this.selectedReviews = this.getReviewsForID(selectedProfile.id);
+    this.currentUsername = selectedProfile.login;
+  }
+
+  trackProfileId = (item: IProfile): number => this.profileService.getProfileIdentifier(item);
+
+  trackReviewId = (index: number, item: IReview): number => item.id;
+
+  trackProfiles = (index: number, item: IProfile): number => item.id;
 
   trackId = (item: IReview): number => this.reviewService.getReviewIdentifier(item);
 
   ngOnInit(): void {
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => {
-          if (!this.reviews || this.reviews.length === 0) {
-            this.load();
-          }
-        }),
-      )
-      .subscribe();
+    this.getCurrentUserInfo();
+    this.loadAllProfiles();
+    this.selectedReviews = this.getReviewsForID(this.currentProfileId);
+    this.load();
   }
 
   delete(review: IReview): void {

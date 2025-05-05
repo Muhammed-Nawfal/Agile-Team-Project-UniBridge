@@ -87,7 +87,7 @@
           >
             <option [ngValue]="null"></option>
             @for (profileOption of profilesSharedCollection; track $index) {
-              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+              <option [ngValue]="profileOption">{{ profileOption.login }}</option>
             }
           </select>
         </div>
@@ -104,7 +104,7 @@
           >
             <option [ngValue]="null"></option>
             @for (profileOption of profilesSharedCollection; track $index) {
-              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
+              <option [ngValue]="profileOption">{{ profileOption.login }}</option>
             }
           </select>
         </div>
