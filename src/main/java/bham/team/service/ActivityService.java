@@ -73,17 +73,11 @@ public class ActivityService {
     }
 
     public boolean isCurrentUserActivityCreator(Long activityId) {
-        Optional<Activity> activity = activityRepository.findById(activityId);
-        if (activity.isEmpty()) {
-            return false;
-        }
+        Activity activity = activityRepository.findById(activityId).orElseThrow(() -> new IllegalStateException("Activity not found"));
 
-        Optional<Profile> currentUserProfile = profileRepository.findByUserLogin(SecurityUtils.getCurrentUserLogin().orElse(""));
+        String userLogin = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new IllegalStateException("User login not found"));
+        Profile profile = profileRepository.findByUserLogin(userLogin).orElseThrow(() -> new IllegalStateException("Profile not found"));
 
-        return (
-            currentUserProfile.isPresent() &&
-            activity.get().getCreator() != null &&
-            activity.get().getCreator().getId().equals(currentUserProfile.get().getId())
-        );
+        return activity.getCreator() != null && activity.getCreator().getId().equals(profile.getId());
     }
 }
