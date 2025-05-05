@@ -7,7 +7,7 @@ import { ActivityMatchComponent } from '../entities/activity-match/list/activity
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
-import { AfterViewInit } from '@angular/core';
+import { AfterViewInit, AfterViewChecked } from '@angular/core';
 import AOS from 'aos';
 
 @Component({
@@ -17,7 +17,7 @@ import AOS from 'aos';
   styleUrl: './home.component.scss',
   imports: [SharedModule, RouterModule],
 })
-export default class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
+export default class HomeComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
   account = signal<Account | null>(null);
 
   private readonly destroy$ = new Subject<void>();
