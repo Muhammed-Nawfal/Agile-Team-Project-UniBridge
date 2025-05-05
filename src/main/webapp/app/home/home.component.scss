@@ -1,0 +1,246 @@
+.landing-hero {
+  background: url('/content/images/h1.jpg') center center / cover no-repeat;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 0 1rem;
+}
+
+.overlay {
+  background-color: rgba(0, 0, 0, 0.55);
+  padding: 3rem;
+  border-radius: 1rem;
+  color: white;
+  text-align: center;
+  max-width: 650px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+  h1 {
+    font-size: 2.75rem;
+  }
+
+  p.lead {
+    font-size: 1.25rem;
+    margin-top: 1rem;
+  }
+}
+
+.app-summary-section {
+  background-color: #fff;
+  color: #111;
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+
+  h2 {
+    line-height: 1.4;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .highlight-purple {
+    color: purple;
+  }
+
+  .highlight-cyan {
+    color: #00bcd4;
+  }
+
+  .app-mockup-img {
+    width: 180px;
+    height: auto;
+    border-radius: 2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+  }
+
+  .app-mockup-img:hover {
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    .app-mockup-img {
+      width: 140px;
+    }
+  }
+}
+
+.feature-highlight-section {
+  background: #ffffff;
+
+  .feature-img {
+    max-width: 100%;
+    border-radius: 1rem;
+    transition: transform 0.3s ease;
+  }
+
+  .feature-img:hover {
+    transform: scale(1.03);
+  }
+
+  h3 {
+    font-size: 2rem;
+    color: #222;
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: #555;
+  }
+
+  @media (max-width: 768px) {
+    .feature-img {
+      max-width: 80%;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+    }
+
+    p {
+      font-size: 1rem;
+    }
+  }
+}
+.feature-svg-wrapper {
+  max-width: 100%;
+  padding: 1rem;
+
+  .feature-svg {
+    width: 100%;
+    max-height: 300px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    transition: transform 0.3s ease;
+
+    // Optional dark mode styling
+    body.dark-mode & {
+      filter: brightness(0.85);
+    }
+  }
+
+  &:hover .feature-svg {
+    transform: scale(1.03);
+  }
+}
+
+.feature-svg {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  display: block;
+  margin: 0 auto;
+  transition: transform 0.3s ease;
+}
+
+.app-flow-section {
+  text-align: center;
+  background: #f8f9fa;
+  border-radius: 1rem;
+  padding: 2rem 1rem;
+
+  h2 {
+    font-weight: 700;
+    color: #222;
+  }
+
+  .flow-step {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: translateY(-5px);
+    }
+
+    .icon-box {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h4 {
+      font-size: 1.5rem;
+      color: #3f51b5;
+    }
+
+    p {
+      color: #555;
+    }
+  }
+}
+
+.how-unibridge-works {
+  text-align: center;
+
+  .flow-row {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1.5rem 0;
+  }
+
+  .three-cols {
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+
+  .arrow-row {
+    display: flex;
+    justify-content: space-around;
+    gap: 2rem;
+    margin: -1rem 0;
+  }
+
+  .box {
+    background-color: #f9f9f9;
+    padding: 1.25rem 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    font-weight: 600;
+    max-width: 220px;
+    margin: 0 auto;
+    transition: transform 0.3s ease;
+  }
+
+  .arrow {
+    font-size: 1.5rem;
+    color: #bbb;
+    min-width: 50px;
+    text-align: center;
+  }
+
+  .flow-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 180px;
+  }
+
+  h2 {
+    font-weight: 700;
+    font-size: 2.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .three-cols {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .arrow-row {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .box {
+      max-width: 90%;
+    }
+  }
+}
