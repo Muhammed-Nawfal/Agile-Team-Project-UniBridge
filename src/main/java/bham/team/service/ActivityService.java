@@ -1,9 +1,12 @@
 package bham.team.service;
 
 import bham.team.domain.Activity;
+import bham.team.domain.Profile;
 import bham.team.domain.enumeration.ActivityType;
 import bham.team.domain.enumeration.Status;
 import bham.team.repository.ActivityRepository;
+import bham.team.repository.ProfileRepository;
+import bham.team.security.SecurityUtils;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -17,9 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ActivityService {
 
     private final ActivityRepository activityRepository;
+    private final ProfileRepository profileRepository;
 
-    public ActivityService(ActivityRepository activityRepository) {
+    public ActivityService(ActivityRepository activityRepository, ProfileRepository profileRepository) {
         this.activityRepository = activityRepository;
+        this.profileRepository = profileRepository;
     }
 
     /**
@@ -65,5 +70,20 @@ public class ActivityService {
 
     public Page<Activity> search(String query, Pageable pageable) {
         return activityRepository.findByActivityNameContainingIgnoreCase(query, pageable);
+    }
+
+    public boolean isCurrentUserActivityCreator(Long activityId) {
+        Optional<Activity> activity = activityRepository.findById(activityId);
+        if (activity.isEmpty()) {
+            return false;
+        }
+
+        Optional<Profile> currentUserProfile = profileRepository.findByUserLogin(SecurityUtils.getCurrentUserLogin().orElse(""));
+
+        return (
+            currentUserProfile.isPresent() &&
+            activity.get().getCreator() != null &&
+            activity.get().getCreator().getId().equals(currentUserProfile.get().getId())
+        );
     }
 }
