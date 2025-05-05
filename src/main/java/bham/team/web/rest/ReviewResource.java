@@ -2,6 +2,7 @@ package bham.team.web.rest;
 
 import bham.team.domain.Review;
 import bham.team.repository.ReviewRepository;
+import bham.team.service.ReviewService;
 import bham.team.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -30,14 +31,31 @@ public class ReviewResource {
     private static final Logger LOG = LoggerFactory.getLogger(ReviewResource.class);
 
     private static final String ENTITY_NAME = "review";
+    private final ReviewService reviewService;
 
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
     private final ReviewRepository reviewRepository;
 
-    public ReviewResource(ReviewRepository reviewRepository) {
+    public ReviewResource(ReviewRepository reviewRepository, ReviewService reviewService) {
         this.reviewRepository = reviewRepository;
+        this.reviewService = reviewService;
+    }
+
+    // get reviews based on profile id aboutUser
+    /**
+     * {@code GET /reviews} : Get all reviews aboutUser.
+     *
+     * @param aboutUser the user the reviews are about.
+     * @return the list of reviews
+     * @throws URISyntaxException if Location URI syntax incorrect
+     */
+    @GetMapping("/getAboutUser/{aboutUser}")
+    public List<Review> getAboutUser(@PathVariable String aboutUser) {
+        LOG.debug("REST request to get reviews for user ID {}", aboutUser);
+        long longUserID = Long.parseLong(aboutUser);
+        return reviewService.getReviewsForProfileId(longUserID);
     }
 
     /**
