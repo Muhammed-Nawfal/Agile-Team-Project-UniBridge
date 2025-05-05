@@ -22,4 +22,27 @@ public class ProfileService {
     public List<Profile> findByActivityType(ActivityType type) {
         return repository.findAll(ProfileSpecifications.byActivityType(type));
     }
+
+    @Transactional
+    public void anonymize(Long id) {
+        repository
+            .findById(id)
+            .ifPresent(profile -> {
+                profile.setBio(null);
+                profile.setProfilePicture(null);
+                profile.setProfilePictureContentType(null);
+                profile.setGymLocation(null);
+                profile.setGymSkill(null);
+                profile.setSports(null);
+                profile.setSportsSkill(null);
+                profile.setSportsTime(null);
+                profile.setPreferredSociety(null);
+                profile.setPreferredEvents(null);
+                profile.setPreferredActivities(null);
+                profile.setStudyTime(null);
+                profile.setGymTime(null);
+                profile.setEventsTime(null);
+                repository.save(profile);
+            });
+    }
 }

@@ -114,6 +114,17 @@
             </option>
           </select>
         </div>
+
+        <!-- Events Time -->
+        <div class="mb-3">
+          <label class="form-label" for="field_eventsTime">Preferred Events Time</label>
+          <select id="field_eventsTime" class="form-control" formControlName="eventsTime">
+            <option [ngValue]="null"></option>
+            <option *ngFor="let time of preferredTimeValues" [value]="time">
+              {{ time }}
+            </option>
+          </select>
+        </div>
       </div>
 
       <!-- COLUMN 3: Gym & Sports Details -->
@@ -195,7 +206,7 @@
     <div class="row mt-3">
       <div class="col text-center">
         <!-- Cancel (go back) -->
-        <button type="button" class="btn btn-secondary me-2" (click)="previousState()">Cancel</button>
+        <button type="button" class="btn btn-secondary me-2" [routerLink]="'/profile'">Cancel</button>
 
         <!-- Save -->
         <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid || isSaving">Save</button>

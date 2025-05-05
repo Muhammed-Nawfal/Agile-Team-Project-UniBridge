@@ -241,4 +241,21 @@ public class ActivityParticipantResource {
         LOG.debug("REST request to get all Activities for current user");
         return activityParticipantService.findActivitiesByCurrentUser();
     }
+
+    /**
+     * {@code DELETE  /activities/:id/leave} : Leave an activity.
+     *
+     * @param id the id of the activity to leave
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the boolean result
+     */
+    @DeleteMapping("/activities/{id}/leave")
+    public ResponseEntity<Boolean> leaveActivity(@PathVariable Long id) {
+        LOG.debug("REST request to leave Activity : {}", id);
+
+        boolean result = activityParticipantService.leaveActivity(id);
+
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createAlert(applicationName, "You have left the activity successfully", id.toString()))
+            .body(result);
+    }
 }

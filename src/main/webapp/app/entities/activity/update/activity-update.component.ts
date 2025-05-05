@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
@@ -19,13 +19,15 @@ import { Status } from 'app/entities/enumerations/status.model';
 import { ActivityService } from '../service/activity.service';
 import { IActivity } from '../activity.model';
 import { ActivityFormGroup, ActivityFormService } from './activity-form.service';
+import { JoinActivityButtonComponent } from '../join-activity-button/join-activity-button.component';
+import FormatMediumDatetimePipe from '../../../shared/date/format-medium-datetime.pipe';
 
 @Component({
   standalone: true,
   selector: 'jhi-activity-update',
   templateUrl: './activity-update.component.html',
   styleUrl: 'activity-update.component.scss',
-  imports: [SharedModule, FormsModule, ReactiveFormsModule],
+  imports: [SharedModule, FormsModule, ReactiveFormsModule, JoinActivityButtonComponent, RouterLink, FormatMediumDatetimePipe],
 })
 export class ActivityUpdateComponent implements OnInit {
   isSaving = false;
@@ -102,10 +104,16 @@ export class ActivityUpdateComponent implements OnInit {
     }
   }
 
+  // protected subscribeToSaveResponse(result: Observable<HttpResponse<IActivity>>): void {
+  //   result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
+  //     next: () => this.onSaveSuccess(),
+  //     error: () => this.onSaveError(),
+  //   });
+  // }
   protected subscribeToSaveResponse(result: Observable<HttpResponse<IActivity>>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
-      error: () => this.onSaveError(),
+      error: error => this.onSaveError(error), // Pass the error here
     });
   }
 
@@ -113,10 +121,16 @@ export class ActivityUpdateComponent implements OnInit {
     this.previousState();
   }
 
-  protected onSaveError(): void {
-    // Api for inheritance.
+  // protected onSaveError(): void {
+  //   // Api for inheritance.
+  // }
+  protected onSaveError(error: any): void {
+    if (error.status === 400 && error.error?.params?.message === 'error.notcreator') {
+      alert('Only the activity creator can edit this activity');
+    } else {
+      alert('An error occurred while saving the activity');
+    }
   }
-
   protected onSaveFinalize(): void {
     this.isSaving = false;
   }

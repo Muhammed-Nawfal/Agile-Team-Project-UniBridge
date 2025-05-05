@@ -88,6 +88,11 @@ const routes: Routes = [
     data: { pageTitle: 'Locations' },
     loadChildren: () => import('./location/location.routes'),
   },
+  {
+    path: 'my-activities',
+    data: { pageTitle: 'My Activities' },
+    loadChildren: () => import('../entities/activity/my-activities/my-activities.routes'),
+  },
   /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
 ];
 

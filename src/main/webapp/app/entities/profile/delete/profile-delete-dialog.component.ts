@@ -1,11 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AlertErrorComponent } from 'app/shared/alert/alert-error.component';
 import { CommonModule } from '@angular/common';
 import { ProfileService } from '../service/profile.service';
 import { AccountService } from 'app/core/auth/account.service';
-import { UserService } from 'app/entities/user/service/user.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,44 +15,35 @@ import { Router } from '@angular/router';
   providers: [NgbActiveModal],
 })
 export class ProfileDeleteDialogComponent implements OnInit {
-  @Input() profile: { id: number } | null = null;
-
-  login: string | null = null;
+  profileId: number | null = null;
 
   constructor(
     protected profileService: ProfileService,
-    protected userService: UserService,
     protected accountService: AccountService,
     protected activeModal: NgbActiveModal,
     protected router: Router,
   ) {}
 
   ngOnInit(): void {
-    this.accountService.identity().subscribe(account => {
-      if (account) {
-        const login = account.login;
-        this.profileService.findUserByLogin(login).subscribe(profile => {
-          this.profile = profile.body ?? null;
-        });
-        this.login = login;
+    this.profileService.findMyProfile().subscribe(myProfileRes => {
+      const profile = myProfileRes.body;
+      if (profile) {
+        this.profileId = profile.id;
       }
     });
   }
 
   cancel(): void {
+    this.router.navigate(['/profile']);
     this.activeModal.dismiss();
   }
 
-  confirmDelete(profileId: number): void {
-    if (!this.login) return;
+  anonymizeProfile(): void {
+    if (!this.profileId) return;
 
-    // Step 1: Delete Profile
-    this.profileService.delete(profileId).subscribe(() => {
-      // Step 2: Delete User Account
-      this.accountService.deleteAccount().subscribe(() => {
-        this.activeModal.close('deleted');
-        this.router.navigate(['/logout']);
-      });
+    this.profileService.anonymize(this.profileId).subscribe(() => {
+      this.activeModal.close('anonymized');
+      this.router.navigate(['/profile/my/edit']);
     });
   }
 }
