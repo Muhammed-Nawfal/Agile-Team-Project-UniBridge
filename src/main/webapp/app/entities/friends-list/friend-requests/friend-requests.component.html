@@ -1,20 +1,15 @@
-<!-- Optimized friend-requests.component.html -->
 <div class="container-fluid">
-  <div class="page-header d-flex align-items-center mb-4">
-    <div class="d-flex align-items-center">
-      <h1 class="m-0">Friend Requests</h1>
-    </div>
-
-    <!-- Font Size Accessibility Toggle -->
-    <div class="accessibility-toggle ms-3">
-      <button class="btn btn-outline-secondary btn-sm" [class.active]="isFontSizeLarge" (click)="toggleFontSize()">
-        <fa-icon icon="text-height"></fa-icon>
-        <span class="ms-1">Big Text</span>
-      </button>
-    </div>
+  <!-- Header with Back Button -->
+  <div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <h1 class="m-0">Friend Requests</h1>
+    <button class="btn-back" routerLink="/friends-list">
+      <fa-icon icon="arrow-left"></fa-icon>
+      <span class="ms-1">Back to Friends List</span>
+    </button>
   </div>
 
-  <div class="d-flex mb-4">
+  <!-- Tabs -->
+  <div class="d-flex mb-4 flex-wrap gap-2">
     <button class="tab-btn me-2" [ngClass]="{ active: activeTab === 'pending' }" (click)="switchTab('pending')">
       <fa-icon icon="bell"></fa-icon>
       <span class="ms-1">Pending Requests</span>
@@ -26,13 +21,14 @@
     </button>
   </div>
 
+  <!-- Loader -->
   <div *ngIf="isLoading" class="d-flex justify-content-center my-3">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
 
-  <!-- Pending Requests Tab -->
+  <!-- Pending Tab -->
   <div *ngIf="activeTab === 'pending' && !isLoading" class="content-container">
     <div *ngIf="pendingRequests.length === 0" class="empty-state">
       <div class="empty-state-icon">
@@ -40,15 +36,11 @@
       </div>
       <h3>No Pending Friend Requests</h3>
       <p>You don't have any pending friend requests at the moment.</p>
-      <button class="btn btn-primary" routerLink="/friends-list">
-        <fa-icon icon="users"></fa-icon>
-        <span class="ms-1">Find Friends</span>
-      </button>
     </div>
 
     <div class="row" *ngIf="pendingRequests.length > 0">
       <div *ngFor="let request of pendingRequests" class="col-md-4 mb-4">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm h-100">
           <div class="card-img-top profile-header">
             <div *ngIf="getProfilePicture(request, 'pending')" class="profile-img-container">
               <img [src]="getProfileImageSrc(request, 'pending')" alt="Profile picture" />
@@ -64,26 +56,23 @@
               <span class="text-muted small">{{ getProfileLogin(request, 'pending') }}</span>
             </div>
 
-            <h5 class="card-title">
-              {{ getProfileName(request, 'pending') }}
-            </h5>
+            <h5 class="card-title">{{ getProfileName(request, 'pending') }}</h5>
 
             <div class="button-group">
               <div class="action-buttons">
-                <button class="btn btn-success me-2" (click)="acceptRequest(request.id)">
+                <button class="btn-accept me-2" (click)="acceptRequest(request.id)">
                   <fa-icon icon="check"></fa-icon>
                   <span>Accept</span>
                 </button>
-                <button class="btn btn-danger" (click)="declineRequest(request.id)">
+                <button class="btn-decline" (click)="declineRequest(request.id)">
                   <fa-icon icon="times"></fa-icon>
                   <span>Decline</span>
                 </button>
               </div>
-
               <div>
-                <a [routerLink]="['/profile', getProfileId(request, 'pending'), 'view']" class="btn btn-view">
+                <a [routerLink]="['/profile', getProfileId(request, 'pending'), 'view']" class="btn-view">
                   <fa-icon icon="eye"></fa-icon>
-                  <span class="ms-1">View</span>
+                  <span class="ms-1">View Profile</span>
                 </a>
               </div>
             </div>
@@ -93,7 +82,7 @@
     </div>
   </div>
 
-  <!-- Sent Requests Tab -->
+  <!-- Sent Tab -->
   <div *ngIf="activeTab === 'sent' && !isLoading" class="content-container">
     <div *ngIf="sentRequests.length === 0" class="empty-state">
       <div class="empty-state-icon">
@@ -101,15 +90,11 @@
       </div>
       <h3>No Sent Friend Requests</h3>
       <p>You haven't sent any friend requests yet.</p>
-      <button class="btn btn-primary" routerLink="/friends-list">
-        <fa-icon icon="user-plus"></fa-icon>
-        <span class="ms-1">Add Friends</span>
-      </button>
     </div>
 
     <div class="row" *ngIf="sentRequests.length > 0">
       <div *ngFor="let request of sentRequests" class="col-md-4 mb-4">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm h-100">
           <div class="card-img-top profile-header">
             <div *ngIf="getProfilePicture(request, 'sent')" class="profile-img-container">
               <img [src]="getProfileImageSrc(request, 'sent')" alt="Profile picture" />
@@ -121,35 +106,22 @@
 
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <span
-                class="badge"
-                [ngClass]="{
-                  'bg-warning': request.requestStatus === 'PENDING',
-                  'bg-success': request.requestStatus === 'ACCEPT',
-                  'bg-danger': request.requestStatus === 'DECLINED',
-                }"
-              >
-                {{ request.requestStatus }}
-              </span>
               <span class="text-muted small">{{ getProfileLogin(request, 'sent') }}</span>
             </div>
 
-            <h5 class="card-title">
-              {{ getProfileName(request, 'sent') }}
-            </h5>
+            <h5 class="card-title">{{ getProfileName(request, 'sent') }}</h5>
 
             <div class="button-group">
               <div class="action-buttons" *ngIf="request.requestStatus === 'PENDING'">
-                <button class="btn btn-danger" (click)="cancelRequest(request.id)">
+                <button class="btn-decline" (click)="cancelRequest(request.id)">
                   <fa-icon icon="times"></fa-icon>
                   <span>Cancel</span>
                 </button>
               </div>
-
               <div>
-                <a [routerLink]="['/profile', getProfileId(request, 'sent'), 'view']" class="btn btn-view">
+                <a [routerLink]="['/profile', getProfileId(request, 'sent'), 'view']" class="btn-view">
                   <fa-icon icon="eye"></fa-icon>
-                  <span class="ms-1">View</span>
+                  <span class="ms-1">View Profile</span>
                 </a>
               </div>
             </div>
@@ -157,12 +129,5 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <div class="mt-3 mb-4">
-    <button class="btn btn-secondary" routerLink="/friends-list">
-      <fa-icon icon="arrow-left"></fa-icon>
-      <span class="ms-1">Back to Friends List</span>
-    </button>
   </div>
 </div>

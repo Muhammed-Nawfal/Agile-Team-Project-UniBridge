@@ -25,7 +25,6 @@ export class FriendRequestsComponent implements OnInit {
   isLoading = false;
   activeTab = 'pending';
   pendingRequestCount = 0;
-  isFontSizeLarge = false;
 
   // Full profiles from the profile service
   profiles: IProfile[] = [];
@@ -43,7 +42,6 @@ export class FriendRequestsComponent implements OnInit {
     // Check for saved font size preference
     const savedFontPreference = localStorage.getItem('friendRequestsFontPreference');
     if (savedFontPreference === 'true') {
-      this.isFontSizeLarge = true;
       this.renderer.addClass(this.elementRef.nativeElement, 'large-font-mode');
     }
   }
@@ -60,18 +58,6 @@ export class FriendRequestsComponent implements OnInit {
         });
       },
     });
-  }
-
-  toggleFontSize(): void {
-    this.isFontSizeLarge = !this.isFontSizeLarge;
-
-    if (this.isFontSizeLarge) {
-      this.renderer.addClass(this.elementRef.nativeElement, 'large-font-mode');
-      localStorage.setItem('friendRequestsFontPreference', 'true');
-    } else {
-      this.renderer.removeClass(this.elementRef.nativeElement, 'large-font-mode');
-      localStorage.setItem('friendRequestsFontPreference', 'false');
-    }
   }
 
   loadPendingRequests(): void {

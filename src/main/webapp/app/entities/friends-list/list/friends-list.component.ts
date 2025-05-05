@@ -91,20 +91,6 @@ export class FriendsListComponent implements OnInit {
       },
     });
   }
-
-  toggleFontSize(): void {
-    this.isFontSizeLarge = !this.isFontSizeLarge;
-
-    if (this.isFontSizeLarge) {
-      // Apply the class to the component's host element
-      this.renderer.addClass(this.elementRef.nativeElement, 'large-font-mode');
-      localStorage.setItem('friendsListFontPreference', 'true');
-    } else {
-      this.renderer.removeClass(this.elementRef.nativeElement, 'large-font-mode');
-      localStorage.setItem('friendsListFontPreference', 'false');
-    }
-  }
-
   trackProfileId = (index: number, item: IProfile): number => item.id;
 
   loadAcceptedFriends(): void {
@@ -325,10 +311,4 @@ export class FriendsListComponent implements OnInit {
       },
     });
   }
-  //   this.messageThreadService
-  // .getOrCreateThreadForFriends(friendship.id!)
-  // .subscribe(res => {
-  //   const thread = res.body!;
-  //   this.router.navigate(['/chat', 'thread', thread.id]);
-  // });
 }
