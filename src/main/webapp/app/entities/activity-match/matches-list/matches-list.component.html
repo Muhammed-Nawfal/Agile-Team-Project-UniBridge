@@ -93,7 +93,7 @@
             <div class="date-time small mb-1">
               <i class="fas fa-calendar-alt me-1"></i> {{ match.matchDate }}
               &bull;
-              <i class="fas fa-clock me-1 ms-2"></i> {{ match.matchTime | date: 'shortTime' }}
+              <i class="fas fa-clock me-1 ms-2"></i> {{ match.matchTime }}
             </div>
 
             <div class="location small mb-2"><i class="fas fa-map-marker-alt me-1"></i> {{ match.location || 'TBD' }}</div>
@@ -119,6 +119,9 @@
               </button>
               <button class="btn btn-outline-light btn-sm" [routerLink]="['/activity-match', match.id, 'edit']">
                 <i class="fas fa-edit me-1"></i> Edit Your Match
+              </button>
+              <button class="btn btn-outline-danger btn-sm" (click)="openDeleteModal(match)">
+                <i class="fas fa-trash-alt me-1"></i> Cancel Match
               </button>
             </div>
           </div>

@@ -5,12 +5,13 @@ import SharedModule from 'app/shared/shared.module';
 import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
 import { DataUtils } from 'app/core/util/data-util.service';
 import { IActivityMatch } from '../activity-match.model';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   standalone: true,
   selector: 'jhi-activity-match-detail',
   templateUrl: './activity-match-detail.component.html',
-  imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
+  imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe, FontAwesomeModule],
 })
 export class ActivityMatchDetailComponent {
   activityMatch = input<IActivityMatch | null>(null);

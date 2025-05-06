@@ -211,13 +211,27 @@ export class BookingComponent implements OnInit {
   }
 
   loadActivities(): void {
-    this.activityService.query().subscribe({
-      next: response => {
-        this.loadedActivities = response.body ?? [];
-        console.log('Loaded activities:', this.loadedActivities);
+    this.profileService.findMyProfile().subscribe({
+      next: profileRes => {
+        const profile = profileRes.body;
+        if (!profile?.id) {
+          console.error('Could not retrieve current profile.');
+          return;
+        }
+
+        this.activityService.query().subscribe({
+          next: response => {
+            const allActivities = response.body ?? [];
+            this.loadedActivities = allActivities.filter(activity => activity.creator!.id === profile.id);
+            console.log('Filtered activities:', this.loadedActivities);
+          },
+          error(err) {
+            console.error('Error loading activities:', err);
+          },
+        });
       },
-      error(error) {
-        console.error('Error loading activities:', error);
+      error(err) {
+        console.error('Error fetching current user profile:', err);
       },
     });
   }
