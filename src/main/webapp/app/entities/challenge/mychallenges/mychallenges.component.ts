@@ -1,3 +1,4 @@
+// mychallenges.component.ts
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
@@ -39,7 +40,30 @@ export class MyChallengesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadUserChallenges();
+    this.load();
+  }
+
+  load(): void {
+    this.isLoading = true;
+
+    this.profileService.findMyProfile().subscribe({
+      next: profileRes => {
+        const myProfile = profileRes.body;
+        if (!myProfile?.id) {
+          this.isLoading = false;
+          return;
+        }
+
+        this.challengeService.query().subscribe({
+          next: res => {
+            this.challenges = (res.body ?? []).filter(c => c.createdBy?.id === myProfile.id);
+            this.isLoading = false;
+          },
+          error: () => (this.isLoading = false),
+        });
+      },
+      error: () => (this.isLoading = false),
+    });
   }
 
   // Filter challenges when a creator is selected
@@ -155,11 +179,11 @@ export class MyChallengesComponent implements OnInit {
   }
 
   onReject(id: number): void {
-    this.challengeService.reject(id).subscribe(() => this.loadUserChallenges());
+    this.challengeService.reject(id).subscribe(() => this.load());
   }
 
   onComplete(id: number): void {
-    this.challengeService.complete(id).subscribe(() => this.loadUserChallenges());
+    this.challengeService.complete(id).subscribe(() => this.load());
   }
 
   // Map category names to Bootstrap contextual classes
@@ -195,13 +219,13 @@ export class MyChallengesComponent implements OnInit {
     }
 
     if (profile.firstName && profile.lastName) {
-      return `${profile.firstName} ${profile.lastName}`;
+      return '${profile.firstName} ${profile.lastName};';
     } else if (profile.firstName) {
       return profile.firstName;
     } else if (profile.login) {
       return profile.login;
     } else {
-      return `User ${profile.id}`;
+      return 'User ${profile.id};';
     }
   }
 }

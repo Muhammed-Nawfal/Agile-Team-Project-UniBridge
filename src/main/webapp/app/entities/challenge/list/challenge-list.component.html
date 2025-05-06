@@ -8,7 +8,7 @@
     </button>
     <button class="btn btn-secondary me-2" routerLink="my">
       <fa-icon icon="list"></fa-icon>
-      My Challenges
+      Challenges you created
     </button>
     <button class="btn btn-success me-2" routerLink="mytrophies">
       <fa-icon icon="trophy"></fa-icon>
@@ -28,7 +28,7 @@
 
   <div class="row g-3">
     <div class="col-12 col-md-6 col-lg-4" *ngFor="let c of challenges; trackBy: trackId">
-      <jhi-challenge-card [challenge]="c" (reject)="onReject(c.id)" (complete)="onComplete(c.id)"></jhi-challenge-card>
+      <jhi-challenge-card [challenge]="c" (reject)="onReject(c.id)" (complete)="onComplete(c)"></jhi-challenge-card>
     </div>
   </div>
 </div>
