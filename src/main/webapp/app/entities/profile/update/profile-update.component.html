@@ -76,7 +76,7 @@
 
         <!-- Course Year -->
         <div class="mb-3">
-          <label class="form-label" for="field_courseYear">Year</label>
+          <label class="form-label" for="field_courseYear">Course Year</label>
           <input type="number" class="form-control" id="field_courseYear" formControlName="courseYear" placeholder="1, 2, 3..." />
         </div>
 
@@ -106,7 +106,7 @@
 
         <!-- Events-->
         <div class="mb-3">
-          <label class="form-label" for="field_preferredEvents">Events</label>
+          <label class="form-label" for="field_preferredEvents">Favourite Event</label>
           <select id="field_preferredEvents" class="form-control" formControlName="preferredEvents">
             <option [ngValue]="null"></option>
             <option *ngFor="let events of preferredEventsValues" [value]="events">
@@ -133,7 +133,7 @@
 
         <!-- Gym Skill -->
         <div class="mb-3">
-          <label class="form-label" for="field_gymSkill">Skill Level</label>
+          <label class="form-label" for="field_gymSkill">Gym Skill Level</label>
           <select id="field_gymSkill" class="form-control" formControlName="gymSkill">
             <option [ngValue]="null"></option>
             <option *ngFor="let skill of skillValues" [value]="skill">
@@ -166,7 +166,7 @@
 
         <!-- Sports -->
         <div class="mb-3">
-          <label class="form-label" for="field_sports">Sports</label>
+          <label class="form-label" for="field_sports">Favourite Sport</label>
           <select id="field_sports" class="form-control" formControlName="sports">
             <option [ngValue]="null"></option>
             <option *ngFor="let sport of sportsValues" [value]="sport">
@@ -177,7 +177,7 @@
 
         <!-- Sports Skill -->
         <div class="mb-3">
-          <label class="form-label" for="field_sportsSkill">Sports Skill</label>
+          <label class="form-label" for="field_sportsSkill">Sport Skill Level</label>
           <select id="field_sportsSkill" class="form-control" formControlName="sportsSkill">
             <option [ngValue]="null"></option>
             <option *ngFor="let skill of skillValues" [value]="skill">
@@ -188,7 +188,7 @@
 
         <!-- Sports Time-->
         <div class="mb-3">
-          <label class="form-label" for="field_sportsTime">Sports Time</label>
+          <label class="form-label" for="field_sportsTime">Preferred Play Time</label>
           <select id="field_sportsTime" class="form-control" formControlName="sportsTime">
             <option [ngValue]="null"></option>
             <option *ngFor="let time of preferredTimeValues" [value]="time">
