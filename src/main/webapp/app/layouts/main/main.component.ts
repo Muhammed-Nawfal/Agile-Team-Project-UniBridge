@@ -8,6 +8,8 @@ import PageRibbonComponent from '../profiles/page-ribbon.component';
 // Import the accessibility component
 import { AccessibilityComponent } from 'app/shared/accessibility/accessibility.component';
 import { GlobalAccessibilityDirective } from '../../shared/a11y/global-accessibility.directive';
+import { register } from 'swiper/element/bundle';
+register();
 
 @Component({
   standalone: true,

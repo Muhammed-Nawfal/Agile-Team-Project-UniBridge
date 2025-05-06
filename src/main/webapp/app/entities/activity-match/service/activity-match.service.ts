@@ -67,20 +67,19 @@ export class ActivityMatchService {
         const profiles = res.body ?? [];
 
         // query all your matches (as requestor and as recipient), any status
-        const commonParams = {
+        const baseParams = {
           'status.in': [Decision.PENDING, Decision.ACCEPT, Decision.DECLINED].join(','),
+          'matchDate.greaterThanOrEqual': todayStr,
+          'activityType.equals': activityType,
         };
 
         const requested$ = this.query({
-          ...commonParams,
+          ...baseParams,
           'matchRequestorId.equals': myProfileId.toString(),
-          'matchDate.greaterThanOrEqual': todayStr,
         });
-
         const received$ = this.query({
-          ...commonParams,
+          ...baseParams,
           'userDetailsId.equals': myProfileId.toString(),
-          'matchDate.greaterThanOrEqual': todayStr,
         });
 
         return forkJoin({ requested: requested$, received: received$ }).pipe(

@@ -35,14 +35,16 @@
         <!--          <div class="form-control-plaintext">{{ activityMatchRef.status?.charAt }}</div>-->
         <!--        </div>-->
 
-        <div class="col-md-6">
-          <label class="form-label">Created At</label>
-          <div class="form-control-plaintext">{{ activityMatchRef.createdAt | formatMediumDatetime }}</div>
-        </div>
+        <div class="row mt-4 border-top pt-4">
+          <div class="col-md-6">
+            <label class="form-label">Created At</label>
+            <div class="form-control-plaintext">{{ activityMatchRef.createdAt | formatMediumDatetime }}</div>
+          </div>
 
-        <div class="col-md-6">
-          <label class="form-label">Response At</label>
-          <div class="form-control-plaintext">{{ activityMatchRef.responseAt | formatMediumDatetime }}</div>
+          <div class="col-md-6">
+            <label class="form-label">Response At</label>
+            <div class="form-control-plaintext">{{ activityMatchRef.responseAt | formatMediumDatetime }}</div>
+          </div>
         </div>
 
         <div class="col-md-6" *ngIf="activityMatchRef.ratings">
