@@ -91,36 +91,39 @@ export class MatchingComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // 1) First resolve my profile ID
-    this.accountService
-      .identity()
+    combineLatest([this.accountService.identity().pipe(take(1)), this.activatedRoute.paramMap])
       .pipe(
-        take(1),
-        switchMap(account => this.profileService.query({ 'userLogin.equals': account?.login }).pipe(take(1))),
-      )
-      .subscribe(resp => {
-        const me = resp.body?.[0];
-        if (me?.id) {
-          this.currentUserProfileId = me.id;
+        switchMap(([account, params]) => {
+          const login = account?.login;
+          const type = params.get('type');
 
-          // 2) Now that we have my ID, listen to route changes
-          this.subscription = this.activatedRoute.paramMap.subscribe(params => {
-            const type = params.get('type');
-            if (type) {
-              this.buddyType = ActivityType[type as keyof typeof ActivityType];
-              // rebuild all three dropdowns for the new buddyType:
-              this.setupFilterOptions();
-              // clear any previous selections:
-              this.filter1Value = '';
-              this.filter2Value = '';
-              this.filter3Value = '';
-              // now load your (filtered-out) deck
-              this.loadBuddies();
-            }
-          });
-        } else {
-          console.error('Could not find my profile');
-        }
+          if (!login || !type) {
+            throw new Error('Missing login or activity type');
+          }
+
+          this.buddyType = ActivityType[type as keyof typeof ActivityType];
+          this.setupFilterOptions();
+          this.filter1Value = '';
+          this.filter2Value = '';
+          this.filter3Value = '';
+
+          return this.profileService.query({ 'userLogin.equals': login }).pipe(take(1));
+        }),
+      )
+      .subscribe({
+        next: resp => {
+          const me = resp.body?.[0];
+          if (me?.id) {
+            this.currentUserProfileId = me.id;
+            this.loadBuddies();
+          } else {
+            console.error('Could not find my profile');
+          }
+        },
+        error: err => {
+          console.error('Error during initialization:', err);
+          this.errorMessage = 'Failed to load your profile. Please refresh the page.';
+        },
       });
   }
 
@@ -680,9 +683,19 @@ export class MatchingComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this.readProfileBtn.nativeElement.focus();
-      // only speak profile if toggled on
-      if (this.a11y.isEnabled()) {
-        this.readProfile();
+
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => {
+          if (this.a11y.isEnabled()) {
+            this.readProfile();
+          }
+        });
+      } else {
+        requestAnimationFrame(() => {
+          if (this.a11y.isEnabled()) {
+            this.readProfile();
+          }
+        });
       }
     }, 0);
   }
