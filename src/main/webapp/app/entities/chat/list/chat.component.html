@@ -51,7 +51,7 @@
           </span>
         </div>
 
-        <!-- Actions for own messages - FIXED: This should only display for the current user's messages -->
+        <!-- Actions for own messages -->
         <div *ngIf="isOwn(c) && editingChatId !== c.id" class="message-actions">
           <button class="action-btn edit-btn" (click)="startEdit(c)" title="Edit">✎</button>
           <button class="action-btn delete-btn" (click)="deleteChat(c)" title="Delete">🗑</button>

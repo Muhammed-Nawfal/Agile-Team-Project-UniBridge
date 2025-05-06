@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { Subject, interval, switchMap, takeUntil, of } from 'rxjs';
+
 import dayjs from 'dayjs/esm';
+
 import { MessageType } from 'app/entities/enumerations/message-type.model';
 import { MessageStatus } from 'app/entities/enumerations/message-status.model';
 import { IChat, NewChat } from '../chat.model';
@@ -23,6 +25,7 @@ import { ChatDeleteDialogComponent } from '../delete/chat-delete-dialog.componen
 })
 export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('messageContainer', { static: true }) messageContainer!: ElementRef<HTMLElement>;
+
   messageForm: FormGroup;
   editForm: FormGroup;
   chats: IChat[] = [];
@@ -40,6 +43,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private destroy$ = new Subject<void>();
+
   private chatService = inject(ChatService);
   private threadService = inject(MessageThreadService);
   private accountService = inject(AccountService);
@@ -201,26 +205,21 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Cache all profiles involved in current conversation
+
   getOtherUserName(): string {
-    // If we have otherId and cached profile, use that
     if (this.otherId && this.userProfiles.has(this.otherId)) {
       const profile = this.userProfiles.get(this.otherId)!;
-      const name = `${profile.firstName} ${profile.lastName}`.trim();
-      return name || 'Unknown';
+      return `${profile.firstName} ${profile.lastName}`.trim() || 'Unknown';
     }
 
-    // Try to find the name from the chat messages
-    const otherUser = this.chats.find(
-      chat => (chat.receiver?.id !== this.meId && chat.receiver?.id) ?? (chat.sender?.id !== this.meId && chat.sender?.id),
-    );
-
-    if (otherUser) {
-      if (otherUser.receiver?.id !== this.meId && otherUser.receiver?.firstName) {
-        return `${otherUser.receiver.firstName} ${otherUser.receiver.lastName ?? ''}`.trim();
-      }
-      if (otherUser.sender?.id !== this.meId && otherUser.sender?.firstName) {
-        return `${otherUser.sender.firstName} ${otherUser.sender.lastName ?? ''}`.trim();
-      }
+    const contact = this.chats.find(chat => chat.receiver?.id === this.otherId || chat.sender?.id === this.otherId);
+    if (contact) {
+      const receiverName =
+        contact.receiver?.firstName && contact.receiver.lastName ? contact.receiver.firstName + ' ' + contact.receiver.lastName : null;
+      const senderName =
+        contact.sender?.firstName && contact.sender.lastName ? contact.sender.firstName + ' ' + contact.sender.lastName : null;
+      return receiverName ?? senderName ?? 'Unknown';
     }
 
     return 'Unknown';
@@ -228,22 +227,21 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   getSenderName(chat: IChat): string {
     const senderId = chat.sender?.id;
-
     if (!senderId) return 'Unknown';
 
-    // Check if it's the current user (self)
+    // Check if we know this profile
+    if (this.userProfiles.has(senderId)) {
+      const profile = this.userProfiles.get(senderId)!;
+      const name = `${profile.firstName} ${profile.lastName}`.trim();
+      return name || (senderId === this.meId ? 'Me' : 'Unknown');
+    }
+
+    // Check if it's the current user
     if (senderId === this.meId) {
       return 'Me';
     }
 
-    // Check if we have this profile cached
-    if (this.userProfiles.has(senderId)) {
-      const profile = this.userProfiles.get(senderId)!;
-      const name = `${profile.firstName} ${profile.lastName}`.trim();
-      return name || 'Unknown';
-    }
-
-    // Use sender info from the chat as fallback
+    // Use sender info from the chat
     if (chat.sender?.firstName || chat.sender?.lastName) {
       return `${chat.sender.firstName ?? ''} ${chat.sender.lastName ?? ''}`.trim();
     }
@@ -259,27 +257,21 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
     }
 
-    // Try to find initial from any chat with the other user
-    const otherUser = this.chats.find(
-      chat => (chat.receiver?.id !== this.meId && chat.receiver?.firstName) ?? (chat.sender?.id !== this.meId && chat.sender?.firstName),
-    );
+    const contact = this.chats.find(chat => chat.receiver?.id === this.otherId || chat.sender?.id === this.otherId);
 
-    if (otherUser) {
-      if (otherUser.receiver?.id !== this.meId && otherUser.receiver?.firstName) {
-        return otherUser.receiver.firstName.charAt(0).toUpperCase();
-      }
-      if (otherUser.sender?.id !== this.meId && otherUser.sender?.firstName) {
-        return otherUser.sender.firstName.charAt(0).toUpperCase();
-      }
+    if (contact?.receiver?.firstName) {
+      return contact.receiver.firstName.charAt(0).toUpperCase();
+    }
+
+    if (contact?.sender?.firstName) {
+      return contact.sender.firstName.charAt(0).toUpperCase();
     }
 
     return 'U';
   }
 
-  // Fixed isOwn method with better checking to ensure we identify the current user's messages correctly
   isOwn(chat: IChat): boolean {
-    // Ensure the sender ID is defined and matches the current user ID exactly
-    return typeof chat.sender?.id === 'number' && chat.sender.id === this.meId;
+    return chat.sender?.id === this.meId;
   }
 
   startEdit(chat: IChat): void {
@@ -310,7 +302,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       message: this.filterProfanity(newMsg),
       updatedOn: dayjs(),
     };
-
     this.chatService.update(updated).subscribe({
       next: () => {
         this.editingChatId = null;
@@ -323,25 +314,13 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   canEditMessage(chat: IChat): boolean {
-    // Only allow editing of own messages that are less than 2 minutes old
-    if (!this.isOwn(chat)) {
-      return false;
-    }
-
     const now = dayjs();
     const messageTime = dayjs(chat.timestamp);
     const diffMinutes = now.diff(messageTime, 'minute');
-
     return diffMinutes < 2;
   }
 
   deleteChat(chat: IChat): void {
-    // Only allow deletion of own messages
-    if (!this.isOwn(chat)) {
-      alert('You can only delete your own messages.');
-      return;
-    }
-
     const modalRef = this.modalService.open(ChatDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
     modalRef.componentInstance.chat = chat;
     modalRef.closed.subscribe(result => {
@@ -356,12 +335,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // Add this function to your component class
   trackByFn(index: number, item: IChat): number {
     return item.id || index;
   }
 
-  // Cache all profiles involved in current conversation
   private cacheUserProfiles(): void {
     // Extract unique user IDs from chats
     const userIds = new Set<number>();
@@ -372,7 +349,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     // Cache any profiles not already cached
     userIds.forEach(id => {
-      if (!this.userProfiles.has(id)) {
+      if (!this.userProfiles.has(id) && id !== this.meId && id !== this.otherId) {
         const profileInfo = this.chats.find(
           c =>
             (c.sender?.id === id && (c.sender.firstName ?? c.sender.lastName)) ??
@@ -409,20 +386,24 @@ export class ChatComponent implements OnInit, OnDestroy {
 
         if (!this.meId) return;
 
-        // Reset otherId to ensure it's set correctly
-        this.otherId = 0;
+        // Find other participants and store their profile info
+        const participants = thread.participants ?? [];
+        participants.forEach(participant => {
+          if (participant.id && participant.id !== this.meId) {
+            // Set as other user if not already set
+            if (!this.otherId) {
+              this.otherId = participant.id;
+            }
 
-        // Find the participant who is not the current user
-        const otherParticipant = (thread.participants ?? []).find(p => p.id !== this.meId);
-        if (otherParticipant?.id) {
-          this.otherId = otherParticipant.id;
-
-          // Cache the other participant's profile info
-          this.userProfiles.set(otherParticipant.id, {
-            firstName: otherParticipant.firstName ?? '',
-            lastName: otherParticipant.lastName ?? '',
-          });
-        }
+            // Cache profile info
+            if (participant.firstName || participant.lastName) {
+              this.userProfiles.set(participant.id, {
+                firstName: participant.firstName ?? '',
+                lastName: participant.lastName ?? '',
+              });
+            }
+          }
+        });
       });
   }
 
