@@ -1,28 +1,103 @@
+// 1️⃣ Staggered slide-in animation for links
+@keyframes itemSlideIn {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// 2️⃣ Navbar + "☰ Menu" toggle - moved to right side
 .navbar-hero {
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-  z-index: 999;
-  background: transparent;
+  position: fixed;
+  top: 1rem;
+  right: 1rem; // Changed from left:1rem to right:1rem
+  z-index: 1060; // above the offcanvas backdrop
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
   padding: 0;
 
-  .nav-list {
-    list-style: none;
-    display: flex;
-    gap: 1.5rem;
+  .navbar-toggler {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: transparent !important;
+    border: none !important;
+    white-space: nowrap;
+
+    fa-icon {
+      font-size: 0.8rem !important; // adjust icon size
+      color: black;
+    }
+  }
+}
+
+// 3️⃣ Offcanvas panel styling
+.offcanvas {
+  width: 240px;
+  color: #f1f1f1;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  .offcanvas-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+    .offcanvas-title {
+      margin: 0;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .btn-close {
+      filter: invert(1); // make the "×" white
+    }
+  }
+
+  .nav {
     margin: 0;
-    padding: 0;
 
-    li a {
-      color: white;
-      font-weight: 500;
-      text-decoration: none;
-      transition: color 0.3s ease;
+    .nav-link {
+      color: black;
+      padding: 0.75rem 1.5rem;
+      transition:
+        background 0.2s,
+        color 0.2s;
 
-      &:hover,
-      &.active {
+      &.active,
+      &:hover {
+        background: linear-gradient(-45deg, #5a2f97, #c76fc3, #8d44ad, #372361);
         color: #ffd700;
       }
     }
+  }
+}
+
+// 4️⃣ When open: animate in & stagger each link
+.offcanvas.show {
+  .nav-link {
+    opacity: 0;
+    animation: itemSlideIn 0.4s ease forwards;
+  }
+  @for $i from 1 through 14 {
+    .nav-item:nth-child(#{$i}) .nav-link {
+      animation-delay: #{0.05 * $i}s;
+    }
+  }
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }

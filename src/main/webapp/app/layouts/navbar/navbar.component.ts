@@ -18,6 +18,7 @@ import NavbarItem from './navbar-item.model';
   imports: [RouterModule, SharedModule, HasAnyAuthorityDirective],
 })
 export default class NavbarComponent implements OnInit {
+  isOffcanvasOpen = false;
   inProduction?: boolean;
   isNavbarCollapsed = signal(true);
   openAPIEnabled?: boolean;
@@ -41,6 +42,14 @@ export default class NavbarComponent implements OnInit {
       this.inProduction = profileInfo.inProduction;
       this.openAPIEnabled = profileInfo.openAPIEnabled;
     });
+  }
+
+  ngAfterViewInit(): void {
+    const offcanvasEl = document.getElementById('mainOffcanvas');
+    if (offcanvasEl) {
+      offcanvasEl.addEventListener('show.bs.offcanvas', () => (this.isOffcanvasOpen = true));
+      offcanvasEl.addEventListener('hidden.bs.offcanvas', () => (this.isOffcanvasOpen = false));
+    }
   }
 
   collapseNavbar(): void {
