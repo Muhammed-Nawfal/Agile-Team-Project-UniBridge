@@ -117,7 +117,9 @@ export class ChallengeFormService {
       completed: new FormControl(challengeRawValue.completed, {
         validators: [Validators.required],
       }),
-      assignedTo: new FormControl(challengeRawValue.assignedTo),
+      assignedTo: new FormControl(challengeRawValue.assignedTo, {
+        validators: [Validators.required], // Add required validator here
+      }),
       createdBy: new FormControl(challengeRawValue.createdBy),
     });
   }

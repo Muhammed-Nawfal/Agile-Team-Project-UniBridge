@@ -2,19 +2,19 @@
 <div class="container-fluid">
   <h2 id="page-heading" class="mb-4">Challenges</h2>
   <div class="d-flex justify-content-end mb-3">
-    <button class="btn btn-primary me-2" routerLink="new">
+    <button id="test" class="btn btn-primary me-2" routerLink="new">
       <fa-icon icon="plus"></fa-icon>
       Create Challenge
     </button>
-    <button class="btn btn-secondary me-2" routerLink="my">
+    <button id="test2" class="btn btn-secondary me-2" routerLink="my">
       <fa-icon icon="list"></fa-icon>
       Challenges you created
     </button>
-    <button class="btn btn-success me-2" routerLink="mytrophies">
+    <button id="test" class="btn btn-success me-2" routerLink="mytrophies">
       <fa-icon icon="trophy"></fa-icon>
       My Trophies
     </button>
-    <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+    <button id="test2" class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
       <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
       Refresh
     </button>
