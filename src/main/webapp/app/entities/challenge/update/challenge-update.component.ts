@@ -1,9 +1,13 @@
+//  challenge-update.component.ts
 import { Component, ElementRef, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
 import dayjs from 'dayjs/esm';
+import { AbstractControl } from '@angular/forms';
+import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 
 import SharedModule from 'app/shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -16,47 +20,65 @@ import { ProfileService } from 'app/entities/profile/service/profile.service';
 import { Category } from 'app/entities/enumerations/category.model';
 import { ChallengeService } from '../service/challenge.service';
 import { IChallenge } from '../challenge.model';
-import { ChallengeFormGroup, ChallengeFormService } from './challenge-form.service';
+import { ChallengeFormGroup, ChallengeFormService, ChallengeFormGroupInput } from './challenge-form.service';
+import { FriendsListService } from 'app/entities/friends-list/service/friends-list.service';
 
 @Component({
   standalone: true,
   selector: 'jhi-challenge-update',
   templateUrl: './challenge-update.component.html',
-  imports: [SharedModule, FormsModule, ReactiveFormsModule],
+  imports: [SharedModule, FormsModule, ReactiveFormsModule, NgbDatepickerModule],
 })
 export class ChallengeUpdateComponent implements OnInit {
-  isSaving = false;
-  challenge: IChallenge | null = null;
-  categoryValues = Object.keys(Category);
-  pointValues = [5, 10, 15, 20, 25]; // Updated point values
-  currentWordCount = 0;
-  maxWordCount = 1000;
-  isEditMode = false; // Flag to check if we're editing an existing challenge
-
-  profilesSharedCollection: IProfile[] = [];
+  public isSaving = false;
+  public challenge: IChallenge | null = null;
+  public categoryValues = Object.keys(Category);
+  public pointValues = [5, 10, 15, 20, 25]; // Updated point values
+  public currentWordCount = 0;
+  public maxWordCount = 1000;
+  public isEditMode = false; // Flag to check if we're editing an existing challenge
+  public profilesSharedCollection: IProfile[] = [];
 
   protected dataUtils = inject(DataUtils);
   protected eventManager = inject(EventManager);
   protected challengeService = inject(ChallengeService);
   protected challengeFormService = inject(ChallengeFormService);
   protected profileService = inject(ProfileService);
+  protected friendsListService = inject(FriendsListService);
   protected elementRef = inject(ElementRef);
   protected activatedRoute = inject(ActivatedRoute);
   protected router = inject(Router);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  editForm: ChallengeFormGroup = this.challengeFormService.createChallengeFormGroup();
+  public editForm: ChallengeFormGroup = this.challengeFormService.createChallengeFormGroup();
 
-  compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
+  public compareProfile = (o1: IProfile | null, o2: IProfile | null): boolean => this.profileService.compareProfile(o1, o2);
+
+  public createFormWithCurrentUser(challenge: ChallengeFormGroupInput = { id: null }): void {
+    this.profileService.findMyProfile().subscribe(profileRes => {
+      const myProfile = profileRes.body;
+
+      if (!myProfile) return;
+
+      const updatedChallenge: ChallengeFormGroupInput = {
+        ...challenge,
+        createdBy: myProfile,
+      };
+
+      this.editForm = this.challengeFormService.createChallengeFormGroup(updatedChallenge);
+    });
+  }
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ challenge }) => {
       this.challenge = challenge;
-      // If challenge has an ID, we're in edit mode
-      this.isEditMode = challenge && challenge.id !== null;
+      this.isEditMode = !!challenge?.id;
 
-      if (challenge) {
-        this.updateForm(challenge);
+      if (this.isEditMode && challenge) {
+        this.updateForm(challenge); // editing existing challenge
+      } else {
+        this.createFormWithCurrentUser(); // creating new challenge
+        this.setDefaultValues(); // optional: pre-fill fields like default points, date, etc.
       }
 
       this.loadRelationshipsOptions();
@@ -67,24 +89,18 @@ export class ChallengeUpdateComponent implements OnInit {
           this.updateWordCount(value);
         }
       });
-
-      // If creating a new challenge, set default values
-      if (!this.isEditMode) {
-        this.setDefaultValues();
-      }
     });
   }
 
   // Set default values for a new challenge
-  setDefaultValues(): void {
+  public setDefaultValues(): void {
     // Set current date as default using dayjs
     this.editForm.patchValue({
-      date: dayjs(), // Use dayjs for today's date
       completed: false, // Default to not completed
     });
   }
 
-  updateWordCount(text: string | null): void {
+  public updateWordCount(text: string | null): void {
     if (!text) {
       this.currentWordCount = 0;
       return;
@@ -95,43 +111,57 @@ export class ChallengeUpdateComponent implements OnInit {
       .filter(word => word.length > 0).length;
   }
 
-  byteSize(base64String: string): string {
+  public byteSize(base64String: string): string {
     return this.dataUtils.byteSize(base64String);
   }
 
-  openFile(base64String: string, contentType: string | null | undefined): void {
+  public openFile(base64String: string, contentType: string | null | undefined): void {
     this.dataUtils.openFile(base64String, contentType);
   }
 
-  setFileData(event: Event, field: string, isImage: boolean): void {
+  public setFileData(event: Event, field: string, isImage: boolean): void {
     this.dataUtils.loadFileToForm(event, this.editForm, field, isImage).subscribe({
       error: (err: FileLoadError) =>
         this.eventManager.broadcast(new EventWithContent<AlertError>('teamproject24App.error', { message: err.message })),
     });
   }
 
-  clearInputImage(field: string, fieldContentType: string, idInput: string): void {
+  public clearInputImage(field: string, fieldContentType: string, idInput: string): void {
     this.editForm.patchValue({
       [field]: null,
       [fieldContentType]: null,
     });
-    if (idInput && this.elementRef.nativeElement.querySelector(`#${idInput}`)) {
+    // Fix the selector to use template literals
+    if (this.elementRef.nativeElement.querySelector(`#${idInput}`)) {
       this.elementRef.nativeElement.querySelector(`#${idInput}`).value = null;
     }
   }
 
-  previousState(): void {
+  public previousState(): void {
     window.history.back();
   }
 
-  save(): void {
+  public trackById(index: number, item: IProfile): number {
+    return item.id;
+  }
+
+  public save(): void {
     this.isSaving = true;
     const challenge = this.challengeFormService.getChallenge(this.editForm);
+
+    // Always override badge with default image
+    challenge.badge = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2NkYGD4DwABBAEAffIabQAAAABJRU5ErkJggg=='; // tiny transparent PNG
+    challenge.badgeContentType = 'image/png';
+
     if (challenge.id !== null) {
       this.subscribeToSaveResponse(this.challengeService.update(challenge));
     } else {
       this.subscribeToSaveResponse(this.challengeService.create(challenge));
     }
+  }
+
+  public get dateControl(): AbstractControl | null {
+    return this.editForm.get('date');
   }
 
   protected subscribeToSaveResponse(result: Observable<HttpResponse<IChallenge>>): void {
@@ -167,14 +197,20 @@ export class ChallengeUpdateComponent implements OnInit {
   }
 
   protected loadRelationshipsOptions(): void {
-    this.profileService
-      .query()
-      .pipe(map((res: HttpResponse<IProfile[]>) => res.body ?? []))
-      .pipe(
-        map((profiles: IProfile[]) =>
-          this.profileService.addProfileToCollectionIfMissing<IProfile>(profiles, this.challenge?.assignedTo, this.challenge?.createdBy),
-        ),
-      )
-      .subscribe((profiles: IProfile[]) => (this.profilesSharedCollection = profiles));
+    this.friendsListService.getFollowedProfiles().subscribe(response => {
+      const followedIds = (response.body ?? []).map(f => f.id);
+      const challengeProfiles = [this.challenge?.assignedTo, this.challenge?.createdBy].filter(p => !!p);
+      const challengeProfileIds = challengeProfiles.map(p => p.id);
+
+      const allIds = Array.from(new Set([...followedIds, ...challengeProfileIds]));
+
+      const profileRequests = allIds.map(id => this.profileService.find(id));
+
+      Promise.all(profileRequests.map(req => firstValueFrom(req))).then(profileResponses => {
+        const profiles = profileResponses.map(res => res.body).filter(p => p !== null);
+
+        this.profilesSharedCollection = profiles;
+      });
+    });
   }
 }
