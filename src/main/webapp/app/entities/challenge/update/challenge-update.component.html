@@ -93,9 +93,8 @@
           }
         </div>
 
-        @let dateRef = editForm.get('date')!;
         <div class="mb-3">
-          <label class="form-label" for="field_date">Date</label>
+          <label class="form-label" for="field_date">Deadline Date</label>
           <div class="input-group">
             <input
               id="field_date"
@@ -106,23 +105,15 @@
               ngbDatepicker
               #dateDp="ngbDatepicker"
               formControlName="date"
-              [readonly]="!isEditMode"
             />
-            <button type="button" class="btn btn-secondary" (click)="dateDp.toggle()" *ngIf="isEditMode">
+            <button type="button" class="btn btn-secondary" (click)="dateDp.toggle()">
               <fa-icon icon="calendar-alt"></fa-icon>
             </button>
-            <div class="input-group-append" *ngIf="!isEditMode">
-              <span class="input-group-text"><fa-icon icon="calendar-check"></fa-icon></span>
-            </div>
           </div>
-          <small class="form-text text-muted" *ngIf="!isEditMode"> Today's date will be used for this challenge </small>
-          @if (dateRef.invalid && (dateRef.dirty || dateRef.touched)) {
-            <div>
-              @if (editForm.get('date')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-            </div>
-          }
+          <small class="form-text text-muted"> Select a due date for this challenge. </small>
+        </div>
+        <div *ngIf="dateControl?.invalid && (dateControl?.dirty || dateControl?.touched)">
+          <small class="form-text text-muted" *ngIf="!isEditMode"> Please select a due date for this challenge. </small>
         </div>
 
         <!-- Points field as a dropdown with values 5, 10, 15, 20, 25 -->
@@ -140,33 +131,6 @@
           <div *ngIf="editForm.get('points')?.invalid && (editForm.get('points')?.dirty || editForm.get('points')?.touched)">
             <small class="form-text text-danger" *ngIf="editForm.get('points')?.errors?.required"> This field is required. </small>
           </div>
-        </div>
-
-        <!-- Badge upload field -->
-        <div class="mb-3">
-          <label class="form-label" for="file_badge">Badge</label>
-          <div>
-            @if (editForm.get('badge')!.value) {
-              <div>
-                <img
-                  [src]="'data:' + editForm.get('badgeContentType')!.value + ';base64,' + editForm.get('badge')!.value"
-                  style="max-height: 100px"
-                  alt="challenge image"
-                />
-              </div>
-              <div>
-                <button
-                  type="button"
-                  class="btn btn-secondary btn-sm"
-                  (click)="clearInputImage('badge', 'badgeContentType', 'file_badge_input')"
-                >
-                  <fa-icon icon="times"></fa-icon><span class="ms-1">Clear</span>
-                </button>
-              </div>
-            }
-            <input type="file" id="file_badge_input" data-cy="badge" accept="image/*" (change)="setFileData($event, 'badge', true)" />
-          </div>
-          <small class="form-text text-danger" *ngIf="!editForm.get('badge')!.value">Badge image is required</small>
         </div>
 
         @let completedRef = editForm.get('completed')!;
@@ -193,26 +157,9 @@
             [compareWith]="compareProfile"
           >
             <option [ngValue]="null"></option>
-            @for (profileOption of profilesSharedCollection; track $index) {
-              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_createdBy">Created By</label>
-          <select
-            class="form-control"
-            id="field_createdBy"
-            data-cy="createdBy"
-            name="createdBy"
-            formControlName="createdBy"
-            [compareWith]="compareProfile"
-          >
-            <option [ngValue]="null"></option>
-            @for (profileOption of profilesSharedCollection; track $index) {
-              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
-            }
+            <option *ngFor="let profileOption of profilesSharedCollection; trackBy: trackById" [ngValue]="profileOption">
+              {{ profileOption.login }}
+            </option>
           </select>
         </div>
       </div>
