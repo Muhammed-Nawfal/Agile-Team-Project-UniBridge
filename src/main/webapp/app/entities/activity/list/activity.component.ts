@@ -12,6 +12,27 @@ import { DataUtils } from 'app/core/util/data-util.service';
 import { IActivity } from '../activity.model';
 import { ActivityService, EntityArrayResponseType } from '../service/activity.service';
 import { ActivityDeleteDialogComponent } from '../delete/activity-delete-dialog.component';
+import { ActivityFilter, ActivityFilterPipe } from '../activity-filter.pipe';
+import { Status } from '../../enumerations/status.model';
+import { ActivityType } from '../../enumerations/activity-type.model';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import {
+  faFilter,
+  faTimes,
+  faChevronUp,
+  faChevronDown,
+  faSearch,
+  faMapMarkerAlt,
+  faUsers,
+  faPlus,
+  faCheck,
+  faCalendarAlt,
+  faDollarSign,
+  faHandHoldingDollar,
+  faUser,
+} from '@fortawesome/free-solid-svg-icons';
+import { ProfileService } from '../../profile/service/profile.service';
+import { AccountService } from '../../../core/auth/account.service';
 
 @Component({
   standalone: true,
@@ -27,6 +48,7 @@ import { ActivityDeleteDialogComponent } from '../delete/activity-delete-dialog.
     DurationPipe,
     FormatMediumDatetimePipe,
     FormatMediumDatePipe,
+    ActivityFilterPipe,
   ],
 })
 export class ActivityComponent implements OnInit {
@@ -34,6 +56,25 @@ export class ActivityComponent implements OnInit {
   activities?: IActivity[];
   isLoading = false;
   currentSearch = '';
+
+  // For filtering
+  activityTypes = Object.values(ActivityType).filter(value => typeof value === 'string') as (keyof typeof ActivityType)[];
+  statusTypes = Object.values(Status).filter(value => typeof value === 'string') as (keyof typeof Status)[];
+
+  // Update the filters property in your ActivityComponent class to match the ActivityFilter interface
+  filters: ActivityFilter = {
+    searchText: '',
+    location: '',
+    activityType: [],
+    status: [],
+    isPaid: null,
+    dateFrom: null,
+    dateTo: null,
+    minCost: null,
+    maxCost: null,
+    creatorId: null,
+  };
+  showFilters = false;
 
   sortState = sortStateSignal({});
 
@@ -46,6 +87,28 @@ export class ActivityComponent implements OnInit {
   protected dataUtils = inject(DataUtils);
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
+  protected readonly faFilter = faFilter;
+  protected readonly faTimes = faTimes;
+  protected readonly faSearch = faSearch;
+  protected readonly faMapMarkerAlt = faMapMarkerAlt;
+  protected readonly faPlus = faPlus;
+
+  protected readonly faCheck = faCheck;
+  protected readonly faCalendarAlt = faCalendarAlt;
+  protected readonly faUsers = faUsers;
+  protected readonly faDollarSign = faDollarSign;
+  protected readonly faHandHoldingDollar = faHandHoldingDollar;
+  protected readonly faUser = faUser;
+
+  // Add this to your constructor
+  constructor(
+    private iconLibrary: FaIconLibrary,
+    private profileService: ProfileService,
+    private accountService: AccountService,
+  ) {
+    // Add all icons that your component needs
+    iconLibrary.addIcons(faFilter, faTimes, faChevronUp, faChevronDown, faSearch, faMapMarkerAlt, faUsers);
+  }
 
   trackId = (item: IActivity): number => this.activityService.getActivityIdentifier(item);
 
@@ -82,9 +145,63 @@ export class ActivityComponent implements OnInit {
       .subscribe();
   }
 
+  // Update the search method to integrate with the filter
   search(query: string): void {
+    this.filters.searchText = query;
     this.currentSearch = query;
     this.load();
+  }
+
+  // Toggle filter method (already in your component)
+  toggleFilters(): void {
+    this.showFilters = !this.showFilters;
+  }
+
+  // Clear all filters (already in your component)
+  clearFilters(): void {
+    this.filters = {
+      searchText: '',
+      location: '',
+      activityType: [],
+      status: [],
+      isPaid: null,
+      dateFrom: null,
+      dateTo: null,
+      minCost: null,
+      maxCost: null,
+    };
+    this.currentSearch = '';
+    this.load();
+  }
+
+  // Toggle activity type selection (already in your component)
+  toggleActivityType(type: keyof typeof ActivityType): void {
+    const index = this.filters.activityType?.indexOf(type) ?? -1;
+    if (index === -1) {
+      this.filters.activityType?.push(type);
+    } else {
+      this.filters.activityType?.splice(index, 1);
+    }
+  }
+
+  // Toggle status selection
+  toggleStatus(status: keyof typeof Status): void {
+    const index = this.filters.status?.indexOf(status) ?? -1;
+    if (index === -1) {
+      this.filters.status?.push(status);
+    } else {
+      this.filters.status?.splice(index, 1);
+    }
+  }
+
+  // Check if a type is selected
+  isTypeSelected(type: keyof typeof ActivityType): boolean {
+    return this.filters.activityType?.includes(type) ?? false;
+  }
+
+  // Check if a status is selected
+  isStatusSelected(status: keyof typeof Status): boolean {
+    return this.filters.status?.includes(status) ?? false;
   }
 
   load(): void {
