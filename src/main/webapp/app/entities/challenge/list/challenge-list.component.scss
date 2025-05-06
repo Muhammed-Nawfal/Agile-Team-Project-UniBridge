@@ -45,7 +45,7 @@
       display: block;
       margin-bottom: 8px;
       font-weight: 500;
-      color: #34495e; // Slightly darker gray for better readability
+      color: #5f20a3; // Slightly darker gray for better readability
       font-size: 14px;
     }
 
@@ -68,7 +68,7 @@
       &:focus {
         border-color: #4caf50;
         outline: none;
-        box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+        box-shadow: 0 0 8px rgb(72, 17, 131);
       }
 
       &::placeholder {
@@ -111,4 +111,15 @@
       transform: none; // Disable lift effect when disabled
     }
   }
+}
+
+#test {
+  background-color: purple;
+  border: none;
+}
+
+#test2 {
+  background-color: mediumpurple;
+  border: none;
+  color: white;
 }
