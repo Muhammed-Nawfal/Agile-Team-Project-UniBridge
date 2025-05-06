@@ -36,6 +36,7 @@ type ProfileFormGroupContent = {
   sportsTime: FormControl<IProfile['sportsTime']>;
   preferredSociety: FormControl<IProfile['preferredSociety']>;
   preferredEvents: FormControl<IProfile['preferredEvents']>;
+  eventsTime: FormControl<IProfile['eventsTime']>;
   user: FormControl<IUser | null | undefined>;
 };
 
@@ -84,6 +85,7 @@ export class ProfileFormService {
       sportsTime: new FormControl(profileRawValue.sportsTime),
       preferredSociety: new FormControl(profileRawValue.preferredSociety),
       preferredEvents: new FormControl(profileRawValue.preferredEvents),
+      eventsTime: new FormControl(profileRawValue.eventsTime),
       user: new FormControl<IUser | null | undefined>(profileRawValue.user),
     });
   }

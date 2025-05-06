@@ -246,6 +246,12 @@ public class ProfileResource {
             .build();
     }
 
+    @PutMapping("/{id}/anonymize")
+    public ResponseEntity<Void> anonymizeProfile(@PathVariable Long id) {
+        profileService.anonymize(id);
+        return ResponseEntity.noContent().build();
+    }
+
     //    @GetMapping("/preferred-activity")
     //    public ResponseEntity<List<Profile>> getProfilesByPreferredActivity(@RequestParam ActivityType activityType) {
     //        LOG.debug("REST request to get Profiles by activityType: {}", activityType);
@@ -259,8 +265,13 @@ public class ProfileResource {
      *   Return all profiles that have any non‐null gym/sports/etc. fields for that ActivityType.
      */
     @GetMapping("/buddies/{type}")
-    public ResponseEntity<List<Profile>> getBuddiesByActivityType(@PathVariable ActivityType type) {
-        List<Profile> buddies = profileService.findByActivityType(type);
+    public ResponseEntity<List<Profile>> getBuddiesByActivityType(
+        @PathVariable ActivityType type,
+        @RequestParam(required = false) String filter1,
+        @RequestParam(required = false) String filter2,
+        @RequestParam(required = false) String filter3
+    ) {
+        List<Profile> buddies = profileService.findByActivityTypeWithFilters(type, filter1, filter2, filter3);
         return ResponseEntity.ok(buddies);
     }
 

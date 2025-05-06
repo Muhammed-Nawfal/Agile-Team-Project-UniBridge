@@ -28,8 +28,8 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
     # If you want to expose these ports outside your dev machine,
     # uncomment the following two lines and remove the "127.0.0.1:" prefix
-    #ports:
-    #  - 127.0.0.1:5432:5432
+    ports:
+      - 5432:5432
     networks:
       - app-network
 

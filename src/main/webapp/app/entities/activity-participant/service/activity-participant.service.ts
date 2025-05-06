@@ -149,6 +149,11 @@ export class ActivityParticipantService {
     return this.http.get<IActivity>(`api/activities/${activityId}`, { observe: 'response' });
   }
 
+  // Leave an activity
+  leaveActivity(activityId: number): Observable<boolean> {
+    return this.http.delete<boolean>(`${this.resourceUrl}/activities/${activityId}/leave`);
+  }
+
   protected convertDateFromClient<T extends IActivityParticipant | NewActivityParticipant | PartialUpdateActivityParticipant>(
     activityParticipant: T,
   ): RestOf<T> {

@@ -161,8 +161,11 @@ public class BookingResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of bookings in body.
      */
     @GetMapping("")
-    public List<Booking> getAllBookings() {
+    public List<Booking> getAllBookings(@RequestParam(required = false) Long creatorId) {
         LOG.debug("REST request to get all Bookings");
+        if (creatorId != null) {
+            return bookingRepository.findByCreatorId(creatorId);
+        }
         return bookingRepository.findAll();
     }
 

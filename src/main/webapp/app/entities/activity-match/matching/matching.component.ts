@@ -71,6 +71,8 @@ export class MatchingComponent implements OnInit, OnDestroy {
   filter2Value = '';
   filter3Value = '';
 
+  animationClass = '';
+
   sortState = sortStateSignal({});
 
   public readonly router = inject(Router);
@@ -89,36 +91,39 @@ export class MatchingComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // 1) First resolve my profile ID
-    this.accountService
-      .identity()
+    combineLatest([this.accountService.identity().pipe(take(1)), this.activatedRoute.paramMap])
       .pipe(
-        take(1),
-        switchMap(account => this.profileService.query({ 'userLogin.equals': account?.login }).pipe(take(1))),
-      )
-      .subscribe(resp => {
-        const me = resp.body?.[0];
-        if (me?.id) {
-          this.currentUserProfileId = me.id;
+        switchMap(([account, params]) => {
+          const login = account?.login;
+          const type = params.get('type');
 
-          // 2) Now that we have my ID, listen to route changes
-          this.subscription = this.activatedRoute.paramMap.subscribe(params => {
-            const type = params.get('type');
-            if (type) {
-              this.buddyType = ActivityType[type as keyof typeof ActivityType];
-              // rebuild all three dropdowns for the new buddyType:
-              this.setupFilterOptions();
-              // clear any previous selections:
-              this.filter1Value = '';
-              this.filter2Value = '';
-              this.filter3Value = '';
-              // now load your (filtered-out) deck
-              this.loadBuddies();
-            }
-          });
-        } else {
-          console.error('Could not find my profile');
-        }
+          if (!login || !type) {
+            throw new Error('Missing login or activity type');
+          }
+
+          this.buddyType = ActivityType[type as keyof typeof ActivityType];
+          this.setupFilterOptions();
+          this.filter1Value = '';
+          this.filter2Value = '';
+          this.filter3Value = '';
+
+          return this.profileService.query({ 'userLogin.equals': login }).pipe(take(1));
+        }),
+      )
+      .subscribe({
+        next: resp => {
+          const me = resp.body?.[0];
+          if (me?.id) {
+            this.currentUserProfileId = me.id;
+            this.loadBuddies();
+          } else {
+            console.error('Could not find my profile');
+          }
+        },
+        error: err => {
+          console.error('Error during initialization:', err);
+          this.errorMessage = 'Failed to load your profile. Please refresh the page.';
+        },
       });
   }
 
@@ -464,7 +469,8 @@ export class MatchingComponent implements OnInit, OnDestroy {
       await firstValueFrom(this.activityMatchService.create(newMatch));
 
       // Advance to next profile
-      this.showNextProfile();
+      this.animationClass = 'swipe-right';
+      setTimeout(() => this.showNextProfile(), 600); // delay matches CSS animation duration
     } catch (err) {
       // err === 'Cancel click' | 'Cross click' if dismissed, or HTTP error
       if (err !== 'Cancel click' && err !== 'Cross click') {
@@ -480,9 +486,11 @@ export class MatchingComponent implements OnInit, OnDestroy {
     }
 
     // run your “rejecting” animation
-    const card = document.querySelector('.card');
-    if (card) card.classList.add('rejecting');
-    await new Promise(r => setTimeout(r, 300));
+    // const card = document.querySelector('.card');
+    // if (card) card.classList.add('rejecting');
+    // await new Promise(r => setTimeout(r, 300));
+
+    this.animationClass = 'swipe-left';
 
     this.isLoading = true;
 
@@ -511,12 +519,8 @@ export class MatchingComponent implements OnInit, OnDestroy {
       console.error('Error saving decline:', err);
     } finally {
       // advance the carousel
-      this.showNextProfile();
+      setTimeout(() => this.showNextProfile(), 600);
       // tear down the animation class
-      setTimeout(() => {
-        const newCard = document.querySelector('.card');
-        if (newCard) newCard.classList.remove('rejecting');
-      }, 50);
       this.isLoading = false;
     }
   }
@@ -527,6 +531,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
 
     if (this.currentProfileIndex < this.profiles.length) {
       this.currentProfile = this.profiles[this.currentProfileIndex];
+      this.animationClass = 'swipe-in';
     } else {
       // No more profiles to show
       this.currentProfile = null;
@@ -536,6 +541,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
     this.isLoading = false;
 
     setTimeout(() => {
+      this.animationClass = '';
       this.readProfileBtn.nativeElement.focus();
     }, 0);
     this.isLoading = false;
@@ -642,7 +648,6 @@ export class MatchingComponent implements OnInit, OnDestroy {
       `Matched buddy: ${p.firstName} ${p.lastName}, ` +
       `studying ${p.course}, year ${p.courseYear}, ` +
       `interested in ${this.buddyType.toLowerCase()}.`;
-    this.speechService.speak(summary, { rate: 1, pitch: 1 });
   }
 
   // Helper method to convert enum to options for select input
@@ -678,9 +683,19 @@ export class MatchingComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this.readProfileBtn.nativeElement.focus();
-      // only speak profile if toggled on
-      if (this.a11y.isEnabled()) {
-        this.readProfile();
+
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => {
+          if (this.a11y.isEnabled()) {
+            this.readProfile();
+          }
+        });
+      } else {
+        requestAnimationFrame(() => {
+          if (this.a11y.isEnabled()) {
+            this.readProfile();
+          }
+        });
       }
     }, 0);
   }

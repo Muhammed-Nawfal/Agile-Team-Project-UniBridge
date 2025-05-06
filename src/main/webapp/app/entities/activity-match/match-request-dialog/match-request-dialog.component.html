@@ -3,33 +3,30 @@
     <div class="modal-content shadow-lg rounded">
       <div class="modal-header">
         <h5 class="modal-title">📅 Send Match Request</h5>
-        <button type="button" class="btn btn-sm btn-outline-secondary ms-2" (click)="readForm()" aria-label="Read form values">
-          🔊 Read Form
-        </button>
-        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="cancel()"></button>
-        <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="cancel()"></button>
+        <!-- Floating Read Form Icon with Tooltip -->
+        <div class="read-form-icon" tabindex="0" (click)="readForm()" title="Read Form">🔊</div>
       </div>
 
       <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label for="date" class="form-label">Date</label>
+              <label for="date" class="form-label"><i class="fas fa-calendar-alt me-1"></i> Date</label>
               <input id="date" type="date" class="form-control" formControlName="date" placeholder="Select a date" required />
             </div>
             <div class="col-md-6">
-              <label for="time" class="form-label">Time</label>
+              <label for="time" class="form-label"><i class="fas fa-clock me-1"></i>Time</label>
               <input id="time" type="time" class="form-control" formControlName="time" placeholder="Select a time" required />
             </div>
           </div>
 
           <div class="mb-3 mt-4">
-            <label for="location" class="form-label">Location</label>
+            <label for="location" class="form-label"><i class="fas fa-location me-1"></i>Location</label>
             <input id="location" type="text" class="form-control" formControlName="location" placeholder="e.g. Gym A, Library" required />
           </div>
 
           <div class="mb-3">
-            <label for="notes" class="form-label">Notes</label>
+            <label for="notes" class="form-label"><i class="fas fa-note-sticky me-1"></i>Notes</label>
             <textarea id="notes" class="form-control" formControlName="notes" rows="3" placeholder="Add any extra details..."></textarea>
           </div>
         </div>

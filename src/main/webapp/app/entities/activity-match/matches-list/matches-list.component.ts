@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, QueryList, signal, ViewChildren } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subject, switchMap, take, takeUntil } from 'rxjs';
@@ -11,13 +11,18 @@ import { ActivityMatchService } from '../service/activity-match.service';
 import { ProfileService } from 'app/entities/profile/service/profile.service';
 import { ActivityType } from 'app/entities/enumerations/activity-type.model';
 import dayjs from 'dayjs/esm';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faSlidersH, faChevronDown, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faChevronDown, faSlidersH } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
-library.add(faSlidersH, faChevronDown, faCalendarAlt);
 import { SpeechService } from '../../../core/speech/speech.service';
-import { AccessibilityService } from '../../../core/Accessibility/accessibility.service';
 import { A11yModule } from 'app/shared/a11y/a11y.module';
+import { ITEM_DELETED_EVENT } from '../../../config/navigation.constants';
+import { ActivityMatchDeleteDialogComponent } from '../delete/activity-match-delete-dialog.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Decision } from 'app/entities/enumerations/decision.model';
+
+library.add(faSlidersH, faChevronDown, faCalendarAlt);
+
+type MatchWithParsedTime = IActivityMatch & { matchTime: Date | null };
 
 @Component({
   standalone: true,
@@ -30,11 +35,13 @@ export class MatchesListComponent implements OnInit, OnDestroy {
   @ViewChildren('readMatchBtn', { read: ElementRef })
   readButtons!: QueryList<ElementRef<HTMLButtonElement>>;
   account = signal<Account | null>(null);
-  upcomingMatches: IActivityMatch[] = [];
+  upcomingMatches: MatchWithParsedTime[] = [];
   activityTypes = Object.values(ActivityType);
   selectedMonth = new Date();
   selectedType = '';
   isLoading = false;
+
+  protected readonly ActivityMatchDeleteDialogComponent = ActivityMatchDeleteDialogComponent;
 
   private router = inject(Router);
   private accountService = inject(AccountService);
@@ -42,6 +49,7 @@ export class MatchesListComponent implements OnInit, OnDestroy {
   private profileService = inject(ProfileService);
   private destroy$ = new Subject<void>();
   private speechService = inject(SpeechService);
+  private modalService = inject(NgbModal);
 
   ngOnInit(): void {
     this.accountService
@@ -76,13 +84,21 @@ export class MatchesListComponent implements OnInit, OnDestroy {
           }
           this.activityMatchService.forUser(me.id).subscribe({
             next: res => {
-              // filter by month and type
-              this.upcomingMatches = (res.body ?? []).filter(m => {
-                const d = dayjs(m.matchDate);
-                const sameMonth = d.month() === dayjs(this.selectedMonth).month();
-                const typeMatch = this.selectedType ? m.activityType === this.selectedType : true;
-                return sameMonth && typeMatch;
-              });
+              this.upcomingMatches = (res.body ?? [])
+                .filter(m => m.status === Decision.ACCEPT)
+                .filter(m => {
+                  const d = dayjs(m.matchDate);
+                  const sameMonth = d.month() === dayjs(this.selectedMonth).month();
+                  const typeMatch = this.selectedType ? m.activityType === this.selectedType : true;
+                  return sameMonth && typeMatch;
+                })
+                .map(
+                  m =>
+                    ({
+                      ...m,
+                      matchTime: m.matchTime ? dayjs(m.matchTime).toDate() : null,
+                    }) as MatchWithParsedTime,
+                );
               this.isLoading = false;
               this.focusFirstReadButton();
             },
@@ -111,6 +127,33 @@ export class MatchesListComponent implements OnInit, OnDestroy {
     const text = `Upcoming ${activity} with ${partner?.firstName} ${partner?.lastName}, ` + `on ${dateStr} at ${timeStr}, location ${loc}.`;
     this.speechService.speak(text);
   }
+
+  getActivityImage(type: 'SOCIAL' | 'ACADEMIC' | 'SPORTS' | 'GYM' | 'OTHER' | null | undefined): string {
+    switch (type) {
+      case ActivityType.ACADEMIC:
+        return 'content/images/ACADEMIC.jpg';
+      case ActivityType.GYM:
+        return 'content/images/GYM.jpg';
+      case ActivityType.SOCIAL:
+        return 'content/images/SOCIAL.jpg';
+      case ActivityType.SPORTS:
+        return 'content/images/SPORTS.jpg';
+      default:
+        return 'assets/placeholder.jpg'; // fallback
+    }
+  }
+
+  openDeleteModal(match: IActivityMatch): void {
+    const modalRef = this.modalService.open(ActivityMatchDeleteDialogComponent, { size: 'md', backdrop: 'static' });
+    modalRef.componentInstance.activityMatch = match;
+
+    modalRef.result.then(reason => {
+      if (reason === ITEM_DELETED_EVENT) {
+        this.loadUpcomingMatches(); // Reload the list
+      }
+    });
+  }
+
   private focusFirstReadButton(): void {
     setTimeout(() => {
       const first = this.readButtons.first;

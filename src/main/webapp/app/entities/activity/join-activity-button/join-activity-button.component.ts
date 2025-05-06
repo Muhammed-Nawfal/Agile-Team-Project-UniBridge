@@ -6,6 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgClass } from '@angular/common';
 import { Status } from '../../enumerations/status.model';
 import { IActivity } from '../activity.model';
+import { LeaveActivityModalComponent } from './leave-activity-modal.component';
 
 @Component({
   selector: 'jhi-join-activity-button',
@@ -35,6 +36,7 @@ export class JoinActivityButtonComponent implements OnInit {
     private http: HttpClient,
     private applicationConfigService: ApplicationConfigService,
     private activityParticipantService: ActivityParticipantService,
+    private modalService: NgbModal,
   ) {
     this.apiUrl = this.applicationConfigService.getEndpointFor('api/activity-participants');
   }
@@ -43,7 +45,7 @@ export class JoinActivityButtonComponent implements OnInit {
     this.checkIfJoined();
     this.loadActivity();
   }
-  // Load activity details to check status and capacity
+
   loadActivity(): void {
     this.activityParticipantService.getActivityDetails(this.activityId).subscribe({
       next: response => {
@@ -67,7 +69,7 @@ export class JoinActivityButtonComponent implements OnInit {
       // this.isFull = this.activity.maxNumberOfParticipants <= this.activity.numberOfParticipants;
     }
   }
-  // method to join activity
+
   joinActivity(): void {
     if (this.hasJoined || this.isLoading || this.isFull || !this.isJoinable) {
       return;
@@ -76,7 +78,6 @@ export class JoinActivityButtonComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = null;
 
-    // Using the activity participant service class
     this.activityParticipantService.joinActivity(this.activityId).subscribe({
       next: () => {
         this.hasJoined = true;
@@ -103,9 +104,61 @@ export class JoinActivityButtonComponent implements OnInit {
     });
   }
 
+  // method to leave activity
+  leaveActivity(): void {
+    if (!this.hasJoined || this.isLoading) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = null;
+
+    this.activityParticipantService.leaveActivity(this.activityId).subscribe({
+      next: () => {
+        this.hasJoined = false;
+        this.isLoading = false;
+      },
+      error: error => {
+        this.isLoading = false;
+        this.errorMessage = `Error leaving activity: ${error.status ? `${error.status} - ` : ''}${error.message || 'Unknown error'}`;
+        console.error('Error leaving activity', error);
+      },
+    });
+  }
+
+  // toggle between leaving and joining an activity
+  toggleParticipation(): void {
+    if (this.isLoading || !this.isJoinable) {
+      return;
+    }
+
+    if (this.hasJoined) {
+      this.openLeaveConfirmation();
+    } else if (!this.isFull) {
+      this.joinActivity();
+    }
+  }
+
+  // Open confirmation modal for leaving activity
+  openLeaveConfirmation(): void {
+    const modalRef = this.modalService.open(LeaveActivityModalComponent);
+    modalRef.componentInstance.activityId = this.activityId;
+
+    modalRef.result.then(
+      result => {
+        if (result === 'confirm') {
+          this.leaveActivity();
+        }
+      },
+      () => {
+        // Modal dismissed
+      },
+    );
+  }
+
   private checkIfJoined(): void {
     this.isLoading = true;
-    // Using the service instead of direct HTTP calls
+    // using the service instead of direct HTTP calls
     this.activityParticipantService.hasUserJoinedActivity(this.activityId).subscribe({
       next: hasJoined => {
         this.hasJoined = hasJoined;

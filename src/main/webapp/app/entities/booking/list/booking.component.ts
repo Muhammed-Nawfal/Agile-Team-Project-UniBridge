@@ -19,6 +19,10 @@ import { Observable } from 'rxjs';
 import { AccountService } from 'app/core/auth/account.service';
 import { TimeSlotService } from 'app/entities/time-slot/service/time-slot.service';
 import { firstValueFrom } from 'rxjs';
+import { ActivityService } from 'app/entities/activity/service/activity.service';
+import { IActivity } from 'app/entities/activity/activity.model';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
+import { IProfile } from 'app/entities/profile/profile.model';
 
 @Component({
   standalone: true,
@@ -41,6 +45,11 @@ export class BookingComponent implements OnInit {
   selectedPartySize: number | null = null;
   availableTimeSlots: ITimeSlot[] = [];
   fullyBookedTimeSlots: string[] = [];
+  loadedActivities: IActivity[] = [];
+  selectedSocialActivity = '';
+  currentUserProfile: IProfile | null = null;
+  bookings: any[] = [];
+  isLoading = false;
 
   readonly MAX_SLOTS = 3;
   bookingError: string | null = null;
@@ -56,6 +65,7 @@ export class BookingComponent implements OnInit {
       selectActivity: 'SELECT AN ACTIVITY',
       selectEvent: 'SELECT AN EVENT',
       selectPartySize: 'PARTY SIZE',
+      selectSActivity: 'PICK A SOCIAL ACTIVITY',
       selectTime: 'TIME',
       bookNow: 'BOOK',
       upcomingActivities: 'UPCOMING',
@@ -76,6 +86,9 @@ export class BookingComponent implements OnInit {
       save: 'SAVE',
       event: 'Event',
       activity: 'Activity',
+      socialActivities: 'Social Activities',
+      none: 'None',
+      selected: 'Selected',
     },
     es: {
       booking: 'RESERVA',
@@ -103,6 +116,9 @@ export class BookingComponent implements OnInit {
       save: 'GUARDAR',
       event: 'Evento',
       activity: 'Actividad',
+      socialActivities: 'Actividades Sociales',
+      none: 'Ninguna',
+      selected: 'Seleccionada',
     },
   };
 
@@ -114,31 +130,108 @@ export class BookingComponent implements OnInit {
   updatedPartySize: number | null = null;
   updatedTimeSlots: string[] = [];
 
+  bookedActivityIds = new Set<number>();
+  selectedActivityIds = new Set<number>();
+
   constructor(
     private http: HttpClient,
     private bookingService: BookingService,
     private accountService: AccountService,
     private eventService: EventService,
     public timeSlotService: TimeSlotService,
+    private activityService: ActivityService,
+    private profileService: ProfileService,
   ) {}
 
   ngOnInit(): void {
     this.loadEvents();
-    this.loadUserBookings();
+    this.loadActivities();
+    this.loadCurrentUserProfile();
   }
 
-  loadUserBookings(): void {
+  loadUserBookingsList(): void {
     this.isLoadingBookings = true;
 
-    this.bookingService.loadUserBookings().subscribe({
-      next: bookings => {
+    if (!this.currentUserProfile) {
+      console.error('No current user profile found');
+      this.isLoadingBookings = false;
+      return;
+    }
+
+    this.bookingService.loadUserBookings(this.currentUserProfile.id).subscribe({
+      next: (bookings: any[]) => {
         this.upcomingBookings = bookings;
         this.isLoadingBookings = false;
-        console.log('Final upcoming bookings array:', this.upcomingBookings);
+        console.log('Loaded user bookings:', this.upcomingBookings);
       },
       error: error => {
         console.error('Error loading bookings', error);
         this.isLoadingBookings = false;
+      },
+    });
+  }
+
+  loadCurrentUserProfile(): void {
+    console.log('Starting to load current user profile...');
+
+    this.accountService.identity().subscribe({
+      next: account => {
+        if (!account?.login) {
+          console.error('No account login found');
+          return;
+        }
+
+        console.log('Looking up profile for login:', account.login);
+        this.profileService.query({ 'login.equals': account.login, size: 1 }).subscribe({
+          next: response => {
+            console.log('Profile response:', response);
+            if (response.body && response.body.length > 0) {
+              const profile = response.body.find(p => p.login === account.login);
+              if (profile) {
+                this.currentUserProfile = profile;
+                console.log('Successfully loaded profile:', this.currentUserProfile);
+                // Load bookings after profile is loaded
+                this.loadUserBookingsList();
+              } else {
+                console.error('No matching profile found for login:', account.login);
+              }
+            } else {
+              console.error('No profile found for login:', account.login);
+            }
+          },
+          error(error) {
+            console.error('Error loading profile:', error);
+          },
+        });
+      },
+      error(error) {
+        console.error('Error loading account:', error);
+      },
+    });
+  }
+
+  loadActivities(): void {
+    this.profileService.findMyProfile().subscribe({
+      next: profileRes => {
+        const profile = profileRes.body;
+        if (!profile?.id) {
+          console.error('Could not retrieve current profile.');
+          return;
+        }
+
+        this.activityService.query().subscribe({
+          next: response => {
+            const allActivities = response.body ?? [];
+            this.loadedActivities = allActivities.filter(activity => activity.creator!.id === profile.id);
+            console.log('Filtered activities:', this.loadedActivities);
+          },
+          error(err) {
+            console.error('Error loading activities:', err);
+          },
+        });
+      },
+      error(err) {
+        console.error('Error fetching current user profile:', err);
       },
     });
   }
@@ -205,9 +298,11 @@ export class BookingComponent implements OnInit {
 
   onActivityChange(event: any): void {
     this.selectedActivity = event.target.value;
-    const selectedActivity = this.activities.find(act => act.value === this.selectedActivity);
 
+    // Handle regular event-based activities
+    const selectedActivity = this.activities.find(act => act.value === this.selectedActivity);
     this.events = selectedActivity ? selectedActivity.events : [];
+
     this.partySizes = [];
     this.timeSlots = [];
     this.selectedTimeSlots = [];
@@ -290,28 +385,16 @@ export class BookingComponent implements OnInit {
   }
 
   validateBookingData(): boolean {
-    if (!this.selectedDate) {
-      this.bookingError = 'Please select a date';
-      return false;
-    }
+    const error = this.bookingService.validateBookingData({
+      selectedDate: this.selectedDate,
+      selectedActivity: this.selectedActivity,
+      selectedEvent: this.selectedEvent,
+      selectedPartySize: this.selectedPartySize,
+      selectedTimeSlots: this.selectedTimeSlots,
+    });
 
-    if (!this.selectedActivity) {
-      this.bookingError = 'Please select an activity';
-      return false;
-    }
-
-    if (!this.selectedEvent) {
-      this.bookingError = 'Please select an event';
-      return false;
-    }
-
-    if (!this.selectedPartySize) {
-      this.bookingError = 'Please select party size';
-      return false;
-    }
-
-    if (this.selectedTimeSlots.length === 0) {
-      this.bookingError = 'Please select at least one time slot';
+    if (error) {
+      this.bookingError = error;
       return false;
     }
 
@@ -332,101 +415,28 @@ export class BookingComponent implements OnInit {
 
     const bookingDate = dayjs(this.selectedDate).startOf('day');
     const formattedDate = bookingDate.format('YYYY-MM-DD');
+    const eventId = this.eventService.findEventIdByValue(this.selectedEvent, this.activities) ?? null;
 
-    const eventId = this.eventService.findEventIdByValue(this.selectedEvent, this.activities);
-
-    const params: any = {
-      'date.equals': formattedDate,
-    };
-
-    if (eventId) {
-      params['event.id.equals'] = eventId;
-    }
-
-    console.log(`Fetching time slots with date=${formattedDate} and eventId=${eventId ?? 'not found'}`);
-
-    this.http.get<ITimeSlot[]>('api/time-slots', { params }).subscribe({
-      next: response => {
-        this.availableTimeSlots = response;
-
-        console.log(
-          `Available time slots for date ${formattedDate}${eventId ? ' and event ID ' + String(eventId) : ''}:`,
-          this.availableTimeSlots,
-        );
-
-        if (this.availableTimeSlots.length === 0) {
-          console.warn(
-            `No time slots found for date ${formattedDate}${eventId ? ' and event ID ' + String(eventId) : ''}. Trying with just date...`,
-          );
-
-          if (eventId) {
-            const dateOnlyParams = { 'date.equals': formattedDate };
-            this.http.get<ITimeSlot[]>('api/time-slots', { params: dateOnlyParams }).subscribe({
-              next: dateResponse => {
-                this.availableTimeSlots = dateResponse;
-                console.log(`All time slots for date ${formattedDate}:`, this.availableTimeSlots);
-
-                if (this.availableTimeSlots.length === 0) {
-                  console.error(`No time slots found for date ${formattedDate}. Make sure time slots are generated for this date.`);
-                } else {
-                  this.timeSlotService
-                    .checkForFullyBookedTimeSlots(
-                      this.timeSlots,
-                      this.availableTimeSlots,
-                      this.selectedDate,
-                      this.selectedEvent,
-                      this.activities,
-                      this.eventService,
-                      this.bookingService,
-                      this.http,
-                    )
-                    .subscribe({
-                      next: fullyBookedSlots => {
-                        this.fullyBookedTimeSlots = fullyBookedSlots;
-                      },
-                      error(error) {
-                        console.error('Error checking for fully booked time slots:', error);
-                      },
-                    });
-                }
-              },
-            });
-          } else {
-            console.warn('No time slots found for the selected date. Make sure time slots are generated for this date.');
-          }
-        } else {
-          const slotsWithIds = this.availableTimeSlots.filter(slot => slot.id);
-          if (slotsWithIds.length === 0) {
-            console.error('Time slots found but they have no IDs!');
-          } else {
-            console.log(`Found ${slotsWithIds.length} valid time slots with IDs`);
-            this.timeSlotService
-              .checkForFullyBookedTimeSlots(
-                this.timeSlots,
-                this.availableTimeSlots,
-                this.selectedDate,
-                this.selectedEvent,
-                this.activities,
-                this.eventService,
-                this.bookingService,
-                this.http,
-              )
-              .subscribe({
-                next: fullyBookedSlots => {
-                  this.fullyBookedTimeSlots = fullyBookedSlots;
-                },
-                error(error) {
-                  console.error('Error checking for fully booked time slots:', error);
-                },
-              });
-          }
-        }
-      },
-      error: error => {
-        console.error('Error fetching time slots:', error);
-        this.bookingError = 'Could not load time slots. Please try again.';
-      },
-    });
+    this.timeSlotService
+      .fetchAvailableTimeSlotsForEvent(
+        formattedDate,
+        eventId,
+        this.timeSlots,
+        this.selectedEvent,
+        this.activities,
+        this.eventService,
+        this.bookingService,
+      )
+      .subscribe({
+        next: result => {
+          this.availableTimeSlots = result.available;
+          this.fullyBookedTimeSlots = result.fullyBooked;
+        },
+        error: error => {
+          console.error('Error fetching time slots:', error);
+          this.bookingError = 'Could not load time slots. Please try again.';
+        },
+      });
   }
 
   onSubmit(): void {
@@ -434,259 +444,41 @@ export class BookingComponent implements OnInit {
       return;
     }
 
-    const selectedEventId = this.eventService.findEventIdByValue(this.selectedEvent, this.activities);
-    const timeSlots: ITimeSlot[] = [];
-    let processedCount = 0;
+    if (!this.currentUserProfile) {
+      console.error('No current user profile found');
+      this.bookingError = 'Unable to create booking: User profile not found';
+      return;
+    }
 
-    const selectedDateString = this.selectedDate;
-    const formattedDateStr = dayjs(selectedDateString).format('YYYY-MM-DD');
-    const bookingDate = dayjs(formattedDateStr);
-
-    console.log('Selected date string:', selectedDateString);
-    console.log('Formatted date string:', formattedDateStr);
-    console.log('Booking date to be used:', bookingDate.format('YYYY-MM-DD'));
-
-    const createNextTimeSlot = (index: number): void => {
-      if (index >= this.selectedTimeSlots.length) {
-        if (timeSlots.length > 0) {
-          const booking: NewBooking = {
-            id: null,
-            activityType: this.selectedActivity as keyof typeof ActivityType,
-            eventType: this.selectedEvent.toUpperCase() as keyof typeof EventType,
-            bookingDate,
-            partySize: this.selectedPartySize ?? 1,
-            bookingStatus: 'CONFIRMED' as const,
-            createdAt: dayjs(),
-            timeSlot: timeSlots[0],
-            assignedAt: null,
-            bookedActivity: null,
-            bookingLocation: null,
-            creator: null,
-            activity: null,
-          };
-
-          console.log('Final booking date to be submitted:', booking.bookingDate?.format('YYYY-MM-DD') ?? 'undefined date');
-
-          const locationTypeName = this.bookingService.getLocationTypeFromEvent(this.selectedEvent);
-          const requiredCapacity = this.selectedPartySize ?? 1;
-
-          const firstTimeSlot = timeSlots[0];
-          const startHour = firstTimeSlot.startHour;
-          const endHour = firstTimeSlot.endHour;
-          const bookingDateStr =
-            typeof firstTimeSlot.date === 'string' ? firstTimeSlot.date : dayjs(firstTimeSlot.date).format('YYYY-MM-DD');
-
-          console.log(`Looking for available locations for ${locationTypeName} on ${bookingDateStr} from ${startHour}:00 to ${endHour}:00`);
-
-          this.http
-            .get<any[]>('api/locations', {
-              params: {
-                'status.equals': 'AVAILABLE',
-                'name.startsWith': locationTypeName,
-              },
-            })
-            .subscribe({
-              next: locations => {
-                console.log('All available locations:', locations);
-
-                const matchingLocations = locations.filter(loc => {
-                  const locName = loc.name?.toLowerCase().replace(/_/g, ' ');
-                  const typeName = locationTypeName.toLowerCase().replace(/_/g, ' ');
-                  return locName?.includes(typeName);
-                });
-
-                console.log('Filtered locations for', locationTypeName, ':', matchingLocations);
-
-                if (matchingLocations.length === 0) {
-                  console.error('No matching locations found for', locationTypeName);
-                  this.bookingError = `No available locations found for ${locationTypeName}`;
-                  return;
-                }
-
-                console.log('Exact booking date we are checking conflicts for:', bookingDateStr);
-
-                this.http
-                  .get<any[]>('api/time-slots', {
-                    params: {
-                      'date.equals': bookingDateStr,
-                    },
-                  })
-                  .subscribe({
-                    next: (existingTimeSlots: any[]) => {
-                      console.log('All time slots for this date:', existingTimeSlots);
-
-                      existingTimeSlots.forEach((slot: any) => {
-                        console.log('Time slot date:', typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD'));
-                      });
-
-                      const conflictingTimeSlots = existingTimeSlots.filter((slot: any) => {
-                        const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
-
-                        return (
-                          slotDate === bookingDateStr &&
-                          slot.startHour === startHour &&
-                          slot.endHour === endHour &&
-                          Boolean(slot.location) &&
-                          Boolean(slot.location.id)
-                        );
-                      });
-
-                      console.log('Time slots with matching hours that have locations assigned:', conflictingTimeSlots);
-
-                      const bookedLocationIds = conflictingTimeSlots.map((slot: any) => Number(slot.location.id)).filter(Boolean);
-
-                      console.log('Location IDs booked for this specific date and time:', bookedLocationIds);
-
-                      const availableLocations = matchingLocations.filter(loc => !bookedLocationIds.includes(loc.id));
-
-                      console.log('Available locations after filtering out booked ones:', availableLocations);
-
-                      if (availableLocations.length === 0) {
-                        console.error('All matching locations are already booked for this date/time');
-                        this.bookingError = `All ${locationTypeName} locations are already booked for the selected date and time`;
-                        return;
-                      }
-
-                      let locationsAvailableForAllSlots: any[] = [...availableLocations];
-
-                      if (this.selectedTimeSlots.length > 1) {
-                        console.log('Checking additional time slots for location conflicts...');
-
-                        for (let i = 1; i < this.selectedTimeSlots.length; i++) {
-                          const additionalSlot = this.selectedTimeSlots[i];
-                          const parsedAdditionalSlot = this.timeSlotService.parseTimeSlot(additionalSlot);
-                          const additionalStartHour = parsedAdditionalSlot.start;
-                          const additionalEndHour = parsedAdditionalSlot.end;
-
-                          console.log(`Checking conflicts for additional time slot: ${additionalStartHour}:00 - ${additionalEndHour}:00`);
-
-                          const additionalConflictingTimeSlots = existingTimeSlots.filter((slot: any) => {
-                            const slotDate = typeof slot.date === 'string' ? slot.date : dayjs(slot.date).format('YYYY-MM-DD');
-                            return (
-                              slotDate === bookingDateStr &&
-                              slot.startHour === additionalStartHour &&
-                              slot.endHour === additionalEndHour &&
-                              Boolean(slot.location) &&
-                              Boolean(slot.location.id)
-                            );
-                          });
-
-                          console.log(`Found ${additionalConflictingTimeSlots.length} conflicting slots for additional time`);
-
-                          const additionalBookedLocationIds = additionalConflictingTimeSlots
-                            .map((slot: any) => Number(slot.location.id))
-                            .filter(Boolean);
-
-                          console.log('Additional booked location IDs:', additionalBookedLocationIds);
-
-                          locationsAvailableForAllSlots = locationsAvailableForAllSlots.filter(
-                            loc => !additionalBookedLocationIds.includes(loc.id),
-                          );
-
-                          console.log(`Locations available for all slots so far: ${locationsAvailableForAllSlots.length}`);
-                        }
-                      }
-
-                      if (locationsAvailableForAllSlots.length === 0) {
-                        console.error('No locations available for all selected time slots');
-                        this.bookingError = `No ${locationTypeName} locations are available for all selected time slots`;
-                        return;
-                      }
-
-                      const availableLocation = locationsAvailableForAllSlots[0];
-                      console.log('Selected available location for all time slots:', availableLocation);
-
-                      if (availableLocation) {
-                        booking.bookingLocation = { id: availableLocation.id };
-                      }
-
-                      this.bookingService.create(booking).subscribe({
-                        next: response => {
-                          console.log('Booking submitted successfully!', response);
-
-                          const bookingId = response.body?.id;
-                          if (bookingId) {
-                            this.timeSlotService.updateTimeSlotsWithBookingId(timeSlots, bookingId, availableLocation?.id);
-                          } else {
-                            console.error('Created booking but no ID was returned');
-                            alert(`Booking created successfully with ${timeSlots.length} time slot(s)!`);
-                            window.location.reload();
-                          }
-
-                          this.bookingError = null;
-                        },
-                        error: error => {
-                          console.error('Error creating booking', error);
-                          this.bookingError = error.error?.detail || error.error?.message || 'Failed to create booking';
-                        },
-                      });
-                    },
-                    error: error => {
-                      console.error('Error checking existing time slots:', error);
-                      this.bookingError = 'Error checking time slot availability';
-                    },
-                  });
-              },
-              error: error => {
-                console.error('Error loading locations:', error);
-                this.bookingError = 'Error loading available locations';
-              },
-            });
-        } else {
-          this.bookingError = 'Failed to create any time slots for booking.';
-        }
-        return;
-      }
-
-      const currentSlot = this.selectedTimeSlots[index];
-      const parsedSlot = this.timeSlotService.parseTimeSlot(currentSlot);
-
-      let eventCapacity = null;
-      for (const activity of this.activities) {
-        const foundEvent = activity.events.find((e: any) => e.value === this.selectedEvent);
-        if (foundEvent) {
-          eventCapacity = foundEvent.capacity;
-          break;
-        }
-      }
-
-      console.log(`Using event capacity: ${eventCapacity} for time slot`);
-
-      const timeSlotDateString = formattedDateStr;
-
-      const newTimeSlot = {
-        date: timeSlotDateString,
-        startHour: parsedSlot.start,
-        endHour: parsedSlot.end,
-        capacity: eventCapacity !== null ? eventCapacity : 10,
-        remainingCapacity: eventCapacity !== null ? eventCapacity : 10,
-        status: 'AVAILABLE',
-        event: { id: selectedEventId },
-        booking: null,
-      };
-
-      console.log(`Time slot date to be created for ${currentSlot}:`, newTimeSlot.date);
-
-      this.http.post<ITimeSlot>('api/time-slots', newTimeSlot).subscribe({
-        next(savedTimeSlot) {
-          console.log(`Time slot created for ${currentSlot}:`, savedTimeSlot);
-          console.log(
-            `Time slot date after save:`,
-            typeof savedTimeSlot.date === 'string' ? savedTimeSlot.date : dayjs(savedTimeSlot.date).format('YYYY-MM-DD'),
-          );
-          timeSlots.push(savedTimeSlot);
-          processedCount++;
-          createNextTimeSlot(index + 1);
+    this.bookingService
+      .createBookingWithTimeSlots(
+        {
+          selectedDate: this.selectedDate,
+          selectedActivity: this.selectedActivity,
+          selectedEvent: this.selectedEvent,
+          selectedPartySize: this.selectedPartySize,
+          selectedTimeSlots: this.selectedTimeSlots,
+          selectedSocialActivity: this.selectedSocialActivity,
+          currentUserProfile: this.currentUserProfile,
+          activities: this.activities,
+          loadedActivities: this.loadedActivities,
         },
-        error(error) {
-          console.error(`Error creating time slot for ${currentSlot}`, error);
-          processedCount++;
-          createNextTimeSlot(index + 1);
+        this.timeSlotService,
+      )
+      .subscribe({
+        next: result => {
+          if (result.success) {
+            this.bookingError = null;
+            window.location.reload();
+          } else {
+            this.bookingError = result.error ?? 'Failed to create booking';
+          }
+        },
+        error: error => {
+          console.error('Error creating booking:', error);
+          this.bookingError = 'Failed to create booking. Please try again.';
         },
       });
-    };
-
-    createNextTimeSlot(0);
   }
 
   openBookingDetails(booking: any): void {
@@ -699,8 +491,59 @@ export class BookingComponent implements OnInit {
     this.fullyBookedTimeSlots = [];
     this.isEditMode = false;
 
-    this.selectedBooking = booking;
-    this.showModal = true;
+    console.log('Initial booking data:', booking);
+
+    // Always load full booking details
+    this.bookingService.find(booking.id).subscribe({
+      next: response => {
+        console.log('Full booking response:', response.body);
+        if (response.body) {
+          // If there's a bookedActivity, load its full details
+          if (response.body.bookedActivity?.id) {
+            this.activityService.find(response.body.bookedActivity.id).subscribe({
+              next: activityResponse => {
+                this.selectedBooking = {
+                  ...response.body,
+                  name: booking.name,
+                  date: booking.date,
+                  time: booking.time,
+                  locationName: booking.locationName,
+                  bookedActivity: activityResponse.body,
+                };
+                console.log('Final selected booking with activity:', this.selectedBooking);
+                this.showModal = true;
+              },
+              error: error => {
+                console.error('Error loading activity details:', error);
+                this.selectedBooking = {
+                  ...response.body,
+                  name: booking.name,
+                  date: booking.date,
+                  time: booking.time,
+                  locationName: booking.locationName,
+                };
+                this.showModal = true;
+              },
+            });
+          } else {
+            this.selectedBooking = {
+              ...response.body,
+              name: booking.name,
+              date: booking.date,
+              time: booking.time,
+              locationName: booking.locationName,
+            };
+            console.log('Final selected booking:', this.selectedBooking);
+            this.showModal = true;
+          }
+        }
+      },
+      error: error => {
+        console.error('Error loading booking details:', error);
+        this.selectedBooking = booking;
+        this.showModal = true;
+      },
+    });
   }
 
   closeModal(): void {
@@ -722,7 +565,11 @@ export class BookingComponent implements OnInit {
 
     this.bookingService.deleteBooking(this.selectedBooking.id).subscribe({
       next: () => {
-        this.loadUserBookings();
+        // Remove the activity from selectedActivityIds if it exists
+        if (this.selectedBooking.bookedActivity?.id) {
+          this.selectedActivityIds.delete(this.selectedBooking.bookedActivity.id);
+        }
+        this.loadUserBookingsList();
         this.closeModal();
       },
       error: (error: unknown) => {
@@ -743,6 +590,7 @@ export class BookingComponent implements OnInit {
     this.isEditMode = true;
     this.updatedDate = dayjs(this.selectedBooking.date).format('YYYY-MM-DD');
     this.updatedPartySize = this.selectedBooking.partySize;
+    this.selectedSocialActivity = this.selectedBooking.bookedActivity ? `activity-${this.selectedBooking.bookedActivity.id}` : '';
 
     const timeRange = this.selectedBooking.time.split(' - ');
     if (timeRange.length === 2) {
@@ -819,6 +667,21 @@ export class BookingComponent implements OnInit {
       return;
     }
 
+    // Find the selected social activity if one is selected
+    let bookedActivity: IActivity | null = null;
+    if (this.selectedSocialActivity.startsWith('activity-')) {
+      const activityId = Number(this.selectedSocialActivity.replace('activity-', ''));
+      bookedActivity = this.loadedActivities.find(act => act.id === activityId) ?? null;
+    }
+
+    // Update selectedActivityIds
+    if (this.selectedBooking.bookedActivity?.id) {
+      this.selectedActivityIds.delete(this.selectedBooking.bookedActivity.id);
+    }
+    if (bookedActivity?.id) {
+      this.selectedActivityIds.add(bookedActivity.id);
+    }
+
     const updatedBooking = {
       id: this.selectedBooking.id,
       activityType: this.selectedBooking.activityType,
@@ -831,13 +694,13 @@ export class BookingComponent implements OnInit {
       bookingLocation: this.selectedBooking.bookingLocation || null,
       creator: this.selectedBooking.creator || null,
       activity: this.selectedBooking.activity || null,
-      bookedActivity: this.selectedBooking.bookedActivity || null,
+      bookedActivity,
       assignedAt: this.selectedBooking.assignedAt || null,
     };
 
     this.bookingService.update(updatedBooking).subscribe({
       next: () => {
-        this.loadUserBookings();
+        this.loadUserBookingsList();
         this.isEditMode = false;
         this.closeModal();
       },
@@ -854,17 +717,27 @@ export class BookingComponent implements OnInit {
     this.updatedTimeSlots = [];
   }
 
-  private deleteBookingOnly(): void {
-    if (!this.selectedBooking) return;
+  onSocialActivityChange(event: any): void {
+    const value = event.target.value;
+    if (value.startsWith('activity-')) {
+      const activityId = Number(value.replace('activity-', ''));
+      if (this.selectedActivityIds.has(activityId)) {
+        this.selectedActivityIds.delete(activityId);
+      } else {
+        this.selectedActivityIds.add(activityId);
+      }
+    }
+    this.selectedSocialActivity = value;
+  }
 
-    this.bookingService.deleteBookingOnly(this.selectedBooking.id).subscribe({
-      next: () => {
-        this.loadUserBookings();
-        this.closeModal();
-      },
-      error: (error: unknown) => {
-        this.bookingError = 'Failed to delete booking. Please try again.';
-      },
-    });
+  isActivitySelected(activity: IActivity): boolean {
+    return this.selectedActivityIds.has(activity.id) || this.bookedActivityIds.has(activity.id);
+  }
+
+  isActivitySelectable(activity: IActivity, isUpdate = false): boolean {
+    if (isUpdate && this.selectedBooking?.bookedActivity?.id === activity.id) {
+      return true; // Allow selecting the booking's own activity
+    }
+    return !this.isActivitySelected(activity);
   }
 }
