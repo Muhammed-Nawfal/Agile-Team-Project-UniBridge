@@ -90,7 +90,7 @@ export class ActivityMatchRequestsComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe({
               next: listRes => {
-                this.matchRequests = listRes.body ?? [];
+                this.matchRequests = (listRes.body ?? []).filter(r => r.matchRequestor?.id !== me.id);
                 this.isLoading = false;
                 this.focusFirstReadButton();
               },

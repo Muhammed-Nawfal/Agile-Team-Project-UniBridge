@@ -19,6 +19,7 @@ export interface ActivityFilter {
 @Pipe({
   name: 'activityFilter',
   standalone: true,
+  pure: false,
 })
 export class ActivityFilterPipe implements PipeTransform {
   transform(activities: IActivity[] | undefined, filters: ActivityFilter): IActivity[] {

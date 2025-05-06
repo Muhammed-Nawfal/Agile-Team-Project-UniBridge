@@ -1318,65 +1318,50 @@
   </div>
 </section>
 
-<section class="how-unibridge-works container py-5">
-  <h2 class="text-center mb-5">How UniBridge Works</h2>
+<section class="slider-section">
+  <h2>How UniBridge Works</h2>
 
-  <!-- Profile Root Node -->
-  <div class="flow-row">
-    <div class="flow-node" data-aos="zoom-in">
-      <div class="box">👤<br />Profile</div>
+  <div class="slider" #sliderContainer>
+    <div class="slides" [ngStyle]="{ transform: currentTransform }">
+      <div class="slide" #slideEl *ngFor="let s of slides; let i = index" [class.active]="i === currentIndex">
+        <i class="fas" [class]="s.icon"></i>
+        <h3>{{ s.title }}</h3>
+        <p>{{ s.desc }}</p>
+      </div>
     </div>
-  </div>
 
-  <!-- First level with branching arrows -->
-  <div class="arrow-row">
-    <div class="arrow">↙</div>
-    <div class="arrow">↓</div>
-    <div class="arrow">↘</div>
-  </div>
+    <button class="nav prev" (click)="prev()">‹</button>
+    <button class="nav next" (click)="next()">›</button>
 
-  <!-- First-level branches -->
-  <div class="flow-row three-cols">
-    <div class="flow-node">
-      <div class="box">🤝<br />Activity Match</div>
-    </div>
-    <div class="flow-node">
-      <div class="box">🎯<br />Create / Join Activities</div>
-    </div>
-    <div class="flow-node">
-      <div class="box">💬<br />Add Friends & Chat</div>
-    </div>
-  </div>
-
-  <!-- Down arrows -->
-  <div class="arrow-row">
-    <div class="arrow">↓</div>
-    <div class="arrow">↘</div>
-    <div class="arrow">↓</div>
-  </div>
-
-  <!-- Second-level results -->
-  <div class="flow-row three-cols">
-    <div class="flow-node">
-      <div class="box">📚<br />Book Spaces<br /><small>(for matched activity)</small></div>
-    </div>
-    <div class="flow-node"></div>
-    <div class="flow-node">
-      <div class="box">🏆<br />Challenges</div>
-    </div>
-  </div>
-
-  <!-- Cross-branch arrow -->
-  <div class="arrow-row">
-    <div class="arrow"></div>
-    <div class="arrow">↙</div>
-    <div class="arrow"></div>
-  </div>
-
-  <!-- Final node -->
-  <div class="flow-row">
-    <div class="flow-node">
-      <div class="box">⭐<br />Rate & Review</div>
-    </div>
+    <!--    <div class="dots">-->
+    <!--            <span-->
+    <!--              *ngFor="let slide of slides; let i = index"-->
+    <!--              [class.active]="i === currentIndex"-->
+    <!--              (click)="goTo(i)"-->
+    <!--            ></span>-->
+    <!--&lt;!&ndash;      <span&ndash;&gt;-->
+    <!--&lt;!&ndash;        *ngFor="let _, i of slides; let idx = index"&ndash;&gt;-->
+    <!--&lt;!&ndash;        [class.active]="idx === currentIndex"&ndash;&gt;-->
+    <!--&lt;!&ndash;        (click)="goTo(idx)"&ndash;&gt;-->
+    <!--&lt;!&ndash;      ></span>&ndash;&gt;-->
+    <!--    </div>-->
   </div>
 </section>
+
+<!--<section class="slider-section">-->
+<!--  <h2>How UniBridge Works</h2>-->
+<!--  <div class="slider">-->
+<!--    <div class="slides" [style.transform]="computeTransform()">-->
+<!--      <div class="slide" *ngFor="let s of slides; let idx = index">-->
+<!--        <i class="fas" [class]="s.icon"></i>-->
+<!--        <h3>{{ s.title }}</h3>-->
+<!--        <p>{{ s.desc }}</p>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--    <button class="nav prev" (click)="prev()">‹</button>-->
+<!--    <button class="nav next" (click)="next()">›</button>-->
+<!--    <div class="dots">-->
+
+<!--    </div>-->
+<!--  </div>-->
+<!--</section>-->
