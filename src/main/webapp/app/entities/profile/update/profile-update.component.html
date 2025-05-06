@@ -1,219 +1,185 @@
-<!-- profile-update.component.html -->
-<div class="container my-4">
-  <div *ngIf="showUpdateTip" class="alert alert-info alert-dismissible fade show" role="alert">
-    💡 <strong>Tip:</strong> Set your preferences to help others find you more easily!
-    <button type="button" class="btn-close" aria-label="Close" (click)="dismissUpdateTip()"></button>
-  </div>
+<div class="container my-5">
+  <div class="card shadow-lg border-0 rounded-4">
+    <div class="card-body p-5">
+      <h2 class="text-center mb-4">
+        <fa-icon icon="user-edit" class="me-2"></fa-icon>
+        Edit Your Profile
+      </h2>
 
-  <h2 class="text-center mb-4">Edit Your Profile</h2>
+      <div *ngIf="showUpdateTip" class="alert alert-info alert-dismissible fade show" role="alert">
+        💡 <strong>Tip:</strong> Set your preferences to help others find you more easily!
+        <button type="button" class="btn-close" aria-label="Close" (click)="dismissUpdateTip()"></button>
+      </div>
 
-  <!-- Form to update the Profile -->
-  <form [formGroup]="editForm" (ngSubmit)="save()" novalidate>
-    <div class="row">
-      <!-- COLUMN 1: User Details -->
-      <div class="col-md-4 mb-3">
-        <h4>User Details</h4>
+      <form [formGroup]="editForm" (ngSubmit)="save()" novalidate>
+        <div class="row">
+          <!-- COLUMN 1: User Details -->
+          <div class="col-md-4 mb-3">
+            <h4>User Details</h4>
 
-        <!-- Bio Field -->
-        <div class="mb-3">
-          <label for="field_bio" class="form-label">Bio</label>
-          <textarea id="field_bio" class="form-control" formControlName="bio" rows="4" placeholder="Enter your bio..."></textarea>
-        </div>
-
-        <!-- Profile Picture -->
-        <div class="mb-3">
-          <label class="form-label" for="file_profilePicture">Profile Picture</label>
-          <div>
-            <!-- Preview if picture is set -->
-            <img
-              class="profile-picture-preview"
-              [src]="
-                editForm.get('profilePicture')?.value
-                  ? 'data:' + editForm.get('profilePictureContentType')?.value + ';base64,' + editForm.get('profilePicture')?.value
-                  : 'content/images/placeholder.svg'
-              "
-              alt="Profile Picture"
-            />
-
-            <!-- Remove/clear button for the image -->
-            <div *ngIf="editForm.get('profilePicture')?.value" class="text-danger mb-2">
-              <button
-                type="button"
-                (click)="clearInputImage('profilePicture', 'profilePictureContentType', 'file_profilePicture')"
-                class="btn btn-sm btn-secondary"
-              >
-                Remove
-              </button>
+            <div class="mb-3">
+              <label for="field_bio" class="form-label">Bio</label>
+              <textarea id="field_bio" class="form-control" formControlName="bio" rows="4" placeholder="Enter your bio..."></textarea>
+              <div *ngIf="editForm.get('bio')?.errors?.['maxlength'] && (editForm.get('bio')?.dirty || editForm.get('bio')?.touched)">
+                <small class="text-danger">Bio cannot exceed 50 characters.</small>
+              </div>
             </div>
 
-            <!-- File input -->
-            <input
-              type="file"
-              id="file_profilePicture"
-              (change)="setFileData($event, 'profilePicture', true)"
-              accept="image/*"
-              class="form-control"
-            />
+            <div class="mb-3">
+              <label class="form-label" for="file_profilePicture">Profile Picture</label>
+              <div>
+                <img
+                  class="profile-picture-preview rounded border"
+                  [src]="
+                    editForm.get('profilePicture')?.value
+                      ? 'data:' + editForm.get('profilePictureContentType')?.value + ';base64,' + editForm.get('profilePicture')?.value
+                      : 'content/images/placeholder.svg'
+                  "
+                  alt="Profile Picture"
+                />
+
+                <div *ngIf="editForm.get('profilePicture')?.value" class="text-danger mb-2">
+                  <button
+                    type="button"
+                    (click)="clearInputImage('profilePicture', 'profilePictureContentType', 'file_profilePicture')"
+                    class="btn btn-sm btn-secondary"
+                  >
+                    Remove
+                  </button>
+                </div>
+
+                <input
+                  type="file"
+                  id="file_profilePicture"
+                  (change)="setFileData($event, 'profilePicture', true)"
+                  accept="image/*"
+                  class="form-control"
+                />
+              </div>
+              <input type="hidden" formControlName="profilePicture" />
+              <input type="hidden" formControlName="profilePictureContentType" />
+            </div>
           </div>
 
-          <!-- Hidden fields to store base64 and content type -->
-          <input type="hidden" formControlName="profilePicture" />
-          <input type="hidden" formControlName="profilePictureContentType" />
-        </div>
-      </div>
+          <!-- COLUMN 2: Study & Social Details -->
+          <div class="col-md-4 mb-3">
+            <h4>Study Details</h4>
 
-      <!-- COLUMN 2: Study Details -->
-      <div class="col-md-4 mb-3">
-        <h4>Study Details</h4>
+            <div class="mb-3">
+              <label class="form-label" for="field_course">Course</label>
+              <select id="field_course" class="form-control" formControlName="course">
+                <option [ngValue]="null"></option>
+                <option *ngFor="let course of courseValues" [value]="course">{{ course }}</option>
+              </select>
+            </div>
 
-        <!-- Course -->
-        <div class="mb-3">
-          <label class="form-label" for="field_course">Course</label>
-          <select id="field_course" class="form-control" formControlName="course">
-            <option [ngValue]="null"></option>
-            <option *ngFor="let course of courseValues" [value]="course">
-              {{ course }}
-            </option>
-          </select>
-        </div>
+            <div class="mb-3">
+              <label class="form-label" for="field_courseYear">Course Year</label>
+              <input type="number" class="form-control" id="field_courseYear" formControlName="courseYear" placeholder="1, 2, 3..." />
+            </div>
 
-        <!-- Course Year -->
-        <div class="mb-3">
-          <label class="form-label" for="field_courseYear">Course Year</label>
-          <input type="number" class="form-control" id="field_courseYear" formControlName="courseYear" placeholder="1, 2, 3..." />
-        </div>
+            <div class="mb-3">
+              <label class="form-label" for="field_studyTime">Preferred Study Time</label>
+              <select id="field_studyTime" class="form-control" formControlName="studyTime">
+                <option [ngValue]="null"></option>
+                <option *ngFor="let time of preferredTimeValues" [value]="time">{{ time }}</option>
+              </select>
+            </div>
 
-        <!-- Study Time -->
-        <div class="mb-3">
-          <label class="form-label" for="field_studyTime">Preferred Study Time</label>
-          <select id="field_studyTime" class="form-control" formControlName="studyTime">
-            <option [ngValue]="null"></option>
-            <option *ngFor="let time of preferredTimeValues" [value]="time">
-              {{ time }}
-            </option>
-          </select>
-        </div>
+            <h4>Social Details</h4>
 
-        <!-- COLUMN 4: Social Details -->
-        <h4>Social Details</h4>
-        <!-- Society-->
-        <div class="mb-3">
-          <label class="form-label" for="field_preferredSociety">Society</label>
-          <select id="field_preferredSociety" class="form-control" formControlName="preferredSociety">
-            <option [ngValue]="null"></option>
-            <option *ngFor="let society of societyValues" [value]="society">
-              {{ society }}
-            </option>
-          </select>
-        </div>
+            <div class="mb-3">
+              <label class="form-label" for="field_preferredSociety">Society</label>
+              <select id="field_preferredSociety" class="form-control" formControlName="preferredSociety">
+                <option [ngValue]="null"></option>
+                <option *ngFor="let society of societyValues" [value]="society">{{ society }}</option>
+              </select>
+            </div>
 
-        <!-- Events-->
-        <div class="mb-3">
-          <label class="form-label" for="field_preferredEvents">Favourite Event</label>
-          <select id="field_preferredEvents" class="form-control" formControlName="preferredEvents">
-            <option [ngValue]="null"></option>
-            <option *ngFor="let events of preferredEventsValues" [value]="events">
-              {{ events }}
-            </option>
-          </select>
-        </div>
+            <div class="mb-3">
+              <label class="form-label" for="field_preferredEvents">Favourite Event</label>
+              <select id="field_preferredEvents" class="form-control" formControlName="preferredEvents">
+                <option [ngValue]="null"></option>
+                <option *ngFor="let events of preferredEventsValues" [value]="events">{{ events }}</option>
+              </select>
+            </div>
 
-        <!-- Events Time -->
-        <div class="mb-3">
-          <label class="form-label" for="field_eventsTime">Preferred Events Time</label>
-          <select id="field_eventsTime" class="form-control" formControlName="eventsTime">
-            <option [ngValue]="null"></option>
-            <option *ngFor="let time of preferredTimeValues" [value]="time">
-              {{ time }}
-            </option>
-          </select>
-        </div>
-      </div>
+            <div class="mb-3">
+              <label class="form-label" for="field_eventsTime">Preferred Events Time</label>
+              <select id="field_eventsTime" class="form-control" formControlName="eventsTime">
+                <option [ngValue]="null"></option>
+                <option *ngFor="let time of preferredTimeValues" [value]="time">{{ time }}</option>
+              </select>
+            </div>
+          </div>
 
-      <!-- COLUMN 3: Gym & Sports Details -->
-      <div class="col-md-4 mb-3">
-        <h4>Gym & Sports Details</h4>
+          <!-- COLUMN 3: Gym & Sports Details -->
+          <div class="col-md-4 mb-3">
+            <h4>Gym Details</h4>
 
-        <!-- Gym Skill -->
-        <div class="mb-3">
-          <label class="form-label" for="field_gymSkill">Gym Skill Level</label>
-          <select id="field_gymSkill" class="form-control" formControlName="gymSkill">
-            <option [ngValue]="null"></option>
-            <option *ngFor="let skill of skillValues" [value]="skill">
-              {{ skill }}
-            </option>
-          </select>
-        </div>
+            <div class="mb-3">
+              <label class="form-label" for="field_gymSkill">Gym Skill Level</label>
+              <select id="field_gymSkill" class="form-control" formControlName="gymSkill">
+                <option [ngValue]="null"></option>
+                <option *ngFor="let skill of skillValues" [value]="skill">{{ skill }}</option>
+              </select>
+            </div>
 
-        <!-- Gym Time -->
-        <div class="mb-3">
-          <label class="form-label" for="field_gymTime">Preferred Workout Time</label>
-          <select id="field_gymTime" class="form-control" formControlName="gymTime">
-            <option [ngValue]="null"></option>
-            <option *ngFor="let time of preferredTimeValues" [value]="time">
-              {{ time }}
-            </option>
-          </select>
-        </div>
+            <div class="mb-3">
+              <label class="form-label" for="field_gymTime">Preferred Workout Time</label>
+              <select id="field_gymTime" class="form-control" formControlName="gymTime">
+                <option [ngValue]="null"></option>
+                <option *ngFor="let time of preferredTimeValues" [value]="time">{{ time }}</option>
+              </select>
+            </div>
 
-        <!-- Gym Location -->
-        <div class="mb-3">
-          <label class="form-label" for="field_gymLocation">Gym Location</label>
-          <select id="field_gymLocation" class="form-control" formControlName="gymLocation">
-            <option [ngValue]="null"></option>
-            <option *ngFor="let location of gymLocationValues" [value]="location">
-              {{ location }}
-            </option>
-          </select>
+            <div class="mb-3">
+              <label class="form-label" for="field_gymLocation">Gym Location</label>
+              <select id="field_gymLocation" class="form-control" formControlName="gymLocation">
+                <option [ngValue]="null"></option>
+                <option *ngFor="let location of gymLocationValues" [value]="location">{{ location }}</option>
+              </select>
+            </div>
+
+            <h4>Sport Details</h4>
+
+            <div class="mb-3">
+              <label class="form-label" for="field_sports">Favourite Sport</label>
+              <select id="field_sports" class="form-control" formControlName="sports">
+                <option [ngValue]="null"></option>
+                <option *ngFor="let sport of sportsValues" [value]="sport">{{ sport }}</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="field_sportsSkill">Sport Skill Level</label>
+              <select id="field_sportsSkill" class="form-control" formControlName="sportsSkill">
+                <option [ngValue]="null"></option>
+                <option *ngFor="let skill of skillValues" [value]="skill">{{ skill }}</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="field_sportsTime">Preferred Play Time</label>
+              <select id="field_sportsTime" class="form-control" formControlName="sportsTime">
+                <option [ngValue]="null"></option>
+                <option *ngFor="let time of preferredTimeValues" [value]="time">{{ time }}</option>
+              </select>
+            </div>
+          </div>
         </div>
 
-        <!-- Sports -->
-        <div class="mb-3">
-          <label class="form-label" for="field_sports">Favourite Sport</label>
-          <select id="field_sports" class="form-control" formControlName="sports">
-            <option [ngValue]="null"></option>
-            <option *ngFor="let sport of sportsValues" [value]="sport">
-              {{ sport }}
-            </option>
-          </select>
-        </div>
+        <input type="hidden" formControlName="id" />
 
-        <!-- Sports Skill -->
-        <div class="mb-3">
-          <label class="form-label" for="field_sportsSkill">Sport Skill Level</label>
-          <select id="field_sportsSkill" class="form-control" formControlName="sportsSkill">
-            <option [ngValue]="null"></option>
-            <option *ngFor="let skill of skillValues" [value]="skill">
-              {{ skill }}
-            </option>
-          </select>
+        <div class="d-flex justify-content-between mt-4">
+          <button type="button" class="btn btn-outline-secondary" [routerLink]="'/profile'">
+            <fa-icon icon="arrow-left"></fa-icon> Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid || isSaving">
+            <fa-icon icon="save"></fa-icon> Save
+          </button>
         </div>
-
-        <!-- Sports Time-->
-        <div class="mb-3">
-          <label class="form-label" for="field_sportsTime">Preferred Play Time</label>
-          <select id="field_sportsTime" class="form-control" formControlName="sportsTime">
-            <option [ngValue]="null"></option>
-            <option *ngFor="let time of preferredTimeValues" [value]="time">
-              {{ time }}
-            </option>
-          </select>
-        </div>
-      </div>
+      </form>
     </div>
-
-    <!-- Hidden/readonly ID field -->
-    <input type="hidden" formControlName="id" />
-
-    <!-- Action Buttons -->
-    <div class="row mt-3">
-      <div class="col text-center">
-        <!-- Cancel (go back) -->
-        <button type="button" class="btn btn-secondary me-2" [routerLink]="'/profile'">Cancel</button>
-
-        <!-- Save -->
-        <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid || isSaving">Save</button>
-      </div>
-    </div>
-  </form>
+  </div>
 </div>
