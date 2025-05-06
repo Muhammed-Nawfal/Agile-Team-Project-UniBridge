@@ -5,6 +5,7 @@ import bham.team.domain.enumeration.ActivityType;
 import bham.team.repository.ProfileRepository;
 import bham.team.repository.specification.ProfileSpecifications;
 import java.util.List;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,12 @@ public class ProfileService {
     /** Find all profiles with any non‐null field for the given activity type */
     public List<Profile> findByActivityType(ActivityType type) {
         return repository.findAll(ProfileSpecifications.byActivityType(type));
+    }
+
+    public List<Profile> findByActivityTypeWithFilters(ActivityType type, String f1, String f2, String f3) {
+        Specification<Profile> eligibilitySpec = ProfileSpecifications.byActivityType(type);
+        Specification<Profile> filterSpec = ProfileSpecifications.byFilters(type, f1, f2, f3);
+        return repository.findAll(eligibilitySpec.and(filterSpec));
     }
 
     @Transactional

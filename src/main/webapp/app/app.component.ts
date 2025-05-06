@@ -9,6 +9,11 @@ import locale from '@angular/common/locales/en';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { fontAwesomeIcons } from './config/font-awesome-icons';
 import MainComponent from './layouts/main/main.component';
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { addIconsToLibrary } from './core/icons/icons';
+
+library.add(faMapMarkerAlt);
 
 @Component({
   standalone: true,
@@ -29,5 +34,6 @@ export default class AppComponent {
     registerLocaleData(locale);
     this.iconLibrary.addIcons(...fontAwesomeIcons);
     this.dpConfig.minDate = { year: dayjs().subtract(100, 'year').year(), month: 1, day: 1 };
+    addIconsToLibrary(); // ✅ Proper call here
   }
 }
