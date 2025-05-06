@@ -1,6 +1,8 @@
-import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+//    challenge-form.ts
+import { Injectable, inject } from '@angular/core';
 
+import { FormControl, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
 import { IChallenge, NewChallenge } from '../challenge.model';
 
 /**
@@ -14,7 +16,7 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type ChallengeFormGroupInput = IChallenge | PartialWithRequiredKeyOf<NewChallenge>;
 
-type ChallengeFormDefaults = Pick<NewChallenge, 'id' | 'completed'>;
+type ChallengeFormDefaults = Pick<NewChallenge, 'id' | 'completed' | 'date'>;
 
 type ChallengeFormGroupContent = {
   id: FormControl<IChallenge['id'] | NewChallenge['id']>;
@@ -31,9 +33,11 @@ type ChallengeFormGroupContent = {
 };
 
 export type ChallengeFormGroup = FormGroup<ChallengeFormGroupContent>;
+export type { ChallengeFormGroupInput };
 
 @Injectable({ providedIn: 'root' })
 export class ChallengeFormService {
+  protected profileService = inject(ProfileService);
   // Custom validator to check minimum word count
   minWordCount(minCount: number): (control: AbstractControl) => ValidationErrors | null {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -108,20 +112,20 @@ export class ChallengeFormService {
       points: new FormControl(challengeRawValue.points, {
         validators: [Validators.required],
       }),
-      badge: new FormControl(challengeRawValue.badge, {
-        validators: [Validators.required],
-      }),
+      badge: new FormControl(challengeRawValue.badge, {}),
       badgeContentType: new FormControl(challengeRawValue.badgeContentType),
       completed: new FormControl(challengeRawValue.completed, {
         validators: [Validators.required],
       }),
-      assignedTo: new FormControl(challengeRawValue.assignedTo),
+      assignedTo: new FormControl(challengeRawValue.assignedTo, {
+        validators: [Validators.required], // Add required validator here
+      }),
       createdBy: new FormControl(challengeRawValue.createdBy),
     });
   }
 
   getChallenge(form: ChallengeFormGroup): IChallenge | NewChallenge {
-    return form.getRawValue() as IChallenge | NewChallenge;
+    return form.getRawValue();
   }
 
   resetForm(form: ChallengeFormGroup, challenge: ChallengeFormGroupInput): void {
@@ -129,8 +133,8 @@ export class ChallengeFormService {
     form.reset(
       {
         ...challengeRawValue,
-        id: { value: challengeRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
+        id: { value: challengeRawValue.id, disabled: true } as any, // workaround type mismatch
+      } /* cast to workaround https://github.com/angular/angular/issues/46458 */,
     );
   }
 
@@ -138,6 +142,7 @@ export class ChallengeFormService {
     return {
       id: null,
       completed: false,
+      date: null,
     };
   }
 }

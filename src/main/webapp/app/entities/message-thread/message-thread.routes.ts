@@ -3,6 +3,9 @@ import { Routes } from '@angular/router';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { ASC } from 'app/config/navigation.constants';
 import MessageThreadResolve from './route/message-thread-routing-resolve.service';
+import { MessageThreadComponent } from './list/message-thread.component';
+import { MessageThreadDetailComponent } from './detail/message-thread-detail.component';
+import { MessageThreadUpdateComponent } from './update/message-thread-update.component';
 
 const messageThreadRoute: Routes = [
   {
