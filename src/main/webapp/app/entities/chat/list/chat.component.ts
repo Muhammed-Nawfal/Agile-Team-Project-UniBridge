@@ -1,13 +1,9 @@
-// src/main/webapp/app/entities/chat/list/chat.component.ts
-
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subject, interval, switchMap, takeUntil } from 'rxjs';
-
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
+import { Subject, interval, switchMap, takeUntil, of } from 'rxjs';
 import dayjs from 'dayjs/esm';
-
 import { MessageType } from 'app/entities/enumerations/message-type.model';
 import { MessageStatus } from 'app/entities/enumerations/message-status.model';
 import { IChat, NewChat } from '../chat.model';
@@ -15,71 +11,155 @@ import { ChatService } from '../service/chat.service';
 import { MessageThreadService } from 'app/entities/message-thread/service/message-thread.service';
 import { ProfileService } from 'app/entities/profile/service/profile.service';
 import { AccountService } from 'app/core/auth/account.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ChatDeleteDialogComponent } from '../delete/chat-delete-dialog.component';
 
 @Component({
   standalone: true,
   selector: 'jhi-chat',
   templateUrl: './chat.component.html',
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  styleUrls: ['./chat.component.scss'],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule],
 })
 export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('messageContainer', { static: true }) messageContainer!: ElementRef<HTMLElement>;
-
   messageForm: FormGroup;
+  editForm: FormGroup;
   chats: IChat[] = [];
   threadId!: number;
   meId!: number;
   otherId!: number;
-  protected router = inject(Router);
+  editingChatId: number | null = null;
+  openMenuId: number | null = null;
+  isSending = false;
 
-  private destroy$ = new Subject<void>();
+  // Store profile information to improve name display
+  userProfiles = new Map<number, { firstName: string; lastName: string }>();
+
+  protected router = inject(Router);
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
+  private destroy$ = new Subject<void>();
   private chatService = inject(ChatService);
   private threadService = inject(MessageThreadService);
   private accountService = inject(AccountService);
   private profileService = inject(ProfileService);
+  private modalService = inject(NgbModal);
+
+  private profanityList: string[] = [
+    'fuck',
+    'shit',
+    'asshole',
+    'bitch',
+    'bastard',
+    'damn',
+    'cunt',
+    'dick',
+    'twat',
+    'piss',
+    'cock',
+    'pussy',
+    'whore',
+    'slut',
+    'ass',
+    'fck',
+    'fuk',
+    'sh1t',
+    'sh!t',
+    'a$$',
+    'b1tch',
+    'b!tch',
+    'd1ck',
+    'd!ck',
+    'f u c k',
+    's h i t',
+    'a s s',
+    'blowjob',
+    'handjob',
+    'cum',
+    'semen',
+    'clit',
+    'vagina',
+    'penis',
+  ];
+
+  private profanityRegexes: RegExp[] = [];
 
   constructor() {
-    this.messageForm = this.fb.group({
-      message: ['', [Validators.required]],
+    this.messageForm = this.fb.group({ message: ['', [Validators.required]] });
+    this.editForm = this.fb.group({ message: ['', [Validators.required]] });
+
+    // Initialize regex patterns for profanity filtering
+    this.profanityList.forEach(word => {
+      const pattern = word
+        .replace(/a/gi, '[a@4]')
+        .replace(/e/gi, '[e3]')
+        .replace(/i/gi, '[i1!]')
+        .replace(/o/gi, '[o0]')
+        .replace(/s/gi, '[s$5]')
+        .replace(/t/gi, '[t7]');
+      this.profanityRegexes.push(new RegExp(`\\b${pattern}\\b`, 'gi'));
     });
   }
 
   ngOnInit(): void {
-    // 1) resolve current user profile
+    this.accountService.identity().subscribe();
+
     this.accountService
-      .identity()
-      .pipe(
-        switchMap(acc => this.profileService.query({ 'userLogin.equals': acc!.login })),
-        takeUntil(this.destroy$),
-      )
-      .subscribe(resp => {
-        this.meId = resp.body![0].id!;
-        // 2) read threadId from route
-        this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
-          const id = Number(params['threadId']);
-          if (!id) {
-            this.router.navigate(['/message-thread']);
-            return;
-          }
-          this.threadId = id;
-          this.loadThreadDetails();
-          this.loadMessages();
-          this.startPolling();
-        });
+      .getAuthenticationState()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(account => {
+        // Reset values on account change to ensure clean state
+        this.meId = 0;
+        this.otherId = 0;
+        this.chats = [];
+        this.userProfiles.clear(); // Clear cached profiles
+
+        if (account?.login) {
+          this.profileService.query({ 'userLogin.equals': account.login }).subscribe(profileResp => {
+            const prof = profileResp.body?.[0];
+            if (!prof) return;
+
+            this.meId = prof.id!;
+
+            // Cache current user's profile
+            if (prof.firstName || prof.lastName) {
+              this.userProfiles.set(prof.id, {
+                firstName: prof.firstName ?? '',
+                lastName: prof.lastName ?? '',
+              });
+            }
+
+            this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
+              const id = Number(params['threadId']);
+              if (!id) {
+                this.router.navigate(['/message-thread']);
+                return;
+              }
+
+              this.threadId = id;
+              this.loadThreadDetails();
+              this.loadMessages();
+              this.startPolling();
+            });
+          });
+        }
       });
   }
 
-  send(): void {
-    if (this.messageForm.invalid) {
-      return;
-    }
+  sendMessage(): void {
+    if (this.messageForm.invalid || this.isSending) return;
+
+    const raw = this.messageForm.value.message as string;
+    if (!raw || raw.trim() === '') return;
+
+    this.isSending = true;
+    const filtered = this.filterProfanity(raw);
 
     const now = dayjs();
     const dto: NewChat = {
       id: null,
-      message: this.messageForm.value.message,
+      message: filtered,
       type: MessageType.TEXT,
       status: MessageStatus.SENT,
       isDeleted: false,
@@ -88,8 +168,8 @@ export class ChatComponent implements OnInit, OnDestroy {
       updatedOn: null,
       media: null,
       mediaContentType: null,
-      sender: null,
-      receiver: null,
+      sender: { id: this.meId },
+      receiver: { id: this.otherId },
       thread: null,
       messageThread: null,
     };
@@ -98,11 +178,13 @@ export class ChatComponent implements OnInit, OnDestroy {
       next: () => {
         this.messageForm.reset();
         this.loadMessages();
+        setTimeout(() => {
+          this.isSending = false;
+        }, 500);
       },
-      error(err) {
-        // 🎯 DEBUGGING: it will log status, headers, and the full error payload
-        console.error('❌ sendMessage failed:', err);
-        alert(`Failed to send message.\n` + `Status: ${err.status} ${err.statusText}\n` + `Response body: ${JSON.stringify(err.error)}`);
+      error: err => {
+        alert(`Failed to send message.\nStatus: ${err.status} ${err.statusText}`);
+        this.isSending = false;
       },
     });
   }
@@ -110,12 +192,163 @@ export class ChatComponent implements OnInit, OnDestroy {
   loadMessages(): void {
     this.chatService.getMessagesByThread(this.threadId).subscribe(res => {
       this.chats = res.body ?? [];
+
+      // Cache user profile information
+      this.cacheUserProfiles();
+
       this.scrollToBottom();
+      this.chatService.markMessagesAsRead(this.threadId).subscribe();
     });
   }
 
+  getOtherUserName(): string {
+    // If we have otherId and cached profile, use that
+    if (this.otherId && this.userProfiles.has(this.otherId)) {
+      const profile = this.userProfiles.get(this.otherId)!;
+      const name = `${profile.firstName} ${profile.lastName}`.trim();
+      return name || 'Unknown';
+    }
+
+    // Try to find the name from the chat messages
+    const otherUser = this.chats.find(
+      chat => (chat.receiver?.id !== this.meId && chat.receiver?.id) ?? (chat.sender?.id !== this.meId && chat.sender?.id),
+    );
+
+    if (otherUser) {
+      if (otherUser.receiver?.id !== this.meId && otherUser.receiver?.firstName) {
+        return `${otherUser.receiver.firstName} ${otherUser.receiver.lastName ?? ''}`.trim();
+      }
+      if (otherUser.sender?.id !== this.meId && otherUser.sender?.firstName) {
+        return `${otherUser.sender.firstName} ${otherUser.sender.lastName ?? ''}`.trim();
+      }
+    }
+
+    return 'Unknown';
+  }
+
+  getSenderName(chat: IChat): string {
+    const senderId = chat.sender?.id;
+
+    if (!senderId) return 'Unknown';
+
+    // Check if it's the current user (self)
+    if (senderId === this.meId) {
+      return 'Me';
+    }
+
+    // Check if we have this profile cached
+    if (this.userProfiles.has(senderId)) {
+      const profile = this.userProfiles.get(senderId)!;
+      const name = `${profile.firstName} ${profile.lastName}`.trim();
+      return name || 'Unknown';
+    }
+
+    // Use sender info from the chat as fallback
+    if (chat.sender?.firstName || chat.sender?.lastName) {
+      return `${chat.sender.firstName ?? ''} ${chat.sender.lastName ?? ''}`.trim();
+    }
+
+    return 'Unknown';
+  }
+
+  getContactInitial(): string {
+    if (this.otherId && this.userProfiles.has(this.otherId)) {
+      const profile = this.userProfiles.get(this.otherId)!;
+      if (profile.firstName) {
+        return profile.firstName.charAt(0).toUpperCase();
+      }
+    }
+
+    // Try to find initial from any chat with the other user
+    const otherUser = this.chats.find(
+      chat => (chat.receiver?.id !== this.meId && chat.receiver?.firstName) ?? (chat.sender?.id !== this.meId && chat.sender?.firstName),
+    );
+
+    if (otherUser) {
+      if (otherUser.receiver?.id !== this.meId && otherUser.receiver?.firstName) {
+        return otherUser.receiver.firstName.charAt(0).toUpperCase();
+      }
+      if (otherUser.sender?.id !== this.meId && otherUser.sender?.firstName) {
+        return otherUser.sender.firstName.charAt(0).toUpperCase();
+      }
+    }
+
+    return 'U';
+  }
+
+  // Fixed isOwn method with better checking to ensure we identify the current user's messages correctly
   isOwn(chat: IChat): boolean {
-    return chat.sender?.id === this.meId;
+    // Ensure the sender ID is defined and matches the current user ID exactly
+    return typeof chat.sender?.id === 'number' && chat.sender.id === this.meId;
+  }
+
+  startEdit(chat: IChat): void {
+    this.editingChatId = chat.id!;
+    this.editForm.setValue({ message: chat.message ?? '' });
+    this.openMenuId = null;
+  }
+
+  cancelEdit(): void {
+    this.editingChatId = null;
+    this.editForm.reset();
+  }
+
+  saveEdit(): void {
+    if (this.editForm.invalid || this.editingChatId === null) return;
+
+    const newMsg = this.editForm.value.message as string;
+    const original = this.chats.find(c => c.id === this.editingChatId)!;
+
+    if (!this.canEditMessage(original)) {
+      alert('You can no longer edit this message. It has been over 2 minutes.');
+      this.cancelEdit();
+      return;
+    }
+
+    const updated: IChat = {
+      ...original,
+      message: this.filterProfanity(newMsg),
+      updatedOn: dayjs(),
+    };
+
+    this.chatService.update(updated).subscribe({
+      next: () => {
+        this.editingChatId = null;
+        this.loadMessages();
+      },
+      error() {
+        alert('Failed to update message.');
+      },
+    });
+  }
+
+  canEditMessage(chat: IChat): boolean {
+    // Only allow editing of own messages that are less than 2 minutes old
+    if (!this.isOwn(chat)) {
+      return false;
+    }
+
+    const now = dayjs();
+    const messageTime = dayjs(chat.timestamp);
+    const diffMinutes = now.diff(messageTime, 'minute');
+
+    return diffMinutes < 2;
+  }
+
+  deleteChat(chat: IChat): void {
+    // Only allow deletion of own messages
+    if (!this.isOwn(chat)) {
+      alert('You can only delete your own messages.');
+      return;
+    }
+
+    const modalRef = this.modalService.open(ChatDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
+    modalRef.componentInstance.chat = chat;
+    modalRef.closed.subscribe(result => {
+      if (result === 'ITEM_DELETED_EVENT') {
+        this.loadMessages();
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -123,8 +356,47 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  // Add this function to your component class
+  trackByFn(index: number, item: IChat): number {
+    return item.id || index;
+  }
+
+  // Cache all profiles involved in current conversation
+  private cacheUserProfiles(): void {
+    // Extract unique user IDs from chats
+    const userIds = new Set<number>();
+    this.chats.forEach(chat => {
+      if (chat.sender?.id) userIds.add(chat.sender.id);
+      if (chat.receiver?.id) userIds.add(chat.receiver.id);
+    });
+
+    // Cache any profiles not already cached
+    userIds.forEach(id => {
+      if (!this.userProfiles.has(id)) {
+        const profileInfo = this.chats.find(
+          c =>
+            (c.sender?.id === id && (c.sender.firstName ?? c.sender.lastName)) ??
+            (c.receiver?.id === id && (c.receiver.firstName ?? c.receiver.lastName)),
+        );
+
+        if (profileInfo) {
+          if (profileInfo.sender?.id === id) {
+            this.userProfiles.set(id, {
+              firstName: profileInfo.sender.firstName ?? '',
+              lastName: profileInfo.sender.lastName ?? '',
+            });
+          } else if (profileInfo.receiver?.id === id) {
+            this.userProfiles.set(id, {
+              firstName: profileInfo.receiver.firstName ?? '',
+              lastName: profileInfo.receiver.lastName ?? '',
+            });
+          }
+        }
+      }
+    });
+  }
+
   private loadThreadDetails(): void {
-    // Use the /message-threads?filter endpoint since GET /message-threads/{id} isn't exposed
     this.threadService
       .query({ 'id.equals': this.threadId, eagerload: true })
       .pipe(takeUntil(this.destroy$))
@@ -134,9 +406,23 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.router.navigate(['/message-thread']);
           return;
         }
-        // In a 1-on-1 chat, pick the “other” participant
-        const others = (thread.participants ?? []).filter(p => p.id !== this.meId);
-        this.otherId = others[0]?.id;
+
+        if (!this.meId) return;
+
+        // Reset otherId to ensure it's set correctly
+        this.otherId = 0;
+
+        // Find the participant who is not the current user
+        const otherParticipant = (thread.participants ?? []).find(p => p.id !== this.meId);
+        if (otherParticipant?.id) {
+          this.otherId = otherParticipant.id;
+
+          // Cache the other participant's profile info
+          this.userProfiles.set(otherParticipant.id, {
+            firstName: otherParticipant.firstName ?? '',
+            lastName: otherParticipant.lastName ?? '',
+          });
+        }
       });
   }
 
@@ -147,8 +433,31 @@ export class ChatComponent implements OnInit, OnDestroy {
         switchMap(() => this.chatService.getMessagesByThread(this.threadId)),
       )
       .subscribe(res => {
-        this.chats = res.body ?? [];
-        this.scrollToBottom();
+        const newMessages = res.body ?? [];
+        const oldCount = this.chats.length;
+
+        // Only update if there are changes (new messages or status changes)
+        if (JSON.stringify(newMessages) !== JSON.stringify(this.chats)) {
+          // Save scroll position
+          const scrollContainer = this.messageContainer.nativeElement;
+          const wasAtBottom = scrollContainer.scrollHeight - scrollContainer.scrollTop <= scrollContainer.clientHeight + 50;
+
+          // Update chat array
+          this.chats = newMessages;
+
+          // Update cached profiles if message count changed
+          if (this.chats.length > oldCount) {
+            this.cacheUserProfiles();
+          }
+
+          // Only scroll to bottom if user was already at bottom
+          if (wasAtBottom) {
+            this.scrollToBottom();
+          }
+        }
+
+        // Mark as read regardless of updates
+        this.chatService.markMessagesAsRead(this.threadId).subscribe();
       });
   }
 
@@ -157,5 +466,18 @@ export class ChatComponent implements OnInit, OnDestroy {
       const el = this.messageContainer.nativeElement;
       el.scrollTop = el.scrollHeight;
     }, 100);
+  }
+
+  private filterProfanity(text: string): string {
+    return text
+      .split(/(\b|\s+)/)
+      .map(word => {
+        let filtered = word;
+        this.profanityRegexes.forEach(regex => {
+          filtered = filtered.replace(regex, match => '*'.repeat(match.length));
+        });
+        return filtered;
+      })
+      .join('');
   }
 }

@@ -1,9 +1,38 @@
-<h2>Conversations</h2>
-<button (click)="load()">Refresh</button>
-<div *ngIf="threads.length === 0">No conversations.</div>
-<ul>
-  <li *ngFor="let th of threads" (click)="open(th)" style="cursor: pointer">
-    <strong>{{ getName(th) }}</strong>
-    <span>{{ th.updatedOn }}</span>
-  </li>
-</ul>
+<div class="conversation-list">
+  <div class="header">
+    <h2>Conversations</h2>
+    <div class="actions">
+      <button (click)="createNewConversation()" class="new-conversation-btn">New Chat</button>
+      <button (click)="loadThreads()" [disabled]="loading" class="refresh-btn">
+        {{ loading ? 'Refreshing...' : 'Refresh' }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-indicator">
+    <span>Loading conversations...</span>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+    <button (click)="loadIdentityAndThreads()" class="retry-btn">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && threads.length === 0" class="no-conversations">No conversations found. Start a new chat!</div>
+
+  <ul *ngIf="!loading && threads.length > 0" class="thread-list">
+    <li *ngFor="let th of threads" (click)="open(th)" class="thread-item" [class.unread]="hasUnreadMessages(th)">
+      <div class="avatar">{{ getInitial(th) }}</div>
+      <div class="thread-content">
+        <div class="thread-info">
+          <strong class="thread-name">{{ getName(th) }}</strong>
+          <span class="thread-date">{{ formatRelativeTime(th.updatedOn || th.createdOn) }}</span>
+        </div>
+        <div class="thread-preview">
+          <span *ngIf="hasUnreadMessages(th)" class="unread-indicator"></span>
+          {{ getLastMessagePreview(th) }}
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
