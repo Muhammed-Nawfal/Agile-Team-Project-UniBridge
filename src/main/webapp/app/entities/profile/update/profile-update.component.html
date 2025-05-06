@@ -26,9 +26,12 @@
           <div>
             <!-- Preview if picture is set -->
             <img
-              *ngIf="editForm.get('profilePicture')?.value"
               class="profile-picture-preview"
-              [src]="'data:' + editForm.get('profilePictureContentType')?.value + ';base64,' + editForm.get('profilePicture')?.value"
+              [src]="
+                editForm.get('profilePicture')?.value
+                  ? 'data:' + editForm.get('profilePictureContentType')?.value + ';base64,' + editForm.get('profilePicture')?.value
+                  : 'content/images/placeholder.svg'
+              "
               alt="Profile Picture"
             />
 
