@@ -15,7 +15,7 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type ProfileFormGroupInput = IProfile | PartialWithRequiredKeyOf<NewProfile>;
 
-type ProfileFormDefaults = Pick<NewProfile, 'id' | 'login' | 'firstName' | 'lastName'>;
+type ProfileFormDefaults = Pick<NewProfile, 'id' | 'login' | 'firstName' | 'lastName' | 'profilePicture' | 'profilePictureContentType'>;
 
 type ProfileFormGroupContent = {
   id: FormControl;
@@ -67,7 +67,9 @@ export class ProfileFormService {
         validators: [Validators.required],
       }),
 
-      bio: new FormControl(profileRawValue.bio),
+      bio: new FormControl(profileRawValue.bio, {
+        validators: [Validators.maxLength(50)],
+      }),
       profilePicture: new FormControl(profileRawValue.profilePicture),
       profilePictureContentType: new FormControl(profileRawValue.profilePictureContentType),
       course: new FormControl(profileRawValue.course, {
@@ -118,6 +120,8 @@ export class ProfileFormService {
       login: '',
       firstName: '',
       lastName: '',
+      profilePicture: null,
+      profilePictureContentType: null,
     };
   }
 }
