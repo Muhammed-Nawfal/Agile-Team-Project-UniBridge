@@ -3,15 +3,15 @@
   <h2 id="page-heading" class="mb-4">The challenges You created</h2>
 
   <div class="d-flex justify-content-end mb-3">
-    <button class="btn btn-secondary me-2" routerLink="/challenge">
+    <button class="btn btn-secondary me-2" id="btnchange" routerLink="/challenge">
       <fa-icon icon="list"></fa-icon>
       Assigned Challenges
     </button>
-    <button class="btn btn-success me-2" routerLink="/challenge/mytrophies">
+    <button class="btn btn-success me-2" id="btnchange2" routerLink="/challenge/mytrophies">
       <fa-icon icon="trophy"></fa-icon>
       My Trophies
     </button>
-    <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+    <button class="btn btn-info me-2" id="btnchange" (click)="load()" [disabled]="isLoading">
       <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
       Refresh
     </button>
