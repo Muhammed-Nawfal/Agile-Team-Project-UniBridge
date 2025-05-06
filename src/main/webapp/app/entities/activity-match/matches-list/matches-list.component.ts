@@ -15,6 +15,10 @@ import { faCalendarAlt, faChevronDown, faSlidersH } from '@fortawesome/free-soli
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { SpeechService } from '../../../core/speech/speech.service';
 import { A11yModule } from 'app/shared/a11y/a11y.module';
+import { ITEM_DELETED_EVENT } from '../../../config/navigation.constants';
+import { ActivityMatchDeleteDialogComponent } from '../delete/activity-match-delete-dialog.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Decision } from 'app/entities/enumerations/decision.model';
 
 library.add(faSlidersH, faChevronDown, faCalendarAlt);
 
@@ -37,12 +41,15 @@ export class MatchesListComponent implements OnInit, OnDestroy {
   selectedType = '';
   isLoading = false;
 
+  protected readonly ActivityMatchDeleteDialogComponent = ActivityMatchDeleteDialogComponent;
+
   private router = inject(Router);
   private accountService = inject(AccountService);
   private activityMatchService = inject(ActivityMatchService);
   private profileService = inject(ProfileService);
   private destroy$ = new Subject<void>();
   private speechService = inject(SpeechService);
+  private modalService = inject(NgbModal);
 
   ngOnInit(): void {
     this.accountService
@@ -78,6 +85,7 @@ export class MatchesListComponent implements OnInit, OnDestroy {
           this.activityMatchService.forUser(me.id).subscribe({
             next: res => {
               this.upcomingMatches = (res.body ?? [])
+                .filter(m => m.status === Decision.ACCEPT)
                 .filter(m => {
                   const d = dayjs(m.matchDate);
                   const sameMonth = d.month() === dayjs(this.selectedMonth).month();
@@ -133,6 +141,17 @@ export class MatchesListComponent implements OnInit, OnDestroy {
       default:
         return 'assets/placeholder.jpg'; // fallback
     }
+  }
+
+  openDeleteModal(match: IActivityMatch): void {
+    const modalRef = this.modalService.open(ActivityMatchDeleteDialogComponent, { size: 'md', backdrop: 'static' });
+    modalRef.componentInstance.activityMatch = match;
+
+    modalRef.result.then(reason => {
+      if (reason === ITEM_DELETED_EVENT) {
+        this.loadUpcomingMatches(); // Reload the list
+      }
+    });
   }
 
   private focusFirstReadButton(): void {
