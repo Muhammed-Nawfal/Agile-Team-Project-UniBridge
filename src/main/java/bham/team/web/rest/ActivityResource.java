@@ -304,4 +304,29 @@ public class ActivityResource {
 
         return PageRequest.of(page, size, sortObj);
     }
+
+    /**
+     * GET /api/activities/my : get all activities created by the current user
+     *
+     * @param pageable the pagination information
+     * @return the ResponseEntity with status 200 (OK) and the list of activities in body
+     */
+    @GetMapping("/activities/my")
+    public ResponseEntity<List<Activity>> getMyActivities(Pageable pageable) {
+        LOG.debug("REST request to get current user's activities");
+
+        // Get current user login
+        String currentUserLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new BadRequestAlertException("Current user login not found", "activity", "userloginnotfound"));
+
+        // Get current user profile
+        Profile currentUserProfile = profileRepository
+            .findByUserLogin(currentUserLogin)
+            .orElseThrow(() -> new BadRequestAlertException("No profile found for current user", "activity", "noprofile"));
+
+        // Get activities created by current user
+        Page<Activity> page = activityRepository.findByCreatorId(currentUserProfile.getId(), pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
 }
