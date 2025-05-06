@@ -11,14 +11,6 @@
         <span class="badge bg-danger ms-1" *ngIf="pendingRequestCount > 0">{{ pendingRequestCount }}</span>
       </a>
     </div>
-
-    <!-- Font Size Accessibility Toggle -->
-    <div class="accessibility-toggle ms-3">
-      <button class="btn btn-outline-secondary btn-sm" [class.active]="isFontSizeLarge" (click)="toggleFontSize()">
-        <fa-icon icon="text-height"></fa-icon>
-        <span class="ms-1">Big Text</span>
-      </button>
-    </div>
   </div>
 
   <!-- No followed profiles found - Improved Empty State -->
@@ -48,10 +40,6 @@
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <span class="username">{{ profile.login }}</span>
-            <span class="text-muted small friends-since">
-              <fa-icon icon="clock" class="me-1"></fa-icon>
-              Since: {{ getFriendshipForProfile(profile.id)?.friendSince }}
-            </span>
           </div>
 
           <!-- Display name with nickname preference -->
@@ -72,8 +60,8 @@
           <div class="button-group">
             <div class="action-buttons">
               <a [routerLink]="['/profile', profile.id, 'view']" class="btn btn-view">
-                <fa-icon icon="eye"></fa-icon>
-                <span class="ms-1">View</span>
+                <fa-icon icon="user"></fa-icon>
+                <span class="ms-1">View Profile</span>
               </a>
 
               <button
@@ -168,8 +156,8 @@
           <div class="button-group">
             <div class="action-buttons">
               <a [routerLink]="['/profile', profile.id, 'view']" class="btn btn-view">
-                <fa-icon icon="eye"></fa-icon>
-                <span class="ms-1">View</span>
+                <fa-icon icon="user"></fa-icon>
+                <span class="ms-1">View Profile</span>
               </a>
             </div>
 

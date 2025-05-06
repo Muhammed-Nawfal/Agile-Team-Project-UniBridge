@@ -23,6 +23,16 @@
         </option>
       </select>
 
+      <h2>{{ translate('socialActivities') }}</h2>
+      <select name="SocialActivity" class="form-control" (change)="onSocialActivityChange($event)">
+        <option value="" selected disabled>{{ translate('socialActivities') }}</option>
+        <option value="none">{{ translate('none') }}</option>
+        <option *ngFor="let activity of loadedActivities" [value]="'activity-' + activity.id" [disabled]="!isActivitySelectable(activity)">
+          {{ activity.activityName }}
+          <span *ngIf="!isActivitySelectable(activity)">({{ translate('selected') }})</span>
+        </option>
+      </select>
+
       <h2>{{ translate('selectEvent') }}</h2>
       <select name="Events" class="form-control" (change)="onEventChange($event)" required>
         <option value="" selected disabled>{{ translate('defaultEvent') }}</option>

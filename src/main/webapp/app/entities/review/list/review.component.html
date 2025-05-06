@@ -10,6 +10,7 @@
   }
   .btn-primary {
     background-color: #7551ea;
+    float: right;
     &:hover {
       background-color: #623cd3;
       box-shadow: 0 4px 8px rgba(94, 114, 228, 0.2);
@@ -44,7 +45,7 @@
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1;
-    max-height: 220px;
+    max-height: 165px;
     overflow: scroll;
     left: 100%;
     top: 0;
@@ -74,26 +75,18 @@
 
 <div>
   <h2 id="page-heading" data-cy="ReviewHeading">
-    <span>{{ this.currentUsername }} reviews</span>
+    <span>Reviews: {{ this.currentUsername }}</span>
 
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-info" (click)="load()" [disabled]="isLoading">
-        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span>Refresh list</span>
-      </button>
-
-      <button
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-review"
-        [routerLink]="['/review/new']"
-      >
-        <fa-icon icon="plus"></fa-icon>
-        <span>Submit review</span>
-      </button>
-    </div>
+    <button
+      id="jh-create-entity"
+      data-cy="entityCreateButton"
+      class="btn btn-primary jh-create-entity create-review"
+      [routerLink]="['/review/new']"
+    >
+      <fa-icon icon="plus"></fa-icon>
+      <span>Submit review</span>
+    </button>
   </h2>
-
   <jhi-alert-error></jhi-alert-error>
 
   <jhi-alert></jhi-alert>
@@ -103,7 +96,7 @@
       <button class="dropbtn">Select User ></button>
       <div class="dropdown-content">
         @for (profile of profiles; track trackProfileId(profile)) {
-          <button (click)="changeUserView(profile)">{{ profile.login }}</button>
+          <button (mousedown)="changeUserView(profile)" (mouseup)="changeUserView(profile)">{{ profile.login }}</button>
         }
       </div>
     </div>
@@ -124,7 +117,8 @@
                 <tr>
                   ({{
                     review.star
-                  }})
+                  }}
+                  stars)
                 </tr>
                 <tr height="90px">
                   {{
@@ -155,7 +149,7 @@
             <td>
               <tr></tr>
               <tr height="90px">
-                No reviews yet!
+                No reviews loaded yet!
               </tr>
               <tr></tr>
             </td>
@@ -165,7 +159,7 @@
             <td>
               <tr></tr>
               <tr height="90px">
-                Why don't you submit one?
+                Pick a user from the dropdown menu,
               </tr>
               <tr></tr>
             </td>
@@ -175,27 +169,7 @@
             <td>
               <tr></tr>
               <tr height="90px">
-                Or, if this is you -
-              </tr>
-              <tr></tr>
-            </td>
-          </tr>
-          <tr data-cy="entityTable">
-            <td width="15%"></td>
-            <td>
-              <tr></tr>
-              <tr height="90px">
-                Try going to some events!
-              </tr>
-              <tr></tr>
-            </td>
-          </tr>
-          <tr data-cy="entityTable">
-            <td width="15%"></td>
-            <td>
-              <tr></tr>
-              <tr height="90px">
-                Maybe you'll get a review!
+                And see what people are saying about them!
               </tr>
               <tr></tr>
             </td>

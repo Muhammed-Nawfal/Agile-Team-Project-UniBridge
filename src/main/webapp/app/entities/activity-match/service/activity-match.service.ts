@@ -53,7 +53,11 @@ export class ActivityMatchService {
    *  • PENDING or ACCEPT matches (until matchDate passes), or
    *  • DECLINED matches (for 14 days from createdAt or responseAt)
    */
-  getAvailableProfiles(activityType: ActivityType, myProfileId: number): Observable<IProfile[]> {
+  getAvailableProfiles(
+    activityType: ActivityType,
+    myProfileId: number,
+    filters: { filter1?: string; filter2?: string; filter3?: string } = {},
+  ): Observable<IProfile[]> {
     const todayStr = dayjs().format(DATE_FORMAT);
     const declineCutoff = dayjs().subtract(14, 'day');
 
@@ -132,8 +136,9 @@ export class ActivityMatchService {
   /**
    * Fetch all Profiles that have any non-null fields for the given ActivityType
    */
-  getProfilesByActivity(type: ActivityType): Observable<HttpResponse<IProfile[]>> {
+  getProfilesByActivity(type: ActivityType, filters: any = {}): Observable<HttpResponse<IProfile[]>> {
     return this.http.get<IProfile[]>(`${this.profileUrl}/buddies/${type}`, {
+      params: createRequestOption(filters), // converts filter1, filter2, filter3 to query params
       observe: 'response',
     });
   }

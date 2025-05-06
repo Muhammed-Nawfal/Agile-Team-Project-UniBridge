@@ -127,6 +127,40 @@ public class ActivityParticipantService {
     }
 
     /**
+     * Leave an activity for the current logged-in user.
+     *
+     * @param activityId the ID of the activity to leave
+     * @return true if successfully left, false otherwise
+     * @throws BadRequestAlertException if the activity is not found or user has not joined
+     */
+    public boolean leaveActivity(Long activityId) {
+        // Get current user
+        Profile profile = getCurrentUserProfile();
+
+        // get the actual activity
+        Activity activity = activityRepository
+            .findById(activityId)
+            .orElseThrow(() -> new BadRequestAlertException("Activity not found", "activityParticipant", "activitynotfound"));
+
+        // check if  user has joined this activity
+        ActivityParticipant activityParticipant = activityParticipantRepository
+            .findByParticipantIdAndActivityId(profile.getId(), activityId)
+            .orElseThrow(() -> new BadRequestAlertException("You have not joined this activity", "activityParticipant", "notjoined"));
+
+        // remove the activity participant
+        activityParticipantRepository.delete(activityParticipant);
+
+        // reduce the number of participants
+        if (activity.getNumberOfParticipants() > 0) {
+            activity.setNumberOfParticipants(activity.getNumberOfParticipants() - 1);
+            activity.setUpdatedOn(Instant.now());
+            activityRepository.save(activity);
+        }
+
+        return true;
+    }
+
+    /**
      * Helper method to get the current username from the security context
      * This handles both JWT and session-based authentication
      */

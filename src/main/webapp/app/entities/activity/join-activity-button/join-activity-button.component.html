@@ -1,24 +1,28 @@
 <button
-  [class]="cssClass"
-  (click)="joinActivity()"
-  [disabled]="hasJoined || isLoading || isFull || !isJoinable"
-  [ngClass]="{ 'btn-success': hasJoined, 'btn-secondary': isFull }"
+  type="button"
+  class="btn btn-lg px-4 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2"
+  [ngClass]="[cssClass, hasJoined ? 'btn-warning' : '', isLoading ? 'disabled' : '']"
+  [disabled]="isLoading || (!isJoinable && !hasJoined) || (isFull && !hasJoined)"
+  (click)="toggleParticipation()"
 >
   @if (isLoading) {
-    <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-  } @else if (hasJoined) {
-    <span>{{ joinedText }}</span>
-  } @else if (isFull) {
-    <span>{{ fullText }}</span>
-  } @else if (!isJoinable) {
-    <span>{{ notJoinableText }}</span>
+    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+    <span>Loading...</span>
   } @else {
-    <span>{{ buttonText }}</span>
+    @if (!isJoinable && !hasJoined) {
+      <span>{{ notJoinableText }}</span>
+    } @else if (isFull && !hasJoined) {
+      <span>{{ fullText }}</span>
+    } @else if (hasJoined) {
+      <span>{{ joinedText }}</span>
+    } @else {
+      <span>{{ buttonText }}</span>
+    }
   }
 </button>
 
 @if (errorMessage) {
-  <div class="text-danger small mt-1">
+  <div class="alert alert-danger mt-3" role="alert">
     {{ errorMessage }}
   </div>
 }
