@@ -1,89 +1,133 @@
-/* 1. Outer spacing */
 .requests-container {
   padding: 1rem;
 }
 
-/* 2. Card base */
 .match-card {
-  position: relative; /* for absolute badge positioning */
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
+  height: 300px;
+  position: relative;
+  border-radius: 12px;
   overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.3s ease;
 
-  .avatar-banner {
-    height: 120px;
+  .card-img {
     width: 100%;
+    height: 100%;
     object-fit: cover;
   }
 
-  /* 2b. If using background-image via ngStyle, ensure these:
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  */
-
-  /* 3. Body overlay */
-  .card-body {
+  .overlay-content {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    color: white;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
-    padding: 1rem;
-    color: #fff; /* ensure text is readable */
-  }
+    justify-content: flex-end;
 
-  /* 4. Title & text */
-  .card-title {
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-  }
-  .card-text {
-    &.small {
-      font-size: 0.9rem;
+    h5 {
+      font-size: 2rem; // Increased from default
+      font-weight: 800;
     }
-    fa-icon {
-      margin-right: 0.25rem;
+
+    .date-time,
+    .location {
+      font-size: 1.2rem; // Bigger than .small (usually ~0.875rem)
     }
-    margin-bottom: 0.75rem;
+
+    .btn {
+      font-size: 1.2rem; // For larger button text
+      padding: 0.8rem 1rem;
+    }
+
+    h5,
+    .date-time,
+    .location {
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    }
+
+    .btn-outline-light {
+      border-color: #fff;
+      color: #fff;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline-light:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    .activity-badge {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      padding: 0.4rem 1rem;
+      font-weight: 600;
+      border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      color: #fff;
+    }
   }
 
-  /* 5. Buttons */
-  .btn {
-    font-size: 0.9rem;
-    padding: 0.5rem 0.75rem;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   }
 
-  /* 6. Activity‐type badge */
-  .activity-badge {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    font-size: 1rem;
-    font-weight: 600;
-    line-height: 1;
-    white-space: nowrap;
-    color: #fff;
-    border-radius: 999px;
-    z-index: 2;
-  }
-
-  /* 7. Badge color variants */
+  // Badge variants
   .badge--social {
     background-color: #4f9aff;
-  } /* blue   */
+  }
   .badge--academic {
     background-color: #ff8c42;
-  } /* orange */
+  }
   .badge--sports {
     background-color: #42d882;
-  } /* green  */
+  }
   .badge--gym {
     background-color: #d142f4;
-  } /* purple */
+  }
   .badge--other {
     background-color: #888888;
-  } /* gray   */
+  }
+}
+
+.read-request-icon {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
+  color: white;
+  padding: 0.4rem;
+  border-radius: 50%;
+  z-index: 3;
+  cursor: pointer;
+
+  i {
+    font-size: 1rem;
+  }
+
+  .tooltip-text {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    background: black;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    margin-top: 0.25rem;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+  }
 }

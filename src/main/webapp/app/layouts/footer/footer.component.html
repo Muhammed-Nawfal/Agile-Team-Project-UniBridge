@@ -1,3 +1,117 @@
-<div class="footer">
-  <a routerLink="/gdpr-policy">Privacy Policy</a>
-</div>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniBridge Footer</title>
+    <style>
+      :root {
+        --primary: #4e5bf2;
+        --primary-light: #6674f2;
+        --primary-dark: #3a46c2;
+        --light-bg: #f0f4ff;
+        --dark: #333;
+        --white: #fff;
+        --shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--dark);
+        background-color: var(--light-bg);
+        padding: 20px;
+        min-height: 10vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Footer Styles */
+      .footer {
+        background: linear-gradient(to right, var(--primary-dark), var(--primary));
+        color: var(--white);
+        padding: 20px 0;
+        border-radius: 0 0 8px 8px;
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .footer-logo {
+        font-weight: bold;
+        font-size: 1.5rem;
+        color: var(--white);
+      }
+
+      .footer-nav {
+        display: flex;
+        gap: 20px;
+      }
+
+      .footer-nav a {
+        color: var(--white);
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .footer-nav a:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+      }
+
+      .footer-nav a::after {
+        content: '';
+        position: absolute;
+        bottom: 4px;
+        left: 12px;
+        right: 12px;
+        height: 2px;
+        background-color: var(--white);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+
+      .footer-nav a:hover::after {
+        transform: scaleX(1);
+      }
+
+      .footer-copyright {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 0.85rem;
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Footer Design -->
+    <div class="footer">
+      <div class="footer-content">
+        <div class="footer-logo">UniBridge</div>
+        <div class="footer-nav">
+          <a routerLink="/gdpr-policy">Privacy Policy</a>
+        </div>
+      </div>
+      <div class="footer-copyright">&copy; 2025 Team 32 - University Project</div>
+    </div>
+  </body>
+</html>

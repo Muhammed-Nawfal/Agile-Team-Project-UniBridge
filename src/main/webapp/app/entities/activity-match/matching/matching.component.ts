@@ -71,6 +71,8 @@ export class MatchingComponent implements OnInit, OnDestroy {
   filter2Value = '';
   filter3Value = '';
 
+  animationClass = '';
+
   sortState = sortStateSignal({});
 
   public readonly router = inject(Router);
@@ -464,7 +466,8 @@ export class MatchingComponent implements OnInit, OnDestroy {
       await firstValueFrom(this.activityMatchService.create(newMatch));
 
       // Advance to next profile
-      this.showNextProfile();
+      this.animationClass = 'swipe-right';
+      setTimeout(() => this.showNextProfile(), 600); // delay matches CSS animation duration
     } catch (err) {
       // err === 'Cancel click' | 'Cross click' if dismissed, or HTTP error
       if (err !== 'Cancel click' && err !== 'Cross click') {
@@ -480,9 +483,11 @@ export class MatchingComponent implements OnInit, OnDestroy {
     }
 
     // run your “rejecting” animation
-    const card = document.querySelector('.card');
-    if (card) card.classList.add('rejecting');
-    await new Promise(r => setTimeout(r, 300));
+    // const card = document.querySelector('.card');
+    // if (card) card.classList.add('rejecting');
+    // await new Promise(r => setTimeout(r, 300));
+
+    this.animationClass = 'swipe-left';
 
     this.isLoading = true;
 
@@ -511,12 +516,8 @@ export class MatchingComponent implements OnInit, OnDestroy {
       console.error('Error saving decline:', err);
     } finally {
       // advance the carousel
-      this.showNextProfile();
+      setTimeout(() => this.showNextProfile(), 600);
       // tear down the animation class
-      setTimeout(() => {
-        const newCard = document.querySelector('.card');
-        if (newCard) newCard.classList.remove('rejecting');
-      }, 50);
       this.isLoading = false;
     }
   }
@@ -527,6 +528,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
 
     if (this.currentProfileIndex < this.profiles.length) {
       this.currentProfile = this.profiles[this.currentProfileIndex];
+      this.animationClass = 'swipe-in';
     } else {
       // No more profiles to show
       this.currentProfile = null;
@@ -536,6 +538,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
     this.isLoading = false;
 
     setTimeout(() => {
+      this.animationClass = '';
       this.readProfileBtn.nativeElement.focus();
     }, 0);
     this.isLoading = false;
@@ -642,7 +645,6 @@ export class MatchingComponent implements OnInit, OnDestroy {
       `Matched buddy: ${p.firstName} ${p.lastName}, ` +
       `studying ${p.course}, year ${p.courseYear}, ` +
       `interested in ${this.buddyType.toLowerCase()}.`;
-    this.speechService.speak(summary, { rate: 1, pitch: 1 });
   }
 
   // Helper method to convert enum to options for select input

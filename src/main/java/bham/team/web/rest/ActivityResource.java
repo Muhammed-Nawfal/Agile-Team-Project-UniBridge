@@ -1,9 +1,12 @@
 package bham.team.web.rest;
 
 import bham.team.domain.Activity;
+import bham.team.domain.Profile;
 import bham.team.domain.enumeration.ActivityType;
 import bham.team.domain.enumeration.Status;
 import bham.team.repository.ActivityRepository;
+import bham.team.repository.ProfileRepository;
+import bham.team.security.SecurityUtils;
 import bham.team.service.ActivityService;
 import bham.team.service.ActivityService;
 import bham.team.web.rest.errors.BadRequestAlertException;
@@ -52,10 +55,12 @@ public class ActivityResource {
 
     private final ActivityRepository activityRepository;
     private final ActivityService activityService; // Add this line
+    private final ProfileRepository profileRepository;
 
-    public ActivityResource(ActivityRepository activityRepository, ActivityService activityService) {
+    public ActivityResource(ActivityRepository activityRepository, ActivityService activityService, ProfileRepository profileRepository) {
         this.activityRepository = activityRepository;
         this.activityService = activityService;
+        this.profileRepository = profileRepository;
     }
 
     /**
@@ -68,9 +73,24 @@ public class ActivityResource {
     @PostMapping("")
     public ResponseEntity<Activity> createActivity(@Valid @RequestBody Activity activity) throws URISyntaxException {
         LOG.debug("REST request to save Activity : {}", activity);
+
+        // Get current user login and profile
+        String currentUserLogin = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new BadRequestAlertException("Current user login not found", "activity", "userloginnotfound"));
+
+        Profile currentUserProfile = profileRepository
+            .findByUserLogin(currentUserLogin)
+            .orElseThrow(() -> new BadRequestAlertException("No profile found for current user", "activity", "noprofile"));
+
+        // Set creator and creation timestamps
+        activity.setCreator(currentUserProfile);
+        activity.setCreatedOn(Instant.now());
+        activity.setUpdatedOn(Instant.now());
+
         if (activity.getId() != null) {
             throw new BadRequestAlertException("A new activity cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
         activity = activityRepository.save(activity);
         return ResponseEntity.created(new URI("/api/activities/" + activity.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, activity.getId().toString()))
@@ -93,6 +113,10 @@ public class ActivityResource {
         @Valid @RequestBody Activity activity
     ) throws URISyntaxException {
         LOG.debug("REST request to update Activity : {}, {}", id, activity);
+        if (!activityService.isCurrentUserActivityCreator(id)) {
+            throw new BadRequestAlertException("Only the activity creator can update this activity", "activity", "notcreator");
+        }
+
         if (activity.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -227,6 +251,9 @@ public class ActivityResource {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteActivity(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Activity : {}", id);
+        if (!activityService.isCurrentUserActivityCreator(id)) {
+            throw new BadRequestAlertException("Only the activity creator can delete this activity", "activity", "notcreator");
+        }
         activityRepository.deleteById(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))

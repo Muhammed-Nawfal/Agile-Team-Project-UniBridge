@@ -43,6 +43,13 @@ export class AlertService {
    * @returns  Added alert
    */
   addAlert(alertToAdd: Omit<Alert, 'id'>, extAlerts?: Alert[]): Alert {
+    // Suppress friendsList alerts (like deletions or updates)
+    const suppressedKeywords = ['friendsList is deleted', 'friendsList is updated'];
+    const msg = alertToAdd.message?.toLowerCase() ?? '';
+    if (suppressedKeywords.some(keyword => msg.includes(keyword.toLowerCase()))) {
+      return {} as Alert; // Return dummy alert and skip
+    }
+
     const alert: Alert = { ...alertToAdd, id: this.alertId++ };
 
     alert.message = this.sanitizer.sanitize(SecurityContext.HTML, alert.message ?? '') ?? '';
