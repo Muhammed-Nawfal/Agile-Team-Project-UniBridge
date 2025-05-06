@@ -1,32 +1,17 @@
+<!-- mychallenges.component.html-->
 <div class="container-fluid">
-  <h2 id="page-heading" class="mb-4">My Challenges</h2>
-
-  <!-- Add Created By filter -->
-  <div class="row mb-4">
-    <div class="col-md-4">
-      <div class="form-group">
-        <label for="creatorFilter" class="form-label"><strong>Created by:</strong></label>
-        <select id="creatorFilter" class="form-select" [(ngModel)]="selectedCreatorId" (change)="onCreatorChange()">
-          <option [ngValue]="null">All Creators</option>
-          <option *ngFor="let creator of creatorProfiles" [ngValue]="creator.id">
-            {{ creator.firstName || 'Profile' }} {{ creator.lastName || creator.id }}
-          </option>
-        </select>
-        <small class="form-text text-muted">This filter will be removed once user profiles are fully implemented.</small>
-      </div>
-    </div>
-  </div>
+  <h2 id="page-heading" class="mb-4">The challenges You created</h2>
 
   <div class="d-flex justify-content-end mb-3">
-    <button class="btn btn-primary me-2" routerLink="/challenge/new">
-      <fa-icon icon="plus"></fa-icon>
-      Create Challenge
+    <button class="btn btn-secondary me-2" routerLink="/challenge">
+      <fa-icon icon="list"></fa-icon>
+      Assigned Challenges
     </button>
     <button class="btn btn-success me-2" routerLink="/challenge/mytrophies">
       <fa-icon icon="trophy"></fa-icon>
       My Trophies
     </button>
-    <button class="btn btn-info me-2" (click)="loadUserChallenges()" [disabled]="isLoading">
+    <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
       <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
       Refresh
     </button>

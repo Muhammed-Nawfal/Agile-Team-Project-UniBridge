@@ -9,17 +9,17 @@ import { ApplicationConfigService } from 'app/core/config/application-config.ser
 import { createRequestOption } from 'app/core/request/request-util';
 import { IMessageThread, NewMessageThread } from '../message-thread.model';
 
-export type PartialUpdateMessageThread = Partial<IMessageThread> & Pick<IMessageThread, 'id'>;
+// The key change is here:
+export type PartialUpdateMessageThread = Partial<Omit<IMessageThread, 'lastMessage'>> &
+  Pick<IMessageThread, 'id'> & { lastMessage?: string };
 
-type RestOf<T extends IMessageThread | NewMessageThread> = Omit<T, 'createdOn' | 'updatedOn'> & {
+type RestOf<T extends IMessageThread | NewMessageThread | PartialUpdateMessageThread> = Omit<T, 'createdOn' | 'updatedOn'> & {
   createdOn?: string | null;
   updatedOn?: string | null;
 };
 
 export type RestMessageThread = RestOf<IMessageThread>;
-
 export type NewRestMessageThread = RestOf<NewMessageThread>;
-
 export type PartialUpdateRestMessageThread = RestOf<PartialUpdateMessageThread>;
 
 export type EntityResponseType = HttpResponse<IMessageThread>;
@@ -108,6 +108,7 @@ export class MessageThreadService {
     return this.http.get<RestMessageThread>(url, { observe: 'response' }).pipe(map(res => this.convertResponseFromServer(res)));
   }
 
+  // And also update this method to accept the PartialUpdateMessageThread type
   protected convertDateFromClient<T extends IMessageThread | NewMessageThread | PartialUpdateMessageThread>(messageThread: T): RestOf<T> {
     return {
       ...messageThread,
