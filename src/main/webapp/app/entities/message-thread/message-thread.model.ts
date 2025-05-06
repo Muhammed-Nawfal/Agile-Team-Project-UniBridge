@@ -4,6 +4,7 @@ import { IActivityMatch } from 'app/entities/activity-match/activity-match.model
 import { IProfile } from 'app/entities/profile/profile.model';
 
 export interface IMessageThread {
+  lastMessage: string;
   id: number;
   isGroup?: boolean | null;
   name?: string | null;

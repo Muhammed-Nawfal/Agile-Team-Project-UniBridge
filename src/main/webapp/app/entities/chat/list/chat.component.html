@@ -1,56 +1,69 @@
 <div class="chat-container">
   <div class="chat-header">
-    <button (click)="router.navigate(['/message-thread'])">← Back</button>
-    <h3>Conversation</h3>
-  </div>
-  <div class="messages" #messageContainer>
-    <div *ngFor="let c of chats" [class.own]="isOwn(c)">
-      <div class="bubble">
-        {{ c.message }}
-        <small>{{ c.timestamp }}</small>
+    <button class="back-button" (click)="router.navigate(['/message-thread'])">← Back</button>
+    <div class="header-title">
+      <div class="contact-avatar" *ngIf="otherId">{{ getContactInitial() }}</div>
+      <div class="header-info">
+        <h3>{{ getOtherUserName() }}</h3>
+        <small class="status-text">Online</small>
       </div>
     </div>
   </div>
-  <form [formGroup]="messageForm" (ngSubmit)="send()" class="input-row">
-    <input formControlName="message" placeholder="Type…" />
-    <button type="submit" [disabled]="!messageForm.valid">Send</button>
+
+  <div class="messages-container" #messageContainer>
+    <div *ngIf="chats.length === 0" class="empty-state">No messages yet</div>
+
+    <!-- All messages will now be on the left side -->
+    <ng-container *ngFor="let c of chats; let i = index; trackBy: trackByFn">
+      <!-- Show sender name for each message -->
+      <div class="sender-block">
+        <div class="sender-name">{{ getSenderName(c) }}</div>
+      </div>
+
+      <!-- Message bubble - all aligned left -->
+      <div class="message-bubble">
+        <!-- Message content -->
+        <div class="message-content" [ngClass]="{ 'own-message': isOwn(c) }">
+          <ng-container *ngIf="editingChatId !== c.id; else editTpl">
+            {{ c.message || '' }}
+          </ng-container>
+
+          <ng-template #editTpl>
+            <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="edit-form">
+              <input formControlName="message" class="edit-input" />
+              <div class="edit-actions">
+                <button type="submit" class="edit-save" [disabled]="!editForm.valid">✓</button>
+                <button type="button" class="edit-cancel" (click)="cancelEdit()">✕</button>
+              </div>
+            </form>
+          </ng-template>
+        </div>
+
+        <!-- Time and status -->
+        <div class="message-meta">
+          <span class="message-time">{{ c.timestamp?.toDate() | date: 'shortTime' }}</span>
+          <span *ngIf="isOwn(c)" class="message-status">
+            <ng-container [ngSwitch]="c.status">
+              <span *ngSwitchCase="'SENT'">✓</span>
+              <span *ngSwitchCase="'DELIVERED'">✓✓</span>
+              <span *ngSwitchCase="'READ'" class="read-status">✓✓</span>
+            </ng-container>
+          </span>
+        </div>
+
+        <!-- Actions for own messages - FIXED: This should only display for the current user's messages -->
+        <div *ngIf="isOwn(c) && editingChatId !== c.id" class="message-actions">
+          <button class="action-btn edit-btn" (click)="startEdit(c)" title="Edit">✎</button>
+          <button class="action-btn delete-btn" (click)="deleteChat(c)" title="Delete">🗑</button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="message-input-container">
+    <input formControlName="message" class="message-input" placeholder="Type a message..." (keyup.enter)="sendMessage()" />
+    <button type="submit" class="send-button" [disabled]="!messageForm.valid || isSending">
+      {{ isSending ? 'Sending...' : 'Send' }}
+    </button>
   </form>
 </div>
-
-<style>
-  .chat-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  .chat-header {
-    padding: 1rem;
-    border-bottom: 1px solid #ccc;
-  }
-  .messages {
-    flex: 1;
-    overflow: auto;
-    padding: 1rem;
-  }
-  .bubble {
-    padding: 0.5rem 1rem;
-    border-radius: 1rem;
-    margin: 0.5rem 0;
-    background: #eee;
-  }
-  .own .bubble {
-    background: #3f51b5;
-    color: #fff;
-    margin-left: auto;
-  }
-  .input-row {
-    display: flex;
-    padding: 1rem;
-    border-top: 1px solid #ccc;
-  }
-  .input-row input {
-    flex: 1;
-    padding: 0.5rem;
-    margin-right: 0.5rem;
-  }
-</style>
