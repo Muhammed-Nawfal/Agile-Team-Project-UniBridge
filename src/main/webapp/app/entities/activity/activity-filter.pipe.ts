@@ -13,6 +13,7 @@ export interface ActivityFilter {
   dateTo?: Date | null;
   minCost?: number | null;
   maxCost?: number | null;
+  creatorId?: number | null; // Add this line
 }
 
 @Pipe({
@@ -96,7 +97,12 @@ export class ActivityFilterPipe implements PipeTransform {
       if (filters.dateTo && activity.activityDate && activity.activityDate.toDate() > filters.dateTo) {
         return false;
       }
-
+      // Creator filter
+      if (filters.creatorId !== null && filters.creatorId !== undefined) {
+        if (!activity.creator || activity.creator.id !== filters.creatorId) {
+          return false;
+        }
+      }
       // If it passed all filter conditions
       return true;
     });

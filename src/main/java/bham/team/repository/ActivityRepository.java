@@ -18,4 +18,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
     Page<Activity> findByActivityNameContainingIgnoreCase(String query, Pageable pageable);
+    // Add this method to your existing repository
+    Page<Activity> findByCreatorId(Long creatorId, Pageable pageable);
 }

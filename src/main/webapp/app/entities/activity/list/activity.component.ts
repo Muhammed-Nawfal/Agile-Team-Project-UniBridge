@@ -29,7 +29,10 @@ import {
   faCalendarAlt,
   faDollarSign,
   faHandHoldingDollar,
+  faUser,
 } from '@fortawesome/free-solid-svg-icons';
+import { ProfileService } from '../../profile/service/profile.service';
+import { AccountService } from '../../../core/auth/account.service';
 
 @Component({
   standalone: true,
@@ -69,6 +72,7 @@ export class ActivityComponent implements OnInit {
     dateTo: null,
     minCost: null,
     maxCost: null,
+    creatorId: null,
   };
   showFilters = false;
 
@@ -94,9 +98,14 @@ export class ActivityComponent implements OnInit {
   protected readonly faUsers = faUsers;
   protected readonly faDollarSign = faDollarSign;
   protected readonly faHandHoldingDollar = faHandHoldingDollar;
+  protected readonly faUser = faUser;
 
   // Add this to your constructor
-  constructor(private iconLibrary: FaIconLibrary) {
+  constructor(
+    private iconLibrary: FaIconLibrary,
+    private profileService: ProfileService,
+    private accountService: AccountService,
+  ) {
     // Add all icons that your component needs
     iconLibrary.addIcons(faFilter, faTimes, faChevronUp, faChevronDown, faSearch, faMapMarkerAlt, faUsers);
   }
