@@ -1,262 +1,108 @@
-<div class="d-flex justify-content-center">
-  <div class="col-8">
-    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="jhi-activity-match-heading" data-cy="ActivityMatchCreateUpdateHeading">Create or edit a Activity Match</h2>
+<div class="container my-5">
+  <div class="card shadow-lg border-0 rounded-4">
+    <div class="card-body p-5">
+      <h2 class="mb-4">
+        <fa-icon icon="handshake" class="me-2"></fa-icon>
+        {{ activityMatch?.id ? 'Edit Match with ' + activityMatch?.userDetails?.firstName : 'Create New Match' }}
+      </h2>
+      <small class="text-muted d-block mb-4">
+        Activity: <strong>{{ activityMatch?.activityType || 'Not set' }}</strong>
+      </small>
 
-      <div>
-        <jhi-alert-error></jhi-alert-error>
+      <form [formGroup]="editForm" (ngSubmit)="save()">
+        <!-- Match Details -->
+        <h5 class="border-bottom pb-2 mb-4"><fa-icon icon="calendar-check" class="me-2"></fa-icon>Match Details</h5>
 
-        @if (editForm.controls.id.value !== null) {
-          <div class="mb-3">
-            <label class="form-label" for="field_id">ID</label>
-            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        <div class="row g-3">
+          <!-- Activity Type -->
+          <div class="col-md-6">
+            <label for="field_activityType" class="form-label">Activity Type</label>
+            <select class="form-select" id="field_activityType" formControlName="activityType">
+              <option [ngValue]="null">-- Select --</option>
+              <option *ngFor="let type of activityTypeValues" [value]="type">{{ type }}</option>
+            </select>
           </div>
-        }
 
-        @let activityTypeRef = editForm.get('activityType')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_activityType">Activity Type</label>
-          <select class="form-control" name="activityType" formControlName="activityType" id="field_activityType" data-cy="activityType">
-            <option [ngValue]="null"></option>
-            @for (activityType of activityTypeValues; track $index) {
-              <option [value]="activityType">
-                {{ { null: '', SOCIAL: 'SOCIAL', ACADEMIC: 'ACADEMIC', SPORTS: 'SPORTS', GYM: 'GYM', OTHER: 'OTHER' }[activityType] }}
-              </option>
-            }
-          </select>
-          @if (activityTypeRef.invalid && (activityTypeRef.dirty || activityTypeRef.touched)) {
-            <div>
-              @if (editForm.get('activityType')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-            </div>
-          }
-        </div>
-
-        @let statusRef = editForm.get('status')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_status">Status</label>
-          <select class="form-control" name="status" formControlName="status" id="field_status" data-cy="status">
-            <option [ngValue]="null"></option>
-            @for (decision of decisionValues; track $index) {
-              <option [value]="decision">{{ { null: '', ACCEPT: 'ACCEPT', DECLINED: 'DECLINED', PENDING: 'PENDING' }[decision] }}</option>
-            }
-          </select>
-          @if (statusRef.invalid && (statusRef.dirty || statusRef.touched)) {
-            <div>
-              @if (editForm.get('status')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-            </div>
-          }
-        </div>
-
-        @let matchDateRef = editForm.get('matchDate')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_matchDate">Match Date</label>
-          <div class="input-group">
-            <input
-              id="field_matchDate"
-              data-cy="matchDate"
-              type="text"
-              class="form-control"
-              name="matchDate"
-              ngbDatepicker
-              #matchDateDp="ngbDatepicker"
-              formControlName="matchDate"
-            />
-            <button type="button" class="btn btn-secondary" (click)="matchDateDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+          <!-- Status -->
+          <div class="col-md-6">
+            <label for="field_status" class="form-label">Status</label>
+            <select class="form-select" id="field_status" formControlName="status">
+              <option [ngValue]="null">-- Select --</option>
+              <option *ngFor="let status of decisionValues" [value]="status">{{ status }}</option>
+            </select>
           </div>
-          @if (matchDateRef.invalid && (matchDateRef.dirty || matchDateRef.touched)) {
-            <div>
-              @if (editForm.get('matchDate')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-            </div>
-          }
-        </div>
 
-        @let matchTimeRef = editForm.get('matchTime')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_matchTime">Match Time</label>
-          <div class="d-flex">
-            <input
-              id="field_matchTime"
-              data-cy="matchTime"
-              type="datetime-local"
-              class="form-control"
-              name="matchTime"
-              formControlName="matchTime"
-              placeholder="YYYY-MM-DD HH:mm"
-            />
+          <!-- Match Date -->
+          <div class="col-md-6">
+            <label for="field_matchDate" class="form-label">Match Date</label>
+            <div class="input-group">
+              <span class="input-group-text"><fa-icon icon="calendar-alt"></fa-icon></span>
+              <input
+                type="text"
+                class="form-control"
+                id="field_matchDate"
+                formControlName="matchDate"
+                ngbDatepicker
+                #matchDateDp="ngbDatepicker"
+              />
+              <button class="btn btn-outline-secondary" type="button" (click)="matchDateDp.toggle()">
+                <fa-icon icon="calendar"></fa-icon>
+              </button>
+            </div>
           </div>
-          @if (matchTimeRef.invalid && (matchTimeRef.dirty || matchTimeRef.touched)) {
-            <div>
-              @if (editForm.get('matchTime')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-              <small class="form-text text-danger" [hidden]="!editForm.get('matchTime')?.errors?.datetimelocal"
-                >This field should be a date and time.</small
-              >
+
+          <!-- Match Time -->
+          <div class="col-md-6">
+            <label for="field_matchTime" class="form-label">Match Time</label>
+            <div class="input-group">
+              <span class="input-group-text"><fa-icon icon="clock"></fa-icon></span>
+              <input type="datetime-local" class="form-control" id="field_matchTime" formControlName="matchTime" />
             </div>
-          }
-        </div>
-
-        @let locationRef = editForm.get('location')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_location">Location</label>
-          <input type="text" class="form-control" name="location" id="field_location" data-cy="location" formControlName="location" />
-          @if (locationRef.invalid && (locationRef.dirty || locationRef.touched)) {
-            <div>
-              @if (editForm.get('location')?.errors?.maxlength) {
-                <small class="form-text text-danger">This field cannot be longer than 100 characters.</small>
-              }
-            </div>
-          }
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_notes">Notes</label>
-          <textarea class="form-control" name="notes" id="field_notes" data-cy="notes" formControlName="notes"></textarea>
-        </div>
-
-        @let createdAtRef = editForm.get('createdAt')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_createdAt">Created At</label>
-          <div class="d-flex">
-            <input
-              id="field_createdAt"
-              data-cy="createdAt"
-              type="datetime-local"
-              class="form-control"
-              name="createdAt"
-              formControlName="createdAt"
-              placeholder="YYYY-MM-DD HH:mm"
-            />
           </div>
-          @if (createdAtRef.invalid && (createdAtRef.dirty || createdAtRef.touched)) {
-            <div>
-              @if (editForm.get('createdAt')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-              <small class="form-text text-danger" [hidden]="!editForm.get('createdAt')?.errors?.datetimelocal"
-                >This field should be a date and time.</small
-              >
-            </div>
-          }
-        </div>
 
-        @let responseAtRef = editForm.get('responseAt')!;
-        <div class="mb-3">
-          <label class="form-label" for="field_responseAt">Response At</label>
-          <div class="d-flex">
-            <input
-              id="field_responseAt"
-              data-cy="responseAt"
-              type="datetime-local"
-              class="form-control"
-              name="responseAt"
-              formControlName="responseAt"
-              placeholder="YYYY-MM-DD HH:mm"
-            />
+          <!-- Location -->
+          <div class="col-md-6">
+            <label for="field_location" class="form-label">Location</label>
+            <div class="input-group">
+              <span class="input-group-text"><fa-icon icon="map-marker-alt"></fa-icon></span>
+              <input type="text" class="form-control" id="field_location" formControlName="location" />
+            </div>
           </div>
-          @if (responseAtRef.invalid && (responseAtRef.dirty || responseAtRef.touched)) {
-            <div>
-              @if (editForm.get('responseAt')?.errors?.required) {
-                <small class="form-text text-danger">This field is required.</small>
-              }
-              <small class="form-text text-danger" [hidden]="!editForm.get('responseAt')?.errors?.datetimelocal"
-                >This field should be a date and time.</small
-              >
-            </div>
-          }
+
+          <!-- Notes -->
+          <div class="col-md-6">
+            <label for="field_notes" class="form-label">Notes</label>
+            <textarea class="form-control" id="field_notes" formControlName="notes" rows="2"></textarea>
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label" for="field_ratings">Ratings</label>
-          <select
-            class="form-control"
-            id="field_ratings"
-            data-cy="ratings"
-            name="ratings"
-            formControlName="ratings"
-            [compareWith]="compareRanking"
-          >
-            <option [ngValue]="null"></option>
-            @for (rankingOption of ratingsCollection; track $index) {
-              <option [ngValue]="rankingOption">{{ rankingOption.id }}</option>
-            }
-          </select>
+        <!-- Meta Info -->
+        <!--        <h5 class="mt-5 border-bottom pb-2 mb-4">-->
+        <!--          <fa-icon icon="info-circle" class="me-2"></fa-icon>Meta Info-->
+        <!--        </h5>-->
+
+        <!--        <div class="row g-3">-->
+        <!--          &lt;!&ndash; Created At &ndash;&gt;-->
+        <!--          <div class="col-md-6">-->
+        <!--            <label for="field_createdAt" class="form-label">Created At</label>-->
+        <!--            <input type="datetime-local" class="form-control" id="field_createdAt" formControlName="createdAt" />-->
+        <!--          </div>-->
+
+        <!--          &lt;!&ndash; Response At &ndash;&gt;-->
+        <!--          <div class="col-md-6">-->
+        <!--            <label for="field_responseAt" class="form-label">Response At</label>-->
+        <!--            <input type="datetime-local" class="form-control" id="field_responseAt" formControlName="responseAt" />-->
+        <!--          </div>-->
+        <!--        </div>-->
+
+        <!-- Footer Buttons -->
+        <div class="d-flex justify-content-between mt-5">
+          <button type="button" class="btn btn-outline-dark" (click)="previousState()"><fa-icon icon="arrow-left"></fa-icon> Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid || isSaving">
+            <fa-icon icon="save"></fa-icon> Save
+          </button>
         </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_matchRequestor">Match Requestor</label>
-          <select
-            class="form-control"
-            id="field_matchRequestor"
-            data-cy="matchRequestor"
-            name="matchRequestor"
-            formControlName="matchRequestor"
-            [compareWith]="compareProfile"
-          >
-            <option [ngValue]="null"></option>
-            @for (profileOption of profilesSharedCollection; track $index) {
-              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_userDetails">User Details</label>
-          <select
-            class="form-control"
-            id="field_userDetails"
-            data-cy="userDetails"
-            name="userDetails"
-            formControlName="userDetails"
-            [compareWith]="compareProfile"
-          >
-            <option [ngValue]="null"></option>
-            @for (profileOption of profilesSharedCollection; track $index) {
-              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_matchedActivity">Matched Activity</label>
-          <select
-            class="form-control"
-            id="field_matchedActivity"
-            data-cy="matchedActivity"
-            name="matchedActivity"
-            formControlName="matchedActivity"
-            [compareWith]="compareActivity"
-          >
-            <option [ngValue]="null"></option>
-            @for (activityOption of activitiesSharedCollection; track $index) {
-              <option [ngValue]="activityOption">{{ activityOption.id }}</option>
-            }
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
-          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
-        </button>
-
-        <button
-          type="submit"
-          id="save-entity"
-          data-cy="entityCreateSaveButton"
-          [disabled]="editForm.invalid || isSaving"
-          USER_DETAILS_ID
-          class="btn btn-primary"
-        >
-          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </div>
