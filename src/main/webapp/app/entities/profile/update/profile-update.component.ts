@@ -20,10 +20,13 @@ import { Society } from 'app/entities/enumerations/society.model';
 import { PreferredEvents } from 'app/entities/enumerations/preferred-events.model';
 import { ActivityType } from 'app/entities/enumerations/activity-type.model';
 
+import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faCalendarAlt, faClock, faMapMarkerAlt, faArrowLeft, faSave, faUserEdit } from '@fortawesome/free-solid-svg-icons';
+
 @Component({
   selector: 'jhi-profile-update',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, FontAwesomeModule],
   templateUrl: './profile-update.component.html',
   styleUrls: ['./profile-update.component.scss'],
 })
@@ -53,7 +56,10 @@ export class ProfileUpdateComponent implements OnInit {
     protected router: Router,
     protected fb: FormBuilder,
     protected dataUtils: DataUtils,
-  ) {}
+    private library: FaIconLibrary,
+  ) {
+    this.library.addIcons(faCalendarAlt, faClock, faMapMarkerAlt, faArrowLeft, faSave, faUserEdit);
+  }
 
   ngOnInit(): void {
     // Handle one-time tip for the current session

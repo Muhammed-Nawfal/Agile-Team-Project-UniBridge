@@ -81,6 +81,7 @@ export class ProfileDetailComponent implements OnInit {
 
             if (isFriend) {
               this.followState = 'friends';
+              const fullName = `${myProfile.firstName ?? ''} ${myProfile.lastName ?? ''}`.trim();
               this.canMessage = true;
               return;
             }

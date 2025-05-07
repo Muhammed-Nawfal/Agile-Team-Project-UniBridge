@@ -67,23 +67,20 @@
           </div>
           <br />
 
-          <!-- Follow/Message -->
-          <!-- Badge for friends -->
+          <!-- Button if not friends -->
           <div class="mt-4">
-            <div *ngIf="followState === 'friends'" class="badge bg-success fs-5 px-3 py-2">Friends</div>
-
-            <!-- Button if not friends -->
             <button
-              *ngIf="followState !== 'friends'"
+              *ngIf="followState"
               class="btn me-2"
               [ngClass]="{
                 'btn-outline-success': followState === 'none',
                 'btn-warning': followState === 'pending',
+                'btn-primary': followState === 'friends',
               }"
-              [disabled]="followState === 'pending'"
+              [disabled]="followState === 'pending' || followState === 'friends'"
               (click)="toggleFollow()"
             >
-              {{ followState === 'none' ? 'Follow' : 'Pending' }}
+              {{ followState === 'none' ? 'Follow' : followState === 'pending' ? 'Pending' : 'Friends' }}
             </button>
 
             <button class="btn btn-primary" [disabled]="!canMessage" (click)="onMessage()">Message</button>

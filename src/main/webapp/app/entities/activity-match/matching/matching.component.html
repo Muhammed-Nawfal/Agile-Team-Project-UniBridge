@@ -226,7 +226,13 @@
           </div>
           <div class="actions">
             <button class="btn btn-primary btn-sm" (click)="navigateToProfile()">View Profile</button>
-            <button class="btn btn-outline-primary btn-sm" (click)="followUser()">Follow</button>
+            <button
+              class="btn btn-outline-primary btn-sm"
+              (click)="followUser()"
+              [disabled]="followState === 'pending' || followState === 'friends'"
+            >
+              {{ followState === 'friends' ? 'Following' : followState === 'pending' ? 'Pending...' : 'Follow' }}
+            </button>
           </div>
         </div>
       </div>
