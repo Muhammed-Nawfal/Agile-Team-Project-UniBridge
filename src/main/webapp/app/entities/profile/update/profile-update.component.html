@@ -21,7 +21,7 @@
               <label for="field_bio" class="form-label">Bio</label>
               <textarea id="field_bio" class="form-control" formControlName="bio" rows="4" placeholder="Enter your bio..."></textarea>
               <div *ngIf="editForm.get('bio')?.errors?.['maxlength'] && (editForm.get('bio')?.dirty || editForm.get('bio')?.touched)">
-                <small class="text-danger">Bio cannot exceed 50 characters.</small>
+                <small class="text-danger">Bio cannot exceed 100 characters.</small>
               </div>
             </div>
 

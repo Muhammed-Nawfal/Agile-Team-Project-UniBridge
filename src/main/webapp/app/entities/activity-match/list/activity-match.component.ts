@@ -3,7 +3,7 @@ import { AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
 import { Observable, Subscription, Subject, combineLatest, filter, tap, takeUntil } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
+import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import SharedModule from 'app/shared/shared.module';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
 import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
@@ -13,6 +13,16 @@ import { IActivityMatch } from '../activity-match.model';
 import { ActivityMatchService, EntityArrayResponseType } from '../service/activity-match.service';
 import { ActivityMatchDeleteDialogComponent } from '../delete/activity-match-delete-dialog.component';
 import { MatchingComponent } from '../matching/matching.component';
+import {
+  faDumbbell,
+  faBookReader,
+  faMedal,
+  faPeopleGroup,
+  faCalendarPlus,
+  faCalendarCheck,
+  faSignInAlt,
+  faUserFriends,
+} from '@fortawesome/free-solid-svg-icons';
 
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
@@ -37,6 +47,7 @@ import { A11yModule } from 'app/shared/a11y/a11y.module';
     FormatMediumDatePipe,
     MatchingComponent,
     A11yModule,
+    FontAwesomeModule,
   ],
 })
 export class ActivityMatchComponent implements OnInit, OnDestroy {
@@ -70,7 +81,10 @@ export class ActivityMatchComponent implements OnInit, OnDestroy {
   constructor(
     public a11y: AccessibilityService, // ← public, not private
     /* …other injections… */
-  ) {}
+    private library: FaIconLibrary,
+  ) {
+    this.library.addIcons(faDumbbell, faBookReader, faMedal, faPeopleGroup, faCalendarPlus, faCalendarCheck, faSignInAlt, faUserFriends);
+  }
 
   toggleA11y(on: boolean): void {
     this.a11y.setEnabled(on);

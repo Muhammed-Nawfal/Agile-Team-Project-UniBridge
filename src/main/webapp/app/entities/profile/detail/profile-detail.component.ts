@@ -15,6 +15,7 @@ type FollowState = 'none' | 'pending' | 'friends';
   selector: 'jhi-profile-detail',
   imports: [CommonModule, RouterModule],
   templateUrl: './profile-detail.component.html',
+  styleUrl: './profile-detail.component.scss',
 })
 export class ProfileDetailComponent implements OnInit {
   profile: IProfile | null = null;
