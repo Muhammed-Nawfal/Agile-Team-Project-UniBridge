@@ -1,14 +1,17 @@
-<button
-  class="btn"
-  [ngClass]="buttonClass"
-  (click)="onButtonClick()"
-  [disabled]="isLoading || friendshipStatus === 'DECLINED' || friendshipStatus === 'SELF'"
-  placement="top"
-  [ngbTooltip]="tooltipText"
->
-  <fa-icon [icon]="buttonIcon"></fa-icon>
-  <span class="d-none d-md-inline ms-1">{{ buttonText }}</span>
-</button>
-<div *ngIf="errorMessage" class="text-danger mt-1 small">
-  {{ errorMessage }}
+<div>
+  <button
+    [disabled]="isLoading || friendshipStatus === 'SELF'"
+    class="btn btn-sm me-2"
+    [ngClass]="buttonClass"
+    (click)="onButtonClick()"
+    [ngbTooltip]="tooltipText"
+  >
+    <fa-icon [icon]="buttonIcon" *ngIf="!isLoading"></fa-icon>
+    <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+    {{ buttonText }}
+  </button>
+
+  <div *ngIf="errorMessage" class="alert alert-danger mt-2 small py-1 px-2">
+    {{ errorMessage }}
+  </div>
 </div>
