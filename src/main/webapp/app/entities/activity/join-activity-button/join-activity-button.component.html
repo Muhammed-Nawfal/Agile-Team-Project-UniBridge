@@ -1,6 +1,6 @@
 <button
   type="button"
-  class="btn btn-lg px-4 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2"
+  class="join-button"
   [ngClass]="[cssClass, hasJoined ? 'btn-warning' : '', isLoading ? 'disabled' : '']"
   [disabled]="isLoading || (!isJoinable && !hasJoined) || (isFull && !hasJoined)"
   (click)="toggleParticipation()"

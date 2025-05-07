@@ -13,6 +13,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ChangeDetectorRef } from '@angular/core';
 import { MessageThreadService } from 'app/entities/message-thread/service/message-thread.service';
+import { Decision } from 'app/entities/enumerations/decision.model';
 
 @Component({
   standalone: true,
@@ -123,17 +124,20 @@ export class FriendsListComponent implements OnInit {
 
     this.friendsLists.forEach(friendship => {
       if (friendship.requestedByProfile && friendship.requestedToProfile) {
-        // Add both profiles
-        profileIds.push(friendship.requestedByProfile.id);
-        profileIds.push(friendship.requestedToProfile.id);
+        // Only add profiles for ACCEPTED friendships
+        if (friendship.requestStatus === Decision.ACCEPT) {
+          // Add both profiles
+          profileIds.push(friendship.requestedByProfile.id);
+          profileIds.push(friendship.requestedToProfile.id);
 
-        // Map both profiles to this friendship for easy lookup
-        this.profileToFriendshipMap.set(friendship.requestedByProfile.id, friendship);
-        this.profileToFriendshipMap.set(friendship.requestedToProfile.id, friendship);
+          // Map both profiles to this friendship for easy lookup
+          this.profileToFriendshipMap.set(friendship.requestedByProfile.id, friendship);
+          this.profileToFriendshipMap.set(friendship.requestedToProfile.id, friendship);
 
-        // Keep track of followed profiles
-        this.followedProfileIds.add(friendship.requestedByProfile.id);
-        this.followedProfileIds.add(friendship.requestedToProfile.id);
+          // Keep track of followed profiles
+          this.followedProfileIds.add(friendship.requestedByProfile.id);
+          this.followedProfileIds.add(friendship.requestedToProfile.id);
+        }
       }
     });
 
@@ -173,7 +177,7 @@ export class FriendsListComponent implements OnInit {
         const allProfiles = res.body ?? [];
         this.isLoadingSuggestions = false;
 
-        // Filter out profiles the user is already following AND the current user's own profile
+        // Filter out profiles the user already has ACCEPTED friendship with AND the current user's own profile
         this.suggestedProfiles = allProfiles.filter(
           profile => !this.followedProfileIds.has(profile.id) && profile.id !== this.currentProfileId,
         );
@@ -246,7 +250,7 @@ export class FriendsListComponent implements OnInit {
       // Force change detection to update the UI
       this.cdr.detectChanges();
 
-      // Reload suggested profiles to include the newly unfollowed profile
+      // Make sure to reload suggestions to include the newly unfollowed profile
       this.loadSuggestedProfiles();
     } else {
       // For other friendship changes, reload all data
