@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, AfterViewInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
@@ -17,7 +17,7 @@ import NavbarItem from './navbar-item.model';
   styleUrl: './navbar.component.scss',
   imports: [RouterModule, SharedModule, HasAnyAuthorityDirective],
 })
-export default class NavbarComponent implements OnInit {
+export default class NavbarComponent implements OnInit, AfterViewInit {
   isOffcanvasOpen = false;
   inProduction?: boolean;
   isNavbarCollapsed = signal(true);
@@ -25,6 +25,9 @@ export default class NavbarComponent implements OnInit {
   version = '';
   account = inject(AccountService).trackCurrentAccount();
   entitiesNavbarItems: NavbarItem[] = [];
+
+  currentRouteHidden = false;
+  hiddenRoutes = ['/', '/login', '/account/register'];
 
   private readonly loginService = inject(LoginService);
   private readonly profileService = inject(ProfileService);
@@ -34,6 +37,10 @@ export default class NavbarComponent implements OnInit {
     if (VERSION) {
       this.version = VERSION.toLowerCase().startsWith('v') ? VERSION : `v${VERSION}`;
     }
+    this.router.events.subscribe(() => {
+      const path = this.router.url;
+      this.currentRouteHidden = this.hiddenRoutes.includes(path);
+    });
   }
 
   ngOnInit(): void {
