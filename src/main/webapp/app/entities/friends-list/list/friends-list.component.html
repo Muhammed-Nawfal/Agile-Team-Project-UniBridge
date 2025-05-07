@@ -100,9 +100,7 @@
     <div class="search-container">
       <div class="input-group">
         <input type="text" class="form-control" placeholder="Search people to add..." [(ngModel)]="searchTerm" (keyup)="searchProfiles()" />
-        <button class="btn btn-outline-secondary clear-btn" type="button" *ngIf="searchTerm" (click)="clearSearch()">
-          <fa-icon icon="times"></fa-icon>
-        </button>
+        <fa-icon icon="times"></fa-icon>
         <button class="btn btn-outline-secondary search-btn" type="button" (click)="searchProfiles()">
           <fa-icon icon="search"></fa-icon>
         </button>
@@ -122,10 +120,8 @@
       </h3>
       <p *ngIf="searchTerm">Try different search terms to find people.</p>
       <p *ngIf="!searchTerm">Check back later for friend suggestions.</p>
-      <button *ngIf="searchTerm" class="btn btn-primary" (click)="clearSearch()">
-        <fa-icon icon="times"></fa-icon>
-        <span class="ms-1">Clear Search</span>
-      </button>
+      <fa-icon icon="times"></fa-icon>
+      <span class="ms-1">Clear Search</span>
     </div>
   </div>
 

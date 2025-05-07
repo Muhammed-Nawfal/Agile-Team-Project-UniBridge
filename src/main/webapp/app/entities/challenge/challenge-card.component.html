@@ -1,5 +1,11 @@
 <!-- src/main/webapp/app/entities/challenge/challenge-card.component.html -->
-<div class="card shadow-sm h-100">
+<div class="card shadow-sm h-100 position-relative challenge-card">
+  <!-- Trophy badge (if any) -->
+  <div *ngIf="trophy" class="trophy-badge badge shadow" [ngStyle]="{ 'background-color': trophy.color }">
+    <fa-icon [icon]="trophy.icon" class="me-1"></fa-icon>
+    {{ trophy.type }}
+  </div>
+
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-start mb-2">
       <h5 class="card-title mb-0">{{ challenge.title }}</h5>
@@ -35,13 +41,10 @@
 
   <div class="card-footer d-flex justify-content-end bg-white border-0 pt-0">
     <div>
-      <!-- For uncompeleted challenges -->
       <ng-container *ngIf="!challenge.completed">
         <button class="btn btn-danger mx-1" (click)="onRejectClick()"><fa-icon icon="times"></fa-icon> Reject</button>
         <button class="btn btn-primary" (click)="onCompleteClick()"><fa-icon icon="check-circle"></fa-icon> Complete</button>
       </ng-container>
-
-      <!-- For completed challenges -->
       <ng-container *ngIf="challenge.completed">
         <span class="badge bg-success">Completed</span>
       </ng-container>
