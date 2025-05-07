@@ -1,3 +1,5 @@
+// src/main/webapp/app/entities/challenge/challenge.component.ts
+
 import { Component, NgZone, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
 import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
@@ -17,6 +19,7 @@ import { ChallengeDeleteDialogComponent } from '../delete/challenge-delete-dialo
   standalone: true,
   selector: 'jhi-challenge',
   templateUrl: './challenge.component.html',
+  styleUrls: ['./challenge.component.scss'],
   imports: [
     RouterModule,
     FormsModule,
@@ -69,7 +72,6 @@ export class ChallengeComponent implements OnInit {
   delete(challenge: IChallenge): void {
     const modalRef = this.modalService.open(ChallengeDeleteDialogComponent, { size: 'lg', backdrop: 'static' });
     modalRef.componentInstance.challenge = challenge;
-    // unsubscribe not needed because closed completes on modal close
     modalRef.closed
       .pipe(
         filter(reason => reason === ITEM_DELETED_EVENT),
@@ -86,8 +88,38 @@ export class ChallengeComponent implements OnInit {
     });
   }
 
-  navigateToWithComponentValues(event: SortState): void {
-    this.handleNavigation(event);
+  getTrophyColor(points: number): string {
+    switch (points) {
+      case 5:
+        return '#CD7F32'; // Bronze
+      case 10:
+        return '#C0C0C0'; // Silver
+      case 15:
+        return '#FFD700'; // Gold
+      case 20:
+        return '#E5E4E2'; // Platinum
+      case 25:
+        return '#B9F2FF'; // Diamond
+      default:
+        return '#ccc'; // Fallback
+    }
+  }
+
+  getTrophyLabel(points: number): string {
+    switch (points) {
+      case 5:
+        return 'Bronze';
+      case 10:
+        return 'Silver';
+      case 15:
+        return 'Gold';
+      case 20:
+        return 'Platinum';
+      case 25:
+        return 'Diamond';
+      default:
+        return '';
+    }
   }
 
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {

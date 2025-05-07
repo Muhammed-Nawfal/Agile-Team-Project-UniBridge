@@ -1,6 +1,13 @@
 <div class="container-fluid">
   <h2 class="text-center my-4">My Trophies</h2>
 
+  <div class="d-flex justify-content-end mb-3">
+    <a routerLink="/challenge" class="btn btn-gradient me-2">
+      <fa-icon icon="arrow-left"></fa-icon>
+      Back to Challenges
+    </a>
+  </div>
+
   <div class="row justify-content-center">
     <div class="col-md-10">
       <!-- Loading State -->
@@ -26,14 +33,14 @@
         <!-- Trophy Grid -->
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 mb-4">
           <div *ngFor="let trophy of trophyCounts" class="col">
-            <div class="card h-100 shadow-sm trophy-card">
-              <div class="card-body text-center">
+            <div class="card h-100 shadow-sm trophy-card text-white text-center">
+              <div class="card-body">
                 <div class="trophy-icon mb-3">
                   <fa-icon [icon]="trophy.icon" [style.color]="trophy.color" size="3x"></fa-icon>
                 </div>
                 <h5 class="card-title">{{ trophy.type }} Trophy</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{ trophy.points }} points each</h6>
-                <div class="trophy-count mt-3">
+                <h6 class="card-subtitle mb-2">{{ trophy.points }} points each</h6>
+                <div class="trophy-count mt-3 bg-white text-dark">
                   <span class="fs-4 fw-bold">x {{ trophy.count }}</span>
                 </div>
               </div>
@@ -46,7 +53,7 @@
           <fa-icon icon="trophy" size="3x" class="text-muted mb-3"></fa-icon>
           <h4>No trophies yet</h4>
           <p>Complete challenges to earn trophies!</p>
-          <a routerLink="/challenge" class="btn btn-primary mt-2"> <fa-icon icon="tasks"></fa-icon> View Challenges </a>
+          <a routerLink="/challenge" class="btn btn-gradient mt-2"> <fa-icon icon="tasks"></fa-icon> View Challenges </a>
         </div>
       </div>
     </div>

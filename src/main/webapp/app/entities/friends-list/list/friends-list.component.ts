@@ -258,11 +258,6 @@ export class FriendsListComponent implements OnInit {
     }
   }
 
-  clearSearch(): void {
-    this.searchTerm = '';
-    this.searchProfiles();
-  }
-
   // Nickname editing functionality
   editNickname(friendship?: IFriendsList): void {
     if (!friendship) {
