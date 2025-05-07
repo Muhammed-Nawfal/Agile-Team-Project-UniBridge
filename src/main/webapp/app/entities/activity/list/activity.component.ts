@@ -279,6 +279,7 @@ import { ActivityDeleteDialogComponent } from '../delete/activity-delete-dialog.
 import { ActivityFilter, ActivityFilterPipe } from '../activity-filter.pipe';
 import { Status } from '../../enumerations/status.model';
 import { ActivityType } from '../../enumerations/activity-type.model';
+import { JoinActivityButtonComponent } from '../join-activity-button/join-activity-button.component';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import {
   faFilter,
@@ -315,6 +316,7 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs'; // Import Su
     FormatMediumDatetimePipe,
     FormatMediumDatePipe,
     ActivityFilterPipe,
+    JoinActivityButtonComponent,
   ],
 })
 export class ActivityComponent implements OnInit {
@@ -495,6 +497,26 @@ export class ActivityComponent implements OnInit {
 
   navigateToWithComponentValues(event: SortState): void {
     this.handleNavigation(event);
+  }
+
+  determineProgressClass(participants: number, maxParticipants: number): string {
+    const percentage = maxParticipants ? Math.round((participants / maxParticipants) * 100) : 0;
+
+    if (percentage <= 40) return '40';
+    if (percentage <= 50) return '50';
+    if (percentage <= 60) return '60';
+    if (percentage <= 70) return '70';
+    if (percentage <= 80) return '80';
+    return '85';
+  }
+
+  determinePriceClass(price: number | null): string {
+    if (!price || price === 0) return '0';
+    if (price <= 40) return '40';
+    if (price <= 50) return '50';
+    if (price <= 60) return '60';
+    if (price <= 75) return '75';
+    return '80';
   }
 
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
