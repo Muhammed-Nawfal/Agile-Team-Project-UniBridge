@@ -45,7 +45,7 @@ export class FollowButtonComponent implements OnInit {
       case 'PENDING_RECEIVED':
         return 'Accept';
       case 'DECLINED':
-        return 'Declined';
+        return 'Follow';
       case 'SELF':
         return 'Your Profile';
       default:
@@ -61,6 +61,8 @@ export class FollowButtonComponent implements OnInit {
         return this.faUserClock;
       case 'PENDING_RECEIVED':
         return this.faUserPlus;
+      case 'DECLINED':
+        return this.faUserPlus;
       default:
         return this.faUserPlus;
     }
@@ -75,7 +77,7 @@ export class FollowButtonComponent implements OnInit {
       case 'PENDING_RECEIVED':
         return 'btn-primary';
       case 'DECLINED':
-        return 'btn-danger';
+        return 'btn-outline-primary';
       case 'SELF':
         return 'btn-secondary';
       default:
@@ -92,7 +94,7 @@ export class FollowButtonComponent implements OnInit {
       case 'PENDING_RECEIVED':
         return 'Accept friend request';
       case 'DECLINED':
-        return 'Request was declined';
+        return 'Follow this profile';
       case 'SELF':
         return 'This is your profile';
       default:
@@ -101,8 +103,8 @@ export class FollowButtonComponent implements OnInit {
   }
 
   onButtonClick(): void {
-    // Skip if self, declined or loading
-    if (this.friendshipStatus === 'DECLINED' || this.friendshipStatus === 'SELF' || this.isLoading) {
+    // Skip if self or loading
+    if (this.friendshipStatus === 'SELF' || this.isLoading) {
       return;
     }
 
@@ -113,12 +115,17 @@ export class FollowButtonComponent implements OnInit {
       case 'NOT_FRIENDS':
         this.sendFriendRequest();
         break;
+      case 'DECLINED':
+        this.sendFriendRequest(); // Treat DECLINED like NOT_FRIENDS
+        break;
       case 'PENDING_RECEIVED':
         this.acceptFriendRequest();
         break;
       case 'PENDING_SENT':
+        this.cancelFriendRequest();
+        break;
       case 'ACCEPTED':
-        this.removeFriendship();
+        this.unfollowFriend();
         break;
     }
   }
@@ -138,7 +145,8 @@ export class FollowButtonComponent implements OnInit {
             this.friendshipStatus = 'SELF';
           }
         },
-        error: () => {
+        error: err => {
+          console.error('Error checking friendship status:', err);
           this.friendshipStatus = 'NOT_FRIENDS';
         },
       });
@@ -166,6 +174,7 @@ export class FollowButtonComponent implements OnInit {
           }
         },
         error: (error: HttpErrorResponse) => {
+          console.error('Error sending friend request:', error);
           if (error.error?.title === 'Cannot send friend request to yourself') {
             this.friendshipStatus = 'SELF';
             this.errorMessage = '';
@@ -190,29 +199,62 @@ export class FollowButtonComponent implements OnInit {
           this.friendshipStatus = 'ACCEPTED';
           this.friendshipChanged.emit('FRIEND_REQUEST_ACCEPTED');
         },
-        error() {
-          // Just reset loading state on error
+        error: err => {
+          console.error('Error accepting friend request:', err);
+          this.errorMessage = 'Failed to accept friend request.';
         },
       });
   }
 
-  private removeFriendship(): void {
+  private cancelFriendRequest(): void {
     if (!this.friendsListId) {
       this.isLoading = false;
       return;
     }
 
     this.friendsListService
-      .delete(this.friendsListId)
+      .respondToFriendRequest(this.friendsListId, Decision.DECLINED)
       .pipe(finalize(() => (this.isLoading = false)))
       .subscribe({
         next: () => {
+          // After canceling, reset the UI state
           this.friendshipStatus = 'NOT_FRIENDS';
-          this.friendsListId = undefined;
-          this.friendshipChanged.emit('FRIENDSHIP_REMOVED');
+          this.friendsListId = undefined; // Clear ID to force new request on follow
+          this.friendshipChanged.emit('FRIEND_REQUEST_CANCELLED');
         },
-        error() {
-          // Just reset loading state on error
+        error: err => {
+          console.error('Error canceling friend request:', err);
+          this.errorMessage = 'Failed to cancel friend request.';
+        },
+      });
+  }
+
+  private unfollowFriend(): void {
+    if (!this.friendsListId) {
+      this.isLoading = false;
+      return;
+    }
+
+    this.friendsListService
+      .respondToFriendRequest(this.friendsListId, Decision.DECLINED)
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: () => {
+          // Reset the button state to "Follow"
+          this.friendshipStatus = 'NOT_FRIENDS';
+          // Clear the ID to force a new request
+          this.friendsListId = undefined;
+          // Emit event to update parent component
+          this.friendshipChanged.emit('FRIENDSHIP_REMOVED');
+
+          // Force recheck after brief delay
+          setTimeout(() => {
+            this.checkFriendshipStatus();
+          }, 500);
+        },
+        error: err => {
+          console.error('Error unfollowing:', err);
+          this.errorMessage = 'Failed to unfollow this profile.';
         },
       });
   }
