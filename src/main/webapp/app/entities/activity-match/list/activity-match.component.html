@@ -30,6 +30,16 @@
     </div>
   </div>
 
+  <h2>About Your Matches</h2>
+  <div class="activity-buttons">
+    <button class="btn-secondary-action" (click)="navigateToUpcomingMatches()">
+      <fa-icon [icon]="['fas', 'calendar-check']" class="me-2"></fa-icon> Upcoming Matches
+    </button>
+    <button class="btn-secondary-action" (click)="navigateToMatchRequests()">
+      <fa-icon [icon]="['fas', 'user-friends']" class="me-2"></fa-icon> Match Requests
+    </button>
+  </div>
+
   <h2>Create/Join</h2>
   <div class="activity-buttons">
     <button class="btn-secondary-action" (click)="navigateToBooking()">
@@ -37,16 +47,6 @@
     </button>
     <button class="btn-secondary-action" (click)="navigateToActivity()">
       <fa-icon [icon]="['fas', 'sign-in-alt']" class="me-2"></fa-icon> Join an Activity
-    </button>
-  </div>
-
-  <h2>View Your Upcoming Matches</h2>
-  <div class="activity-buttons">
-    <button class="btn-secondary-action" (click)="navigateToUpcomingMatches()">
-      <fa-icon [icon]="['fas', 'calendar-check']" class="me-2"></fa-icon> Upcoming Matches
-    </button>
-    <button class="btn-secondary-action" (click)="navigateToMatchRequests()">
-      <fa-icon [icon]="['fas', 'user-friends']" class="me-2"></fa-icon> Match Requests
     </button>
   </div>
 </div>

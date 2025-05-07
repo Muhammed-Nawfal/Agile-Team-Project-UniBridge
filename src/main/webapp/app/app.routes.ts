@@ -5,8 +5,6 @@ import { Authority } from 'app/config/authority.constants';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { errorRoute } from './layouts/error/error.route';
 import { ActivityMatchComponent } from './entities/activity-match/list/activity-match.component';
-import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
-import NavbarComponent from './layouts/navbar/navbar.component';
 
 const routes: Routes = [
   {
@@ -14,6 +12,11 @@ const routes: Routes = [
     loadComponent: () => import('./home/home.component').then(m => m.default),
     title: 'home.title',
   },
+  // {
+  //   path: '',
+  //   loadComponent: () => import('./layouts/navbar/navbar.component'),
+  //   outlet: 'navbar',
+  // },
   {
     path: '',
     loadComponent: () => import('./layouts/navbar/navbar.component'),
@@ -47,14 +50,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    component: NavbarComponent,
-    children: [
-      {
-        path: 'activity-match',
-        loadChildren: () => import('./entities/activity-match/activity-match.routes'),
-      },
-      // other routes
-    ],
+    loadChildren: () => import(`./entities/entity.routes`),
   },
   ...errorRoute,
 ];
