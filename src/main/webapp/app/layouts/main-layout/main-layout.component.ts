@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import NavbarComponent from '../navbar/navbar.component';
+import { NavbarComponent } from '../navbar/navbar.component';
 import { ProfileService } from 'app/entities/profile/service/profile.service';
 import { IProfile } from 'app/entities/profile/profile.model';
 

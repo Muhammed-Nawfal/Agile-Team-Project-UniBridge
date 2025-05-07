@@ -1,16 +1,11 @@
-<div>
-  <router-outlet name="navbar"></router-outlet>
-</div>
+<jhi-navbar></jhi-navbar>
 
-<main class="flex-grow-1 d-flex flex-column">
-  <div class="container-fluid jh-card flex-grow-1 d-flex flex-column" jhiGlobalAccessibility>
-    <router-outlet></router-outlet>
-  </div>
-</main>
+<div class="container-fluid jh-card" jhiGlobalAccessibility>
+  <router-outlet></router-outlet>
+</div>
 
 <!-- Add accessibility component -->
 <jhi-accessibility></jhi-accessibility>
 
 <!-- Keep your original footer elements - DO NOT add GDPR policy here -->
 <jhi-footer></jhi-footer>
-<!-- DO NOT add another GDPR policy component here -->

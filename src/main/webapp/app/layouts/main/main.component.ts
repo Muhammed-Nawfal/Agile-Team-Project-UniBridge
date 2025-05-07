@@ -9,6 +9,7 @@ import PageRibbonComponent from '../profiles/page-ribbon.component';
 import { AccessibilityComponent } from 'app/shared/accessibility/accessibility.component';
 import { GlobalAccessibilityDirective } from '../../shared/a11y/global-accessibility.directive';
 import { register } from 'swiper/element/bundle';
+import NavbarComponent from '../navbar/navbar.component';
 register();
 
 @Component({
@@ -16,14 +17,7 @@ register();
   selector: 'jhi-main',
   templateUrl: './main.component.html',
   providers: [AppPageTitleStrategy],
-  imports: [
-    RouterOutlet,
-    FooterComponent,
-    PageRibbonComponent,
-    // Add AccessibilityComponent to imports
-    AccessibilityComponent,
-    GlobalAccessibilityDirective,
-  ],
+  imports: [RouterOutlet, FooterComponent, PageRibbonComponent, AccessibilityComponent, GlobalAccessibilityDirective, NavbarComponent],
 })
 export default class MainComponent implements OnInit {
   private readonly router = inject(Router);
