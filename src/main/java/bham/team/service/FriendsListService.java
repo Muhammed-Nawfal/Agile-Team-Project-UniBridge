@@ -50,11 +50,13 @@ public class FriendsListService {
 
     /**
      * Send a friend request from one profile to another.
+     * If a DECLINED relationship exists, it will update it to PENDING.
      *
      * @param requestorProfileId the ID of the profile sending the request
      * @param requestedProfileId the ID of the profile receiving the request
-     * @return the created friend request
+     * @return the created or updated friend request
      */
+    @SuppressWarnings("java:modernizer")
     public FriendsList sendFriendRequest(Long requestorProfileId, Long requestedProfileId) {
         log.debug("Request to send friend request from profile ID {} to profile ID {}", requestorProfileId, requestedProfileId);
 
@@ -71,8 +73,18 @@ public class FriendsListService {
         Optional<FriendsList> existingRequest = friendsListRepository.findExistingFriendRequest(requestorProfile, requestedProfile);
 
         if (existingRequest.isPresent()) {
-            log.debug("Friend request already exists between these profiles");
-            return existingRequest.orElseThrow(() -> new IllegalStateException("Friend request unexpectedly not present"));
+            FriendsList existingFriendship = existingRequest.orElseThrow();
+
+            // If it's DECLINED, update to PENDING
+            if (Decision.DECLINED.equals(existingFriendship.getRequestStatus())) {
+                log.debug("Found DECLINED relationship (ID: {}), updating to PENDING", existingFriendship.getId());
+                existingFriendship.setRequestStatus(Decision.PENDING);
+                existingFriendship.setRequestTime(Instant.now());
+                return friendsListRepository.save(existingFriendship);
+            }
+
+            log.debug("Friend request already exists between these profiles with status: {}", existingFriendship.getRequestStatus());
+            return existingFriendship;
         }
 
         // Create and save new friend request
@@ -83,6 +95,32 @@ public class FriendsListService {
         friendsList.setRequestStatus(Decision.PENDING);
         friendsList.setFriendSince(Instant.now()); // Set to satisfy @NotNull constraint
 
+        log.debug("Creating new friend request");
+        return friendsListRepository.save(friendsList);
+    }
+
+    /**
+     * Update friendship status without restrictions on who can make the change
+     * or what the previous status was.
+     *
+     * @param friendsListId the ID of the friends list to update
+     * @param decision the new status (ACCEPT, DECLINED, or PENDING)
+     * @return the updated friend request
+     */
+    public FriendsList updateFriendshipStatus(Long friendsListId, Decision decision) {
+        log.debug("Request to update friendship status for ID {} to {}", friendsListId, decision);
+
+        FriendsList friendsList = friendsListRepository
+            .findById(friendsListId)
+            .orElseThrow(() -> new IllegalArgumentException("Friend request not found with ID: " + friendsListId));
+
+        log.debug("Updating friendship status from {} to {}", friendsList.getRequestStatus(), decision);
+        friendsList.setRequestStatus(decision);
+
+        if (decision == Decision.ACCEPT) {
+            friendsList.setFriendSince(Instant.now());
+        }
+
         return friendsListRepository.save(friendsList);
     }
 
@@ -90,7 +128,7 @@ public class FriendsListService {
      * Respond to a friend request.
      *
      * @param friendsListId the ID of the friends list to update
-     * @param decision the decision (ACCEPT or DECLINED)
+     * @param decision the decision (ACCEPT, DECLINED, or PENDING)
      * @return the updated friend request
      */
     public FriendsList respondToFriendRequest(Long friendsListId, Decision decision) {
@@ -100,6 +138,7 @@ public class FriendsListService {
             .findById(friendsListId)
             .orElseThrow(() -> new IllegalArgumentException("Friend request not found with ID: " + friendsListId));
 
+        log.debug("Updating friendship status from {} to {}", friendsList.getRequestStatus(), decision);
         friendsList.setRequestStatus(decision);
 
         if (decision == Decision.ACCEPT) {
@@ -208,11 +247,15 @@ public class FriendsListService {
 
     /**
      * Delete a friends list.
+     * Note: This method should be used with caution due to constraints with MessageThread.
+     * Consider using updateFriendshipStatus to DECLINED instead for unfollowing.
      *
      * @param id the id of the entity.
      */
     public void delete(Long id) {
         log.debug("Request to delete FriendsList : {}", id);
+        log.warn("CAUTION: Deleting a FriendsList record may cause related MessageThread records to be deleted as well.");
+        log.warn("Consider using updateFriendshipStatus(id, Decision.DECLINED) instead for unfollowing.");
         friendsListRepository.deleteById(id);
     }
 }

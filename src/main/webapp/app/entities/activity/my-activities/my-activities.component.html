@@ -1,48 +1,119 @@
-<div>
-  <h2 id="page-heading" data-cy="MyActivitiesHeading">
-    <span>My Activities</span>
-  </h2>
+<!--<div>-->
+<!--  <h2 id="page-heading" data-cy="MyActivitiesHeading">-->
+<!--    <span>My Activities</span>-->
+<!--  </h2>-->
+
+<!--  <jhi-alert-error></jhi-alert-error>-->
+<!--  <jhi-alert></jhi-alert>-->
+
+<!--  <div *ngIf="isLoading" class="d-flex justify-content-center">-->
+<!--    <div class="spinner-border text-primary" role="status">-->
+<!--      <span class="visually-hidden">Loading...</span>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <div class="alert alert-warning" id="no-result" *ngIf="!isLoading && (!userActivities || userActivities.length === 0)">-->
+<!--    <span>You haven't joined any activities yet</span>-->
+<!--  </div>-->
+<!--  <div *ngIf="!isLoading && userActivities && userActivities.length > 0">-->
+<!--    <div class="row">-->
+<!--      <div class="col-md-6 col-lg-4 mb-4" *ngFor="let userActivity of userActivities; trackBy: trackId">-->
+<!--        <div class="card shadow-sm h-100">-->
+<!--          <div class="card-body">-->
+<!--            <h5 class="card-title">{{ userActivity.activity?.activityName }}</h5>-->
+
+<!--            <p class="card-text">-->
+<!--              <strong>Date Joined:</strong>-->
+<!--              {{ userActivity.joinedDate }}-->
+<!--            </p>-->
+<!--            <p class="card-text">-->
+<!--              <strong>Activity Date:</strong>-->
+<!--              {{ userActivity.activity?.activityDate || 'N/A' }}-->
+<!--            </p>-->
+<!--            <p class="card-text">-->
+<!--              <strong>Location:</strong>-->
+<!--              {{ userActivity.activity?.location || 'Not specified' }}-->
+<!--            </p>-->
+<!--          </div>-->
+
+<!--          <div class="card-footer text-end bg-transparent border-0">-->
+<!--            <button-->
+<!--              type="button"-->
+<!--              [routerLink]="['/activity', userActivity.activity?.id, 'view']"-->
+<!--              class="btn btn-info btn-sm"-->
+<!--              data-cy="entityDetailsButton"-->
+<!--            >-->
+<!--              <fa-icon icon="eye"></fa-icon>-->
+<!--              <span class="d-none d-md-inline">View</span>-->
+<!--            </button>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <div *ngIf="error" class="alert alert-danger">-->
+<!--    <span>{{ errorMessage }}</span>-->
+<!--  </div>-->
+<!--</div>-->
+
+<div class="activities-container">
+  <div class="activities-header">
+    <h2 id="page-heading" data-cy="MyActivitiesHeading">
+      <span>My Activities</span>
+    </h2>
+
+    <div class="search-container">
+      <div class="search-bar">
+        <fa-icon icon="search" class="search-icon"></fa-icon>
+        <input type="text" [(ngModel)]="searchTerm" (input)="filterActivities()" placeholder="Search activities..." class="search-input" />
+      </div>
+    </div>
+  </div>
 
   <jhi-alert-error></jhi-alert-error>
   <jhi-alert></jhi-alert>
 
-  <div *ngIf="isLoading" class="d-flex justify-content-center">
+  <div *ngIf="isLoading" class="loading-spinner">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
   </div>
 
-  <div class="alert alert-warning" id="no-result" *ngIf="!isLoading && (!userActivities || userActivities.length === 0)">
-    <span>You haven't joined any activities yet</span>
+  <div class="no-results alert alert-warning" *ngIf="!isLoading && (!filteredActivities || filteredActivities.length === 0)">
+    <span>{{ searchTerm ? 'No activities match your search' : "You haven't joined any activities yet" }}</span>
   </div>
-  <div *ngIf="!isLoading && userActivities && userActivities.length > 0">
-    <div class="row">
-      <div class="col-md-6 col-lg-4 mb-4" *ngFor="let userActivity of userActivities; trackBy: trackId">
-        <div class="card shadow-sm h-100">
-          <div class="card-body">
-            <h5 class="card-title">{{ userActivity.activity?.activityName }}</h5>
 
-            <p class="card-text">
-              <strong>Date Joined:</strong>
-              {{ userActivity.joinedDate }}
-            </p>
-            <p class="card-text">
-              <strong>Activity Date:</strong>
-              {{ userActivity.activity?.activityDate || 'N/A' }}
-            </p>
-            <p class="card-text">
-              <strong>Location:</strong>
-              {{ userActivity.activity?.location || 'Not specified' }}
-            </p>
+  <div *ngIf="!isLoading && filteredActivities && filteredActivities.length > 0">
+    <div class="activities-grid">
+      <div class="activity-card-wrapper" *ngFor="let userActivity of filteredActivities; trackBy: trackId">
+        <div class="activity-card">
+          <div class="card-header">
+            <h5 class="card-title">{{ userActivity.activity?.activityName }}</h5>
+            <div class="date-badge" *ngIf="userActivity.activity?.activityDate">
+              {{ convertDayjsToDate(userActivity.activity?.activityDate) | date: 'MMM d' }}
+            </div>
           </div>
 
-          <div class="card-footer text-end bg-transparent border-0">
-            <button
-              type="button"
-              [routerLink]="['/activity', userActivity.activity?.id, 'view']"
-              class="btn btn-info btn-sm"
-              data-cy="entityDetailsButton"
-            >
+          <div class="card-body">
+            <div class="card-detail">
+              <fa-icon icon="calendar-plus" class="detail-icon"></fa-icon>
+              <span>Joined: {{ convertDayjsToDate(userActivity.joinedDate) | date: 'mediumDate' }}</span>
+            </div>
+
+            <div class="card-detail" *ngIf="userActivity.activity?.activityDate">
+              <fa-icon icon="calendar-day" class="detail-icon"></fa-icon>
+              <span>Scheduled: {{ convertDayjsToDate(userActivity.activity?.activityDate) | date: 'mediumDate' }}</span>
+            </div>
+
+            <div class="card-detail" *ngIf="userActivity.activity?.location">
+              <fa-icon icon="map-marker-alt" class="detail-icon"></fa-icon>
+              <span>{{ userActivity.activity?.location }}</span>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button (click)="viewActivity(userActivity.activity?.id)" class="btn btn-info btn-sm">
               <fa-icon icon="eye"></fa-icon>
               <span class="d-none d-md-inline">View</span>
             </button>
@@ -52,7 +123,7 @@
     </div>
   </div>
 
-  <div *ngIf="error" class="alert alert-danger">
+  <div *ngIf="error" class="error-alert alert alert-danger">
     <span>{{ errorMessage }}</span>
   </div>
 </div>

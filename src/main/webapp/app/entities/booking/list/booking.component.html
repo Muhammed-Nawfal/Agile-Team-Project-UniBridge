@@ -1,51 +1,44 @@
-<div class="header">
-  <select class="language-select" (change)="changeLanguage($event)">
-    <option value="en">English</option>
-    <option value="es">Español</option>
-  </select>
-</div>
-
 <div class="secondDiv">
   <form action="submit" class="bookSection">
-    <h1>{{ translate('booking') }}</h1>
+    <h1>BOOKING</h1>
     <div class="bookDetails">
-      <h2>{{ translate('selectDate') }}</h2>
+      <h2>CHOOSE A DATE</h2>
       <input type="date" name="date" class="form-control" (change)="onDateChange($event)" required />
 
-      <h2>{{ translate('selectActivity') }}</h2>
-      <!-- Updated title -->
-      <select name="SocialActivity" class="form-control" (change)="onSocialActivityChange($event)">
-        <option value="" selected disabled>{{ translate('selectActivity') }}</option>
-        <option value="none">{{ translate('none') }}</option>
+      <h2>SELECT AN ACTIVITY</h2>
+      <select name="activity" class="form-control" (change)="onActivityChange($event)" required>
+        <option value="" selected disabled>Activities</option>
+        <option *ngFor="let activity of activities" [value]="activity.value">{{ activity.name }}</option>
+      </select>
+
+      <h2>What activity are you booking for?</h2>
+      <select name="socialActivity" class="form-control" (change)="onSocialActivityChange($event)">
+        <option value="" selected disabled>Social Activities</option>
+        <option value="none">None</option>
         <option *ngFor="let activity of loadedActivities" [value]="'activity-' + activity.id" [disabled]="!isActivitySelectable(activity)">
           {{ activity.activityName }}
-          <span *ngIf="!isActivitySelectable(activity)">({{ translate('selected') }})</span>
+          <span *ngIf="!isActivitySelectable(activity)">(Selected)</span>
         </option>
       </select>
 
-      <h2>{{ translate('socialActivities') }}</h2>
-      <select name="SocialActivity" class="form-control" (change)="onSocialActivityChange($event)">
-        <option value="" selected disabled>{{ translate('socialActivities') }}</option>
-        <option value="none">{{ translate('none') }}</option>
-        <option *ngFor="let activity of loadedActivities" [value]="'activity-' + activity.id" [disabled]="!isActivitySelectable(activity)">
-          {{ activity.activityName }}
-          <span *ngIf="!isActivitySelectable(activity)">({{ translate('selected') }})</span>
-        </option>
-      </select>
-
-      <h2>{{ translate('selectEvent') }}</h2>
+      <h2>SELECT AN EVENT Room</h2>
       <select name="Events" class="form-control" (change)="onEventChange($event)" required>
-        <option value="" selected disabled>{{ translate('defaultEvent') }}</option>
+        <option value="" selected disabled>Events</option>
         <option *ngFor="let event of events" [value]="event.value">{{ event.name }}</option>
       </select>
 
-      <h2>{{ translate('selectPartySize') }}</h2>
-      <select name="partySize" class="form-control" (change)="onPartySizeChange($event)" required>
-        <option value="" selected disabled>{{ translate('defaultPartySize') }}</option>
-        <option *ngFor="let size of partySizes" [value]="size">{{ size }}</option>
-      </select>
+      <h2>PARTY SIZE</h2>
+      <input
+        type="number"
+        name="partySize"
+        class="form-control"
+        (change)="onPartySizeChange($event)"
+        min="1"
+        required
+        placeholder="Enter number of people"
+      />
 
-      <h2>{{ translate('selectTime') }}</h2>
+      <h2>TIME</h2>
       <div *ngIf="timeSlots.length > 0" class="time-slots">
         <div *ngFor="let slot of timeSlots; let i = index" class="time-slot-checkbox">
           <input
@@ -76,19 +69,19 @@
         {{ bookingError }}
       </div>
 
-      <button type="button" class="bookBtn" (click)="onSubmit()">{{ translate('bookNow') }}</button>
+      <button type="button" class="bookBtn" (click)="onSubmit()">BOOK</button>
     </div>
   </form>
 
   <div class="activitySection">
-    <h1>{{ translate('upcomingActivities') }}</h1>
+    <h1>UPCOMING</h1>
 
     <div *ngIf="isLoadingBookings" class="loading-indicator">
       <p>Loading bookings...</p>
     </div>
 
     <div *ngIf="!isLoadingBookings && upcomingBookings.length === 0" class="empty-bookings">
-      <p>{{ translate('noBookings') }}</p>
+      <p>NO BOOKINGS, MAKE ONE NOW</p>
     </div>
 
     <div class="activity-list" *ngIf="!isLoadingBookings && upcomingBookings.length > 0">
@@ -117,28 +110,20 @@
     <h2>{{ selectedBooking.name }}</h2>
     <div class="modal-details">
       <div *ngIf="!isEditMode">
-        <p>
-          <strong>{{ translate('date') }}:</strong> {{ selectedBooking.date }}
-        </p>
-        <p>
-          <strong>{{ translate('time') }}:</strong> {{ selectedBooking.time }}
-        </p>
-        <p>
-          <strong>{{ translate('location') }}:</strong> {{ selectedBooking.locationName }}
-        </p>
-        <p>
-          <strong>{{ translate('partySize') }}:</strong> {{ selectedBooking.partySize }}
-        </p>
+        <p><strong>Date:</strong> {{ selectedBooking.date }}</p>
+        <p><strong>Time:</strong> {{ selectedBooking.time }}</p>
+        <p><strong>Location:</strong> {{ selectedBooking.locationName }}</p>
+        <p><strong>Party Size:</strong> {{ selectedBooking.partySize }}</p>
         <p><strong>Social Activity:</strong> {{ selectedBooking.bookedActivity?.activityName || 'None' }}</p>
         <div class="modal-actions">
-          <button type="button" class="update-button" (click)="updateBooking()">{{ translate('update') }}</button>
-          <button type="button" class="delete-button" (click)="confirmDelete()">{{ translate('delete') }}</button>
+          <button type="button" class="update-button" (click)="updateBooking()">UPDATE</button>
+          <button type="button" class="delete-button" (click)="confirmDelete()">DELETE</button>
         </div>
       </div>
 
       <div *ngIf="isEditMode" class="edit-form">
         <div class="form-group">
-          <label for="editActivityType">{{ translate('event') }}</label>
+          <label for="editActivityType">Event</label>
           <input
             type="text"
             id="editActivityType"
@@ -149,27 +134,33 @@
         </div>
 
         <div class="form-group">
-          <label for="editEventName">{{ translate('activity') }}</label>
+          <label for="editEventName">Activity</label>
           <input type="text" id="editEventName" [value]="selectedBooking.name" class="form-control" disabled />
         </div>
 
         <div class="form-group">
-          <label for="editDate">{{ translate('date') }}</label>
+          <label for="editDate">Date</label>
           <input type="date" id="editDate" [(ngModel)]="updatedDate" class="form-control" disabled />
         </div>
 
         <div class="form-group">
-          <label for="editPartySize">{{ translate('partySize') }}</label>
-          <select id="editPartySize" class="form-control" [(ngModel)]="updatedPartySize" required>
-            <option *ngFor="let size of partySizes" [value]="size">{{ size }}</option>
-          </select>
+          <label for="editPartySize">Party Size</label>
+          <input
+            type="number"
+            id="editPartySize"
+            class="form-control"
+            [(ngModel)]="updatedPartySize"
+            min="1"
+            required
+            placeholder="Enter number of people"
+          />
         </div>
 
         <div class="form-group">
-          <label for="editSocialActivity">{{ translate('selectSActivity') }}</label>
+          <label for="editSocialActivity">PICK A SOCIAL ACTIVITY</label>
           <select id="editSocialActivity" class="form-control" (change)="onSocialActivityChange($event)">
-            <option value="" selected disabled>{{ translate('socialActivities') }}</option>
-            <option value="none">{{ translate('none') }}</option>
+            <option value="" selected disabled>Social Activities</option>
+            <option value="none">None</option>
             <option
               *ngFor="let activity of loadedActivities"
               [value]="'activity-' + activity.id"
@@ -177,15 +168,13 @@
               [selected]="selectedBooking.bookedActivity?.id === activity.id"
             >
               {{ activity.activityName }}
-              <span *ngIf="!isActivitySelectable(activity, true) && selectedBooking.bookedActivity?.id !== activity.id"
-                >({{ translate('selected') }})</span
-              >
+              <span *ngIf="!isActivitySelectable(activity, true) && selectedBooking.bookedActivity?.id !== activity.id">(Selected)</span>
             </option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>{{ translate('time') }}</label>
+          <label>Time</label>
           <div class="time-slots">
             <div *ngFor="let slot of updateTimeSlots; let i = index" class="time-slot-checkbox">
               <input
@@ -209,8 +198,8 @@
         </div>
 
         <div class="modal-actions">
-          <button type="button" class="cancel-button" (click)="cancelUpdate()">{{ translate('cancel') }}</button>
-          <button type="button" class="save-button" (click)="saveUpdate()">{{ translate('save') }}</button>
+          <button type="button" class="cancel-button" (click)="cancelUpdate()">CANCEL</button>
+          <button type="button" class="save-button" (click)="saveUpdate()">SAVE</button>
         </div>
       </div>
     </div>
@@ -220,11 +209,11 @@
 <div class="modal" *ngIf="showDeleteConfirmation" [class.show]="showDeleteConfirmation">
   <div class="modal-content">
     <span class="close" (click)="cancelDelete()">&times;</span>
-    <h2>{{ translate('confirmDelete') }}</h2>
-    <p>{{ translate('deleteConfirmationMessage') }}</p>
+    <h2>Confirm Delete</h2>
+    <p>Are you sure you want to delete this booking?</p>
     <div class="modal-actions">
-      <button type="button" class="cancel-button" (click)="cancelDelete()">{{ translate('cancel') }}</button>
-      <button type="button" class="delete-button" (click)="deleteBooking()">{{ translate('delete') }}</button>
+      <button type="button" class="cancel-button" (click)="cancelDelete()">CANCEL</button>
+      <button type="button" class="delete-button" (click)="deleteBooking()">DELETE</button>
     </div>
   </div>
 </div>
