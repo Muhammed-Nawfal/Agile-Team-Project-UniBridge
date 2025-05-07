@@ -3,7 +3,8 @@
   border: none;
   border-radius: 10px;
   overflow: hidden;
-  background: #fff;
+  background: linear-gradient(135deg, #481183, #2563eb);
+  color: white;
 }
 
 .trophy-card:hover {
@@ -23,9 +24,10 @@
   border-radius: 20px;
   background: #f8f9fa;
   display: inline-block;
+  font-weight: bold;
 }
 
-// Trophy-specific color classes
+// Trophy color accents
 .bronze {
   color: #cd7f32;
 }
@@ -46,7 +48,19 @@
   color: #b9f2ff;
 }
 
-.btn-view-challenges {
-  color: #481183;
+.btn-gradient {
+  background: linear-gradient(135deg, #481183, #2563eb);
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.3s ease;
 }
-// Text color for both text and icon
+
+.btn-gradient:hover {
+  background: linear-gradient(135deg, #38106a, #1e4fc9);
+}

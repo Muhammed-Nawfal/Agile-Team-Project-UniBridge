@@ -6,7 +6,6 @@ import { Component, OnInit } from '@angular/core';
 import { IChallenge } from '../challenge.model';
 import { ChallengeService } from '../service/challenge.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgFor, NgIf } from '@angular/common';
 import { ChallengeCardComponent } from '../challenge-card.component';
 import { RouterLink } from '@angular/router';
 import { ProfileService } from 'app/entities/profile/service/profile.service';
@@ -15,17 +14,31 @@ import { ChatService } from 'app/entities/chat/service/chat.service';
 import { NewChat } from 'app/entities/chat/chat.model';
 import dayjs from 'dayjs/esm';
 import { FriendsListService } from 'app/entities/friends-list/service/friends-list.service';
+import { DatePipe, NgFor, NgIf, NgStyle } from '@angular/common';
 
+interface TrophyBadge {
+  type: string;
+  color: string;
+  icon: string;
+}
 @Component({
   selector: 'jhi-challenge-list',
   templateUrl: './challenge-list.component.html',
   styleUrls: ['./challenge-list.component.scss'],
-  imports: [FontAwesomeModule, NgFor, NgIf, ChallengeCardComponent, RouterLink],
+  imports: [FontAwesomeModule, NgFor, NgIf, NgStyle, ChallengeCardComponent, RouterLink, DatePipe],
   standalone: true,
 })
 export class ChallengeListComponent implements OnInit {
-  challenges: IChallenge[] = [];
+  challenges: (IChallenge & { trophy?: TrophyBadge })[] = [];
   isLoading = false;
+
+  private trophyMap: Record<number, TrophyBadge> = {
+    5: { type: 'Bronze', icon: 'trophy', color: '#CD7F32' },
+    10: { type: 'Silver', icon: 'trophy', color: '#C0C0C0' },
+    15: { type: 'Gold', icon: 'trophy', color: '#FFD700' },
+    20: { type: 'Platinum', icon: 'trophy', color: '#E5E4E2' },
+    25: { type: 'Diamond', icon: 'trophy', color: '#B9F2FF' },
+  };
 
   constructor(
     private challengeService: ChallengeService,
@@ -52,7 +65,13 @@ export class ChallengeListComponent implements OnInit {
 
         this.challengeService.query().subscribe({
           next: res => {
-            this.challenges = (res.body ?? []).filter(c => c.assignedTo?.id === myProfile.id);
+            const rawChallenges = res.body ?? [];
+            this.challenges = rawChallenges
+              .filter(c => c.assignedTo?.id === myProfile.id)
+              .map(c => ({
+                ...c,
+                trophy: c.completed ? this.trophyMap[c.points || 0] : undefined,
+              }));
             this.isLoading = false;
           },
           error: () => (this.isLoading = false),

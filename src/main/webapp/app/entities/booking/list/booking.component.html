@@ -1,19 +1,26 @@
+<!-- Add the gradient background -->
+<div class="page-background"></div>
+
+<!-- Confirmation message that appears after successful booking -->
+<div class="confirmation-message" *ngIf="showConfirmation">Your booking has been successfully confirmed!</div>
+
 <div class="secondDiv">
-  <form action="submit" class="bookSection">
+  <!-- Booking Section -->
+  <div class="bookSection">
     <h1>BOOKING</h1>
     <div class="bookDetails">
       <h2>CHOOSE A DATE</h2>
       <input type="date" name="date" class="form-control" (change)="onDateChange($event)" required />
 
-      <h2>SELECT AN ACTIVITY</h2>
+      <h2>SELECT AN ACTIVITY Type</h2>
       <select name="activity" class="form-control" (change)="onActivityChange($event)" required>
-        <option value="" selected disabled>Activities</option>
+        <option value="" selected disabled>Activity type</option>
         <option *ngFor="let activity of activities" [value]="activity.value">{{ activity.name }}</option>
       </select>
 
       <h2>What activity are you booking for?</h2>
       <select name="socialActivity" class="form-control" (change)="onSocialActivityChange($event)">
-        <option value="" selected disabled>Social Activities</option>
+        <option value="" selected disabled>Activities you have created</option>
         <option value="none">None</option>
         <option *ngFor="let activity of loadedActivities" [value]="'activity-' + activity.id" [disabled]="!isActivitySelectable(activity)">
           {{ activity.activityName }}
@@ -21,9 +28,9 @@
         </option>
       </select>
 
-      <h2>SELECT AN EVENT Room</h2>
+      <h2>SELECT A Booking Location</h2>
       <select name="Events" class="form-control" (change)="onEventChange($event)" required>
-        <option value="" selected disabled>Events</option>
+        <option value="" selected disabled>Location</option>
         <option *ngFor="let event of events" [value]="event.value">{{ event.name }}</option>
       </select>
 
@@ -65,19 +72,22 @@
         </div>
       </div>
 
-      <div *ngIf="bookingError" class="alert alert-danger mt-2">
+      <div *ngIf="bookingError" class="alert alert-danger">
         {{ bookingError }}
       </div>
 
-      <button type="button" class="bookBtn" (click)="onSubmit()">BOOK</button>
+      <div class="bookBtn">
+        <button type="button" (click)="onSubmit()">BOOK NOW</button>
+      </div>
     </div>
-  </form>
+  </div>
 
+  <!-- Activity Section -->
   <div class="activitySection">
     <h1>UPCOMING</h1>
 
     <div *ngIf="isLoadingBookings" class="loading-indicator">
-      <p>Loading bookings...</p>
+      <p>Loading your bookings...</p>
     </div>
 
     <div *ngIf="!isLoadingBookings && upcomingBookings.length === 0" class="empty-bookings">
@@ -85,17 +95,19 @@
     </div>
 
     <div class="activity-list" *ngIf="!isLoadingBookings && upcomingBookings.length > 0">
-      <div class="activity-card" *ngFor="let booking of upcomingBookings" (click)="openBookingDetails(booking)">
+      <div
+        class="activity-card"
+        *ngFor="let booking of upcomingBookings; let i = index"
+        (click)="openBookingDetails(booking)"
+        style="--index: {{ i }}"
+      >
         <div class="activity-icon">{{ booking.icon }}</div>
         <div class="booking-info">
           <div class="event-name">
-            <h3>{{ booking.name.split(' ')[0] }}</h3>
-            <h3>{{ booking.name.split(' ').slice(1).join(' ') }}</h3>
+            <h3>{{ booking.name }}</h3>
           </div>
           <div class="booking-details">
-            <p class="date-time">
-              {{ booking.date }} | <span>{{ booking.time }}</span>
-            </p>
+            <p class="date-time">{{ booking.date }} | {{ booking.time }}</p>
             <p class="location">{{ booking.locationName }}</p>
           </div>
         </div>
@@ -104,17 +116,20 @@
   </div>
 </div>
 
+<!-- Modal for booking details -->
 <div class="modal" *ngIf="selectedBooking" [class.show]="showModal">
   <div class="modal-content">
-    <span class="close" (click)="closeModal()">&times;</span>
-    <h2>{{ selectedBooking.name }}</h2>
+    <div class="modal-header">
+      <h2>{{ selectedBooking.name }}</h2>
+      <span class="close" (click)="closeModal()">&times;</span>
+    </div>
     <div class="modal-details">
       <div *ngIf="!isEditMode">
         <p><strong>Date:</strong> {{ selectedBooking.date }}</p>
         <p><strong>Time:</strong> {{ selectedBooking.time }}</p>
         <p><strong>Location:</strong> {{ selectedBooking.locationName }}</p>
         <p><strong>Party Size:</strong> {{ selectedBooking.partySize }}</p>
-        <p><strong>Social Activity:</strong> {{ selectedBooking.bookedActivity?.activityName || 'None' }}</p>
+        <p><strong>Book for activities you have created:</strong> {{ selectedBooking.bookedActivity?.activityName || 'None' }}</p>
         <div class="modal-actions">
           <button type="button" class="update-button" (click)="updateBooking()">UPDATE</button>
           <button type="button" class="delete-button" (click)="confirmDelete()">DELETE</button>
@@ -159,7 +174,7 @@
         <div class="form-group">
           <label for="editSocialActivity">PICK A SOCIAL ACTIVITY</label>
           <select id="editSocialActivity" class="form-control" (change)="onSocialActivityChange($event)">
-            <option value="" selected disabled>Social Activities</option>
+            <option value="" selected disabled>Choose from activities you have created</option>
             <option value="none">None</option>
             <option
               *ngFor="let activity of loadedActivities"
@@ -206,14 +221,19 @@
   </div>
 </div>
 
+<!-- Delete confirmation modal -->
 <div class="modal" *ngIf="showDeleteConfirmation" [class.show]="showDeleteConfirmation">
   <div class="modal-content">
-    <span class="close" (click)="cancelDelete()">&times;</span>
-    <h2>Confirm Delete</h2>
-    <p>Are you sure you want to delete this booking?</p>
-    <div class="modal-actions">
-      <button type="button" class="cancel-button" (click)="cancelDelete()">CANCEL</button>
-      <button type="button" class="delete-button" (click)="deleteBooking()">DELETE</button>
+    <div class="modal-header">
+      <h2>Confirm Delete</h2>
+      <span class="close" (click)="cancelDelete()">&times;</span>
+    </div>
+    <div class="modal-details">
+      <p>Are you sure you want to delete this booking?</p>
+      <div class="modal-actions">
+        <button type="button" class="cancel-button" (click)="cancelDelete()">CANCEL</button>
+        <button type="button" class="delete-button" (click)="deleteBooking()">DELETE</button>
+      </div>
     </div>
   </div>
 </div>

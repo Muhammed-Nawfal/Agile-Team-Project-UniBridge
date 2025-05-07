@@ -1,34 +1,69 @@
-<!-- src/main/webapp/app/entities/challenge/list/challenge-list.component.html -->
 <div class="container-fluid">
-  <h2 id="page-heading" class="mb-4">Challenges</h2>
-  <div class="d-flex justify-content-end mb-3">
-    <button id="test" class="btn btn-primary me-2" routerLink="new">
-      <fa-icon icon="plus"></fa-icon>
-      Create Challenge
-    </button>
-    <button id="test2" class="btn btn-secondary me-2" routerLink="my">
-      <fa-icon icon="list"></fa-icon>
-      Challenges you created
-    </button>
-    <button id="test" class="btn btn-success me-2" routerLink="mytrophies">
-      <fa-icon icon="trophy"></fa-icon>
-      My Trophies
-    </button>
-    <button id="test2" class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
-      <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-      Refresh
+  <!-- Gradient Page Header -->
+  <div class="page-header-gradient text-white p-4 rounded shadow mb-4">
+    <h2 class="mb-1">Assigned Challenges</h2>
+    <p class="mb-0 text-white-50">These are the challenges you've been assigned. Complete them to earn trophies.</p>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="d-flex flex-wrap justify-content-end gap-2 mb-4">
+    <button class="btn gradient-btn" routerLink="new"><fa-icon icon="plus"></fa-icon> <span class="ms-1">Create Challenge</span></button>
+    <button class="btn gradient-btn" routerLink="my"><fa-icon icon="list"></fa-icon> <span class="ms-1">Created by You</span></button>
+    <button class="btn gradient-btn" routerLink="mytrophies">
+      <fa-icon icon="trophy"></fa-icon> <span class="ms-1">My Trophies</span>
     </button>
   </div>
 
-  <div *ngIf="isLoading" class="text-center">
-    <div class="spinner-border" role="status"><span class="visually-hidden">Loading…</span></div>
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2">Loading challenges...</p>
   </div>
 
-  <div *ngIf="challenges.length === 0 && !isLoading" class="alert alert-warning">No Challenges found</div>
+  <!-- No Challenges -->
+  <div *ngIf="!isLoading && challenges.length === 0" class="empty-state-container text-center py-5">
+    <fa-icon icon="clipboard-list" class="empty-icon mb-3"></fa-icon>
+    <h4 class="mb-2">You're all caught up!</h4>
+    <p class="text-muted">No challenges assigned yet. Once your friends assign you some, they'll appear here.</p>
+    <a routerLink="/challenge/new" class="btn gradient-btn mt-3">
+      <fa-icon icon="plus"></fa-icon> <span class="ms-1">Create Your Own Challenge</span>
+    </a>
+  </div>
 
-  <div class="row g-3">
+  <!-- Challenge Cards -->
+  <div class="row g-4">
     <div class="col-12 col-md-6 col-lg-4" *ngFor="let c of challenges; trackBy: trackId">
-      <jhi-challenge-card [challenge]="c" (reject)="onReject(c.id)" (complete)="onComplete(c)"></jhi-challenge-card>
+      <div class="card challenge-card shadow-sm">
+        <!-- Full-width Trophy Banner -->
+        <div *ngIf="c.trophy" class="trophy-banner-full" [ngStyle]="{ 'background-color': c.trophy.color }">
+          <fa-icon [icon]="c.trophy.icon" class="me-2"></fa-icon> {{ c.trophy.type }} Trophy
+        </div>
+
+        <div class="card-body">
+          <h5 class="mb-2">{{ c.title }}</h5>
+
+          <p class="text-muted small mb-1"><fa-icon icon="calendar" class="me-1"></fa-icon> {{ c.date?.toDate() | date: 'dd/MM/yyyy' }}</p>
+
+          <p class="text-muted small mb-2" *ngIf="c.createdBy">
+            <fa-icon icon="user" class="me-1"></fa-icon> Created by: {{ c.createdBy?.firstName ?? 'Unknown' }}
+          </p>
+
+          <p class="mb-3">{{ c.description }}</p>
+
+          <span class="badge bg-dark mb-3"> <fa-icon icon="star" class="me-1"></fa-icon> {{ c.points }} points </span>
+
+          <div class="d-flex justify-content-between align-items-center">
+            <button class="btn btn-sm btn-outline-primary" (click)="onComplete(c)" *ngIf="!c.completed">
+              <fa-icon icon="check-circle"></fa-icon> Complete
+            </button>
+            <button class="btn btn-sm btn-outline-danger" (click)="onReject(c.id)" *ngIf="!c.completed">
+              <fa-icon icon="times"></fa-icon> Reject
+            </button>
+
+            <span *ngIf="c.completed" class="badge bg-success">Completed</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
