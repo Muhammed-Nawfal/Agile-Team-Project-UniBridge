@@ -1,6 +1,16 @@
-/*ssh into vm and then run  
+
+/*ssh into vm (KEYFILE IS IN GIT REPO, YOU MAY NEED TO CHANGE ACCESS PERMISSIONS)
+ssh -i UniBridge_key.pem ubuntu_t32@4.213.178.172
+and then run  
 docker exec -it team-project-teamproject-postgresql-prd-1 psql -U teamproject24 -d teamproject24
 */
+
+
+
+/*WARNING RUNNING THIS SCRIPT WILL RENDER ADMIN AND USER USELESS AND YOU WONT BE ABLE TO LOG IN*/
+UPDATE jhi_user
+SET password_hash = '$2a$10$ThisIsAFakePasswordHash123456789012345678901'
+WHERE id IN (1, 2);
 
 
 
