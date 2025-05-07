@@ -17,11 +17,11 @@ const routes: Routes = [
   //   loadComponent: () => import('./layouts/navbar/navbar.component'),
   //   outlet: 'navbar',
   // },
-  {
-    path: '',
-    loadComponent: () => import('./layouts/navbar/navbar.component'),
-    outlet: 'navbar',
-  },
+  // {
+  //   path: '',
+  //   loadComponent: () => import('./layouts/navbar/navbar.component'),
+  //   outlet: 'navbar',
+  // },
   {
     path: 'admin',
     data: {
