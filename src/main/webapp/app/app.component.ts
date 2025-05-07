@@ -15,6 +15,8 @@ import { addIconsToLibrary } from './core/icons/icons';
 
 library.add(faMapMarkerAlt);
 
+import AOS from 'aos';
+
 @Component({
   standalone: true,
   selector: 'jhi-app',
@@ -35,5 +37,9 @@ export default class AppComponent {
     this.iconLibrary.addIcons(...fontAwesomeIcons);
     this.dpConfig.minDate = { year: dayjs().subtract(100, 'year').year(), month: 1, day: 1 };
     addIconsToLibrary(); // ✅ Proper call here
+  }
+
+  ngAfterViewInit(): void {
+    AOS.init({ duration: 1000, once: true });
   }
 }
