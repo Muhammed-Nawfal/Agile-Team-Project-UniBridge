@@ -1,57 +1,102 @@
 import { Routes } from '@angular/router';
-
 import { Authority } from 'app/config/authority.constants';
-
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { errorRoute } from './layouts/error/error.route';
-import { ActivityMatchComponent } from './entities/activity-match/list/activity-match.component';
-import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
-import NavbarComponent from './layouts/navbar/navbar.component';
 
 const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./home/home.component').then(m => m.default),
-    title: 'home.title',
-  },
-  {
-    path: 'admin',
-    data: {
-      authorities: [Authority.ADMIN],
-    },
-    canActivate: [UserRouteAccessService],
-    loadChildren: () => import('./admin/admin.routes'),
-  },
-  {
-    path: 'account',
-    loadChildren: () => import('./account/account.route'),
-  },
-  {
-    path: 'no-profile',
-    loadComponent: () => import('./entities/profile/no-profile/no-profile.component').then(m => m.NoProfileComponent),
-  },
-
-  {
-    path: 'gdpr-policy',
-    loadComponent: () => import('./gdpr-policy/gdpr-policy.component'),
-  },
-  {
-    path: 'login',
-    loadComponent: () => import('./login/login.component'),
-    title: 'login.title',
-  },
-  {
-    path: '',
-    component: NavbarComponent,
+    // load your MainComponent as the shell
+    loadComponent: () => import('./layouts/main/main.component').then(m => m.default),
     children: [
       {
-        path: 'activity-match',
-        loadChildren: () => import('./entities/activity-match/activity-match.routes'),
+        path: '',
+        loadComponent: () => import('./home/home.component').then(m => m.default),
+        title: 'home.title',
       },
-      // other routes
+      {
+        path: 'login',
+        loadComponent: () => import('./login/login.component'),
+        title: 'login.title',
+      },
+      {
+        path: 'no-profile',
+        loadComponent: () => import('./entities/profile/no-profile/no-profile.component').then(m => m.NoProfileComponent),
+      },
+      {
+        path: 'gdpr-policy',
+        loadComponent: () => import('./gdpr-policy/gdpr-policy.component'),
+      },
+      {
+        path: 'admin',
+        data: { authorities: [Authority.ADMIN] },
+        canActivate: [UserRouteAccessService],
+        loadChildren: () => import('./admin/admin.routes'),
+      },
+      {
+        path: 'account',
+        loadChildren: () => import('./account/account.route'),
+      },
+      {
+        path: '',
+        loadChildren: () => import('./entities/entity.routes'),
+      },
+      ...errorRoute,
     ],
   },
-  ...errorRoute,
 ];
 
 export default routes;
+
+// import { Routes } from '@angular/router';
+//
+// import { Authority } from 'app/config/authority.constants';
+//
+// import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+// import { errorRoute } from './layouts/error/error.route';
+// import { ActivityMatchComponent } from './entities/activity-match/list/activity-match.component';
+//
+// const routes: Routes = [
+//   {
+//     path: '',
+//     loadComponent: () => import('./home/home.component').then(m => m.default),
+//     title: 'home.title',
+//   },
+//   {
+//     path: '',
+//     loadComponent: () => import('./layouts/navbar/navbar.component').then(m => m.NavbarComponent),
+//   },
+//   {
+//     path: 'admin',
+//     data: {
+//       authorities: [Authority.ADMIN],
+//     },
+//     canActivate: [UserRouteAccessService],
+//     loadChildren: () => import('./admin/admin.routes'),
+//   },
+//   {
+//     path: 'account',
+//     loadChildren: () => import('./account/account.route'),
+//   },
+//   {
+//     path: 'no-profile',
+//     loadComponent: () => import('./entities/profile/no-profile/no-profile.component').then(m => m.NoProfileComponent),
+//   },
+//
+//   {
+//     path: 'gdpr-policy',
+//     loadComponent: () => import('./gdpr-policy/gdpr-policy.component'),
+//   },
+//   {
+//     path: 'login',
+//     loadComponent: () => import('./login/login.component'),
+//     title: 'login.title',
+//   },
+//   {
+//     path: '',
+//     loadChildren: () => import(`./entities/entity.routes`),
+//   },
+//   ...errorRoute,
+// ];
+//
+// export default routes;

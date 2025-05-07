@@ -538,7 +538,8 @@ app-root {
   margin: 0 !important;
   padding: 0 !important;
   width: 100vw !important;
-  height: 100vh !important;
+  min-height: 100vh;
+  height: auto;
   overflow-x: hidden !important;
   position: relative;
 }
