@@ -19,7 +19,7 @@
 
             <div class="mb-3">
               <label for="field_bio" class="form-label">Bio</label>
-              <textarea id="field_bio" class="form-control" formControlName="bio" rows="4" placeholder="Enter your bio..."></textarea>
+              <textarea id="field_bio" class="form-control" formControlName="bio" rows="3" placeholder="Enter your bio..."></textarea>
               <div *ngIf="editForm.get('bio')?.errors?.['maxlength'] && (editForm.get('bio')?.dirty || editForm.get('bio')?.touched)">
                 <small class="text-danger">Bio cannot exceed 100 characters.</small>
               </div>
@@ -33,7 +33,7 @@
                   [src]="
                     editForm.get('profilePicture')?.value
                       ? 'data:' + editForm.get('profilePictureContentType')?.value + ';base64,' + editForm.get('profilePicture')?.value
-                      : 'content/images/placeholder.svg'
+                      : 'content/images/default-pfp.svg'
                   "
                   alt="Profile Picture"
                 />
