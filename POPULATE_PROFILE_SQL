@@ -3,6 +3,29 @@ docker exec -it team-project-teamproject-postgresql-prd-1 psql -U teamproject24 
 */
 
 
+
+
+INSERT INTO jhi_user (
+  id, login, password_hash, first_name, last_name, email,
+  activated, lang_key, created_by, created_date, last_modified_by, last_modified_date
+) VALUES
+  (11, 'alexj', '$2a$10$dummyHashExample0', 'Alex', 'Johnson', 'test9@localhost', true, 'en', 'system', now(), 'system', now()),
+  (12, 'npatel', '$2a$10$dummyHashExample1', 'Nina', 'Patel', 'test10@localhost', true, 'en', 'system', now(), 'system', now()),
+  (13, 'bwayne', '$2a$10$dummyHashExample2', 'Bruce', 'Wayne', 'test11@localhost', true, 'en', 'system', now(), 'system', now()),
+  (14, 'ckent', '$2a$10$dummyHashExample3', 'Clark', 'Kent', 'test12@localhost', true, 'en', 'system', now(), 'system', now()),
+  (15, 'dparker', '$2a$10$dummyHashExample4', 'Diana', 'Parker', 'test13@localhost', true, 'en', 'system', now(), 'system', now()),
+  (16, 'jstewart', '$2a$10$dummyHashExample5', 'James', 'Stewart', 'test14@localhost', true, 'en', 'system', now(), 'system', now()),
+  (17, 'mlee', '$2a$10$dummyHashExample6', 'Maya', 'Lee', 'test15@localhost', true, 'en', 'system', now(), 'system', now()),
+  (18, 'arodriguez', '$2a$10$dummyHashExample7', 'Ana', 'Rodriguez', 'test16@localhost', true, 'en', 'system', now(), 'system', now()),
+  (19, 'kbell', '$2a$10$dummyHashExample8', 'Kevin', 'Bell', 'test17@localhost', true, 'en', 'system', now(), 'system', now()),
+  (20, 'tyang', '$2a$10$dummyHashExample9', 'Tina', 'Yang', 'test18@localhost', true, 'en', 'system', now(), 'system', now());
+
+
+
+
+
+
+
 INSERT INTO profile (
     id, login, first_name, last_name, bio, profile_picture, profile_picture_content_type,
     course, course_year, university, gym_skill, gym_location, gym_time, study_time,
@@ -21,11 +44,199 @@ INSERT INTO profile (
     'BOXING', 'NOVICE', 'MORNING', 'OTHER', 'GAMES_NIGHT', 'MORNING',
     'ACADEMIC', 2
 ),
-(3, 'test1', 'John', 'Doe', NULL, NULL, NULL, 'BIOLOGY', 4, 'UNIVERSITY_OF_BIRMINGHAM', 'CONFIDENT', 'PUREGYM_FIVE_WAYS', 'EARLY_MORNING', 'EVENING', 'CRICKET', 'CONFIDENT', 'EVENING', 'VIETNAMESE', 'RELIGIOUS', 'NIGHT', 'SOCIAL', 3),
-(4, 'test2', 'Jane', 'Smith', NULL, NULL, NULL, 'PHYSICS', 1, 'UNIVERSITY_OF_NOTTINGHAM', 'INTERMEDIATE', 'THE_GYM_SELLY_OAK', 'LATE_NIGHT', 'EARLY_MORNING', 'BADMINTON', 'NOVICE', 'AFTERNOON', 'BAKING', 'GAMES_NIGHT', 'NIGHT', 'SOCIAL', 4),
-(5, 'test3', 'Mike', 'Johnson', NULL, NULL, NULL, 'BUSINESS', 4, 'UNIVERSITY_OF_BIRMINGHAM', 'INTERMEDIATE', 'PUREGYM_FIVE_WAYS', 'LATE_NIGHT', 'LATE_NIGHT', 'TABLE_TENNIS', 'INTERMEDIATE', 'EARLY_MORNING', 'ABACUS', 'ACADEMIC', 'EARLY_MORNING', 'OTHER', 5),
-(6, 'test4', 'Emily', 'Davis', NULL, NULL, NULL, 'ECONOMICS', 6, 'UNIVERSITY_OF_NOTTINGHAM', 'NOVICE', 'THE_GYM_SELLY_OAK', 'EVENING', 'EVENING', 'HOCKEY', 'PROFESSIONAL', 'LATE_NIGHT', 'VIETNAMESE', 'MEET_AND_GREET', 'NIGHT', 'OTHER', 6),
-(7, 'test5', 'Chris', 'Brown', NULL, NULL, NULL, 'SOCIOLOGY', 1, 'UNIVERSITY_OF_NOTTINGHAM', 'PROFESSIONAL', 'THE_GYM_SELLY_OAK', 'MORNING', 'AFTERNOON', 'BADMINTON', 'NOVICE', 'NIGHT', 'WELSH', 'MEET_AND_GREET', 'EVENING', 'OTHER', 7),
-(8, 'test6', 'Laura', 'Wilson', NULL, NULL, NULL, 'LAW', 1, 'UNIVERSITY_OF_NOTTINGHAM', 'NOVICE', 'THE_GYM_SELLY_OAK', 'NIGHT', 'NIGHT', 'BOXING', 'NOVICE', 'NIGHT', 'SIKH', 'RELIGIOUS', 'EVENING', 'SOCIAL', 8),
-(9, 'test7', 'David', 'Taylor', NULL, NULL, NULL, 'ENGINEERING', 4, 'UNIVERSITY_OF_BIRMINGHAM', 'PROFESSIONAL', 'PUREGYM_FIVE_WAYS', 'EVENING', 'AFTERNOON', 'NETBALL', 'NOVICE', 'MORNING', 'PUNJABI', 'CLUBBING', 'LATE_NIGHT', 'OTHER', 9),
-(10, 'test8', 'Sophia', 'Martinez', NULL, NULL, NULL, 'SOCIOLOGY', 6, 'BIRMINGHAM_CITY_UNIVERSITY', 'PROFESSIONAL', 'THE_GYM_SELLY_OAK', 'AFTERNOON', 'LATE_NIGHT', 'ATHLETICS', 'PROFESSIONAL', 'EVENING', 'EGYPTIAN', 'GAMES_NIGHT', 'EARLY_MORNING', 'SPORTS', 10);
+(3, 'jdoe', 'John', 'Doe', NULL, NULL, NULL, 'BIOLOGY', 4, 'UNIVERSITY_OF_BIRMINGHAM', 'CONFIDENT', 'PUREGYM_FIVE_WAYS', 'EARLY_MORNING', 'EVENING', 'CRICKET', 'CONFIDENT', 'EVENING', 'VIETNAMESE', 'RELIGIOUS', 'NIGHT', 'SOCIAL', 3),
+(4, 'jsmith', 'Jane', 'Smith', NULL, NULL, NULL, 'PHYSICS', 1, 'UNIVERSITY_OF_NOTTINGHAM', 'INTERMEDIATE', 'THE_GYM_SELLY_OAK', 'LATE_NIGHT', 'EARLY_MORNING', 'BADMINTON', 'NOVICE', 'AFTERNOON', 'BAKING', 'GAMES_NIGHT', 'NIGHT', 'SOCIAL', 4),
+(5, 'mjohnson', 'Mike', 'Johnson', NULL, NULL, NULL, 'BUSINESS', 4, 'UNIVERSITY_OF_BIRMINGHAM', 'INTERMEDIATE', 'PUREGYM_FIVE_WAYS', 'LATE_NIGHT', 'LATE_NIGHT', 'TABLE_TENNIS', 'INTERMEDIATE', 'EARLY_MORNING', 'ABACUS', 'ACADEMIC', 'EARLY_MORNING', 'OTHER', 5),
+(6, 'davis', 'Emily', 'Davis', NULL, NULL, NULL, 'ECONOMICS', 6, 'UNIVERSITY_OF_NOTTINGHAM', 'NOVICE', 'THE_GYM_SELLY_OAK', 'EVENING', 'EVENING', 'HOCKEY', 'PROFESSIONAL', 'LATE_NIGHT', 'VIETNAMESE', 'MEET_AND_GREET', 'NIGHT', 'OTHER', 6),
+(7, 'cbreezy', 'Chris', 'Brown', NULL, NULL, NULL, 'SOCIOLOGY', 1, 'UNIVERSITY_OF_BIRMINGHAM', 'PROFESSIONAL', 'THE_GYM_SELLY_OAK', 'MORNING', 'AFTERNOON', 'BADMINTON', 'NOVICE', 'NIGHT', 'WELSH', 'MEET_AND_GREET', 'EVENING', 'OTHER', 7),
+(8, 'lwilson', 'Laura', 'Wilson', NULL, NULL, NULL, 'LAW', 1, 'UNIVERSITY_OF_NOTTINGHAM', 'NOVICE', 'THE_GYM_SELLY_OAK', 'NIGHT', 'NIGHT', 'BOXING', 'NOVICE', 'NIGHT', 'SIKH', 'RELIGIOUS', 'EVENING', 'SOCIAL', 8),
+(9, 'dtaylor', 'David', 'Taylor', NULL, NULL, NULL, 'ENGINEERING', 4, 'UNIVERSITY_OF_BIRMINGHAM', 'PROFESSIONAL', 'PUREGYM_FIVE_WAYS', 'EVENING', 'AFTERNOON', 'NETBALL', 'NOVICE', 'MORNING', 'PUNJABI', 'CLUBBING', 'LATE_NIGHT', 'OTHER', 9),
+(10, 'soph', 'Sophia', 'Martinez', NULL, NULL, NULL, 'SOCIOLOGY', 6, 'BIRMINGHAM_CITY_UNIVERSITY', 'PROFESSIONAL', 'THE_GYM_SELLY_OAK', 'AFTERNOON', 'LATE_NIGHT', 'ATHLETICS', 'PROFESSIONAL', 'EVENING', 'EGYPTIAN', 'GAMES_NIGHT', 'EARLY_MORNING', 'SPORTS', 10);
+
+
+
+
+INSERT INTO profile (
+  id, login, first_name, last_name, bio, profile_picture, profile_picture_content_type,
+  course, course_year, university,
+  gym_skill, gym_location, gym_time, study_time,
+  sports, sports_skill, sports_time,
+  preferred_society, preferred_events, events_time,
+  preferred_activities, user_id
+) VALUES
+(11, 'alexj', 'Alex', 'Johnson', 'Creative writer & coder', null, null,
+ 'PHILOSOPHY', 2, 'ASTON_UNIVERSITY',
+ 'INTERMEDIATE', 'TIVERTON', 'EVENING', 'MORNING',
+ 'TENNIS', 'CONFIDENT', 'EVENING',
+ 'DEBATING', 'GAMES_NIGHT', 'EVENING',
+ null, 11),
+
+(12, 'npatel', 'Nina', 'Patel', 'Enthusiastic learner', null, null,
+ 'BIOLOGY', 1, 'UNIVERSITY_OF_NOTTINGHAM',
+ 'NOVICE', 'THE_GYM_SELLY_OAK', 'MORNING', 'AFTERNOON',
+ 'BADMINTON', 'NOVICE', 'MORNING',
+ 'HINDU', 'ACADEMIC', 'MORNING',
+ null, 12),
+
+(13, 'bwayne', 'Bruce', 'Wayne', 'Always on time', null, null,
+ 'LAW', 3, 'UNIVERSITY_OF_BIRMINGHAM',
+ 'PROFESSIONAL', 'PUREGYM_FIVE_WAYS', 'NIGHT', 'EVENING',
+ 'BOXING', 'PROFESSIONAL', 'LATE_NIGHT',
+ 'CRIMINOLOGY', 'CLUBBING', 'NIGHT',
+ null, 13),
+
+(14, 'ckent', 'Clark', 'Kent', 'Part-time journalist', null, null,
+ 'ENGLISH', 2, 'BIRMINGHAM_CITY_UNIVERSITY',
+ 'CONFIDENT', 'TIVERTON', 'EARLY_MORNING', 'AFTERNOON',
+ 'FOOTBALL', 'CONFIDENT', 'AFTERNOON',
+ 'FILMSOC', 'MEET_AND_GREET', 'AFTERNOON',
+ null, 14),
+
+(15, 'dparker', 'Diana', 'Parker', 'History enthusiast', null, null,
+ 'HISTORY', 4, 'UNIVERSITY_OF_BIRMINGHAM',
+ 'CONFIDENT', 'THE_GYM_SELLY_OAK', 'MORNING', 'EVENING',
+ 'SWIMMING', 'INTERMEDIATE', 'EVENING',
+ 'WAYFARERS_HIKING_SOCIETY', 'SPORTS_NIGHT', 'EVENING',
+ null, 15),
+
+(16, 'jstewart', 'James', 'Stewart', 'Always curious', null, null,
+ 'PSYCHOLOGY', 2, 'ASTON_UNIVERSITY',
+ 'INTERMEDIATE', 'PUREGYM_FIVE_WAYS', 'AFTERNOON', 'EVENING',
+ 'BASKETBALL', 'INTERMEDIATE', 'AFTERNOON',
+ 'PSYCHOLOGY', 'RELIGIOUS', 'AFTERNOON',
+ null, 16),
+
+(17, 'mlee', 'Maya', 'Lee', 'Future neuroscientist', null, null,
+ 'MEDICINE', 1, 'UNIVERSITY_OF_NOTTINGHAM',
+ 'NOVICE', 'THE_GYM_SELLY_OAK', 'EVENING', 'MORNING',
+ 'VOLLEYBALL', 'NOVICE', 'MORNING',
+ 'WOMEN_IN_MEDICINE', 'ACADEMIC', 'MORNING',
+ null, 17),
+
+(18, 'arodriguez', 'Ana', 'Rodriguez', 'Food lover and artist', null, null,
+ 'ART', 3, 'BIRMINGHAM_CITY_UNIVERSITY',
+ 'INTERMEDIATE', 'TIVERTON', 'EVENING', 'AFTERNOON',
+ 'TABLE_TENNIS', 'CONFIDENT', 'EVENING',
+ 'CULTURAL_ARTS', 'GAMES_NIGHT', 'EVENING',
+ null, 18),
+
+(19, 'kbell', 'Kevin', 'Bell', 'I love data & design', null, null,
+ 'COMPUTER_SCIENCE', 2, 'UNIVERSITY_OF_BIRMINGHAM',
+ 'CONFIDENT', 'PUREGYM_FIVE_WAYS', 'LATE_NIGHT', 'NIGHT',
+ 'ESPORTS', 'PROFESSIONAL', 'LATE_NIGHT',
+ 'VIDEO_GAMES_SOCIETY', 'MEET_AND_GREET', 'LATE_NIGHT',
+ null, 19),
+
+(20, 'tyang', 'Tina', 'Yang', 'Passionate about learning', null, null,
+ 'ECONOMICS', 1, 'ASTON_UNIVERSITY',
+ 'NOVICE', 'THE_GYM_SELLY_OAK', 'MORNING', 'MORNING',
+ 'BADMINTON', 'NOVICE', 'MORNING',
+ 'ACCOUNTING_AND_FINANCE', 'ACADEMIC', 'MORNING',
+ null, 20);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INSERT INTO activity (
+  id, activity_name, activity_type, activity_date, number_of_participants, max_number_of_participants,
+  location, description, created_on, updated_on, status, cover_image, cover_image_content_type,
+  is_paid, activity_cost, creator_id, challenge_id
+) VALUES
+(1, 'Board Game Night', 'SOCIAL', '2025-05-10 19:00:00', 12, 20,
+ 'Student Union Hall A', 'Casual board games and snacks.', now(), now(), 'ANNOUNCED', null, null, false, 0.00, 5, null),
+
+(2, 'Machine Learning Workshop', 'ACADEMIC', '2025-05-15 14:00:00', 25, 30,
+ 'CS Building Lab 4', 'Intro to ML and neural networks.', now(), now(), 'ANNOUNCED', null, null, false, 0.00, 12, null),
+
+(3, 'Inter-university Football Match', 'SPORTS', '2025-05-12 16:00:00', 22, 22,
+ 'Main Sports Field', 'UoB vs Aston friendly football match.', now(), now(), 'CURRENTLY_HAPPENING', null, null, false, 0.00, 19, null),
+
+(4, 'Weightlifting Bootcamp', 'GYM', '2025-05-13 10:00:00', 8, 15,
+ 'PureGym Five Ways', 'Strength training for all levels.', now(), now(), 'ANNOUNCED', null, null, true, 3.00, 17, null),
+
+(5, 'Study Group - Economics 101', 'ACADEMIC', '2025-05-14 17:00:00', 6, 10,
+ 'Library Room 3C', 'Group discussion on upcoming exam topics.', now(), now(), 'ANNOUNCED', null, null, false, 0.00, 20, null),
+
+(6, 'Coding Hackathon', 'ACADEMIC', '2025-05-18 09:00:00', 35, 40,
+ 'Engineering Commons', 'Full-day team coding competition.', now(), now(), 'ANNOUNCED', null, null, true, 5.00, 11, null),
+
+(7, 'Basketball Shootout', 'SPORTS', '2025-05-16 15:00:00', 16, 20,
+ 'Sports Complex Court B', 'Free shootout and skill drills.', now(), now(), 'ANNOUNCED', null, null, false, 0.00, 13, null),
+
+(8, 'Debate Society Meetup', 'SOCIAL', '2025-05-11 18:00:00', 10, 15,
+ 'Debate Room A', 'Discussing current events and practice rounds.', now(), now(), 'CURRENTLY_HAPPENING', null, null, false, 0.00, 16, null),
+
+(9, 'Cardio & HIIT Workshop', 'GYM', '2025-05-20 08:00:00', 10, 12,
+ 'Tiverton Studio 2', 'Guided cardio and HIIT circuits.', now(), now(), 'ANNOUNCED', null, null, false, 0.00, 14, null),
+
+(10, 'Salsa Night', 'SOCIAL', '2025-05-19 20:00:00', 18, 25,
+ 'Community Centre Hall', 'Dance and socialize with music.', now(), now(), 'ANNOUNCED', null, null, true, 2.00, 18, null),
+
+(11, 'Philosophy Reading Circle', 'ACADEMIC', '2025-05-22 18:00:00', 9, 10,
+ 'Library Quiet Room', 'Read and discuss “Republic” by Plato.', now(), now(), 'ANNOUNCED', null, null, false, 0.00, 15, null),
+
+(12, 'Bouldering Trip', 'SPORTS', '2025-05-21 10:00:00', 12, 12,
+ 'Redpoint Climbing Centre', 'Off-campus climbing fun.', now(), now(), 'ANNOUNCED', null, null, true, 7.00, 6, null),
+
+(13, 'Muay Thai Basics', 'GYM', '2025-05-23 17:00:00', 14, 15,
+ 'Combat Gym, City Centre', 'Beginner-friendly intro class.', now(), now(), 'ANNOUNCED', null, null, true, 4.00, 7, null),
+
+(14, 'Chess Challenge', 'SOCIAL', '2025-05-24 13:00:00', 20, 24,
+ 'SU Game Room', 'Tournament style chess matches.', now(), now(), 'ANNOUNCED', null, null, false, 0.00, 8, null),
+
+(15, 'Resume & CV Workshop', 'ACADEMIC', '2025-05-25 11:00:00', 30, 35,
+ 'Careers Office', 'Tips and review session.', now(), now(), 'ANNOUNCED', null, null, false, 0.00, 4, null),
+
+(16, 'Netball League Game', 'SPORTS', '2025-05-26 14:00:00', 14, 14,
+ 'Sports Complex Court D', 'Womens’ inter-college game.', now(), now(), 'ANNOUNCED', null, null, false, 0.00, 10, null),
+
+(17, 'Night Hike Prep Talk', 'SOCIAL', '2025-05-27 19:00:00', 7, 10,
+ 'Wayfarers Society Lounge', 'Plan the night hike logistics.', now(), now(), 'ANNOUNCED', null, null, false, 0.00, 3, null),
+
+(18, 'JavaScript Crash Course', 'ACADEMIC', '2025-05-28 15:00:00', 28, 30,
+ 'Tech Lab', 'Hands-on JavaScript intro.', now(), now(), 'ANNOUNCED', null, null, false, 0.00, 9, null),
+
+(19, 'Open Mic Talent Night', 'OTHER', '2025-05-29 20:00:00', 20, 30,
+ 'Main Auditorium', 'Sing, speak, or perform anything!', now(), now(), 'ANNOUNCED', null, null, true, 2.00, 2, null),
+
+(20, 'Study Picnic at Park', 'SOCIAL', '2025-05-30 12:00:00', 15, 20,
+ 'Cannon Hill Park', 'Group study with snacks in nature.', now(), now(), 'ANNOUNCED', null, null, false, 0.00, 1, null);
+
+
+
+
+
+
+INSERT INTO ranking (
+  id, review_number, activity_number, star_average, reliable, rank_given_id
+) VALUES
+(1, 1, 1, 4.2, true, 1),
+(2, 2, 2, 3.4, false, 2),
+(3, 3, 3, 4.5, true, 3),
+(4, 4, 4, 2.9, false, 4),
+(5, 5, 5, 4.0, true, 5),
+(6, 6, 6, 3.1, false, 6),
+(7, 7, 7, 3.6, true, 7),
+(8, 8, 8, 3.3, false, 8),
+(9, 9, 9, 3.8, true, 9),
+(10, 10, 10, 4.6, true, 10),
+(11, 11, 11, 2.5, false, 11),
+(12, 12, 12, 3.7, true, 12),
+(13, 13, 13, 3.9, true, 13),
+(14, 14, 14, 3.5, false, 14),
+(15, 15, 15, 4.1, true, 15),
+(16, 16, 16, 3.0, false, 16),
+(17, 17, 17, 4.3, true, 17),
+(18, 18, 18, 3.2, false, 18),
+(19, 19, 19, 3.6, true, 19),
+(20, 20, 20, 2.7, false, 20);
