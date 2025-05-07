@@ -7,6 +7,7 @@ import { DataUtils } from 'app/core/util/data-util.service';
 import { IActivity } from '../activity.model';
 import { JoinActivityButtonComponent } from '../join-activity-button/join-activity-button.component';
 import { LeaveActivityModalComponent } from '../join-activity-button/leave-activity-modal.component';
+import { ActivityDeleteDialogComponent } from '../delete/activity-delete-dialog.component';
 
 @Component({
   standalone: true,

@@ -119,6 +119,9 @@
                     @if (editForm.get('numberOfParticipants')?.errors?.required) {
                       <small>This field is required.</small>
                     }
+                    @if (editForm.get('numberOfParticipants')?.errors?.exceedsMaxParticipants) {
+                      <small>Cannot exceed max participants.</small>
+                    }
                     <small [hidden]="!editForm.get('numberOfParticipants')?.errors?.number"> Must be a number. </small>
                   </div>
                 }
@@ -144,6 +147,9 @@
                     }
                     @if (editForm.get('maxNumberOfParticipants')?.errors?.min) {
                       <small>Minimum is 2.</small>
+                    }
+                    @if (editForm.get('maxNumberOfParticipants')?.errors?.belowCurrentParticipants) {
+                      <small>Cannot be less than current participants.</small>
                     }
                     <small [hidden]="!editForm.get('maxNumberOfParticipants')?.errors?.number"> Must be a number. </small>
                   </div>
@@ -272,13 +278,19 @@
                     step="0.01"
                   />
                 </div>
-                @if (activityCostRef.invalid && (activityCostRef.dirty || activityCostRef.touched) && editForm.get('isPaid')?.value) {
+                @if (activityCostRef.invalid && (activityCostRef.dirty || activityCostRef.touched)) {
                   <div class="invalid-feedback d-block">
                     @if (editForm.get('activityCost')?.errors?.required) {
                       <small>Cost is required for paid activities.</small>
                     }
                     @if (editForm.get('activityCost')?.errors?.min) {
                       <small>Cost cannot be negative.</small>
+                    }
+                    @if (editForm.get('activityCost')?.errors?.mustBeZeroWhenNotPaid) {
+                      <small>Cost must be 0 when activity is not paid.</small>
+                    }
+                    @if (editForm.get('activityCost')?.errors?.mustBePositiveWhenPaid) {
+                      <small>Cost must be positive when activity is paid.</small>
                     }
                     <small [hidden]="!editForm.get('activityCost')?.errors?.number"> Must be a number. </small>
                   </div>
