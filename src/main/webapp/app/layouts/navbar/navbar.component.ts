@@ -26,6 +26,9 @@ export default class NavbarComponent implements OnInit, AfterViewInit {
   account = inject(AccountService).trackCurrentAccount();
   entitiesNavbarItems: NavbarItem[] = [];
 
+  currentRouteHidden = false;
+  hiddenRoutes = ['/', '/login', '/account/register'];
+
   private readonly loginService = inject(LoginService);
   private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
@@ -34,6 +37,10 @@ export default class NavbarComponent implements OnInit, AfterViewInit {
     if (VERSION) {
       this.version = VERSION.toLowerCase().startsWith('v') ? VERSION : `v${VERSION}`;
     }
+    this.router.events.subscribe(() => {
+      const path = this.router.url;
+      this.currentRouteHidden = this.hiddenRoutes.includes(path);
+    });
   }
 
   ngOnInit(): void {

@@ -42,7 +42,7 @@ Generic styles
 /* other generic styles */
 
 .jh-card {
-  padding: 1.5%;
+  padding: 0;
   margin-top: 20px;
   border: none;
 }
@@ -531,3 +531,33 @@ html[data-font-size] {
 }
 
 /* jhipster-needle-scss-add-main JHipster will add new css style */
+
+html,
+body,
+app-root {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow-x: hidden !important;
+  position: relative;
+}
+
+/* If you're using a container div, ensure it also has no margin */
+.container-fluid,
+.container {
+  padding: 0;
+  margin: 0;
+  max-width: 100%;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.jh-card {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}

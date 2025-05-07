@@ -1,15 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
 .landing-hero {
-  background: url('/content/images/h1.jpg') center center / cover no-repeat;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
-  padding: 0 1rem;
+  padding: 0;
+  margin: 0;
+}
+
+.vanta-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(4px);
+  z-index: -1;
 }
 
 .overlay {
-  background-color: rgba(0, 0, 0, 0.55);
+  background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.6), rgba(30, 0, 50, 0.6));
   padding: 3rem;
   border-radius: 1rem;
   color: white;
@@ -17,15 +31,72 @@
   max-width: 650px;
   width: 100%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
 
-  h1 {
-    font-size: 2.75rem;
+.overlay h1 {
+  font-size: 2.75rem;
+}
+
+.overlay p.lead {
+  font-size: 1.25rem;
+  margin-top: 1rem;
+}
+
+button.btn-light:hover {
+  background-color: #ddd;
+  color: #000;
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+}
+
+button.btn-outline-light:hover {
+  background-color: white;
+  color: #3c0f64;
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+}
+
+.text-highlight {
+  color: #bb86fc;
+}
+
+@media (max-width: 576px) {
+  .overlay {
+    padding: 2rem;
   }
 
-  p.lead {
-    font-size: 1.25rem;
-    margin-top: 1rem;
+  .overlay h1 {
+    font-size: 2rem;
   }
+
+  .overlay p.lead {
+    font-size: 1rem;
+  }
+}
+.arrow-container {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  z-index: 10;
+}
+
+.tinted-bar {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.3); /* semi-transparent tint */
+  padding: 0.5rem 0;
+}
+
+.down-arrow {
+  font-size: 5rem;
+  color: white;
+  transition: transform 0.3s ease;
+}
+
+.down-arrow:hover {
+  transform: translateY(5px);
+  color: #bb86fc;
 }
 
 .app-summary-section {
@@ -237,4 +308,15 @@
       right: 10px;
     }
   }
+}
+
+.vanta-bg {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
 }

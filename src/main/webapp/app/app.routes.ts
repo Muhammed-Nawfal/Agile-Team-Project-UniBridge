@@ -5,6 +5,7 @@ import { Authority } from 'app/config/authority.constants';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { errorRoute } from './layouts/error/error.route';
 import { ActivityMatchComponent } from './entities/activity-match/list/activity-match.component';
+import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 
 const routes: Routes = [
   {
@@ -45,7 +46,13 @@ const routes: Routes = [
   },
   {
     path: '',
-    loadChildren: () => import(`./entities/entity.routes`),
+    component: MainLayoutComponent,
+    children: [
+      {
+        path: '',
+        loadChildren: () => import(`./entities/entity.routes`),
+      },
+    ],
   },
   ...errorRoute,
 ];

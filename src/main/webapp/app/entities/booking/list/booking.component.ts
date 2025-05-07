@@ -50,13 +50,10 @@ export class BookingComponent implements OnInit {
   currentUserProfile: IProfile | null = null;
   bookings: any[] = [];
   isLoading = false;
-
   readonly MAX_SLOTS = 3;
   bookingError: string | null = null;
-
   upcomingBookings: any[] = [];
   isLoadingBookings = false;
-
   currentLanguage: 'en' | 'es' = 'en';
   translations: Record<'en' | 'es', Record<string, string>> = {
     en: {
@@ -129,9 +126,10 @@ export class BookingComponent implements OnInit {
   updatedDate = '';
   updatedPartySize: number | null = null;
   updatedTimeSlots: string[] = [];
-
   bookedActivityIds = new Set<number>();
   selectedActivityIds = new Set<number>();
+
+  private _tempAllActivities: IActivity[] = []; // Property to store activities temporarily
 
   constructor(
     private http: HttpClient,
@@ -145,8 +143,9 @@ export class BookingComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadEvents();
-    this.loadActivities();
+    // First load the user profile
     this.loadCurrentUserProfile();
+    // Activities will be loaded after profile is ready
   }
 
   loadUserBookingsList(): void {
@@ -190,6 +189,10 @@ export class BookingComponent implements OnInit {
               if (profile) {
                 this.currentUserProfile = profile;
                 console.log('Successfully loaded profile:', this.currentUserProfile);
+
+                // Load activities after profile is loaded
+                this.loadActivities();
+
                 // Load bookings after profile is loaded
                 this.loadUserBookingsList();
               } else {
@@ -211,27 +214,20 @@ export class BookingComponent implements OnInit {
   }
 
   loadActivities(): void {
-    this.profileService.findMyProfile().subscribe({
-      next: profileRes => {
-        const profile = profileRes.body;
-        if (!profile?.id) {
-          console.error('Could not retrieve current profile.');
-          return;
-        }
+    if (!this.currentUserProfile?.id) {
+      console.error('No current user profile available');
+      return;
+    }
 
-        this.activityService.query().subscribe({
-          next: response => {
-            const allActivities = response.body ?? [];
-            this.loadedActivities = allActivities.filter(activity => activity.creator!.id === profile.id);
-            console.log('Filtered activities:', this.loadedActivities);
-          },
-          error(err) {
-            console.error('Error loading activities:', err);
-          },
-        });
+    this.activityService.query().subscribe({
+      next: response => {
+        const allActivities = response.body ?? [];
+        // Safely filter activities to avoid null reference error
+        this.loadedActivities = allActivities.filter(activity => activity.creator && activity.creator.id === this.currentUserProfile!.id);
+        console.log('Filtered activities:', this.loadedActivities);
       },
       error(err) {
-        console.error('Error fetching current user profile:', err);
+        console.error('Error loading activities:', err);
       },
     });
   }
