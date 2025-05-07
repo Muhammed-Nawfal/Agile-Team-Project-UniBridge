@@ -58,7 +58,6 @@ public class UserFriendsResource {
      */
     @PostMapping("/send-request/{profileId}")
     @Transactional
-    @SuppressWarnings("java:modernizer")
     public ResponseEntity<FriendsList> sendFriendRequest(@PathVariable Long profileId) throws URISyntaxException {
         log.debug("REST request from current user to send friend request to profile ID: {}", profileId);
 
@@ -92,7 +91,7 @@ public class UserFriendsResource {
             Optional<FriendsList> existingRequest = friendsListRepository.findExistingFriendRequest(currentUserProfile, targetProfile);
 
             if (existingRequest.isPresent()) {
-                FriendsList friendship = existingRequest.orElseThrow();
+                FriendsList friendship = existingRequest.get();
 
                 // If it's DECLINED, update to PENDING
                 if (Decision.DECLINED.equals(friendship.getRequestStatus())) {

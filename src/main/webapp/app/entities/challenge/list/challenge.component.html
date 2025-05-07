@@ -1,8 +1,9 @@
+<!-- src/main/webapp/app/entities/challenge/challenge.component.html -->
 <div>
   <h2 id="page-heading" data-cy="ChallengeHeading">
     <span>Challenges</span>
 
-    <div class="d-flex justify-content-end">
+    <div class="d-flex justify-content-end mt-2">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
         <span>Refresh list</span>
@@ -21,7 +22,6 @@
   </h2>
 
   <jhi-alert-error></jhi-alert-error>
-
   <jhi-alert></jhi-alert>
 
   @if (challenges?.length === 0) {
@@ -31,79 +31,21 @@
   }
 
   @if (challenges && challenges.length > 0) {
-    <div class="table-responsive table-entities" id="entities">
-      <table class="table table-striped" aria-describedby="page-heading">
+    <div class="table-responsive table-entities mt-4" id="entities">
+      <table class="table table-striped align-middle" aria-describedby="page-heading">
         <thead>
           <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span>ID</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="title">
-              <div class="d-flex">
-                <span>Title</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="description">
-              <div class="d-flex">
-                <span>Description</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="category">
-              <div class="d-flex">
-                <span>Category</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="date">
-              <div class="d-flex">
-                <span>Date</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="points">
-              <div class="d-flex">
-                <span>Points</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="badge">
-              <div class="d-flex">
-                <span>Badge</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="completed">
-              <div class="d-flex">
-                <span>Completed</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="assignedTo.id">
-              <div class="d-flex">
-                <span>Assigned To</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="createdBy.id">
-              <div class="d-flex">
-                <span>Created By</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col"></th>
+            <th scope="col" jhiSortBy="id">ID <fa-icon icon="sort" class="ms-1"></fa-icon></th>
+            <th scope="col" jhiSortBy="title">Title <fa-icon icon="sort" class="ms-1"></fa-icon></th>
+            <th scope="col" jhiSortBy="description">Description <fa-icon icon="sort" class="ms-1"></fa-icon></th>
+            <th scope="col" jhiSortBy="category">Category <fa-icon icon="sort" class="ms-1"></fa-icon></th>
+            <th scope="col" jhiSortBy="date">Date <fa-icon icon="sort" class="ms-1"></fa-icon></th>
+            <th scope="col" jhiSortBy="points">Points <fa-icon icon="sort" class="ms-1"></fa-icon></th>
+            <th scope="col">Trophy</th>
+            <th scope="col" jhiSortBy="completed">Completed <fa-icon icon="sort" class="ms-1"></fa-icon></th>
+            <th scope="col" jhiSortBy="assignedTo.id">Assigned To <fa-icon icon="sort" class="ms-1"></fa-icon></th>
+            <th scope="col" jhiSortBy="createdBy.id">Created By <fa-icon icon="sort" class="ms-1"></fa-icon></th>
+            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -118,41 +60,33 @@
                 {{
                   {
                     null: '',
-                    STUDY: 'STUDY',
-                    SPORTS: 'SPORTS',
-                    COMMUNITY: 'COMMUNITY',
-                    PERSONAL_GROWTH: 'PERSONAL_GROWTH',
-                    SOCIAL: 'SOCIAL',
+                    STUDY: 'Study',
+                    SPORTS: 'Sports',
+                    COMMUNITY: 'Community',
+                    PERSONAL_GROWTH: 'Personal Growth',
+                    SOCIAL: 'Social',
                   }[challenge.category ?? 'null']
                 }}
               </td>
               <td>{{ challenge.date | formatMediumDate }}</td>
               <td>{{ challenge.points }}</td>
               <td>
-                @if (challenge.badge) {
-                  <a (click)="openFile(challenge.badge, challenge.badgeContentType)">
-                    <img
-                      [src]="'data:' + challenge.badgeContentType + ';base64,' + challenge.badge"
-                      style="max-height: 30px"
-                      alt="challenge"
-                    />
-                  </a>
-                  <span>{{ challenge.badgeContentType }}, {{ byteSize(challenge.badge) }}</span>
+                @if (challenge.completed && challenge.points >= 5) {
+                  <span class="badge trophy-badge" [ngStyle]="{ 'background-color': getTrophyColor(challenge.points), color: '#000' }">
+                    <fa-icon icon="trophy" class="me-1"></fa-icon>
+                    {{ getTrophyLabel(challenge.points) }}
+                  </span>
                 }
               </td>
-              <td>{{ challenge.completed }}</td>
+              <td>{{ challenge.completed ? 'Yes' : 'No' }}</td>
               <td>
                 @if (challenge.assignedTo) {
-                  <div>
-                    <a [routerLink]="['/profile', challenge.assignedTo.id, 'view']">{{ challenge.assignedTo.id }}</a>
-                  </div>
+                  <a [routerLink]="['/profile', challenge.assignedTo.id, 'view']">{{ challenge.assignedTo.id }}</a>
                 }
               </td>
               <td>
                 @if (challenge.createdBy) {
-                  <div>
-                    <a [routerLink]="['/profile', challenge.createdBy.id, 'view']">{{ challenge.createdBy.id }}</a>
-                  </div>
+                  <a [routerLink]="['/profile', challenge.createdBy.id, 'view']">{{ challenge.createdBy.id }}</a>
                 }
               </td>
               <td class="text-end">
@@ -161,12 +95,10 @@
                     <fa-icon icon="eye"></fa-icon>
                     <span class="d-none d-md-inline">View</span>
                   </a>
-
                   <a [routerLink]="['/challenge', challenge.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
                     <fa-icon icon="pencil-alt"></fa-icon>
                     <span class="d-none d-md-inline">Edit</span>
                   </a>
-
                   <button type="submit" (click)="delete(challenge)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                     <fa-icon icon="times"></fa-icon>
                     <span class="d-none d-md-inline">Delete</span>
