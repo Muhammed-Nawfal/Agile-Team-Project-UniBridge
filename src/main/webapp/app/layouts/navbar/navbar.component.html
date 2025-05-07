@@ -1,39 +1,22 @@
-<nav class="navbar navbar-hero">
-  <button
-    *ngIf="!isOffcanvasOpen"
-    class="navbar-toggler"
-    type="button"
-    data-bs-toggle="offcanvas"
-    data-bs-target="#mainOffcanvas"
-    aria-controls="mainOffcanvas"
-  >
-    <fa-icon icon="bars" size="2x"></fa-icon>
-  </button>
-</nav>
+<div class="layout-container">
+  <!-- Sidebar -->
+  <nav class="fixed-sidebar">
+    <div class="sidebar-header">
+      <h5 class="sidebar-title">UniBridge</h5>
+    </div>
 
-<!-- Offcanvas panel - changed to offcanvas-end -->
-<div class="offcanvas offcanvas-end offcanvas-dark" tabindex="-1" id="mainOffcanvas" aria-labelledby="offcanvasLabel">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offcanvasLabel">UniBridge</h5>
-    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-
-  <div class="offcanvas-body p-0">
     <ul class="nav flex-column">
       <li class="nav-item">
-        <a class="nav-link" routerLink="/" routerLinkActive="active" data-bs-dismiss="offcanvas">Home</a>
+        <a class="nav-link" routerLink="/" routerLinkActive="active">Home</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" routerLink="/activity" routerLinkActive="active" data-bs-dismiss="offcanvas">Activities</a>
+        <a class="nav-link" routerLink="/activity-match" routerLinkActive="active">Activity Match</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" routerLink="/activity-match" routerLinkActive="active" data-bs-dismiss="offcanvas">Activity Match</a>
+        <a class="nav-link" routerLink="/ranking" routerLinkActive="active">Ranking</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" routerLink="/ranking" routerLinkActive="active" data-bs-dismiss="offcanvas">Ranking</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/profile" routerLinkActive="active" data-bs-dismiss="offcanvas">Profile</a>
+        <a class="nav-link" routerLink="/profile" routerLinkActive="active">Profile</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" routerLink="/challenge" routerLinkActive="active" data-bs-dismiss="offcanvas">Challenges</a>
@@ -62,52 +45,26 @@
       <li class="nav-item">
         <a class="nav-link" routerLink="/challenge" routerLinkActive="active" data-bs-dismiss="offcanvas">Challenges</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/booking" routerLinkActive="active" data-bs-dismiss="offcanvas">Bookings</a>
+      </li>
     </ul>
-  </div>
-  <li *jhiHasAnyAuthority="'ROLE_ADMIN'">
-    <hr class="dropdown-divider" />
-    <h6 class="dropdown-header">Administration</h6>
-    <a
-      class="dropdown-item"
-      routerLink="/authority"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
-      (click)="collapseNavbar()"
-    >
-      <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
-      <span>Authority</span>
-    </a>
-    <a class="dropdown-item" routerLink="/admin/user-management" routerLinkActive="active" (click)="collapseNavbar()">
-      <fa-icon icon="users" [fixedWidth]="true"></fa-icon>
-      <span>User management</span>
-    </a>
-    <a class="dropdown-item" routerLink="/admin/metrics" routerLinkActive="active" (click)="collapseNavbar()">
-      <fa-icon icon="tachometer-alt" [fixedWidth]="true"></fa-icon>
-      <span>Metrics</span>
-    </a>
-    <a class="dropdown-item" routerLink="/admin/health" routerLinkActive="active" (click)="collapseNavbar()">
-      <fa-icon icon="heart" [fixedWidth]="true"></fa-icon>
-      <span>Health</span>
-    </a>
-    <a class="dropdown-item" routerLink="/admin/configuration" routerLinkActive="active" (click)="collapseNavbar()">
-      <fa-icon icon="cogs" [fixedWidth]="true"></fa-icon>
-      <span>Configuration</span>
-    </a>
-    <a class="dropdown-item" routerLink="/admin/logs" routerLinkActive="active" (click)="collapseNavbar()">
-      <fa-icon icon="tasks" [fixedWidth]="true"></fa-icon>
-      <span>Logs</span>
-    </a>
-    @if (openAPIEnabled) {
-      <a class="dropdown-item" routerLink="/admin/docs" routerLinkActive="active" (click)="collapseNavbar()">
-        <fa-icon icon="book" [fixedWidth]="true"></fa-icon>
-        <span>API</span>
-      </a>
-    }
-    @if (!inProduction) {
-      <a class="dropdown-item" href="./h2-console/" target="_tab" (click)="collapseNavbar()">
-        <fa-icon icon="database" [fixedWidth]="true"></fa-icon>
-        <span>Database</span>
-      </a>
-    }
-  </li>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="profile">
+        <img
+          *ngIf="profile?.profilePicture"
+          [src]="'data:' + profile?.profilePictureContentType + ';base64,' + profile?.profilePicture"
+          alt="Profile"
+          class="avatar-lg rounded-circle border"
+        />
+      </div>
+    </header>
+    <section class="page-content">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
 </div>

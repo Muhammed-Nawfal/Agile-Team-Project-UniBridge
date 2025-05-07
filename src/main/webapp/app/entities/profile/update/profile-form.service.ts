@@ -68,7 +68,7 @@ export class ProfileFormService {
       }),
 
       bio: new FormControl(profileRawValue.bio, {
-        validators: [Validators.maxLength(50)],
+        validators: [Validators.maxLength(100)],
       }),
       profilePicture: new FormControl(profileRawValue.profilePicture),
       profilePictureContentType: new FormControl(profileRawValue.profilePictureContentType),

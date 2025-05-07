@@ -1,6 +1,6 @@
 <div class="page" id="page-activity-match" jhiFocusAnnouncer jhiHoverAnnouncer>
   <h1 id="page-heading" class="title" data-cy="ActivityMatchHeading" tabindex="0" aria-label="Welcome to UNIBRIDGE">
-    Welcome to UNIBRIDGE
+    Choose Your Match Buddy
   </h1>
 
   <jhi-alert-error></jhi-alert-error>
@@ -10,43 +10,43 @@
   <div class="row g-3">
     <div class="col-md-6 col-lg-3">
       <button (click)="navigateToBuddy(ActivityType.ACADEMIC)" class="w-100 btn btn-gradient">
-        <i class="fas fa-book-reader me-2"></i> Academic Buddy
+        <fa-icon [icon]="['fas', 'book-reader']" class="me-2"></fa-icon> Academic Buddy
       </button>
     </div>
     <div class="col-md-6 col-lg-3">
       <button (click)="navigateToBuddy(ActivityType.GYM)" class="w-100 btn btn-gradient">
-        <i class="fas fa-dumbbell me-2"></i> Gym Buddy
+        <fa-icon [icon]="['fas', 'dumbbell']" class="me-2"></fa-icon> Gym Buddy
       </button>
     </div>
     <div class="col-md-6 col-lg-3">
       <button (click)="navigateToBuddy(ActivityType.SPORTS)" class="w-100 btn btn-gradient">
-        <i class="fas fa-medal me-2"></i> Sports Buddy
+        <fa-icon [icon]="['fas', 'medal']" class="me-2"></fa-icon> Sports Buddy
       </button>
     </div>
     <div class="col-md-6 col-lg-3">
       <button (click)="navigateToBuddy(ActivityType.SOCIAL)" class="w-100 btn btn-gradient">
-        <i class="fas fa-people-group me-2"></i> Socials Buddy
+        <fa-icon [icon]="['fas', 'people-group']" class="me-2"></fa-icon> Socials Buddy
       </button>
     </div>
   </div>
 
   <h2>Create/Join</h2>
   <div class="activity-buttons">
-    <button class="btn-secondary-action" (click)="navigateToBooking()"><i class="fas fa-calendar-plus me-2"></i> Create a Booking</button>
-    <button class="btn-secondary-action" (click)="navigateToActivity()"><i class="fas fa-sign-in-alt me-2"></i> Join an Activity</button>
+    <button class="btn-secondary-action" (click)="navigateToBooking()">
+      <fa-icon [icon]="['fas', 'calendar-plus']" class="me-2"></fa-icon> Create a Booking
+    </button>
+    <button class="btn-secondary-action" (click)="navigateToActivity()">
+      <fa-icon [icon]="['fas', 'sign-in-alt']" class="me-2"></fa-icon> Join an Activity
+    </button>
   </div>
 
   <h2>View Your Upcoming Matches</h2>
   <div class="activity-buttons">
     <button class="btn-secondary-action" (click)="navigateToUpcomingMatches()">
-      <i class="fas fa-calendar-check me-2"></i> Upcoming Matches
+      <fa-icon [icon]="['fas', 'calendar-check']" class="me-2"></fa-icon> Upcoming Matches
     </button>
     <button class="btn-secondary-action" (click)="navigateToMatchRequests()">
-      <i class="fas fa-user-friends me-2"></i> Match Requests
+      <fa-icon [icon]="['fas', 'user-friends']" class="me-2"></fa-icon> Match Requests
     </button>
-  </div>
-  <div class="form-text">
-    <span *ngIf="a11y.isEnabled$ | async" class="text-success">🟢 Accessibility ON</span>
-    <span *ngIf="!(a11y.isEnabled$ | async)" class="text-muted">⚪ Accessibility OFF</span>
   </div>
 </div>

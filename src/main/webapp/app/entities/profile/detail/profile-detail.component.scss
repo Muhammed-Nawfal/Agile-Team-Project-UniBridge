@@ -40,22 +40,6 @@ h3 {
   }
 }
 
-.badge {
-  font-size: 0.8rem;
-  @media (min-width: 768px) {
-    font-size: 0.9rem;
-  }
-  padding: 0.6em 0.8em;
-  border-radius: 0.6rem;
-}
-
-.btn-wide-short {
-  padding: 0.3rem 1.5rem; // less vertical, good horizontal
-  min-width: 160px; // makes it wider
-  font-size: 0.95rem;
-  line-height: 1.2;
-}
-
 .badge-outline {
   background-color: #ffffff00;
   border: 1.5px solid;
@@ -99,6 +83,15 @@ h3 {
   @extend .badge-outline;
   color: #8b07ff;
   border-color: #8b07ff;
+}
+
+.badge {
+  font-size: 0.8rem;
+  @media (min-width: 768px) {
+    font-size: 0.9rem;
+  }
+  padding: 0.6em 0.8em;
+  border-radius: 0.6rem;
 }
 
 button {

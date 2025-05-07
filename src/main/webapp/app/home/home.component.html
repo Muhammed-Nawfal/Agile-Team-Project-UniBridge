@@ -1,27 +1,34 @@
-<!-- Hero Section -->
-<div class="landing-hero">
-  <div class="overlay text-center">
-    <h1 class="display-4 fw-bold">Welcome to UniBridge</h1>
-    <p class="lead">Find your gym buddy, study partner, teammate, or event crew – all in one place.</p>
-    <div class="download-buttons d-flex justify-content-center mt-4 gap-3">
-      <button (click)="onButtonClick()" class="btn btn-light btn-lg">Get Started</button>
-      <button class="btn btn-outline-light btn-lg" routerLink="/about">How It Works</button>
+<div #vantaRef class="vanta-bg">
+  <div class="landing-hero">
+    <div class="overlay text-center">
+      <h1 class="display-4 fw-bold mb-3">Welcome to <span class="text-highlight">UniBridge</span></h1>
+      <p class="lead">Find your gym buddy, study partner, teammate, or event crew – all in one place.</p>
+      <div class="download-buttons d-flex justify-content-center mt-4 gap-3">
+        <button (click)="onButtonClick()" class="btn btn-light btn-lg">Get Started</button>
+      </div>
     </div>
+    <a href="#next-section" class="arrow-container">
+      <div class="tinted-bar">
+        <span class="down-arrow">&#8964;</span>
+      </div>
+    </a>
   </div>
 </div>
 
-<section class="app-summary-section text-center py-5">
-  <div class="container">
-    <h2 class="display-5 fw-bold">
-      The app connecting students across universities<br />
-      for <span class="highlight-purple">friendship</span> and <span class="highlight-cyan">collaboration</span>
-    </h2>
-    <div class="d-flex justify-content-center flex-wrap mt-4 gap-4">
-      <img src="/content/images/UB2.png" alt="Matching screen" class="app-mockup-img" />
-      <img src="/content/images/UB1.png" alt="Chat screen" class="app-mockup-img" />
-      <img src="/content/images/UB3.png" alt="Profile screen" class="app-mockup-img" />
+<section id="next-section">
+  <section class="app-summary-section text-center py-5">
+    <div class="container">
+      <h2 class="display-5 fw-bold">
+        The app connecting students across universities<br />
+        for <span class="highlight-purple">friendship</span> and <span class="highlight-cyan">collaboration</span>
+      </h2>
+      <div class="d-flex justify-content-center flex-wrap mt-4 gap-4">
+        <img src="/content/images/UB2.png" alt="Matching screen" class="app-mockup-img" />
+        <img src="/content/images/UB1.png" alt="Chat screen" class="app-mockup-img" />
+        <img src="/content/images/UB3.png" alt="Profile screen" class="app-mockup-img" />
+      </div>
     </div>
-  </div>
+  </section>
 </section>
 
 <section class="feature-highlight-section py-5">
@@ -1318,6 +1325,59 @@
   </div>
 </section>
 
+<section>
+  <nav class="fixed-sidebar">
+    <div class="sidebar-header">
+      <h5 class="sidebar-title">UniBridge</h5>
+    </div>
+
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/" routerLinkActive="active">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/activity-match" routerLinkActive="active">Activity Match</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/ranking" routerLinkActive="active">Ranking</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/profile" routerLinkActive="active">Profile</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/challenge" routerLinkActive="active" data-bs-dismiss="offcanvas">Challenges</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/login" routerLinkActive="active" data-bs-dismiss="offcanvas">Login</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/activity" routerLinkActive="active" data-bs-dismiss="offcanvas">Available Activities</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/my-activities" routerLinkActive="active" data-bs-dismiss="offcanvas">My Activities</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/friends-list" routerLinkActive="active" data-bs-dismiss="offcanvas">Your Friends</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/ranking" routerLinkActive="active" data-bs-dismiss="offcanvas">Rankings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/review" routerLinkActive="active" data-bs-dismiss="offcanvas">Review</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/chat" routerLinkActive="active" data-bs-dismiss="offcanvas">Your Chats</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/challenge" routerLinkActive="active" data-bs-dismiss="offcanvas">Challenges</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/booking" routerLinkActive="active" data-bs-dismiss="offcanvas">Bookings</a>
+      </li>
+    </ul>
+  </nav>
+</section>
+
 <section class="slider-section">
   <h2>How UniBridge Works</h2>
 
@@ -1347,21 +1407,3 @@
     <!--    </div>-->
   </div>
 </section>
-
-<!--<section class="slider-section">-->
-<!--  <h2>How UniBridge Works</h2>-->
-<!--  <div class="slider">-->
-<!--    <div class="slides" [style.transform]="computeTransform()">-->
-<!--      <div class="slide" *ngFor="let s of slides; let idx = index">-->
-<!--        <i class="fas" [class]="s.icon"></i>-->
-<!--        <h3>{{ s.title }}</h3>-->
-<!--        <p>{{ s.desc }}</p>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    <button class="nav prev" (click)="prev()">‹</button>-->
-<!--    <button class="nav next" (click)="next()">›</button>-->
-<!--    <div class="dots">-->
-
-<!--    </div>-->
-<!--  </div>-->
-<!--</section>-->

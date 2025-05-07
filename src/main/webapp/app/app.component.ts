@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, AfterViewInit } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import dayjs from 'dayjs/esm';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
@@ -15,6 +15,8 @@ import { addIconsToLibrary } from './core/icons/icons';
 
 library.add(faMapMarkerAlt);
 
+import AOS from 'aos';
+
 @Component({
   standalone: true,
   selector: 'jhi-app',
@@ -24,7 +26,7 @@ library.add(faMapMarkerAlt);
     // jhipster-needle-angular-add-module JHipster will add new module here
   ],
 })
-export default class AppComponent {
+export default class AppComponent implements AfterViewInit {
   private readonly applicationConfigService = inject(ApplicationConfigService);
   private readonly iconLibrary = inject(FaIconLibrary);
   private readonly dpConfig = inject(NgbDatepickerConfig);
@@ -35,5 +37,9 @@ export default class AppComponent {
     this.iconLibrary.addIcons(...fontAwesomeIcons);
     this.dpConfig.minDate = { year: dayjs().subtract(100, 'year').year(), month: 1, day: 1 };
     addIconsToLibrary(); // ✅ Proper call here
+  }
+
+  ngAfterViewInit(): void {
+    AOS.init({ duration: 1000, once: true });
   }
 }

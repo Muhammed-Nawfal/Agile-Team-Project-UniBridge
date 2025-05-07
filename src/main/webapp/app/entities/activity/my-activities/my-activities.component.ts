@@ -11,19 +11,31 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 import { IActivity } from '../../activity/activity.model';
+import { FormsModule } from '@angular/forms';
+import { Dayjs } from 'dayjs';
 
 @Component({
   selector: 'jhi-my-activities',
   standalone: true,
-  imports: [CommonModule, FormatMediumDatetimePipe, RouterLink, AlertErrorComponent, AlertComponent, FontAwesomeModule],
+  imports: [
+    CommonModule,
+    FormatMediumDatetimePipe,
+    RouterLink,
+    AlertErrorComponent,
+    AlertComponent,
+    FontAwesomeModule,
+    FormsModule, // Added for search functionality
+  ],
   templateUrl: './my-activities.component.html',
   styleUrl: './my-activities.component.scss',
 })
 export class MyActivitiesComponent implements OnInit {
   userActivities: IActivityParticipant[] = [];
+  filteredActivities: IActivityParticipant[] = []; // Added for search functionality
   isLoading = false;
   error = false;
   errorMessage = '';
+  searchTerm = ''; // Added for search functionality
 
   constructor(
     protected activityParticipantService: ActivityParticipantService,
@@ -47,6 +59,7 @@ export class MyActivitiesComponent implements OnInit {
           this.loadActivityDetails(activities);
         } else {
           this.userActivities = activities;
+          this.filteredActivities = [...activities]; // Initialize filtered array
           this.isLoading = false;
         }
       },
@@ -68,6 +81,7 @@ export class MyActivitiesComponent implements OnInit {
     if (!needsAdditionalDetails) {
       // All data seems to be available, use as is
       this.userActivities = participants;
+      this.filteredActivities = [...participants]; // Initialize filtered array
       this.isLoading = false;
       return;
     }
@@ -95,6 +109,7 @@ export class MyActivitiesComponent implements OnInit {
     forkJoin(requests).subscribe({
       next: updatedParticipants => {
         this.userActivities = updatedParticipants;
+        this.filteredActivities = [...updatedParticipants]; // Initialize filtered array
         this.isLoading = false;
       },
       error: error => {
@@ -102,6 +117,27 @@ export class MyActivitiesComponent implements OnInit {
         this.errorMessage = error.message || 'Error loading activity details';
         this.isLoading = false;
       },
+    });
+  }
+
+  /**
+   * Filter activities based on search term
+   */
+  filterActivities(): void {
+    if (!this.searchTerm) {
+      this.filteredActivities = [...this.userActivities];
+      return;
+    }
+
+    const term = this.searchTerm.toLowerCase();
+    this.filteredActivities = this.userActivities.filter(participant => {
+      const activity = participant.activity;
+      return (
+        activity?.activityName?.toLowerCase().includes(term) ??
+        activity?.location?.toLowerCase().includes(term) ??
+        activity?.description?.toLowerCase().includes(term) ??
+        participant.joinedDate?.toString().toLowerCase().includes(term)
+      );
     });
   }
 
@@ -152,6 +188,77 @@ export class MyActivitiesComponent implements OnInit {
     }
   }
 
+  // Helper method to format date for display
+  formatDate(date: any): string {
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  }
+
+  convertDayjsToDate(date: unknown): Date | null {
+    // Handle null/undefined cases
+    if (date === null || date === undefined) {
+      return null;
+    }
+
+    // Handle JavaScript Date objects
+    if (date instanceof Date) {
+      return date;
+    }
+
+    // Handle DayJS objects (type guard)
+    if (typeof date === 'object' && 'toDate' in date && typeof (date as { toDate: unknown }).toDate === 'function') {
+      const result = (date as { toDate: () => Date }).toDate();
+      return result;
+    }
+
+    // Handle ISO strings
+    if (typeof date === 'string') {
+      try {
+        const parsed = new Date(date);
+        return isNaN(parsed.getTime()) ? null : parsed;
+      } catch {
+        return null;
+      }
+    }
+
+    // Handle numbers (timestamps)
+    if (typeof date === 'number') {
+      const parsed = new Date(date);
+      return isNaN(parsed.getTime()) ? null : parsed;
+    }
+
+    console.warn('Unrecognized date format:', date);
+    return null;
+  }
+
   // Helper methods for the template
   trackId = (_index: number, item: IActivityParticipant): number => item.id;
+
+  viewActivity(activityId: number | undefined): void {
+    if (!activityId) {
+      console.error('No activity ID available');
+      // Optional: show user feedback
+      return;
+    }
+
+    this.router.navigate(['/activity', activityId, 'view']).then(
+      success => {
+        if (!success) {
+          console.error('Navigation failed - route may not exist');
+        }
+      },
+      (error: unknown) => {
+        // Explicitly type as unknown
+        if (error instanceof Error) {
+          console.error('Navigation error:', error.message);
+        } else {
+          console.error('Unknown navigation error occurred');
+        }
+      },
+    );
+  }
 }
