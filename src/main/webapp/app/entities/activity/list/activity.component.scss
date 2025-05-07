@@ -6,11 +6,11 @@ $card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 $card-hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
 $border-radius: 12px;
 $pill-radius: 20px;
+$danger-color: #dc3545;
 
 /* Base Styles */
 .activity-container {
   padding: 2rem;
-  //background-color: $light-bg;
   min-height: 100vh;
   font-family:
     'Inter',
@@ -167,7 +167,7 @@ $pill-radius: 20px;
   }
 }
 
-/* Activity Cards - Ventixe Style */
+/* Activity Cards */
 .activity-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -176,7 +176,7 @@ $pill-radius: 20px;
 
 .activity-card {
   background-color: white;
-  border: 1px solid black; // <-- added thin black border
+  border: 1px solid black;
   border-radius: $border-radius;
   overflow: hidden;
   box-shadow: $card-shadow;
@@ -318,10 +318,11 @@ $pill-radius: 20px;
     gap: 0.75rem;
     border-top: 1px solid #f1f3f6;
     justify-content: space-between;
+    flex-wrap: wrap;
 
     .view-btn {
-      flex: none;
-      padding: 0.4rem 0.65rem;
+      flex: 1;
+      padding: 0.5rem;
       background-color: white;
       border: 1px solid #e0e0e0;
       border-radius: 6px;
@@ -332,7 +333,6 @@ $pill-radius: 20px;
       transition: all 0.2s ease;
       text-align: center;
       min-width: 90px;
-      width: auto;
 
       &:hover {
         background-color: #f8f9fa;
@@ -342,8 +342,8 @@ $pill-radius: 20px;
 
     .join-btn,
     :host ::ng-deep .join-btn {
-      flex: none;
-      padding: 0.4rem 0.65rem;
+      flex: 1;
+      padding: 0.5rem;
       background-color: $primary-color;
       border: none;
       border-radius: 6px;
@@ -354,7 +354,6 @@ $pill-radius: 20px;
       transition: all 0.2s ease;
       text-align: center;
       min-width: 90px;
-      width: auto;
       text-transform: uppercase;
       letter-spacing: 0.3px;
 
@@ -362,10 +361,41 @@ $pill-radius: 20px;
         background-color: darken($primary-color, 5%);
       }
     }
+
+    .btn-danger {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      min-width: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      border: none;
+      background-color: $danger-color;
+      color: white;
+
+      &:hover {
+        background-color: darken($danger-color, 5%);
+      }
+
+      fa-icon {
+        font-size: 0.8rem;
+      }
+
+      .d-none.d-md-inline {
+        display: inline !important;
+      }
+    }
   }
 }
 
-/* Filter Panel (keep your existing filter panel but styled to match) */
+/* Filter Panel */
 .filter-panel {
   background-color: white;
   border-radius: $border-radius;
@@ -404,14 +434,14 @@ $pill-radius: 20px;
     }
   }
 
-  //.card-footer {
-  //  padding: 1rem 1.5rem;
-  //  background-color: #f8f9fa;
-  //  border-top: 1px solid #f1f3f6;
-  //  display: flex;
-  //  justify-content: flex-end;
-  //  gap: 0.75rem;
-  //}
+  .card-footer {
+    padding: 1rem 1.5rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #f1f3f6;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+  }
 }
 
 /* Responsive Design */
@@ -461,6 +491,16 @@ $pill-radius: 20px;
       }
     }
   }
+
+  .activity-card {
+    .card-footer {
+      .view-btn,
+      .join-btn,
+      .btn-danger {
+        flex: 1 1 calc(50% - 0.375rem);
+      }
+    }
+  }
 }
 
 @media (max-width: 480px) {
@@ -469,8 +509,10 @@ $pill-radius: 20px;
       flex-direction: column;
 
       .view-btn,
-      .join-btn {
+      .join-btn,
+      .btn-danger {
         width: 100%;
+        flex: 1 1 auto;
       }
     }
   }

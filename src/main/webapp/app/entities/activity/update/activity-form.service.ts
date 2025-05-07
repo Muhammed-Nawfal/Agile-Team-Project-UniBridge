@@ -168,7 +168,7 @@ export class ActivityFormService {
         validators: [Validators.required],
       }),
       status: new FormControl(activityRawValue.status, {
-        validators: [Validators.required],
+        validators: [Validators.required, this.statusValidator()],
       }),
       coverImage: new FormControl(activityRawValue.coverImage),
       coverImageContentType: new FormControl(activityRawValue.coverImageContentType),
@@ -208,6 +208,12 @@ export class ActivityFormService {
 
   resetForm(form: ActivityFormGroup, activity: ActivityFormGroupInput): void {
     const activityRawValue = this.convertActivityToActivityRawValue({ ...this.getFormDefaults(), ...activity });
+
+    // Set default status for new activities and prevent CANCELLED
+    if (!activity.id && activityRawValue.status === 'CANCELED') {
+      activityRawValue.status = 'ANNOUNCED'; // Default to ACTIVE if trying to set CANCELLED on new activity
+    }
+
     form.reset(
       {
         ...activityRawValue,
@@ -228,6 +234,23 @@ export class ActivityFormService {
     if (isPaid === false) {
       form.get('activityCost')?.setValue(0);
     }
+  }
+
+  statusValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const status = control.value;
+      const form = control.parent;
+      if (!form) return null;
+
+      const id = form.get('id')?.value;
+
+      // If this is a new activity (id is null) and status is CANCELLED
+      if (id === null && status === 'CANCELLED') {
+        return { cancelledNotAllowedOnCreate: true };
+      }
+
+      return null;
+    };
   }
 
   private getFormDefaults(): ActivityFormDefaults {
