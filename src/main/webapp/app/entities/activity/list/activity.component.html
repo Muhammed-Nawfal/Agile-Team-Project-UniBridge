@@ -202,8 +202,6 @@
         </div>
       }
 
-      <jhi-alert-error></jhi-alert-error>
-      <jhi-alert></jhi-alert>
       <div class="activity-grid">
         <div *ngFor="let activity of activities | activityFilter: filters" class="activity-card">
           <div class="card-header">
@@ -249,6 +247,10 @@
           <div class="card-footer">
             <button class="view-btn" [routerLink]="['/activity', activity.id, 'view']">View Activity</button>
             <jhi-join-activity-button [activityId]="activity.id" class="join-btn"></jhi-join-activity-button>
+            <button type="submit" (click)="delete(activity)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+              <fa-icon icon="times"></fa-icon>
+              <span class="d-none d-md-inline">Delete</span>
+            </button>
           </div>
         </div>
       </div>

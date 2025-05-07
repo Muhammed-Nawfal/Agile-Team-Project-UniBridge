@@ -28,7 +28,7 @@ import { faCalendarAlt, faClock, faMapMarkerAlt, faArrowLeft, faSave, faUserEdit
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, FontAwesomeModule],
   templateUrl: './profile-update.component.html',
-  styleUrls: ['./profile-update.component.scss'],
+  styleUrl: './profile-update.component.scss',
 })
 export class ProfileUpdateComponent implements OnInit {
   isSaving = false;
