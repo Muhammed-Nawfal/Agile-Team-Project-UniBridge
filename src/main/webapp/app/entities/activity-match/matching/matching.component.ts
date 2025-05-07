@@ -30,6 +30,7 @@ import { Decision } from '../../enumerations/decision.model';
 import { SpeechService } from 'app/core/speech/speech.service';
 import { A11yModule } from 'app/shared/a11y/a11y.module';
 import { AccessibilityService } from '../../../core/Accessibility/accessibility.service';
+import { FriendsListService } from 'app/entities/friends-list/service/friends-list.service';
 
 @Component({
   standalone: true,
@@ -73,6 +74,8 @@ export class MatchingComponent implements OnInit, OnDestroy {
 
   animationClass = '';
 
+  followState: 'none' | 'pending' | 'friends' = 'none'; // Add this
+
   sortState = sortStateSignal({});
 
   public readonly router = inject(Router);
@@ -84,6 +87,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
   private accountService = inject(AccountService);
   private profileService = inject(ProfileService);
   private modalService = inject(NgbModal);
+  private friendsListService = inject(FriendsListService);
 
   constructor(
     protected a11y: AccessibilityService, // ← add this
@@ -136,7 +140,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
     this.activityMatchService.getAvailableProfiles(this.buddyType, this.currentUserProfileId).subscribe({
       next: profiles => {
         this.isLoading = false;
-        this.profiles = profiles;
+        this.profiles = profiles.filter(p => p.id !== this.currentUserProfileId); // Exclude self
         this.resetCursor();
       },
       error: err => {
@@ -283,7 +287,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
       .getAvailableProfiles(this.buddyType, this.currentUserProfileId)
       .pipe(
         map(profiles => {
-          let filtered = [...profiles];
+          let filtered = profiles.filter(p => p.id !== this.currentUserProfileId); // Exclude self
           if (this.filter1Value) {
             filtered = this.applyFilter1(filtered, this.filter1Value);
           }
@@ -607,7 +611,8 @@ export class MatchingComponent implements OnInit, OnDestroy {
   }
 
   navigateToProfile(): void {
-    this.router.navigate(['/profile']);
+    if (!this.currentProfile?.id) return;
+    this.router.navigate(['/profile-detail', this.currentProfile.id]);
   }
 
   navigateToFriendRequest(): void {
@@ -619,16 +624,51 @@ export class MatchingComponent implements OnInit, OnDestroy {
   }
 
   followUser(): void {
-    const popup = document.getElementById('followPopup');
-    if (popup) {
-      popup.classList.add('show');
+    if (!this.currentProfile?.id) return;
 
-      this.showFollowPopup = true;
+    const targetId = this.currentProfile.id;
 
-      setTimeout(() => {
-        this.showFollowPopup = false;
-      }, 3000);
-    }
+    this.profileService.findMyProfile().subscribe(myProfileRes => {
+      const myProfileId = myProfileRes.body?.id;
+      if (!myProfileId || myProfileId === targetId) return;
+
+      // 1. Check if already friends
+      this.friendsListService.getCurrentUserAcceptedFriends().subscribe(friendsRes => {
+        const isFriend = (friendsRes.body ?? []).some(
+          f =>
+            (f.requestedByProfile?.id === myProfileId && f.requestedToProfile?.id === targetId) ||
+            (f.requestedByProfile?.id === targetId && f.requestedToProfile?.id === myProfileId),
+        );
+
+        if (isFriend) {
+          alert('You are already friends!');
+          return;
+        }
+
+        // 2. Check if follow request already sent
+        this.friendsListService.getCurrentUserSentFriendRequests().subscribe(sentRes => {
+          const isPending = (sentRes.body ?? []).some(req => req.requestedToProfile?.id === targetId && req.requestStatus === 'PENDING');
+
+          if (isPending) {
+            alert('Friend request already pending!');
+            return;
+          }
+
+          // 3. Send follow request
+          this.friendsListService.sendFriendRequest(targetId).subscribe(() => {
+            const popup = document.getElementById('followPopup');
+            if (popup) {
+              popup.classList.add('show');
+              this.showFollowPopup = true;
+              setTimeout(() => {
+                popup.classList.remove('show');
+                this.showFollowPopup = false;
+              }, 3000);
+            }
+          });
+        });
+      });
+    });
   }
 
   getInitials(name: string): string {

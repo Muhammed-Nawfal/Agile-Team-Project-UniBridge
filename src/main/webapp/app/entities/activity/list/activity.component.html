@@ -1,10 +1,11 @@
 <div>
-  <h2 id="page-heading" data-cy="ActivityHeading">
-    <span>Some activities near you ...</span>
-    <!-- Search and Filter Controls -->
-    <div class="row mb-3">
+  <h2 id="page-heading" data-cy="ActivityHeading" class="mb-4">
+    <span class="page-title-main">Activities</span>
+    <span class="page-title-location text-muted">near you</span>
+
+    <div class="row mb-3 mt-3">
       <div class="col-md-8">
-        <div class="input-group">
+        <div class="input-group input-group-sm">
           <input
             type="text"
             class="form-control"
@@ -17,10 +18,10 @@
             <fa-icon [icon]="faSearch"></fa-icon>
           </button>
           <button class="btn btn-outline-primary" type="button" (click)="toggleFilters()" [class.active]="showFilters">
-            <fa-icon [icon]="faFilter"></fa-icon> Filters
+            <fa-icon [icon]="faFilter" class="me-1"></fa-icon> Filters
           </button>
           @if (showFilters) {
-            <button class="btn btn-outline-danger" type="button" (click)="clearFilters()" title="Clear all filters">
+            <button class="btn btn-outline-danger btn-sm ms-1" type="button" (click)="clearFilters()" title="Clear all filters">
               <fa-icon [icon]="faTimes"></fa-icon> Clear
             </button>
           }
@@ -30,34 +31,34 @@
         <button
           id="jh-create-entity"
           data-cy="entityCreateButton"
-          class="btn btn-primary jh-create-entity create-activity"
+          class="btn btn-primary btn-sm jh-create-entity create-activity"
           [routerLink]="['/activity/new']"
         >
           <fa-icon [icon]="faPlus"></fa-icon>
-          <span class="ms-2">Create New Activity</span>
+          <span class="ms-1">Create Activity</span>
         </button>
       </div>
     </div>
 
-    <!-- Filter Panel -->
     @if (showFilters) {
-      <div class="card mb-3 border-primary">
-        <div class="card-header bg-primary text-white py-2">
-          <h6 class="mb-0">
-            <fa-icon [icon]="faFilter" class="me-2"></fa-icon>
-            Filter Options
+      <div class="card filter-panel mb-3 border-0 shadow-sm">
+        <div class="card-header bg-light py-2 border-bottom">
+          <h6 class="mb-0 fs-6 d-flex align-items-center">
+            <fa-icon [icon]="faFilter" class="me-2 text-primary"></fa-icon>
+            <span>Filter Options</span>
           </h6>
         </div>
         <div class="card-body p-3">
-          <div class="row g-2">
-            <!-- Location Filter -->
-            <div class="col-md-6">
-              <label class="form-label small fw-bold mb-1">Location</label>
+          <div class="row g-3">
+            <div class="col-md-4 col-lg-3">
+              <label class="form-label small fw-bold mb-1 text-muted">Location</label>
               <div class="input-group input-group-sm">
-                <span class="input-group-text bg-light py-1"><fa-icon [icon]="faMapMarkerAlt" class="fa-xs"></fa-icon></span>
+                <span class="input-group-text bg-light border-end-0"
+                  ><fa-icon [icon]="faMapMarkerAlt" class="fa-xs text-primary"></fa-icon
+                ></span>
                 <input
                   type="text"
-                  class="form-control form-control-sm"
+                  class="form-control form-control-sm border-start-0"
                   placeholder="Enter location"
                   [(ngModel)]="filters.location"
                   (keyup.enter)="load()"
@@ -65,16 +66,14 @@
               </div>
             </div>
 
-            <!-- Activity Type Filter -->
-            <div class="col-md-6">
-              <label class="form-label small fw-bold mb-1">Activity Type</label>
+            <div class="col-md-8 col-lg-4">
+              <label class="form-label small fw-bold mb-1 text-muted">Activity Type</label>
               <div class="d-flex flex-wrap gap-1">
                 @for (type of activityTypes; track type) {
                   <button
                     type="button"
-                    class="btn btn-xs"
-                    [class.btn-primary]="isTypeSelected(type)"
-                    [class.btn-outline-primary]="!isTypeSelected(type)"
+                    class="btn btn-sm filter-chip"
+                    [class.active]="isTypeSelected(type)"
                     (click)="toggleActivityType(type)"
                   >
                     {{ type }}
@@ -83,34 +82,35 @@
               </div>
             </div>
 
-            <!-- Status Filter -->
-            <div class="col-md-6">
-              <label class="form-label small fw-bold mb-1">Status</label>
+            <div class="col-md-8 col-lg-5">
+              <label class="form-label small fw-bold mb-1 text-muted">Status</label>
               <div class="d-flex flex-wrap gap-1">
                 @for (status of statusTypes; track status) {
                   <button
                     type="button"
-                    class="btn btn-xs"
-                    [class.btn-primary]="isStatusSelected(status)"
-                    [class.btn-outline-primary]="!isStatusSelected(status)"
+                    class="btn btn-sm filter-chip status-chip"
+                    [class.active]="isStatusSelected(status)"
+                    [class.announced]="status === 'ANNOUNCED'"
+                    [class.currently_happening]="status === 'CURRENTLY_HAPPENING'"
+                    [class.finished]="status === 'FINISHED'"
+                    [class.canceled]="status === 'CANCELED'"
                     (click)="toggleStatus(status)"
                   >
-                    {{ status }}
+                    {{ status | titlecase }}
                   </button>
                 }
               </div>
             </div>
 
-            <!-- Cost Filter -->
-            <div class="col-md-6">
-              <label class="form-label small fw-bold mb-1">Cost Range</label>
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label small fw-bold mb-1 text-muted">Cost Range</label>
               <div class="row g-1">
-                <div class="col">
+                <div class="col-6">
                   <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light py-1">$</span>
+                    <span class="input-group-text bg-light border-end-0">£</span>
                     <input
                       type="number"
-                      class="form-control form-control-sm"
+                      class="form-control form-control-sm border-start-0"
                       placeholder="Min"
                       min="0"
                       [(ngModel)]="filters.minCost"
@@ -118,12 +118,12 @@
                     />
                   </div>
                 </div>
-                <div class="col">
+                <div class="col-6">
                   <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light py-1">$</span>
+                    <span class="input-group-text bg-light border-end-0">£</span>
                     <input
                       type="number"
-                      class="form-control form-control-sm"
+                      class="form-control form-control-sm border-start-0"
                       placeholder="Max"
                       min="0"
                       [(ngModel)]="filters.maxCost"
@@ -134,62 +134,64 @@
               </div>
             </div>
 
-            <!-- Date Range Filter -->
-            <div class="col-md-6">
-              <label class="form-label small fw-bold mb-1">Date Range</label>
+            <div class="col-md-6 col-lg-6">
+              <label class="form-label small fw-bold mb-1 text-muted">Date Range</label>
               <div class="row g-1">
-                <div class="col">
+                <div class="col-sm-6">
                   <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light py-1"><fa-icon [icon]="faCalendarAlt" class="fa-xs"></fa-icon></span>
-                    <input type="date" class="form-control form-control-sm" [(ngModel)]="filters.dateFrom" (change)="load()" />
+                    <span class="input-group-text bg-light border-end-0"
+                      ><fa-icon [icon]="faCalendarAlt" class="fa-xs text-primary"></fa-icon
+                    ></span>
+                    <input
+                      type="date"
+                      class="form-control form-control-sm border-start-0"
+                      [(ngModel)]="filters.dateFrom"
+                      (change)="load()"
+                    />
                   </div>
                 </div>
-                <div class="col">
+                <div class="col-sm-6">
                   <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light py-1"><fa-icon [icon]="faCalendarAlt" class="fa-xs"></fa-icon></span>
-                    <input type="date" class="form-control form-control-sm" [(ngModel)]="filters.dateTo" (change)="load()" />
+                    <span class="input-group-text bg-light border-end-0"
+                      ><fa-icon [icon]="faCalendarAlt" class="fa-xs text-primary"></fa-icon
+                    ></span>
+                    <input type="date" class="form-control form-control-sm border-start-0" [(ngModel)]="filters.dateTo" (change)="load()" />
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Paid/Free Filter -->
-            <div class="col-md-6">
-              <label class="form-label small fw-bold mb-1">Payment Type</label>
-              <div class="btn-group btn-group-sm w-100">
-                <button
-                  type="button"
-                  class="btn btn-sm"
-                  [class.btn-primary]="filters.isPaid === null"
-                  [class.btn-outline-secondary]="filters.isPaid !== null"
-                  (click)="filters.isPaid = null"
-                >
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label small fw-bold mb-1 text-muted">Payment Type</label>
+              <div class="payment-type-toggle w-100">
+                <button type="button" class="btn btn-sm" [class.active]="filters.isPaid === null" (click)="filters.isPaid = null; load()">
                   Any
                 </button>
                 <button
                   type="button"
-                  class="btn btn-sm"
-                  [class.btn-success]="filters.isPaid === true"
-                  [class.btn-outline-success]="filters.isPaid !== true"
-                  (click)="filters.isPaid = true"
+                  class="btn btn-sm paid"
+                  [class.active]="filters.isPaid === true"
+                  (click)="filters.isPaid = true; load()"
                 >
-                  Paid
+                  <fa-icon [icon]="faDollarSign" class="me-1 fa-xs"></fa-icon> Paid
                 </button>
                 <button
                   type="button"
-                  class="btn btn-sm"
-                  [class.btn-info]="filters.isPaid === false"
-                  [class.btn-outline-info]="filters.isPaid !== false"
-                  (click)="filters.isPaid = false"
+                  class="btn btn-sm free"
+                  [class.active]="filters.isPaid === false"
+                  (click)="filters.isPaid = false; load()"
                 >
-                  Free
+                  <fa-icon [icon]="faHandHoldingDollar" class="me-1 fa-xs"></fa-icon> Free
                 </button>
               </div>
             </div>
           </div>
         </div>
-        <div class="card-footer bg-light text-end py-2">
-          <button class="btn btn-sm btn-primary" (click)="load()"><fa-icon [icon]="faCheck" class="me-1"></fa-icon> Apply</button>
+        <div class="card-footer bg-white text-end py-2 border-top">
+          <button class="btn btn-sm btn-outline-secondary me-2" (click)="clearFilters()">
+            <fa-icon [icon]="faTimes" class="me-1"></fa-icon> Clear All
+          </button>
+          <button class="btn btn-sm btn-primary" (click)="load()"><fa-icon [icon]="faCheck" class="me-1"></fa-icon> Apply Filters</button>
         </div>
       </div>
     }
@@ -197,80 +199,99 @@
     <jhi-alert-error></jhi-alert-error>
     <jhi-alert></jhi-alert>
 
-    @if ((activities | activityFilter: filters)?.length === 0) {
-      <div class="alert alert-warning" id="no-result">
-        <span>No Activities found matching your criteria</span>
+    @if ((activities | activityFilter: filters)?.length === 0 && !isLoading) {
+      <div class="alert alert-warning py-3 text-center" id="no-result">
+        <fa-icon [icon]="faSearch" size="2x" class="mb-2 d-block"></fa-icon>
+        <h5 class="alert-heading">No Activities Found</h5>
+        <p class="mb-0">There are no activities matching your current criteria. Try adjusting your filters or search terms.</p>
+      </div>
+    } @else if (isLoading) {
+      <div class="app-loading">
+        <div class="spinner-border spinner-border-sm me-2" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        Loading activities...
       </div>
     }
 
     @if ((activities | activityFilter: filters) && (activities | activityFilter: filters).length > 0) {
-      <div class="row">
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">
         @for (activity of activities | activityFilter: filters; track trackId(activity)) {
-          <div class="col-12 col-md-6 col-lg-4 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-              <!-- Cover Image with Radiant Background -->
+          <div class="col">
+            <div class="card entity-card border-0 shadow-sm h-100">
               @if (activity.coverImage) {
                 <div class="position-relative radiant-image-container">
                   <div class="radiant-background {{ activity.activityType | lowercase }}"></div>
-                  <div class="text-center p-3">
-                    <a (click)="openFile(activity.coverImage, activity.coverImageContentType)">
+                  <div class="image-wrapper">
+                    <a
+                      (click)="openFile(activity.coverImage, activity.coverImageContentType)"
+                      role="button"
+                      [attr.aria-label]="'View cover image for ' + activity.activityName"
+                    >
                       <img
                         class="img-fluid rounded"
-                        style="max-height: 150px; width: auto; position: relative; z-index: 2"
                         [src]="'data:' + activity.coverImageContentType + ';base64,' + activity.coverImage"
-                        alt="Activity cover image"
+                        [alt]="activity.activityName + ' cover image'"
                       />
                     </a>
                   </div>
                 </div>
+              } @else {
+                <div class="position-relative radiant-image-container placeholder-image-container">
+                  <div class="radiant-background {{ activity.activityType | lowercase }}"></div>
+                  <div class="image-wrapper">
+                    <fa-icon [icon]="faImage" class="placeholder-icon text-muted"></fa-icon>
+                  </div>
+                </div>
               }
 
-              <!-- Rest of the card content remains the same -->
-              <div class="card-header bg-white border-0 pb-0 d-flex justify-content-between align-items-center">
-                <span class="badge activity-type {{ activity.activityType | lowercase }} text-uppercase font-weight-normal">
+              <div class="card-header bg-white border-0 pb-0 pt-2 px-3 d-flex justify-content-between align-items-center">
+                <span class="badge activity-type {{ activity.activityType | lowercase }} text-uppercase fs-xs">
                   {{ activity.activityType }}
                 </span>
-                <span class="text-muted small">{{ activity.activityDate | formatMediumDate }}</span>
+                <span class="text-muted small fs-xs">{{ activity.activityDate | formatMediumDate }}</span>
               </div>
 
-              <div class="card-body pt-2">
-                <h5 class="card-title font-weight-bold mb-2">{{ activity.activityName }}</h5>
+              <div class="card-body pt-1 pb-2 px-3 d-flex flex-column">
+                <h5 class="card-title fs-6 fw-bold mb-1 mt-1 text-truncate-lines" title="{{ activity.activityName }}">
+                  {{ activity.activityName }}
+                </h5>
 
-                <p class="card-text text-muted small mb-3">
-                  <i class="fas fa-map-marker-alt mr-1"></i>
-                  location: {{ activity.location }}
+                <p class="card-text text-muted fs-sm mb-2 d-flex align-items-center">
+                  <fa-icon [icon]="faMapMarkerAlt" class="me-1 fa-fw"></fa-icon>
+                  <span class="text-truncate" title="{{ activity.location }}">{{ activity.location }}</span>
                 </p>
 
-                <div class="d-flex align-items-center mb-3">
-                  <i class="fas fa-users mr-2 text-muted"></i>
-                  <span class="font-weight-bold mr-1">{{ activity.numberOfParticipants }}/{{ activity.maxNumberOfParticipants }} </span>
-                  <span class="text-muted small">participants</span>
+                <div class="d-flex align-items-center mb-2 mt-auto">
+                  <fa-icon [icon]="faUsers" class="me-1 text-muted fa-fw"></fa-icon>
+                  <span class="fw-bold me-1 fs-sm">{{ activity.numberOfParticipants }}/{{ activity.maxNumberOfParticipants }}</span>
+                  <span class="text-muted fs-sm">participants</span>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center">
-                  <span class="badge status-label {{ activity.status | lowercase }} px-2 py-1">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="badge status-label {{ activity.status | lowercase }} px-2 py-1 fs-xs">
                     {{
                       {
-                        null: '',
+                        null: 'UNKNOWN',
                         ANNOUNCED: 'ANNOUNCED',
-                        CURRENTLY_HAPPENING: 'CURRENTLY HAPPENING',
+                        CURRENTLY_HAPPENING: 'HAPPENING',
                         FINISHED: 'FINISHED',
                         CANCELED: 'CANCELED',
-                      }[activity.status ?? 'null']
+                      }[activity.status ?? 'null'] | titlecase
                     }}
                   </span>
-                  <span class="font-weight-bold text-primary">
-                    {{ activity.activityCost | currency: 'GBP' : 'symbol' : '1.2-2' }}
-                  </span>
-
-                  <span class="font-weight-bold text-primary">
-                    {{ activity.activityDate }}
+                  <span class="fw-bold text-primary fs-sm">
+                    {{ (activity.activityCost ?? 0) > 0 ? (activity.activityCost | currency: 'GBP' : 'symbol' : '1.2-2') : 'Free' }}
                   </span>
                 </div>
               </div>
 
-              <div class="card-footer bg-white border-0 pt-0">
-                <a [routerLink]="['/activity', activity.id, 'view']" class="btn btn-block btn-outline-primary btn-sm rounded-pill">View </a>
+              <div class="card-footer bg-white border-0 pt-0 pb-2 px-3">
+                <a
+                  [routerLink]="['/activity', activity.id, 'view']"
+                  class="btn btn-block btn-outline-primary btn-sm rounded-pill w-100 py-1 fs-sm"
+                  >View Details</a
+                >
               </div>
             </div>
           </div>
@@ -279,296 +300,3 @@
     }
   </h2>
 </div>
-
-<!--<div>-->
-<!--  <h2 id="page-heading" data-cy="ActivityHeading" class="mb-3">-->
-<!--    <span class="h5">Activities near you</span>-->
-<!--    &lt;!&ndash; Search and Filter Controls &ndash;&gt;-->
-<!--    <div class="row mb-3 mt-2">-->
-<!--      <div class="col-md-8">-->
-<!--        <div class="input-group input-group-sm">-->
-<!--          <input-->
-<!--            type="text"-->
-<!--            class="form-control"-->
-<!--            placeholder="Search activities..."-->
-<!--            [(ngModel)]="filters.searchText"-->
-<!--            (keyup.enter)="load()"-->
-<!--            #searchInput-->
-<!--          />-->
-<!--          <button class="btn btn-outline-secondary" type="button" (click)="load()" title="Search">-->
-<!--            <fa-icon [icon]="faSearch"></fa-icon>-->
-<!--          </button>-->
-<!--          <button class="btn btn-outline-primary" type="button" (click)="toggleFilters()" [class.active]="showFilters">-->
-<!--            <fa-icon [icon]="faFilter"></fa-icon> Filters-->
-<!--          </button>-->
-<!--          @if (showFilters) {-->
-<!--            <button class="btn btn-outline-danger btn-sm" type="button" (click)="clearFilters()" title="Clear all filters">-->
-<!--              <fa-icon [icon]="faTimes"></fa-icon> Clear-->
-<!--            </button>-->
-<!--          }-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      <div class="col-md-4 text-end">-->
-<!--        <button-->
-<!--          id="jh-create-entity"-->
-<!--          data-cy="entityCreateButton"-->
-<!--          class="btn btn-primary btn-sm jh-create-entity create-activity"-->
-<!--          [routerLink]="['/activity/new']"-->
-<!--        >-->
-<!--          <fa-icon [icon]="faPlus"></fa-icon>-->
-<!--          <span class="ms-1">Create Activity</span>-->
-<!--        </button>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; Enhanced Filter Panel &ndash;&gt;-->
-<!--    @if (showFilters) {-->
-<!--      <div class="card filter-panel mb-3 border-0 shadow-sm">-->
-<!--        <div class="card-header bg-white py-2 border-bottom">-->
-<!--          <h6 class="mb-0 fs-6 d-flex align-items-center">-->
-<!--            <fa-icon [icon]="faFilter" class="me-2 text-primary"></fa-icon>-->
-<!--            <span>Filter Options</span>-->
-<!--          </h6>-->
-<!--        </div>-->
-<!--        <div class="card-body p-3">-->
-<!--          <div class="row g-3">-->
-<!--            &lt;!&ndash; Location Filter &ndash;&gt;-->
-<!--            <div class="col-md-4 col-lg-3">-->
-<!--              <label class="form-label small fw-bold mb-1 text-muted">Location</label>-->
-<!--              <div class="input-group input-group-sm">-->
-<!--                <span class="input-group-text bg-light border-end-0"-->
-<!--                  ><fa-icon [icon]="faMapMarkerAlt" class="fa-xs text-primary"></fa-icon-->
-<!--                ></span>-->
-<!--                <input-->
-<!--                  type="text"-->
-<!--                  class="form-control form-control-sm border-start-0"-->
-<!--                  placeholder="Enter location"-->
-<!--                  [(ngModel)]="filters.location"-->
-<!--                  (keyup.enter)="load()"-->
-<!--                />-->
-<!--              </div>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; Activity Type Filter &ndash;&gt;-->
-<!--            <div class="col-md-8 col-lg-4">-->
-<!--              <label class="form-label small fw-bold mb-1 text-muted">Activity Type</label>-->
-<!--              <div class="d-flex flex-wrap gap-1">-->
-<!--                @for (type of activityTypes; track type) {-->
-<!--                  <button-->
-<!--                    type="button"-->
-<!--                    class="btn btn-sm filter-chip"-->
-<!--                    [class.active]="isTypeSelected(type)"-->
-<!--                    (click)="toggleActivityType(type)"-->
-<!--                  >-->
-<!--                    {{ type }}-->
-<!--                  </button>-->
-<!--                }-->
-<!--              </div>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; Status Filter &ndash;&gt;-->
-<!--            <div class="col-md-8 col-lg-5">-->
-<!--              <label class="form-label small fw-bold mb-1 text-muted">Status</label>-->
-<!--              <div class="d-flex flex-wrap gap-1">-->
-<!--                @for (status of statusTypes; track status) {-->
-<!--                  <button-->
-<!--                    type="button"-->
-<!--                    class="btn btn-sm filter-chip status-chip"-->
-<!--                    [class.active]="isStatusSelected(status)"-->
-<!--                    [class.announced]="status === 'ANNOUNCED'"-->
-<!--                    [class.currently_happening]="status === 'CURRENTLY_HAPPENING'"-->
-<!--                    [class.finished]="status === 'FINISHED'"-->
-<!--                    [class.canceled]="status === 'CANCELED'"-->
-<!--                    (click)="toggleStatus(status)"-->
-<!--                  >-->
-<!--                    {{ status }}-->
-<!--                  </button>-->
-<!--                }-->
-<!--              </div>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; Cost Filter &ndash;&gt;-->
-<!--            <div class="col-md-6 col-lg-3">-->
-<!--              <label class="form-label small fw-bold mb-1 text-muted">Cost Range</label>-->
-<!--              <div class="row g-1">-->
-<!--                <div class="col-6">-->
-<!--                  <div class="input-group input-group-sm">-->
-<!--                    <span class="input-group-text bg-light border-end-0">£</span>-->
-<!--                    <input-->
-<!--                      type="number"-->
-<!--                      class="form-control form-control-sm border-start-0"-->
-<!--                      placeholder="Min"-->
-<!--                      min="0"-->
-<!--                      [(ngModel)]="filters.minCost"-->
-<!--                      (keyup.enter)="load()"-->
-<!--                    />-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--                <div class="col-6">-->
-<!--                  <div class="input-group input-group-sm">-->
-<!--                    <span class="input-group-text bg-light border-end-0">£</span>-->
-<!--                    <input-->
-<!--                      type="number"-->
-<!--                      class="form-control form-control-sm border-start-0"-->
-<!--                      placeholder="Max"-->
-<!--                      min="0"-->
-<!--                      [(ngModel)]="filters.maxCost"-->
-<!--                      (keyup.enter)="load()"-->
-<!--                    />-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; Date Range Filter &ndash;&gt;-->
-<!--            <div class="col-md-6 col-lg-6">-->
-<!--              <label class="form-label small fw-bold mb-1 text-muted">Date Range</label>-->
-<!--              <div class="row g-1">-->
-<!--                <div class="col-sm-6">-->
-<!--                  <div class="input-group input-group-sm">-->
-<!--                    <span class="input-group-text bg-light border-end-0"-->
-<!--                      ><fa-icon [icon]="faCalendarAlt" class="fa-xs text-primary"></fa-icon-->
-<!--                    ></span>-->
-<!--                    <input-->
-<!--                      type="date"-->
-<!--                      class="form-control form-control-sm border-start-0"-->
-<!--                      [(ngModel)]="filters.dateFrom"-->
-<!--                      (change)="load()"-->
-<!--                    />-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--                <div class="col-sm-6">-->
-<!--                  <div class="input-group input-group-sm">-->
-<!--                    <span class="input-group-text bg-light border-end-0"-->
-<!--                      ><fa-icon [icon]="faCalendarAlt" class="fa-xs text-primary"></fa-icon-->
-<!--                    ></span>-->
-<!--                    <input type="date" class="form-control form-control-sm border-start-0" [(ngModel)]="filters.dateTo" (change)="load()" />-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; Paid/Free Filter &ndash;&gt;-->
-<!--            <div class="col-md-6 col-lg-3">-->
-<!--              <label class="form-label small fw-bold mb-1 text-muted">Payment Type</label>-->
-<!--              <div class="payment-type-toggle w-100">-->
-<!--                <button type="button" class="btn btn-sm" [class.active]="filters.isPaid === null" (click)="filters.isPaid = null">-->
-<!--                  Any-->
-<!--                </button>-->
-<!--                <button type="button" class="btn btn-sm paid" [class.active]="filters.isPaid === true" (click)="filters.isPaid = true">-->
-<!--                  <fa-icon [icon]="faDollarSign" class="me-1 fa-xs"></fa-icon> Paid-->
-<!--                </button>-->
-<!--                <button type="button" class="btn btn-sm free" [class.active]="filters.isPaid === false" (click)="filters.isPaid = false">-->
-<!--                  <fa-icon [icon]="faHandHoldingDollar" class="me-1 fa-xs"></fa-icon> Free-->
-<!--                </button>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--            <div class="col-md-6 col-lg-3">-->
-<!--              <label class="form-label small fw-bold mb-1 text-muted">Created By</label>-->
-<!--              <div class="creator-filter-toggle w-100">-->
-<!--                <button type="button" class="btn btn-sm" [class.active]="filters.creatorId === null" (click)="filters.creatorId = null">-->
-<!--                  Any-->
-<!--                </button>-->
-<!--                <button type="button" class="btn btn-sm my-activities" [class.active]="filters.creatorId === 'currentUser'" (click)="filters.creatorId = 'currentUser'">-->
-<!--                  <fa-icon [icon]="faUser" class="me-1 fa-xs"></fa-icon> My Activities-->
-<!--                </button>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="card-footer bg-white text-end py-2 border-top">-->
-<!--          <button class="btn btn-sm btn-outline-secondary me-2" (click)="clearFilters()">-->
-<!--            <fa-icon [icon]="faTimes" class="me-1"></fa-icon> Clear-->
-<!--          </button>-->
-<!--          <button class="btn btn-sm btn-primary" (click)="load()"><fa-icon [icon]="faCheck" class="me-1"></fa-icon> Apply Filters</button>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    }-->
-
-<!--    <jhi-alert-error></jhi-alert-error>-->
-<!--    <jhi-alert></jhi-alert>-->
-
-<!--    @if ((activities | activityFilter: filters)?.length === 0) {-->
-<!--      <div class="alert alert-warning py-2" id="no-result">-->
-<!--        <span>No Activities found matching your criteria</span>-->
-<!--      </div>-->
-<!--    }-->
-
-<!--    @if ((activities | activityFilter: filters) && (activities | activityFilter: filters).length > 0) {-->
-<!--      <div class="row">-->
-<!--        @for (activity of activities | activityFilter: filters; track trackId(activity)) {-->
-<!--          <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-3">-->
-<!--            <div class="card border-0 shadow-sm h-100">-->
-<!--              &lt;!&ndash; Cover Image with Radiant Background &ndash;&gt;-->
-<!--              @if (activity.coverImage) {-->
-<!--                <div class="position-relative radiant-image-container">-->
-<!--                  <div class="radiant-background {{ activity.activityType | lowercase }}"></div>-->
-<!--                  <div class="text-center p-2">-->
-<!--                    <a (click)="openFile(activity.coverImage, activity.coverImageContentType)">-->
-<!--                      <img-->
-<!--                        class="img-fluid rounded"-->
-<!--                        style="max-height: 120px; width: auto; position: relative; z-index: 2"-->
-<!--                        [src]="'data:' + activity.coverImageContentType + ';base64,' + activity.coverImage"-->
-<!--                        alt="Activity cover image"-->
-<!--                      />-->
-<!--                    </a>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              }-->
-
-<!--              &lt;!&ndash; Card content &ndash;&gt;-->
-<!--              <div class="card-header bg-white border-0 pb-0 pt-2 px-2 d-flex justify-content-between align-items-center">-->
-<!--                <span class="badge activity-type {{ activity.activityType | lowercase }} text-uppercase fs-7">-->
-<!--                  {{ activity.activityType }}-->
-<!--                </span>-->
-<!--                <span class="text-muted small fs-7">{{ activity.activityDate | formatMediumDate }}</span>-->
-<!--              </div>-->
-
-<!--              <div class="card-body pt-1 pb-2 px-2">-->
-<!--                <h5 class="card-title fs-6 fw-bold mb-1 text-truncate" title="{{ activity.activityName }}">-->
-<!--                  {{ activity.activityName }}-->
-<!--                </h5>-->
-
-<!--                <p class="card-text text-muted fs-7 mb-2">-->
-<!--                  <fa-icon [icon]="faMapMarkerAlt" class="me-1"></fa-icon>-->
-<!--                  <span class="text-truncate" title="{{ activity.location }}">{{ activity.location }}</span>-->
-<!--                </p>-->
-
-<!--                <div class="d-flex align-items-center mb-2">-->
-<!--                  <fa-icon [icon]="faUsers" class="me-1 text-muted"></fa-icon>-->
-<!--                  <span class="fw-bold me-1 fs-7">{{ activity.numberOfParticipants }}/{{ activity.maxNumberOfParticipants }}</span>-->
-<!--                  <span class="text-muted fs-7">participants</span>-->
-<!--                </div>-->
-
-<!--                <div class="d-flex justify-content-between align-items-center">-->
-<!--                  <span class="badge status-label {{ activity.status | lowercase }} px-2 py-1 fs-7">-->
-<!--                    {{-->
-<!--                      {-->
-<!--                        null: '',-->
-<!--                        ANNOUNCED: 'ANNOUNCED',-->
-<!--                        CURRENTLY_HAPPENING: 'HAPPENING',-->
-<!--                        FINISHED: 'FINISHED',-->
-<!--                        CANCELED: 'CANCELED',-->
-<!--                      }[activity.status ?? 'null']-->
-<!--                    }}-->
-<!--                  </span>-->
-<!--                  <span class="fw-bold text-primary fs-7">-->
-<!--                    {{ activity.activityCost | currency: 'GBP' : 'symbol' : '1.2-2' }}-->
-<!--                  </span>-->
-<!--                </div>-->
-<!--              </div>-->
-
-<!--              <div class="card-footer bg-white border-0 pt-0 pb-2 px-2">-->
-<!--                <a-->
-<!--                  [routerLink]="['/activity', activity.id, 'view']"-->
-<!--                  class="btn btn-block btn-outline-primary btn-sm rounded-pill w-100 py-1"-->
-<!--                  >View</a-->
-<!--                >-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        }-->
-<!--      </div>-->
-<!--    }-->
-<!--  </h2>-->
-<!--</div>-->
