@@ -12,6 +12,7 @@ import { RankingService } from 'app/entities/ranking/service/ranking.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './profile.component.html',
+  styleUrl: './profile.component.scss',
 })
 export class ProfileComponent implements OnInit {
   starAverage: number | null = null;
