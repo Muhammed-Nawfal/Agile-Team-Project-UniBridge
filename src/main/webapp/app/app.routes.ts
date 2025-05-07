@@ -6,6 +6,7 @@ import { UserRouteAccessService } from 'app/core/auth/user-route-access.service'
 import { errorRoute } from './layouts/error/error.route';
 import { ActivityMatchComponent } from './entities/activity-match/list/activity-match.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
+import NavbarComponent from './layouts/navbar/navbar.component';
 
 const routes: Routes = [
   {
@@ -46,12 +47,13 @@ const routes: Routes = [
   },
   {
     path: '',
-    component: MainLayoutComponent,
+    component: NavbarComponent,
     children: [
       {
-        path: '',
-        loadChildren: () => import(`./entities/entity.routes`),
+        path: 'activity-match',
+        loadChildren: () => import('./entities/activity-match/activity-match.routes'),
       },
+      // other routes
     ],
   },
   ...errorRoute,

@@ -1,6 +1,6 @@
 <div class="page" id="page-activity-match" jhiFocusAnnouncer jhiHoverAnnouncer>
   <h1 id="page-heading" class="title" data-cy="ActivityMatchHeading" tabindex="0" aria-label="Welcome to UNIBRIDGE">
-    Welcome to UNIBRIDGE
+    Choose Your Match Buddy
   </h1>
 
   <jhi-alert-error></jhi-alert-error>
@@ -44,9 +44,5 @@
     <button class="btn-secondary-action" (click)="navigateToMatchRequests()">
       <i class="fas fa-user-friends me-2"></i> Match Requests
     </button>
-  </div>
-  <div class="form-text">
-    <span *ngIf="a11y.isEnabled$ | async" class="text-success">🟢 Accessibility ON</span>
-    <span *ngIf="!(a11y.isEnabled$ | async)" class="text-muted">⚪ Accessibility OFF</span>
   </div>
 </div>
