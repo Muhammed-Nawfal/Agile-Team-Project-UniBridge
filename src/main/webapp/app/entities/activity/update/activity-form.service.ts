@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import dayjs from 'dayjs/esm';
 import { DATE_TIME_FORMAT } from 'app/config/input.constants';
@@ -55,12 +55,86 @@ export type ActivityFormGroup = FormGroup<ActivityFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class ActivityFormService {
+  // Custom validator for cost constraints based on isPaid value
+  activityCostValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const activityCost = control.value;
+      const form = control.parent;
+      if (!form) return null;
+
+      const isPaid = form.get('isPaid')?.value;
+
+      if (isPaid === false && activityCost !== 0) {
+        return { mustBeZeroWhenNotPaid: true };
+      }
+
+      if (isPaid === true && (activityCost === null || activityCost <= 0)) {
+        return { mustBePositiveWhenPaid: true };
+      }
+
+      return null;
+    };
+  }
+
+  // Validator to ensure the isPaid and activityCost are consistent
+  isPaidValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const isPaid = control.value;
+      const form = control.parent;
+      if (!form) return null;
+
+      // When isPaid changes, validate activityCost
+      const activityCostControl = form.get('activityCost');
+      if (activityCostControl) {
+        // Force re-validation of activityCost
+        activityCostControl.updateValueAndValidity();
+      }
+
+      return null;
+    };
+  }
+
+  // Custom validator to prevent numberOfParticipants exceeding maxNumberOfParticipants
+  maxParticipantsValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const maxNumberOfParticipants = control.value;
+      const form = control.parent;
+      if (!form) return null;
+
+      const numberOfParticipants = form.get('numberOfParticipants')?.value;
+
+      if (numberOfParticipants !== null && maxNumberOfParticipants !== null && numberOfParticipants > maxNumberOfParticipants) {
+        return { belowCurrentParticipants: true };
+      }
+
+      return null;
+    };
+  }
+
+  // Custom validator to ensure numberOfParticipants doesn't exceed maxNumberOfParticipants
+  numberOfParticipantsValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const numberOfParticipants = control.value;
+      const form = control.parent;
+      if (!form) return null;
+
+      const maxNumberOfParticipants = form.get('maxNumberOfParticipants')?.value;
+
+      if (numberOfParticipants !== null && maxNumberOfParticipants !== null && numberOfParticipants > maxNumberOfParticipants) {
+        return { exceedsMaxParticipants: true };
+      }
+
+      return null;
+    };
+  }
+
   createActivityFormGroup(activity: ActivityFormGroupInput = { id: null }): ActivityFormGroup {
     const activityRawValue = this.convertActivityToActivityRawValue({
       ...this.getFormDefaults(),
       ...activity,
     });
-    return new FormGroup<ActivityFormGroupContent>({
+
+    const form = new FormGroup<ActivityFormGroupContent>({
       id: new FormControl(
         { value: activityRawValue.id, disabled: true },
         {
@@ -78,10 +152,10 @@ export class ActivityFormService {
         validators: [Validators.required],
       }),
       numberOfParticipants: new FormControl(activityRawValue.numberOfParticipants, {
-        validators: [Validators.required],
+        validators: [Validators.required, this.numberOfParticipantsValidator()],
       }),
       maxNumberOfParticipants: new FormControl(activityRawValue.maxNumberOfParticipants, {
-        validators: [Validators.required, Validators.min(2)],
+        validators: [Validators.required, Validators.min(2), this.maxParticipantsValidator()],
       }),
       location: new FormControl(activityRawValue.location, {
         validators: [Validators.required, Validators.maxLength(95)],
@@ -99,18 +173,37 @@ export class ActivityFormService {
       coverImage: new FormControl(activityRawValue.coverImage),
       coverImageContentType: new FormControl(activityRawValue.coverImageContentType),
       isPaid: new FormControl(activityRawValue.isPaid, {
-        validators: [Validators.required],
+        validators: [Validators.required, this.isPaidValidator()],
       }),
       activityCost: new FormControl(activityRawValue.activityCost, {
-        validators: [Validators.required, Validators.min(0)],
+        validators: [Validators.required, Validators.min(0), this.activityCostValidator()],
       }),
-      creator: new FormControl(activityRawValue.creator),
+      creator: new FormControl({
+        value: activityRawValue.creator,
+        disabled: activityRawValue.id !== null, // Disable creator field when editing (id exists)
+      }),
       challenge: new FormControl(activityRawValue.challenge),
     });
+
+    return form;
   }
 
   getActivity(form: ActivityFormGroup): IActivity | NewActivity {
-    return this.convertActivityRawValueToActivity(form.getRawValue() as ActivityFormRawValue | NewActivityFormRawValue);
+    // Ensure the original creator is preserved when editing
+    let formValue = form.getRawValue() as ActivityFormRawValue | NewActivityFormRawValue;
+
+    // If form is in edit mode (id exists) and creator is disabled, get the original value
+    if (formValue.id && form.get('creator')?.disabled) {
+      const creatorControl = form.get('creator');
+      if (creatorControl) {
+        formValue = {
+          ...formValue,
+          creator: creatorControl.value,
+        };
+      }
+    }
+
+    return this.convertActivityRawValueToActivity(formValue);
   }
 
   resetForm(form: ActivityFormGroup, activity: ActivityFormGroupInput): void {
@@ -121,6 +214,20 @@ export class ActivityFormService {
         id: { value: activityRawValue.id, disabled: true },
       } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
     );
+
+    // Disable creator field when editing
+    if (activity.id) {
+      form.get('creator')?.disable();
+    }
+
+    // Force validation after form reset to ensure constraints are applied immediately
+    form.updateValueAndValidity();
+
+    // Set initial activity cost to 0 if isPaid is false
+    const isPaid = form.get('isPaid')?.value;
+    if (isPaid === false) {
+      form.get('activityCost')?.setValue(0);
+    }
   }
 
   private getFormDefaults(): ActivityFormDefaults {
