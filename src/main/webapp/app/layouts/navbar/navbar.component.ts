@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, AfterViewInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
@@ -17,7 +17,7 @@ import NavbarItem from './navbar-item.model';
   styleUrl: './navbar.component.scss',
   imports: [RouterModule, SharedModule, HasAnyAuthorityDirective],
 })
-export default class NavbarComponent implements OnInit {
+export default class NavbarComponent implements OnInit, AfterViewInit {
   isOffcanvasOpen = false;
   inProduction?: boolean;
   isNavbarCollapsed = signal(true);
