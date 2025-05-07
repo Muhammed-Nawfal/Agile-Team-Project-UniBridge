@@ -1,4 +1,3 @@
-// mychallenges.component.ts
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
@@ -10,27 +9,36 @@ import { IChallenge } from '../challenge.model';
 import { IProfile } from '../../profile/profile.model';
 import SharedModule from 'app/shared/shared.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ChallengeCardComponent } from '../challenge-card.component';
 import dayjs from 'dayjs';
 import { FormsModule } from '@angular/forms';
+
+interface TrophyMapping {
+  type: string;
+  color: string;
+  minPoints: number;
+  maxPoints: number;
+}
 
 @Component({
   selector: 'jhi-mychallenges',
   templateUrl: './mychallenges.component.html',
   styleUrls: ['./mychallenges.component.scss'],
-  imports: [FontAwesomeModule, NgFor, NgIf, RouterLink, CommonModule, RouterModule, SharedModule, ChallengeCardComponent, FormsModule],
   standalone: true,
+  imports: [FontAwesomeModule, NgFor, NgIf, RouterLink, CommonModule, RouterModule, SharedModule, FormsModule],
 })
 export class MyChallengesComponent implements OnInit {
   profile: IProfile | null = null;
   challenges: IChallenge[] = [];
-  allChallenges: IChallenge[] = []; // Store all challenges to filter from
   isLoading = true;
   error = false;
 
-  // Properties for the "created by" filter
-  selectedCreatorId: number | null = null;
-  creatorProfiles: IProfile[] = [];
+  trophyMappings: TrophyMapping[] = [
+    { type: 'Bronze Trophy', color: '#CD7F32', minPoints: 1, maxPoints: 5 },
+    { type: 'Silver Trophy', color: '#C0C0C0', minPoints: 6, maxPoints: 10 },
+    { type: 'Gold Trophy', color: '#FFD700', minPoints: 11, maxPoints: 15 },
+    { type: 'Platinum Trophy', color: '#E5E4E2', minPoints: 16, maxPoints: 20 },
+    { type: 'Diamond Trophy', color: '#B9F2FF', minPoints: 21, maxPoints: 100 },
+  ];
 
   constructor(
     private accountService: AccountService,
@@ -66,110 +74,6 @@ export class MyChallengesComponent implements OnInit {
     });
   }
 
-  // Filter challenges when a creator is selected
-  onCreatorChange(): void {
-    if (this.selectedCreatorId === null) {
-      // Show all challenges assigned to the user
-      this.challenges = [...this.allChallenges];
-    } else {
-      // Filter challenges by creator ID
-      this.challenges = this.allChallenges.filter(challenge => challenge.createdBy?.id === this.selectedCreatorId);
-    }
-  }
-
-  loadUserChallenges(): void {
-    this.isLoading = true;
-    this.error = false;
-
-    // Get the current user's account
-    this.accountService.identity().subscribe({
-      next: account => {
-        if (!account?.login) {
-          this.error = true;
-          this.isLoading = false;
-          return;
-        }
-
-        // Query for profiles with the current user's login
-        this.profileService
-          .query({
-            'login.equals': account.login,
-          })
-          .subscribe({
-            next: profilesResponse => {
-              // This should return the current user's profile
-              if (profilesResponse.body && profilesResponse.body.length > 0) {
-                this.profile = profilesResponse.body[0];
-
-                // Load the challenges
-                this.loadChallenges();
-              } else {
-                this.error = true;
-                this.isLoading = false;
-              }
-            },
-            error: () => {
-              this.error = true;
-              this.isLoading = false;
-            },
-          });
-      },
-      error: () => {
-        this.error = true;
-        this.isLoading = false;
-      },
-    });
-  }
-
-  loadChallenges(): void {
-    if (!this.profile?.id) {
-      this.error = true;
-      this.isLoading = false;
-      return;
-    }
-
-    // Get all challenges assigned to the current user
-    this.challengeService
-      .query({
-        'assignedToId.equals': this.profile.id,
-        // Remove eagerload as it might be causing permission issues
-      })
-      .subscribe({
-        next: (res: HttpResponse<IChallenge[]>) => {
-          this.allChallenges = res.body ?? [];
-          this.challenges = [...this.allChallenges]; // Make a copy
-
-          // Extract unique creator profiles from challenges
-          this.extractCreatorProfiles();
-
-          this.isLoading = false;
-        },
-        error: () => {
-          this.error = true;
-          this.isLoading = false;
-        },
-      });
-  }
-
-  extractCreatorProfiles(): void {
-    // Extract unique creator IDs
-    const uniqueCreatorIds = new Set<number>();
-    const uniqueCreators: IProfile[] = [];
-
-    this.allChallenges.forEach(challenge => {
-      if (challenge.createdBy?.id && !uniqueCreatorIds.has(challenge.createdBy.id)) {
-        uniqueCreatorIds.add(challenge.createdBy.id);
-        uniqueCreators.push(challenge.createdBy);
-      }
-    });
-
-    this.creatorProfiles = uniqueCreators;
-  }
-
-  loadAssignedChallenges(): void {
-    this.loadChallenges();
-  }
-
   trackId(_index: number, item: IChallenge): number {
     return item.id;
   }
@@ -186,46 +90,71 @@ export class MyChallengesComponent implements OnInit {
     this.challengeService.complete(id).subscribe(() => this.load());
   }
 
-  // Map category names to Bootstrap contextual classes
+  getTrophy(points: number | null | undefined): TrophyMapping | null {
+    if (!points) return null;
+    return this.trophyMappings.find(t => points >= t.minPoints && points <= t.maxPoints) ?? null;
+  }
   getCategoryClass(category: string | null | undefined): string {
-    if (!category) return 'secondary';
-
-    const categoryMap: Record<string, string> = {
+    const map: Record<string, string> = {
       ACADEMIC: 'primary',
       SOCIAL: 'info',
       SPORTS: 'success',
       CREATIVE: 'warning',
       OTHER: 'secondary',
     };
-
-    return categoryMap[category.toUpperCase()] || 'secondary';
+    return category ? map[category.toUpperCase()] || 'secondary' : 'secondary';
   }
 
   getCategoryLabel(category: string | null | undefined): string {
-    if (!category) return 'Unknown';
-    return category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+    return category ? category.charAt(0).toUpperCase() + category.slice(1).toLowerCase() : 'Unknown';
   }
 
   formatDate(date: dayjs.Dayjs | null | undefined): string {
-    if (!date) {
-      return 'No date';
-    }
-    return date.format('MMM D, YYYY');
+    return date ? date.format('MMM D, YYYY') : 'No date';
   }
 
-  getCreatorName(profile: IProfile | null): string {
-    if (!profile) {
-      return 'Unknown';
-    }
+  getCreatorName(): string {
+    this.profileService.findMyProfile().subscribe(myProfileRes => {
+      const profile = myProfileRes.body;
+      if (profile) {
+        return profile.login;
+      }
+      return 'Unknown1';
+    });
+    return 'Unknown2';
+  }
 
-    if (profile.firstName && profile.lastName) {
-      return '${profile.firstName} ${profile.lastName};';
-    } else if (profile.firstName) {
-      return profile.firstName;
-    } else if (profile.login) {
-      return profile.login;
-    } else {
-      return 'User ${profile.id};';
+  getTrophyColor(points?: number | null): string {
+    switch (points) {
+      case 5:
+        return '#CD7F32'; // Bronze
+      case 10:
+        return '#C0C0C0'; // Silver
+      case 15:
+        return '#FFD700'; // Gold
+      case 20:
+        return '#E5E4E2'; // Platinum
+      case 25:
+        return '#B9F2FF'; // Diamond
+      default:
+        return '#ccc'; // Default fallback
+    }
+  }
+
+  getTrophyLabel(points?: number | null): string {
+    switch (points) {
+      case 5:
+        return 'Bronze';
+      case 10:
+        return 'Silver';
+      case 15:
+        return 'Gold';
+      case 20:
+        return 'Platinum';
+      case 25:
+        return 'Diamond';
+      default:
+        return '';
     }
   }
 }
