@@ -58,7 +58,6 @@ public class UserFriendsResource {
      */
     @PostMapping("/send-request/{profileId}")
     @Transactional
-    @SuppressWarnings("java:modernizer")
     public ResponseEntity<FriendsList> sendFriendRequest(@PathVariable Long profileId) throws URISyntaxException {
         log.debug("REST request from current user to send friend request to profile ID: {}", profileId);
 
@@ -92,7 +91,7 @@ public class UserFriendsResource {
             Optional<FriendsList> existingRequest = friendsListRepository.findExistingFriendRequest(currentUserProfile, targetProfile);
 
             if (existingRequest.isPresent()) {
-                FriendsList friendship = existingRequest.orElseThrow();
+                FriendsList friendship = existingRequest.get();
 
                 // If it's DECLINED, update to PENDING
                 if (Decision.DECLINED.equals(friendship.getRequestStatus())) {
@@ -263,7 +262,6 @@ public class UserFriendsResource {
      * @return map containing status and friendsListId if applicable.
      */
     @GetMapping("/check-status/{profileId}")
-    @SuppressWarnings("java:modernizer")
     public ResponseEntity<Map<String, Object>> checkFriendshipStatus(@PathVariable Long profileId) {
         log.debug("REST request to check friendship status with profile ID: {}", profileId);
 
@@ -282,7 +280,7 @@ public class UserFriendsResource {
         try {
             currentUserProfile = profileRepository
                 .findByUserLogin(currentUsername)
-                .orElseThrow(() -> new BadRequestAlertException("Current user has no profile", "friendsList", "noprofile"));
+                .orElseThrow(() -> new RuntimeException("Current user has no profile for username: " + currentUsername));
         } catch (Exception e) {
             log.warn("Current user has no profile for username: {}", currentUsername);
             result.put("status", "NOT_FRIENDS");
@@ -311,7 +309,7 @@ public class UserFriendsResource {
         Optional<FriendsList> existingRequest = friendsListRepository.findExistingFriendRequest(currentUserProfile, targetProfile);
 
         if (existingRequest.isPresent()) {
-            FriendsList request = existingRequest.orElseThrow();
+            FriendsList request = existingRequest.get();
             log.debug("Found existing relationship with status: {}", request.getRequestStatus());
 
             if (Decision.ACCEPT.equals(request.getRequestStatus())) {
@@ -344,7 +342,6 @@ public class UserFriendsResource {
      * @return map with relationship details.
      */
     @GetMapping("/check-relationship/{profileId}")
-    @SuppressWarnings("java:modernizer")
     public ResponseEntity<Map<String, Object>> checkRelationship(@PathVariable Long profileId) {
         log.debug("REST request to check relationship with profile ID: {}", profileId);
 
@@ -386,7 +383,7 @@ public class UserFriendsResource {
         Optional<FriendsList> existingRequest = friendsListRepository.findExistingFriendRequest(currentUserProfile, targetProfile);
 
         if (existingRequest.isPresent()) {
-            FriendsList relationship = existingRequest.orElseThrow();
+            FriendsList relationship = existingRequest.get();
             result.put("status", "exists");
             result.put("relationshipId", relationship.getId());
             result.put("requestStatus", relationship.getRequestStatus());
