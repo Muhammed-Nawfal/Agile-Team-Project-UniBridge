@@ -18,6 +18,7 @@ import { LoginService } from 'app/login/login.service';
   selector: 'jhi-register',
   imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule, PasswordStrengthBarComponent],
   templateUrl: './register.component.html',
+  styleUrl: 'register.component.scss',
 })
 export default class RegisterComponent implements AfterViewInit {
   @ViewChild('login', { static: true }) loginField?: ElementRef;
