@@ -56,7 +56,6 @@ public class FriendsListService {
      * @param requestedProfileId the ID of the profile receiving the request
      * @return the created or updated friend request
      */
-    @SuppressWarnings("java:modernizer")
     public FriendsList sendFriendRequest(Long requestorProfileId, Long requestedProfileId) {
         log.debug("Request to send friend request from profile ID {} to profile ID {}", requestorProfileId, requestedProfileId);
 
@@ -73,7 +72,7 @@ public class FriendsListService {
         Optional<FriendsList> existingRequest = friendsListRepository.findExistingFriendRequest(requestorProfile, requestedProfile);
 
         if (existingRequest.isPresent()) {
-            FriendsList existingFriendship = existingRequest.orElseThrow();
+            FriendsList existingFriendship = existingRequest.get();
 
             // If it's DECLINED, update to PENDING
             if (Decision.DECLINED.equals(existingFriendship.getRequestStatus())) {
