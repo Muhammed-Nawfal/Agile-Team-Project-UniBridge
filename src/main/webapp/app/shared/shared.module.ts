@@ -21,7 +21,7 @@ import {
   faSync,
   faSearch,
 
-  // User Related
+  // User related
   faUser,
   faUserPlus,
   faUserCheck,

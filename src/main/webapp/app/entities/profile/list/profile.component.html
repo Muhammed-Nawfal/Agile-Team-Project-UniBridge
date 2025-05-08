@@ -83,7 +83,7 @@
     </div>
   </div>
   <!-- Only show this section when user is NOT logged in -->
-  <div class="text-center mt-4 mb-4" *ngIf="!profile()">
+  <div class="text-center mt-4 mb-4" *ngIf="!profile">
     <a class="btn btn-primary btn-lg" [routerLink]="['/login']">
       <fa-icon icon="sign-in-alt" class="me-2"></fa-icon>
       Sign in to register

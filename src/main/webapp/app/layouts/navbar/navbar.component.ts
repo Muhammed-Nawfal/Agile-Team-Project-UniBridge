@@ -27,14 +27,14 @@ export default class NavbarComponent implements OnInit {
   navLinks = [
     { label: 'Home', route: '/', icon: 'home' },
     { label: 'Profile', route: '/profile', icon: 'user' },
-    { label: 'Matches', route: '/activity-match', icon: 'handshake-alt' }, // changed from handshake
+    { label: 'Matches', route: '/activity-match', icon: 'handshake' }, // using base handshake icon
     { label: 'Activities', route: '/activity', icon: 'star' },
-    { label: 'Your Activities', route: '/my-activities', icon: 'calendar' }, // fixed spelling
+    { label: 'Your Activities', route: '/my-activities', icon: 'calendar-alt' }, // changed to calendar-alt
     { label: 'Your Friends', route: '/friends-list', icon: 'user-friends' },
     { label: 'Booking', route: '/booking', icon: 'calendar-check' },
-    { label: 'Challenges', route: '/challenge', icon: 'bolt-lightning' }, // changed from bolt
+    { label: 'Challenges', route: '/challenge', icon: 'bolt' }, // using base bolt icon
     { label: 'Ranking', route: '/ranking', icon: 'trophy' },
-    { label: 'Review', route: '/review', icon: 'star-half' }, // changed from star-half-alt
+    { label: 'Review', route: '/review', icon: 'star-half-alt' }, // using star-half-alt consistently
   ];
 
   hiddenRoutes = ['/', '/login', '/account/register', '/profile/my/edit', '/#next-section'];

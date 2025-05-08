@@ -1,15 +1,19 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 // Import the accessibility component
 import { AccessibilityComponent } from 'app/shared/accessibility/accessibility.component';
 import { GlobalAccessibilityDirective } from '../../shared/a11y/global-accessibility.directive';
 import { register } from 'swiper/element/bundle';
 import NavbarComponent from '../navbar/navbar.component';
+
 register();
 
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -20,6 +24,7 @@ library.add(faUser, faComments, faTrophy, faCalendarCheck, faStar, faHandshake, 
 import { ViewChild } from '@angular/core';
 import { NgClass } from '@angular/common';
 import SharedModule from 'app/shared/shared.module';
+import { fontAwesomeIcons } from 'app/config/font-awesome-icons';
 
 @Component({
   standalone: true,
@@ -36,6 +41,9 @@ import SharedModule from 'app/shared/shared.module';
     NavbarComponent,
     NgClass,
     SharedModule,
+    NgModule,
+    CommonModule,
+    FontAwesomeModule,
   ],
 })
 export default class MainComponent implements OnInit {
