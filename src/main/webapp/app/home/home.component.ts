@@ -36,14 +36,14 @@ export default class HomeComponent implements OnInit, OnDestroy, AfterViewInit, 
 
   account = signal<Account | null>(null);
   slides = [
-    { title: 'Create Profile', icon: 'fa-user-plus', desc: 'HIII' },
-    { title: 'Set Preferences', icon: 'fa-sliders-h', desc: 'HOW ARE YOU?' },
-    { title: 'Match Buddies', icon: 'fa-users', desc: 'HOWS TP?' },
-    { title: 'Create & Join Activities', icon: 'fa-running', desc: 'DIE' },
-    { title: 'Chat & Connect', icon: 'fa-comments', desc: 'DONT DIE' },
-    { title: 'Book Event Spaces', icon: 'fa-calendar-check', desc: 'DONT USE THIS APP' },
-    { title: 'Challenge Your Friends', icon: 'fa-trophy', desc: 'WASTE YOUR TIME' },
-    { title: 'Rank other users', icon: 'fa-star', desc: 'BYEEEEE' },
+    { title: 'Create Profile', icon: 'fa-user-plus', desc: 'Set up your student profile to start matching and connecting.' },
+    { title: 'Set Preferences', icon: 'fa-sliders-h', desc: 'Tell us what you’re into – sports, study, societies, and more.' },
+    { title: 'Match Buddies', icon: 'fa-users', desc: 'Find students with similar interests to hang out or work with.' },
+    { title: 'Create & Join Activities', icon: 'fa-running', desc: 'Organize or join events like gym sessions, study groups, or matches.' },
+    { title: 'Chat & Connect', icon: 'fa-comments', desc: 'Message matched users and make new friends instantly.' },
+    { title: 'Book Event Spaces', icon: 'fa-calendar-check', desc: 'Reserve rooms, pitches, or spaces easily for your activities.' },
+    { title: 'Challenge Your Friends', icon: 'fa-trophy', desc: 'Compete with friends in challenges and level up together.' },
+    { title: 'Rank Other Users', icon: 'fa-star', desc: 'Give and receive feedback to build your Unibridge reputation.' },
   ];
   currentIndex = 0;
   currentTransform = 'translateX(0px)';
@@ -106,7 +106,7 @@ export default class HomeComponent implements OnInit, OnDestroy, AfterViewInit, 
   }
 
   onButtonClick(): void {
-    void this.router.navigate(['/login']);
+    this.router.navigate(['/login']);
   }
 
   ngAfterViewChecked(): void {
