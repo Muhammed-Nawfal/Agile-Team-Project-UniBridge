@@ -1,24 +1,26 @@
-<jhi-navbar></jhi-navbar>
+<div class="page-wrapper">
+  <jhi-navbar></jhi-navbar>
 
-<div
-  class="main-wrapper"
-  [ngClass]="{
-    'with-sidebar': navbarComponent?.showNavbar,
-    'no-sidebar': !navbarComponent?.showNavbar,
-  }"
-  jhiGlobalAccessibility
->
-  <div class="topbar" *ngIf="navbarComponent?.showNavbar && navbarComponent?.profile?.profilePicture">
-    <div class="profile-pic">
-      <img
-        [src]="'data:' + navbarComponent?.profile?.profilePictureContentType + ';base64,' + navbarComponent?.profile?.profilePicture"
-        alt="Profile"
-      />
+  <div
+    class="main-wrapper"
+    [ngClass]="{
+      'with-sidebar': navbarComponent?.showNavbar,
+      'no-sidebar': !navbarComponent?.showNavbar,
+    }"
+    jhiGlobalAccessibility
+  >
+    <div class="topbar" *ngIf="navbarComponent?.showNavbar && navbarComponent?.profile?.profilePicture">
+      <div class="profile-pic">
+        <img
+          [src]="'data:' + navbarComponent?.profile?.profilePictureContentType + ';base64,' + navbarComponent?.profile?.profilePicture"
+          alt="Profile"
+        />
+      </div>
     </div>
+
+    <router-outlet></router-outlet>
   </div>
 
-  <router-outlet></router-outlet>
+  <jhi-accessibility></jhi-accessibility>
+  <jhi-footer></jhi-footer>
 </div>
-
-<jhi-accessibility></jhi-accessibility>
-<jhi-footer></jhi-footer>

@@ -1,5 +1,4 @@
-<!doctype html>
-<html lang="en">
+<div class="footer-wrapper">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,24 +14,6 @@
         --shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
       }
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        line-height: 1.6;
-        color: var(--dark);
-        background-color: var(--light-bg);
-        padding: 20px;
-        min-height: 10vh;
-        display: flex;
-        flex-direction: column;
-      }
-
-      /* Footer Styles */
       .footer {
         background: linear-gradient(to right, var(--primary-dark), var(--primary));
         color: var(--white);
@@ -41,6 +22,8 @@
         box-shadow: var(--shadow);
         position: relative;
         overflow: hidden;
+        margin-top: auto;
+        width: 100%;
       }
 
       .footer-content {
@@ -100,34 +83,16 @@
         font-size: 0.85rem;
         opacity: 0.8;
       }
-      html,
-      body {
-        height: 100%;
-      }
-
-      body {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        padding: 0;
-        margin: 0;
-      }
-
-      .footer {
-        margin-top: auto;
-      }
     </style>
   </head>
-  <body>
-    <!-- Footer Design -->
-    <div class="footer">
-      <div class="footer-content">
-        <div class="footer-logo">UniBridge</div>
-        <div class="footer-nav">
-          <a routerLink="/gdpr-policy">Privacy Policy</a>
-        </div>
+  <!-- Footer Design -->
+  <div class="footer">
+    <div class="footer-content">
+      <div class="footer-logo">UniBridge</div>
+      <div class="footer-nav">
+        <a routerLink="/gdpr-policy">Privacy Policy</a>
       </div>
-      <div class="footer-copyright">&copy; 2025 Team 32 - University Project</div>
     </div>
-  </body>
-</html>
+    <div class="footer-copyright">&copy; 2025 Team 32 - University Project</div>
+  </div>
+</div>

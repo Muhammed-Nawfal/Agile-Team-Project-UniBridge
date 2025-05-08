@@ -1,8 +1,16 @@
-.main-wrapper {
-  padding: 2rem;
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+}
+
+.main-wrapper {
+  flex: 1; // Changed from just flex: 1
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
   transition: margin-left 0.3s ease;
-  background-color: #f3f9ff;
+  background-color: white;
 
   &.with-sidebar {
     margin-left: 240px; // Adjust based on sidebar width
@@ -34,6 +42,20 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
   }
+}
+
+/* For home page specific styles */
+.home-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #6f42c1 0%, #8557d3 100%);
+  min-height: calc(100% - 60px); // Adjust based on topbar height
+  border-radius: 8px;
+  margin: -2rem; // Counteract the padding of main-wrapper
+  padding: 2rem;
 }
 
 /* Optional: override default jh-card spacing if needed */
