@@ -25,16 +25,17 @@ export default class NavbarComponent implements OnInit {
   entitiesNavbarItems: NavbarItem[] = [];
 
   navLinks = [
+    { label: 'Home', route: '/', icon: 'home' },
     { label: 'Profile', route: '/profile', icon: 'user' },
     { label: 'Matches', route: '/activity-match', icon: 'handshake' },
     { label: 'Activities', route: '/activity', icon: 'star' },
-    { label: 'Your Activities', route: '/review', icon: 'star' },
-    { label: 'Your Friends', route: '/friends-list', icon: 'star' },
+    { label: 'Your Activities', route: '/review', icon: 'calender' },
+    { label: 'Your Friends', route: '/friends-list', icon: 'user-friends' },
     { label: 'Chat', route: '/chat', icon: 'comments' },
     { label: 'Booking', route: '/booking', icon: 'calendar-check' },
-    { label: 'Challenges', route: '/challenge', icon: 'star' },
+    { label: 'Challenges', route: '/challenge', icon: 'bolt' },
     { label: 'Ranking', route: '/ranking', icon: 'trophy' },
-    { label: 'Review', route: '/review', icon: 'star' },
+    { label: 'Review', route: '/review', icon: 'star-half-alt' },
   ];
 
   hiddenRoutes = ['/', '/login', '/account/register', '/#next-section'];
