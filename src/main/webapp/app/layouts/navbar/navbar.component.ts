@@ -1,14 +1,16 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Component, OnInit, inject } from '@angular/core';
+import { Router, NavigationEnd, RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
 import HasAnyAuthorityDirective from 'app/shared/auth/has-any-authority.directive';
 import { VERSION } from 'app/app.constants';
 import { AccountService } from 'app/core/auth/account.service';
 import { LoginService } from 'app/login/login.service';
-import { ProfileService } from 'app/layouts/profiles/profile.service';
+import { ProfileService } from 'app/entities/profile/service/profile.service';
+import { IProfile } from 'app/entities/profile/profile.model';
 import { EntityNavbarItems } from 'app/entities/entity-navbar-items';
 import NavbarItem from './navbar-item.model';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   standalone: true,
@@ -18,33 +20,51 @@ import NavbarItem from './navbar-item.model';
   imports: [RouterModule, SharedModule, HasAnyAuthorityDirective],
 })
 export default class NavbarComponent implements OnInit {
-  inProduction?: boolean;
-  isNavbarCollapsed = signal(true);
-  openAPIEnabled?: boolean;
-  version = '';
+  version = VERSION.toLowerCase().startsWith('v') ? VERSION : `v${VERSION}`;
   account = inject(AccountService).trackCurrentAccount();
   entitiesNavbarItems: NavbarItem[] = [];
+
+  navLinks = [
+    { label: 'Profile', route: '/profile', icon: 'user' },
+    { label: 'Matches', route: '/activity-match', icon: 'handshake' },
+    { label: 'Ranking', route: '/ranking', icon: 'trophy' },
+    { label: 'Booking', route: '/booking', icon: 'calendar-check' },
+    { label: 'Chat', route: '/chat', icon: 'comments' },
+    { label: 'Review', route: '/review', icon: 'star' },
+  ];
+
+  hiddenRoutes = ['/', '/login', '/account/register', '/#next-section'];
+  showNavbar = true;
+  profile: IProfile | null = null;
 
   private readonly loginService = inject(LoginService);
   private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
 
   constructor() {
-    if (VERSION) {
-      this.version = VERSION.toLowerCase().startsWith('v') ? VERSION : `v${VERSION}`;
-    }
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        const cleanPath = event.urlAfterRedirects.split('?')[0];
+        this.showNavbar = !this.hiddenRoutes.includes(cleanPath);
+      }
+    });
   }
 
   ngOnInit(): void {
     this.entitiesNavbarItems = EntityNavbarItems;
-    this.profileService.getProfileInfo().subscribe(profileInfo => {
-      this.inProduction = profileInfo.inProduction;
-      this.openAPIEnabled = profileInfo.openAPIEnabled;
-    });
-  }
 
-  collapseNavbar(): void {
-    this.isNavbarCollapsed.set(true);
+    // Only fetch profile if user is logged in
+    const currentAccount = this.account();
+    if (currentAccount) {
+      this.profileService.findMyProfile().subscribe({
+        next: res => {
+          this.profile = res.body ?? null;
+        },
+        error: () => {
+          this.profile = null;
+        },
+      });
+    }
   }
 
   login(): void {
@@ -52,12 +72,7 @@ export default class NavbarComponent implements OnInit {
   }
 
   logout(): void {
-    this.collapseNavbar();
     this.loginService.logout();
     this.router.navigate(['']);
-  }
-
-  toggleNavbar(): void {
-    this.isNavbarCollapsed.update(isNavbarCollapsed => !isNavbarCollapsed);
   }
 }

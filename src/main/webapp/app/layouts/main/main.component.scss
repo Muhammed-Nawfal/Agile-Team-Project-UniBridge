@@ -1,0 +1,48 @@
+.main-wrapper {
+  min-height: 100vh;
+  padding: 2rem;
+  transition: margin-left 0.3s ease;
+
+  &.with-sidebar {
+    margin-left: 240px; // shift content when sidebar is present
+  }
+
+  &.no-sidebar {
+    margin-left: 0; // default for home/login/register
+  }
+}
+
+.sidebar {
+  width: 240px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  background: rgba(28, 28, 45, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: white;
+  z-index: 1000;
+  padding: 2rem 1rem;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.2);
+}
+
+.content-wrapper {
+  width: 100%;
+  flex-grow: 1;
+}
+
+.topbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 1rem;
+  height: 60px;
+}
+
+.profile-pic img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+}

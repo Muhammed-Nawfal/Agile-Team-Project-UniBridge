@@ -12,14 +12,35 @@ import { register } from 'swiper/element/bundle';
 import NavbarComponent from '../navbar/navbar.component';
 register();
 
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faUser, faComments, faTrophy, faCalendarCheck, faStar, faHandshake, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faUser, faComments, faTrophy, faCalendarCheck, faStar, faHandshake, faSignOutAlt);
+
+import { ViewChild } from '@angular/core';
+import { NgClass } from '@angular/common';
+
 @Component({
   standalone: true,
   selector: 'jhi-main',
   templateUrl: './main.component.html',
+  styleUrl: './main.component.scss',
   providers: [AppPageTitleStrategy],
-  imports: [RouterOutlet, FooterComponent, PageRibbonComponent, AccessibilityComponent, GlobalAccessibilityDirective, NavbarComponent],
+  imports: [
+    RouterOutlet,
+    FooterComponent,
+    PageRibbonComponent,
+    AccessibilityComponent,
+    GlobalAccessibilityDirective,
+    NavbarComponent,
+    NgClass,
+  ],
 })
 export default class MainComponent implements OnInit {
+  @ViewChild(NavbarComponent) navbarComponent?: NavbarComponent;
+
+  showNavbar = true;
+
   private readonly router = inject(Router);
   private readonly appPageTitleStrategy = inject(AppPageTitleStrategy);
   private readonly accountService = inject(AccountService);
@@ -27,5 +48,11 @@ export default class MainComponent implements OnInit {
   ngOnInit(): void {
     // try to log in automatically
     this.accountService.identity().subscribe();
+  }
+  ngAfterViewInit(): void {
+    // Update `showNavbar` after view is ready
+    setTimeout(() => {
+      this.showNavbar = this.navbarComponent?.showNavbar ?? true;
+    });
   }
 }
