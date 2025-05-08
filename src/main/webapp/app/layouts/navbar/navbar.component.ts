@@ -29,7 +29,7 @@ export default class NavbarComponent implements OnInit {
     { label: 'Profile', route: '/profile', icon: 'user' },
     { label: 'Matches', route: '/activity-match', icon: 'handshake' },
     { label: 'Activities', route: '/activity', icon: 'star' },
-    { label: 'Your Activities', route: '/review', icon: 'calender' },
+    { label: 'Your Activities', route: '/my-activities', icon: 'calender' },
     { label: 'Your Friends', route: '/friends-list', icon: 'user-friends' },
     { label: 'Chat', route: '/message-thread', icon: 'comments' },
     { label: 'Booking', route: '/booking', icon: 'calendar-check' },
