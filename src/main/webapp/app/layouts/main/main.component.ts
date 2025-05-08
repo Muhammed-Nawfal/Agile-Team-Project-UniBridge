@@ -19,6 +19,7 @@ library.add(faUser, faComments, faTrophy, faCalendarCheck, faStar, faHandshake, 
 
 import { ViewChild } from '@angular/core';
 import { NgClass } from '@angular/common';
+import SharedModule from 'app/shared/shared.module';
 
 @Component({
   standalone: true,
@@ -34,6 +35,7 @@ import { NgClass } from '@angular/common';
     GlobalAccessibilityDirective,
     NavbarComponent,
     NgClass,
+    SharedModule,
   ],
 })
 export default class MainComponent implements OnInit {

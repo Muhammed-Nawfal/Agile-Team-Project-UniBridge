@@ -1,7 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { ProfileService } from '../service/profile.service';
 import { IProfile } from '../profile.model';
@@ -10,7 +11,7 @@ import { RankingService } from 'app/entities/ranking/service/ranking.service';
 @Component({
   selector: 'jhi-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FontAwesomeModule, SharedModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',
 })

@@ -6,15 +6,110 @@ import { AlertErrorComponent } from './alert/alert-error.component';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCalendarCheck, faUserFriends, faTrophy, faBullhorn, faAward } from '@fortawesome/free-solid-svg-icons';
+import {
+  // Navigation & Common Actions
+  faArrowLeft,
+  faHome,
+  faBars,
+  faSave,
+  faTimes,
+  faEye,
+  faEdit,
+  faTrash,
+  faBan,
+  faPlus,
+  faSync,
+  faSearch,
 
-library.add(faCalendarCheck, faUserFriends, faTrophy, faBullhorn, faAward);
+  // User Related
+  faUser,
+  faUserPlus,
+  faUserCheck,
+  faUserClock,
+  faUserFriends,
+  faSignInAlt,
+  faSignOutAlt,
 
-/**
- * Application wide Module
- */
+  // Activity & Events
+  faCalendarCheck,
+  faCalendarAlt,
+  faClock,
+  faMapMarkerAlt,
+  faHandshake,
+  faStar,
+  faStarHalfAlt,
+  faTrophy,
+  faBolt,
+  faAward,
+
+  // Communication
+  faComments,
+  faBell,
+
+  // Accessibility
+  faUniversalAccess,
+  faTextHeight,
+  faAdjust,
+  faMoon,
+  faSun,
+  faHeadphones,
+
+  // Status & Feedback
+  faCheckCircle,
+  faTimesCircle,
+  faExclamationCircle,
+  faInfoCircle,
+} from '@fortawesome/free-solid-svg-icons';
+
 @NgModule({
-  imports: [AlertComponent, AlertErrorComponent, FontAwesomeModule],
+  imports: [AlertComponent, AlertErrorComponent, FontAwesomeModule, CommonModule, NgbModule],
   exports: [CommonModule, NgbModule, FontAwesomeModule, AlertComponent, AlertErrorComponent],
 })
-export default class SharedModule {}
+export default class SharedModule {
+  constructor() {
+    // Add all icons
+    library.add(
+      faArrowLeft,
+      faHome,
+      faBars,
+      faSave,
+      faTimes,
+      faEye,
+      faEdit,
+      faTrash,
+      faBan,
+      faPlus,
+      faSync,
+      faSearch,
+      faUser,
+      faUserPlus,
+      faUserCheck,
+      faUserClock,
+      faUserFriends,
+      faSignInAlt,
+      faSignOutAlt,
+      faCalendarCheck,
+      faCalendarAlt,
+      faClock,
+      faMapMarkerAlt,
+      faHandshake,
+      faStar,
+      faStarHalfAlt,
+      faTrophy,
+      faBolt,
+      faAward,
+      faComments,
+      faBell,
+      faUniversalAccess,
+      faTextHeight,
+      faAdjust,
+      faMoon,
+      faSun,
+      faHeadphones,
+      faCheckCircle,
+      faTimesCircle,
+      faExclamationCircle,
+      faInfoCircle,
+    );
+  }
+}
