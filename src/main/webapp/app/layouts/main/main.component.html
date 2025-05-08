@@ -2,7 +2,10 @@
 
 <div
   class="main-wrapper"
-  [ngClass]="{ 'with-sidebar': navbarComponent?.showNavbar, 'no-sidebar': !navbarComponent?.showNavbar }"
+  [ngClass]="{
+    'with-sidebar': navbarComponent?.showNavbar,
+    'no-sidebar': !navbarComponent?.showNavbar,
+  }"
   jhiGlobalAccessibility
 >
   <div class="topbar" *ngIf="navbarComponent?.showNavbar && navbarComponent?.profile?.profilePicture">
