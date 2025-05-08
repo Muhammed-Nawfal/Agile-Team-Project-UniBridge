@@ -27,9 +27,13 @@ export default class NavbarComponent implements OnInit {
   navLinks = [
     { label: 'Profile', route: '/profile', icon: 'user' },
     { label: 'Matches', route: '/activity-match', icon: 'handshake' },
-    { label: 'Ranking', route: '/ranking', icon: 'trophy' },
-    { label: 'Booking', route: '/booking', icon: 'calendar-check' },
+    { label: 'Activities', route: '/activity', icon: 'star' },
+    { label: 'Your Activities', route: '/review', icon: 'star' },
+    { label: 'Your Friends', route: '/friends-list', icon: 'star' },
     { label: 'Chat', route: '/chat', icon: 'comments' },
+    { label: 'Booking', route: '/booking', icon: 'calendar-check' },
+    { label: 'Challenges', route: '/challenge', icon: 'star' },
+    { label: 'Ranking', route: '/ranking', icon: 'trophy' },
     { label: 'Review', route: '/review', icon: 'star' },
   ];
 
