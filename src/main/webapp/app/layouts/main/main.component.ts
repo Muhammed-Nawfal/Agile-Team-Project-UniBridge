@@ -1,6 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { AccountService } from 'app/core/auth/account.service';
@@ -41,7 +40,6 @@ import { fontAwesomeIcons } from 'app/config/font-awesome-icons';
     NavbarComponent,
     NgClass,
     SharedModule,
-    NgModule,
     CommonModule,
     FontAwesomeModule,
   ],
