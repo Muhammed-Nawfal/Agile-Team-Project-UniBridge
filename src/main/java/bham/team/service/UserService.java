@@ -148,7 +148,7 @@ public class UserService {
         Profile profile = new Profile();
         profile.setId(newUser.getId()); //copy user id
         profile.setUser(newUser);
-        profile.setLogin(userDTO.getLogin()); //copy user login
+        profile.setLogin(userDTO.getLogin().toLowerCase()); //copy user login
         profile.setFirstName(userDTO.getFirstName()); //copy user first name
         profile.setLastName(userDTO.getLastName()); //copy user last name
         profile.setCourse(Course.COMPUTER_SCIENCE); // Default value
