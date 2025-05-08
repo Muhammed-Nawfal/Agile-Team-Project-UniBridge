@@ -38,7 +38,7 @@ export default class NavbarComponent implements OnInit {
     { label: 'Review', route: '/review', icon: 'star-half-alt' },
   ];
 
-  hiddenRoutes = ['/', '/login', '/account/register', '/#next-section'];
+  hiddenRoutes = ['/login', '/account/register', '/profile/my/edit', '/#next-section'];
   showNavbar = true;
   profile: IProfile | null = null;
 
