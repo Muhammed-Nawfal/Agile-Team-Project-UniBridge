@@ -65,6 +65,7 @@ import {
   faBoltLightning,
   faStarHalf,
   faCalendar,
+  faVolumeUp,
 } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
@@ -120,6 +121,7 @@ export default class SharedModule {
       faBoltLightning,
       faStarHalf,
       faCalendar,
+      faVolumeUp,
     );
   }
 }

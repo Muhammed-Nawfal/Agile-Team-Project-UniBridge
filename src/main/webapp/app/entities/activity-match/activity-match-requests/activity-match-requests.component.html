@@ -10,7 +10,7 @@
         <section class="match-card card shadow-sm overflow-hidden position-relative text-white h-100">
           <!-- Floating Read Request Icon -->
           <button class="read-request-icon" (click)="readRequest(req)" aria-label="Read match request">
-            <i class="fas fa-volume-up"></i>
+            <fa-icon icon="volume-up"></fa-icon>
             <span class="tooltip-text">Read Request</span>
           </button>
           <!-- Full background image -->
@@ -34,12 +34,12 @@
             <h5 class="fw-bold mb-2">{{ req.matchRequestor?.firstName }} {{ req.matchRequestor?.lastName }}</h5>
 
             <div class="date-time small mb-1">
-              <fa-icon [icon]="['fas', 'calendar-alt']"></fa-icon> {{ req.matchDate?.format('DD-MM-YYYY') }}
+              <fa-icon icon="calendar-alt"></fa-icon> {{ req.matchDate?.format('DD-MM-YYYY') }}
               &bull;
-              <fa-icon [icon]="['fas', 'clock']"></fa-icon> {{ req.matchTime }}
+              <fa-icon icon="clock"></fa-icon> {{ req.matchTime }}
             </div>
 
-            <div class="location small mb-3"><fa-icon [icon]="['fas', 'map-marker-alt']"></fa-icon> {{ req.location || 'TBD' }}</div>
+            <div class="location small mb-3"><fa-icon icon="map-marker-alt"></fa-icon> {{ req.location || 'TBD' }}</div>
 
             <div class="d-flex gap-2 flex-wrap">
               <button class="btn btn-outline-light btn-sm flex-fill" (click)="onRespond(req, Decision.ACCEPT)" [disabled]="isLoading">
