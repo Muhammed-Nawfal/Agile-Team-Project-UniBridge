@@ -26,7 +26,7 @@
           />
 
           <!-- Display Name -->
-          <h3>{{ profile?.firstName || 'Unknown' }} {{ profile?.lastName || 'User' }}</h3>
+          <h3 class="profile-name">{{ profile?.firstName || 'Unknown' }} {{ profile?.lastName || 'User' }}</h3>
 
           <!-- Display Username -->
           <p class="text-muted" *ngIf="profile?.login">&#64;{{ profile?.login }}</p>
@@ -82,9 +82,9 @@
       </div>
     </div>
   </div>
-  <!-- Add this new section -->
-  <div class="text-center mt-4 mb-4">
-    <a class="btn btn-primary btn-lg" routerLink="/login">
+  <!-- Only show this section when user is NOT logged in -->
+  <div class="text-center mt-4 mb-4" *ngIf="!account()">
+    <a class="btn btn-primary btn-lg" [routerLink]="['/login']">
       <fa-icon icon="sign-in-alt" class="me-2"></fa-icon>
       Sign in to register
     </a>

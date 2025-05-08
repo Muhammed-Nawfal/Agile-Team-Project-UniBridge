@@ -17,7 +17,7 @@
   width: 100%;
   max-width: 700px;
   padding: 1rem;
-  min-height: 450px;
+  min-height: 300px; // Reduced from 450px
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   border-radius: 1rem;
 
@@ -35,9 +35,30 @@
 
 h3 {
   font-size: 1.4rem;
+  margin: 1rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+
   @media (min-width: 768px) {
     font-size: 1.75rem;
   }
+}
+
+.profile-name {
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 100%;
+  display: block;
+}
+
+.badges-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 1rem 0;
 }
 
 .badge {
@@ -47,6 +68,12 @@ h3 {
   }
   padding: 0.6em 0.8em;
   border-radius: 0.6rem;
+  margin: 0.25rem;
+  white-space: normal;
+  text-align: center;
+  max-width: calc(100% - 1rem);
+  height: auto;
+  line-height: 1.2;
 }
 
 .btn-wide-short {

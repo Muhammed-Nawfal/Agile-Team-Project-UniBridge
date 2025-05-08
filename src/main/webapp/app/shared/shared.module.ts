@@ -59,6 +59,12 @@ import {
   faTimesCircle,
   faExclamationCircle,
   faInfoCircle,
+
+  // New Icons
+  faHandshakeAlt,
+  faBoltLightning,
+  faStarHalf,
+  faCalendar,
 } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
@@ -110,6 +116,10 @@ export default class SharedModule {
       faTimesCircle,
       faExclamationCircle,
       faInfoCircle,
+      faHandshakeAlt,
+      faBoltLightning,
+      faStarHalf,
+      faCalendar,
     );
   }
 }
