@@ -1,0 +1,144 @@
+.register-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 2rem;
+
+  .col-md-8 {
+    background: white;
+    border-radius: 1.25rem;
+    padding: 3rem;
+    max-width: 700px;
+    width: 100%;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease-in-out;
+
+    h1[data-cy='registerTitle'] {
+      text-align: center;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #4f46e5;
+      margin-bottom: 2rem;
+    }
+
+    form {
+      .mb-3 {
+        label.form-label {
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          display: inline-block;
+          color: #333;
+        }
+
+        input.form-control {
+          border-radius: 0.75rem;
+          border: 1px solid #ccc;
+          padding: 0.75rem;
+          font-size: 1rem;
+          background-color: #f8f8f8;
+          transition: all 0.3s ease;
+
+          &:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+            outline: none;
+          }
+        }
+
+        small.form-text.text-danger {
+          font-size: 0.85rem;
+          margin-top: 0.25rem;
+          display: block;
+        }
+      }
+
+      .btn-primary {
+        background-color: #4f46e5;
+        border: none;
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1.1rem;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+
+        &:hover {
+          background-color: #4338ca;
+          transform: scale(1.02);
+        }
+
+        &:disabled {
+          background-color: #a5b4fc;
+          cursor: not-allowed;
+        }
+      }
+
+      jhi-password-strength-bar {
+        display: block;
+        margin-top: 0.5rem;
+      }
+    }
+
+    // Success & Error Alerts
+    .alert {
+      border-radius: 0.75rem;
+      font-size: 0.95rem;
+      padding: 0.75rem 1rem;
+      margin-top: 1rem;
+    }
+
+    .alert-success {
+      background-color: #e0f7fa;
+      border-left: 4px solid #26c6da;
+      color: #004d40;
+    }
+
+    .alert-danger {
+      background-color: #fdecea;
+      border-left: 4px solid #dc3545;
+      color: #58151c;
+    }
+
+    // Sign-in Alert Box
+    .alert-warning {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #4338ca;
+      padding: 1rem;
+      border-radius: 12px;
+      margin-top: 2rem;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+
+      .alert-link {
+        color: #ffe082;
+        font-weight: 600;
+        text-decoration: underline;
+
+        &:hover {
+          color: #fff176;
+        }
+      }
+
+      &:hover {
+        transform: scale(1.01);
+      }
+    }
+  }
+}
+
+// Animation
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
