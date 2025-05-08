@@ -1,17 +1,705 @@
-<!--<div #vantaRef class="vanta-bg">-->
-<div class="landing-hero">
-  <div class="overlay text-center">
-    <h1 class="display-4 fw-bold mb-3">Welcome to <span class="text-highlight">UniBridge</span></h1>
-    <p class="lead">Find your gym buddy, study partner, teammate, or event crew – all in one place.</p>
-    <div class="download-buttons d-flex justify-content-center mt-4 gap-3">
-      <button class="btn btn-light btn-lg" routerLink="/login" routerLinkActive="active" data-bs-dismiss="offcanvas">Get Started</button>
+<!-- HTML -->
+<section class="hero-section">
+  <div class="animated-gradient-bg"></div>
+  <div class="network-overlay"></div>
+
+  <div class="content-container">
+    <div class="logo-container">
+      <div class="logo-circle">
+        <span class="logo-text">UB</span>
+      </div>
+    </div>
+
+    <div class="text-container">
+      <h1 class="title">Welcome to <span class="highlight">UniBridge</span></h1>
+      <p class="subtitle">Find your gym buddy, study partner, teammate, or event crew – all in one place.</p>
+
+      <div class="btn-container">
+        <button class="btn-get-started" (click)="onButtonClick()">
+          <span>GET STARTED</span>
+          <svg
+            class="btn-arrow"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="floating-elements">
+      <div class="floating-icon icon-1">
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#fff"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </div>
+      <div class="floating-icon icon-2">
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#fff"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+          <path d="M2 17l10 5 10-5"></path>
+          <path d="M2 12l10 5 10-5"></path>
+        </svg>
+      </div>
+      <div class="floating-icon icon-3">
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#fff"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+      </div>
+
+      <div class="floating-icon icon-book">
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#fff"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"></path>
+        </svg>
+      </div>
+
+      <div class="floating-icon icon-dumbbell">
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#fff"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M6 6h2v12H6zM16 6h2v12h-2zM9 10h6v4H9z"></path>
+        </svg>
+      </div>
+
+      <div class="floating-icon icon-calendar">
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#fff"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+      </div>
+
+      <div class="floating-icon icon-trophy">
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#fff"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M8 21h8M12 17v4M17 5a5 5 0 0 0 5 5V5h-5zM7 5H2v5a5 5 0 0 0 5-5zM12 17a5 5 0 0 0 5-5V5H7v7a5 5 0 0 0 5 5z" />
+        </svg>
+      </div>
+
+      <div class="floating-icon icon-group">
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#fff"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M17 21v-2a4 4 0 0 0-3-3.87M3 21v-2a4 4 0 0 1 3-3.87"></path>
+          <circle cx="17" cy="7" r="4"></circle>
+        </svg>
+      </div>
     </div>
   </div>
-</div>
-<!--</div>-->
 
-<section id="next-section">
-  <section class="app-summary-section text-center py-5">
+  <a href="#next-section" class="scroll-indicator">
+    <div class="mouse">
+      <div class="wheel"></div>
+    </div>
+    <div class="chevrons">
+      <div class="chevron"></div>
+      <div class="chevron"></div>
+    </div>
+  </a>
+</section>
+
+<!-- CSS -->
+<style>
+  /* Base styles */
+  .hero-section {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family:
+      'Poppins',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      Oxygen,
+      Ubuntu,
+      Cantarell,
+      'Open Sans',
+      'Helvetica Neue',
+      sans-serif;
+  }
+
+  /* Animated background with enhanced gradient */
+  .animated-gradient-bg {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(-45deg, #8b5cf6, #3b82f6, #6d28d9, #4c1d95);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    z-index: 0;
+  }
+
+  @keyframes gradientBG {
+    0% {
+      background-position: 0% 50%;
+      transform: rotate(0deg);
+    }
+    50% {
+      background-position: 100% 50%;
+      transform: rotate(3deg);
+    }
+    100% {
+      background-position: 0% 50%;
+      transform: rotate(0deg);
+    }
+  }
+
+  /* Network connection overlay */
+  .network-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.07'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.7;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Content container */
+  .content-container {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 800px;
+    padding: 2rem;
+  }
+
+  /* Logo design */
+  .logo-container {
+    margin-bottom: 2rem;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .logo-circle {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .logo-circle::after {
+    content: '';
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    background: linear-gradient(rgba(255, 255, 255, 0.3), transparent);
+    transform: rotate(45deg);
+    top: -40%;
+    left: -40%;
+  }
+
+  .logo-text {
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+  }
+
+  /* Text container */
+  .text-container {
+    background: rgba(30, 27, 75, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 3rem;
+    text-align: center;
+    color: white;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+    max-width: 650px;
+    transform: perspective(1000px) rotateX(0deg);
+    transition: transform 0.5s ease;
+  }
+
+  .text-container:hover {
+    transform: perspective(1000px) rotateX(2deg);
+  }
+
+  /* Title and subtitle */
+  .title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .highlight {
+    position: relative;
+    display: inline-block;
+    color: #a78bfa;
+    font-weight: 700;
+  }
+
+  .highlight::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    width: 100%;
+    background: linear-gradient(90deg, #8b5cf6, #3b82f6);
+    transform-origin: left;
+    animation: line-animation 3s ease-in-out infinite;
+  }
+
+  @keyframes line-animation {
+    0% {
+      transform: scaleX(0);
+    }
+    50% {
+      transform: scaleX(1);
+    }
+    100% {
+      transform: scaleX(0);
+    }
+  }
+
+  .subtitle {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+  }
+
+  /* Button styles */
+  .btn-container {
+    margin-top: 1rem;
+  }
+
+  .btn-get-started {
+    position: relative;
+    background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 10px 20px rgba(139, 92, 246, 0.4);
+  }
+
+  .btn-get-started::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(255, 255, 255, 0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .btn-get-started:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(139, 92, 246, 0.6);
+  }
+
+  .btn-get-started:hover::before {
+    opacity: 1;
+  }
+
+  .btn-get-started:hover .btn-arrow {
+    transform: translateX(5px);
+  }
+
+  .btn-arrow {
+    transition: transform 0.3s ease;
+  }
+
+  /* Floating elements */
+  .floating-elements {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .floating-icon {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .icon-1 {
+    top: 20%;
+    left: 10%;
+    animation: float-1 10s ease-in-out infinite;
+  }
+
+  .icon-2 {
+    top: 60%;
+    right: 15%;
+    animation: float-2 8s ease-in-out infinite;
+  }
+
+  .icon-3 {
+    bottom: 0;
+    left: 20%;
+    animation: float-3 12s ease-in-out infinite;
+  }
+
+  .icon-book {
+    bottom: 0;
+    left: -50%;
+    animation: float-1 12s ease-in-out infinite;
+  }
+
+  .icon-group {
+    top: -10%;
+    left: -40%;
+    animation: float-3 12s ease-in-out infinite;
+  }
+
+  .icon-dumbbell {
+    top: 100%;
+    right: 20%;
+    animation: float-2 12s ease-in-out infinite;
+  }
+
+  .icon-calendar {
+    bottom: 20%;
+    right: -30%;
+    animation: float-3 12s ease-in-out infinite;
+  }
+
+  .icon-trophy {
+    bottom: 60%;
+    right: -20%;
+    animation: float-2 12s ease-in-out infinite;
+  }
+
+  @keyframes float-1 {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(20px, -30px);
+    }
+  }
+
+  @keyframes float-2 {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(-20px, -20px);
+    }
+  }
+
+  @keyframes float-3 {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(15px, -25px);
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+  }
+
+  /* Scroll indicator */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+  }
+
+  .mouse {
+    width: 30px;
+    height: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+  }
+
+  .wheel {
+    width: 4px;
+    height: 8px;
+    background-color: white;
+    border-radius: 2px;
+    animation: scroll 2s ease infinite;
+  }
+
+  @keyframes scroll {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(15px);
+      opacity: 0;
+    }
+  }
+
+  .chevrons {
+    margin-top: 10px;
+  }
+
+  .chevron {
+    width: 20px;
+    height: 8px;
+    opacity: 0;
+    transform: scale(0.5);
+    animation: move-chevron 3s ease-out infinite;
+  }
+
+  .chevron:before,
+  .chevron:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    background: white;
+  }
+
+  .chevron:before {
+    left: 0;
+    transform: skewY(30deg);
+  }
+
+  .chevron:after {
+    right: 0;
+    transform: skewY(-30deg);
+  }
+
+  .chevron:first-child {
+    animation-delay: 0s;
+  }
+
+  .chevron:nth-child(2) {
+    animation-delay: 0.5s;
+  }
+
+  @keyframes move-chevron {
+    0% {
+      opacity: 0;
+      transform: translateY(0) scale(0.5);
+    }
+    20% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    80% {
+      opacity: 1;
+      transform: translateY(20px) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(30px) scale(0.5);
+    }
+  }
+
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .text-container {
+      padding: 2rem;
+    }
+
+    .title {
+      font-size: 2.2rem;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+    }
+
+    .floating-icon {
+      width: 50px;
+      height: 50px;
+    }
+
+    .icon-1 {
+      top: 15%;
+      left: 5%;
+    }
+
+    .icon-2 {
+      top: 70%;
+      right: 5%;
+    }
+
+    .icon-3 {
+      bottom: 20%;
+      left: 10%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .text-container {
+      padding: 1.5rem;
+    }
+
+    .title {
+      font-size: 1.8rem;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-get-started {
+      padding: 0.8rem 2rem;
+      font-size: 0.9rem;
+    }
+
+    .logo-circle {
+      width: 60px;
+      height: 60px;
+    }
+
+    .logo-text {
+      font-size: 1.5rem;
+    }
+
+    .floating-elements {
+      display: none;
+    }
+  }
+</style>
+
+<section id="next-section" class="next-content">
+  <section class="app-summary-section text-center py-5 bg-custom-light">
     <div class="container">
       <h2 class="display-5 fw-bold">
         The app connecting students across universities<br />
@@ -26,15 +714,17 @@
   </section>
 </section>
 
-<section class="feature-highlight-section py-5">
+<section class="feature-highlight-section py-5 bg-white">
   <div class="container">
-    <h2 class="display-5 fw-bold">
-      Discover the features that make UniBridge<br />
-      the ultimate app for students!!!
-    </h2>
+    <div class="full-width-highlight-box">
+      <h2 class="display-5 fw-bold text-center mb-0">
+        Discover the features that make UniBridge<br />
+        the ultimate app for students!!!
+      </h2>
+    </div>
     <!-- Feature Block 1 -->
     <div class="row align-items-center mb-5">
-      <div class="col-md-6 text-center mb-4 mb-md-0">
+      <div class="col-md-6 text-center mb-4 mb-md-0" data-aos="fade-right">
         <div class="feature-svg-wrapper">
           <svg
             class="feature-svg"
@@ -221,7 +911,7 @@
           </svg>
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6" data-aos="fade-left">
         <h3 class="fw-bold mb-3">Match Buddies</h3>
         <p class="lead text-muted">
           Swipe or browse to find other students who share your interests—whether it’s gym, group study, football, or joining societies.
@@ -231,7 +921,7 @@
 
     <!-- Feature Block 2 -->
     <div class="row align-items-center flex-md-row-reverse">
-      <div class="col-md-6 text-center mb-4 mb-md-0">
+      <div class="col-md-6 text-center mb-4 mb-md-0" data-aos="fade-left">
         <div class="feature-svg-wrapper">
           <svg
             class="feature-svg"
@@ -385,7 +1075,7 @@
           </svg>
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6" data-aos="fade-right">
         <h3 class="fw-bold mb-3">Create & Join Activities</h3>
         <p class="lead text-muted">
           Start your own activity or join ongoing events posted by others. From football matches to study sessions, it’s all here.
@@ -396,7 +1086,7 @@
     <!--    <! &#45;&#45; Feature Block 3 &ndash;&gt;-->
 
     <div class="row align-items-center mb-5">
-      <div class="col-md-6 text-center mb-4 mb-md-0">
+      <div class="col-md-6 text-center mb-4 mb-md-0" data-aos="fade-right">
         <div class="feature-svg-wrapper">
           <svg
             class="feature-svg"
@@ -586,7 +1276,7 @@
           </svg>
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6" data-aos="fade-left">
         <h3 class="fw-bold mb-3">Chat & Connect</h3>
         <p class="lead text-muted">Instantly message matched users to plan meetups, collaborate, or just get to know each other.</p>
       </div>
@@ -594,7 +1284,7 @@
 
     <!-- Feature block 4   -->
     <div class="row align-items-center flex-md-row-reverse">
-      <div class="col-md-6 text-center mb-4 mb-md-0">
+      <div class="col-md-6 text-center mb-4 mb-md-0" data-aos="fade-left">
         <div class="feature-svg-wrapper">
           <svg
             class="feature-svg"
@@ -779,14 +1469,14 @@
           </svg>
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6" data-aos="fade-right">
         <h3 class="fw-bold mb-3">Book Event Spaces</h3>
         <p class="lead text-muted">Easily book university facilities like study rooms or sports pitches with just a few taps.</p>
       </div>
     </div>
 
     <div class="row align-items-center mb-5">
-      <div class="col-md-6 text-center mb-4 mb-md-0">
+      <div class="col-md-6 text-center mb-4 mb-md-0" data-aos="fade-right">
         <div class="feature-svg-wrapper">
           <svg
             class="feature-svg"
@@ -1029,7 +1719,7 @@
           </svg>
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6" data-aos="fade-left">
         <h3 class="fw-bold mb-3">Challenge Your Friends</h3>
         <p class="lead text-muted">
           Compete with friends in fitness or academic challenges, track progress, and climb the leaderboard together.
@@ -1038,7 +1728,7 @@
     </div>
 
     <div class="row align-items-center flex-md-row-reverse">
-      <div class="col-md-6 text-center mb-4 mb-md-0">
+      <div class="col-md-6 text-center mb-4 mb-md-0" data-aos="fade-left">
         <div class="feature-svg-wrapper">
           <svg
             class="feature-svg"
@@ -1222,7 +1912,7 @@
           </svg>
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6" data-aos="fade-right">
         <h3 class="fw-bold mb-3">Rank Other Users</h3>
         <p class="lead text-muted">
           Leave feedback after events to help others know who’s reliable, fun, or competitive. Build your own rep too!
@@ -1230,59 +1920,6 @@
       </div>
     </div>
   </div>
-</section>
-
-<section>
-  <nav class="fixed-sidebar">
-    <div class="sidebar-header">
-      <h5 class="sidebar-title">UniBridge</h5>
-    </div>
-
-    <ul class="nav flex-column">
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/" routerLinkActive="active">Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/activity-match" routerLinkActive="active">Activity Match</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/ranking" routerLinkActive="active">Ranking</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/profile" routerLinkActive="active">Profile</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/challenge" routerLinkActive="active" data-bs-dismiss="offcanvas">Challenges</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/login" routerLinkActive="active" data-bs-dismiss="offcanvas">Login</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/activity" routerLinkActive="active" data-bs-dismiss="offcanvas">Available Activities</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/my-activities" routerLinkActive="active" data-bs-dismiss="offcanvas">My Activities</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/friends-list" routerLinkActive="active" data-bs-dismiss="offcanvas">Your Friends</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/ranking" routerLinkActive="active" data-bs-dismiss="offcanvas">Rankings</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/review" routerLinkActive="active" data-bs-dismiss="offcanvas">Review</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/chat" routerLinkActive="active" data-bs-dismiss="offcanvas">Your Chats</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/challenge" routerLinkActive="active" data-bs-dismiss="offcanvas">Challenges</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/booking" routerLinkActive="active" data-bs-dismiss="offcanvas">Bookings</a>
-      </li>
-    </ul>
-  </nav>
 </section>
 
 <section class="slider-section">
@@ -1314,54 +1951,3 @@
     <!--    </div>-->
   </div>
 </section>
-
-<nav class="fixed-sidebar">
-  <div class="sidebar-header">
-    <h5 class="sidebar-title">UniBridge</h5>
-  </div>
-
-  <ul class="nav flex-column">
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/" routerLinkActive="active">Home</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/activity-match" routerLinkActive="active">Activity Match</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/ranking" routerLinkActive="active">Ranking</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/profile" routerLinkActive="active">Profile</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/challenge" routerLinkActive="active" data-bs-dismiss="offcanvas">Challenges</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/login" routerLinkActive="active" data-bs-dismiss="offcanvas">Login</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/activity" routerLinkActive="active" data-bs-dismiss="offcanvas">Available Activities</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/my-activities" routerLinkActive="active" data-bs-dismiss="offcanvas">My Activities</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/friends-list" routerLinkActive="active" data-bs-dismiss="offcanvas">Your Friends</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/ranking" routerLinkActive="active" data-bs-dismiss="offcanvas">Rankings</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/review" routerLinkActive="active" data-bs-dismiss="offcanvas">Review</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/chat" routerLinkActive="active" data-bs-dismiss="offcanvas">Your Chats</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/challenge" routerLinkActive="active" data-bs-dismiss="offcanvas">Challenges</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/booking" routerLinkActive="active" data-bs-dismiss="offcanvas">Bookings</a>
-    </li>
-  </ul>
-</nav>

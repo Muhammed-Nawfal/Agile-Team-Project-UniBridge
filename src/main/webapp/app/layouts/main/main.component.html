@@ -1,11 +1,21 @@
 <jhi-navbar></jhi-navbar>
 
-<div class="container-fluid jh-card" jhiGlobalAccessibility>
+<div
+  class="main-wrapper"
+  [ngClass]="{ 'with-sidebar': navbarComponent?.showNavbar, 'no-sidebar': !navbarComponent?.showNavbar }"
+  jhiGlobalAccessibility
+>
+  <div class="topbar" *ngIf="navbarComponent?.showNavbar && navbarComponent?.profile?.profilePicture">
+    <div class="profile-pic">
+      <img
+        [src]="'data:' + navbarComponent?.profile?.profilePictureContentType + ';base64,' + navbarComponent?.profile?.profilePicture"
+        alt="Profile"
+      />
+    </div>
+  </div>
+
   <router-outlet></router-outlet>
 </div>
 
-<!-- Add accessibility component -->
 <jhi-accessibility></jhi-accessibility>
-
-<!-- Keep your original footer elements - DO NOT add GDPR policy here -->
 <jhi-footer></jhi-footer>

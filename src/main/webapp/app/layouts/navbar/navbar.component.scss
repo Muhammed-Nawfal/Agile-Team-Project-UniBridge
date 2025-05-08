@@ -1,90 +1,140 @@
-// navbar.component.scss
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-.navbar {
+.unibridge-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f8f9fa;
+}
+
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+
+  /* Glassmorphism effect */
+  background: rgba(28, 28, 45, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-header {
+  padding: 2rem 1.5rem 1.5rem;
+  text-align: center;
+}
+
+.sidebar-header h4 {
+  color: white;
+  font-weight: 500;
+  margin: 0;
+}
+
+.sidebar-nav {
+  flex: 1;
+  margin: 1rem 0;
+  padding: 0 1rem;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+}
+
+.nav-item {
+  margin-bottom: 0.5rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
   padding: 0.75rem 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-  .navbar-brand {
-    display: flex;
-    align-items: center;
-
-    .navbar-title {
-      font-weight: bold;
-      font-size: 1.25rem;
-      color: #ffffff;
-    }
-
-    .navbar-version {
-      font-size: 0.8rem;
-      color: #e0e0e0;
-      margin-left: 0.5rem;
-    }
-  }
-
-  .navbar-toggler {
-    color: #ffffff;
-    border: none;
-
-    fa-icon {
-      font-size: 1.2rem;
-    }
-  }
-
-  .navbar-collapse {
-    .navbar-nav {
-      .nav-item {
-        margin-left: 0.5rem;
-
-        .nav-link {
-          color: #ffffff;
-          display: flex;
-          align-items: center;
-
-          fa-icon {
-            margin-right: 0.4rem;
-          }
-
-          &:hover,
-          &.active {
-            color: #ffe082;
-          }
-        }
-
-        &.dropdown {
-          .dropdown-toggle {
-            color: #ffffff;
-          }
-
-          .dropdown-menu {
-            background-color: #1976d2;
-            border: none;
-
-            .dropdown-item {
-              color: #ffffff;
-
-              &:hover,
-              &.active {
-                background-color: #1565c0;
-                color: #ffe082;
-              }
-
-              fa-icon {
-                margin-right: 0.4rem;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  border-radius: 0.25rem;
+  color: white;
+  text-decoration: none;
+  transition: all 0.2s ease;
 }
 
-// Profile image in account menu
-.profile-image {
-  width: 32px;
-  height: 32px;
+.nav-link:hover,
+.nav-link.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.nav-icon {
+  margin-right: 0.75rem;
+  width: 1rem;
+  text-align: center;
+}
+
+.logout-container {
+  padding: 1.5rem 1rem;
+  text-align: center;
+}
+
+.btn-logout {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.content {
+  margin-left: 240px;
+  width: calc(100% - 240px);
+  min-height: 100vh;
+  padding: 1rem 2rem;
+}
+
+.topbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+}
+
+.profile-pic img {
+  width: 40px;
+  height: 40px;
   object-fit: cover;
-  border: 2px solid #fff;
+  border-radius: 50%;
+  border: 2px solid #ced4da;
 }
 
-// Dark mode or theme-based tweaks can be added with conditional classes
+/* Media query for responsive design */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 0;
+    transform: translateX(-100%);
+    transition: all 0.3s ease;
+  }
+
+  .sidebar.show {
+    width: 240px;
+    transform: translateX(0);
+  }
+
+  .content {
+    margin-left: 0;
+    width: 100%;
+  }
+}
