@@ -31,7 +31,6 @@ export default class NavbarComponent implements OnInit {
     { label: 'Activities', route: '/activity', icon: 'star' },
     { label: 'Your Activities', route: '/my-activities', icon: 'calender' },
     { label: 'Your Friends', route: '/friends-list', icon: 'user-friends' },
-    { label: 'Chat', route: '/message-thread', icon: 'comments' },
     { label: 'Booking', route: '/booking', icon: 'calendar-check' },
     { label: 'Challenges', route: '/challenge', icon: 'bolt' },
     { label: 'Ranking', route: '/ranking', icon: 'trophy' },

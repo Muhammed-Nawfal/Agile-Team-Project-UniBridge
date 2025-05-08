@@ -18,6 +18,7 @@ import { CommonModule } from '@angular/common';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import AOS from 'aos';
+import { LoginService } from 'app/login/login.service';
 
 @Component({
   standalone: true,
@@ -44,12 +45,12 @@ export default class HomeComponent implements OnInit, OnDestroy, AfterViewInit, 
   ];
   currentIndex = 0;
   currentTransform = 'translateX(0px)';
-
   private autoplaySub?: Subscription;
   private readonly accountService = inject(AccountService);
   private readonly router = inject(Router);
   private aosInitialized = false;
   private vantaEffect: any;
+  private readonly loginService = inject(LoginService);
 
   ngOnInit(): void {
     this.accountService.getAuthenticationState().subscribe(acc => this.account.set(acc));
@@ -100,6 +101,19 @@ export default class HomeComponent implements OnInit, OnDestroy, AfterViewInit, 
   goTo(idx: number): void {
     this.currentIndex = idx;
     this.updateTransform();
+  }
+
+  get isLoggedIn(): boolean {
+    return this.account() !== null;
+  }
+
+  login(): void {
+    this.router.navigate(['/login']);
+  }
+
+  logout(): void {
+    this.loginService.logout();
+    this.router.navigate(['/']);
   }
 
   onButtonClick(): void {
