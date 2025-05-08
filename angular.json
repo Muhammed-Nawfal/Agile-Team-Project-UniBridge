@@ -45,7 +45,12 @@
               "node_modules/swiper/swiper-bundle.css",
               "node_modules/swiper/swiper-bundle.min.css"
             ],
-            "scripts": ["node_modules/bootstrap/dist/js/bootstrap.bundle.min.js", "node_modules/aos/dist/aos.js"]
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+              "node_modules/aos/dist/aos.js"
+              //              "node_modules/three/build/three.min.js",
+              //              "node_modules/vanta/dist/vanta.fog.min.js
+            ]
           },
           "configurations": {
             "production": {

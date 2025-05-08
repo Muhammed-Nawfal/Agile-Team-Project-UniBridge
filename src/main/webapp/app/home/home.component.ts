@@ -19,9 +19,6 @@ import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import AOS from 'aos';
 
-declare const VANTA: any;
-import * as THREE from 'three';
-
 @Component({
   standalone: true,
   selector: 'jhi-home',
@@ -64,19 +61,19 @@ export default class HomeComponent implements OnInit, OnDestroy, AfterViewInit, 
   ngAfterViewInit(): void {
     this.initAOS();
 
-    this.vantaEffect = VANTA.FOG({
-      el: this.vantaRef.nativeElement,
-      THREE,
-      mouseControls: true,
-      touchControls: true,
-      gyroControls: false,
-      highlightColor: 0xa64ac9,
-      midtoneColor: 0xd472ff,
-      lowlightColor: 0x3b1f63,
-      baseColor: 0x000000,
-      blurFactor: 0.5,
-      speed: 1.5,
-    });
+    // this.vantaEffect = VANTA.FOG({
+    //   el: this.vantaRef.nativeElement,
+    //   THREE,
+    //   mouseControls: true,
+    //   touchControls: true,
+    //   gyroControls: false,
+    //   highlightColor: 0xa64ac9,
+    //   midtoneColor: 0xd472ff,
+    //   lowlightColor: 0x3b1f63,
+    //   baseColor: 0x000000,
+    //   blurFactor: 0.5,
+    //   speed: 1.5,
+    // });
 
     // midtoneColor: 0xffffff,
     //   lowlightColor: 0x4a3b8b,
