@@ -128,6 +128,14 @@ export class RankingComponent implements OnInit {
     this.handleNavigation(event);
   }
 
+  getProfileLogin(rankGiven: any): string {
+    if (!rankGiven) {
+      return 'Unknown User';
+    }
+    const profile = this.profiles.find(p => p.id === rankGiven.id);
+    return profile?.login ?? 'Unknown User';
+  }
+
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
     this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
   }
