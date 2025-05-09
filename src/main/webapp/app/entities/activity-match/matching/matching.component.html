@@ -111,7 +111,7 @@
           aria-label="Reject this profile"
           (click)="rejectProfile()"
         >
-          <i class="fas fa-times" aria-hidden="true"></i>
+          ✖️
         </button>
 
         <!-- Profile Card -->
@@ -216,25 +216,8 @@
           aria-label="Accept this profile"
           (click)="acceptProfile()"
         >
-          <i class="fas fa-check" aria-hidden="true"></i>
+          ✔️
         </button>
-
-        <!-- Profile actions - moved OUTSIDE the card -->
-        <div class="profile-actions">
-          <div class="rating">
-            <a routerLink="/ranking" class="small text-decoration-underline"> View detailed ratings </a>
-          </div>
-          <div class="actions">
-            <button class="btn btn-primary btn-sm" (click)="navigateToProfile()">View Profile</button>
-            <button
-              class="btn btn-outline-primary btn-sm"
-              (click)="followUser()"
-              [disabled]="followState === 'pending' || followState === 'friends'"
-            >
-              {{ followState === 'friends' ? 'Following' : followState === 'pending' ? 'Pending...' : 'Follow' }}
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   </section>
