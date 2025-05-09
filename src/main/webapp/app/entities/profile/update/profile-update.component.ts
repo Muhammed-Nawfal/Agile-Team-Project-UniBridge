@@ -49,6 +49,9 @@ export class ProfileUpdateComponent implements OnInit {
   // Keep a reference to the user field so it can be re-attached on save
   private originalUser: IProfile['user'] | null | undefined = null;
 
+  // Add default image path as a constant
+  private readonly DEFAULT_PROFILE_IMAGE = 'content/images/default-pfp.svg';
+
   constructor(
     protected profileService: ProfileService,
     protected profileFormService: ProfileFormService,
@@ -68,9 +71,17 @@ export class ProfileUpdateComponent implements OnInit {
 
     this.activatedRoute.data.subscribe(({ profile }) => {
       this.profile = profile;
-      this.originalUser = profile.user; // Preserve user
+      this.originalUser = profile.user;
+      // If no profile picture, set the default one
+      if (!profile.profilePicture) {
+        this.setDefaultProfilePicture();
+      }
       this.updateForm(profile);
     });
+  }
+
+  formatType(type: string): string {
+    return type.charAt(0) + type.slice(1).toLowerCase().replace('_', ' ');
   }
 
   previousState(): void {
@@ -102,10 +113,7 @@ export class ProfileUpdateComponent implements OnInit {
   }
 
   clearInputImage(field: string, contentTypeField: string, inputId: string): void {
-    this.editForm.patchValue({
-      [field]: null,
-      [contentTypeField]: null,
-    });
+    this.setDefaultProfilePicture();
     const input = document.getElementById(inputId) as HTMLInputElement;
     input.value = '';
   }
@@ -123,6 +131,9 @@ export class ProfileUpdateComponent implements OnInit {
         });
       };
       reader.readAsDataURL(file);
+    } else {
+      // If no file selected, set default image
+      this.setDefaultProfilePicture();
     }
   }
 
@@ -133,6 +144,34 @@ export class ProfileUpdateComponent implements OnInit {
 
   dismissUpdateTip(): void {
     this.showUpdateTip = false;
+  }
+
+  // Change from private to public
+  public setDefaultProfilePicture(): void {
+    fetch(this.DEFAULT_PROFILE_IMAGE)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch default profile picture');
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64data = reader.result?.toString().split(',')[1];
+          if (base64data) {
+            this.editForm.patchValue({
+              profilePicture: base64data,
+              profilePictureContentType: 'image/svg+xml',
+            });
+          }
+        };
+        reader.readAsDataURL(blob);
+      })
+      .catch((error: unknown) => {
+        console.error('Error loading default profile picture:', error);
+        // Optionally show user-friendly error message
+      });
   }
 
   protected onSaveSuccess(): void {

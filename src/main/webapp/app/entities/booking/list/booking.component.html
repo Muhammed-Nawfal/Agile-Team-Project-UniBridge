@@ -15,7 +15,9 @@
       <h2>SELECT AN ACTIVITY Type</h2>
       <select name="activity" class="form-control" (change)="onActivityChange($event)" required>
         <option value="" selected disabled>Activity type</option>
-        <option *ngFor="let activity of activities" [value]="activity.value">{{ activity.name }}</option>
+        <option *ngFor="let type of activityTypes" [value]="type">
+          {{ formatActivityType(type) }}
+        </option>
       </select>
 
       <h2>What activity are you booking for?</h2>
