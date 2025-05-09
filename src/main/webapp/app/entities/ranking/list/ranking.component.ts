@@ -76,6 +76,8 @@ export class RankingComponent implements OnInit {
     this.profileService.query().subscribe({
       next: res => {
         this.profiles = res.body ?? [];
+        // Load rankings after profiles are loaded
+        this.load();
       },
     });
   }
@@ -89,7 +91,7 @@ export class RankingComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCurrentUserInfo();
-    this.loadAllProfiles();
+    this.loadAllProfiles(); // This will trigger load() after profiles are loaded
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
       .pipe(
         tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),

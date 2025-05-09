@@ -83,10 +83,14 @@
         <tbody>
           @for (ranking of rankings; track trackId(ranking)) {
             <tr data-cy="entityTable">
-              @if (ranking.id == this.currentProfileId) {
-                <td id="animate">{{ profiles[ranking.id - 1].login }}</td>
+              @if (ranking.id === this.currentProfileId) {
+                <td id="animate">
+                  {{ profiles.find(p => p.id === ranking.rankGiven?.id)?.login }}
+                </td>
               } @else {
-                <td>{{ profiles[ranking.id - 1].login }}</td>
+                <td>
+                  {{ profiles.find(p => p.id === ranking.rankGiven?.id)?.login }}
+                </td>
               }
               <td>
                 {{ ranking.starAverage }}
