@@ -128,6 +128,7 @@ export class BookingComponent implements OnInit {
   updatedTimeSlots: string[] = [];
   bookedActivityIds = new Set<number>();
   selectedActivityIds = new Set<number>();
+  activityTypes = Object.values(ActivityType);
 
   private _tempAllActivities: IActivity[] = []; // Property to store activities temporarily
 
@@ -251,7 +252,8 @@ export class BookingComponent implements OnInit {
   groupEventsByActivityType(events: IEvent[]): any[] {
     const activityMap = new Map<string, any>();
 
-    Object.values(ActivityType).forEach(type => {
+    // Use the activityTypes property
+    this.activityTypes.forEach(type => {
       activityMap.set(type, {
         name: this.formatActivityType(type),
         value: type,
