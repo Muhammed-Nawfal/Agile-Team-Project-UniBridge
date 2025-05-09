@@ -64,8 +64,12 @@ export class ActivityFormService {
 
       const isPaid = form.get('isPaid')?.value;
 
+      // if (isPaid === false && activityCost !== 0) {
+      //   return { mustBeZeroWhenNotPaid: true };
+      // }
+
       if (isPaid === false && activityCost !== 0) {
-        return { mustBeZeroWhenNotPaid: true };
+        return null;
       }
 
       if (isPaid === true && (activityCost === null || activityCost <= 0)) {
@@ -86,6 +90,9 @@ export class ActivityFormService {
       // When isPaid changes, validate activityCost
       const activityCostControl = form.get('activityCost');
       if (activityCostControl) {
+        if (!isPaid) {
+          activityCostControl.setValue(0);
+        }
         // Force re-validation of activityCost
         activityCostControl.updateValueAndValidity();
       }
@@ -176,7 +183,7 @@ export class ActivityFormService {
         validators: [Validators.required, this.isPaidValidator()],
       }),
       activityCost: new FormControl(activityRawValue.activityCost, {
-        validators: [Validators.required, Validators.min(0), this.activityCostValidator()],
+        validators: [this.activityCostValidator()],
       }),
       creator: new FormControl({
         value: activityRawValue.creator,
