@@ -4,7 +4,12 @@
   </div>
 
   <div class="requests-container">
-    <h2 class="text-center mb-4">Match Requests</h2>
+    <h2 class="text-center mb-4">Your Pending Match Requests...</h2>
+    <div *ngIf="!isLoading && matchRequests.length === 0" class="alert alert-info text-center mt-4 text-white">
+      <i class="fas fa-inbox fa-2x mb-2"></i>
+      <div><strong>No pending match requests.</strong></div>
+      <div>Check back later or explore to connect with more buddies!</div>
+    </div>
     <div class="row gy-4">
       <div class="col-sm-6 col-md-4 col-lg-3" *ngFor="let req of matchRequests">
         <section class="match-card card shadow-sm overflow-hidden position-relative text-white h-100">

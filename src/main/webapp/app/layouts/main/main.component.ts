@@ -16,11 +16,55 @@ import NavbarComponent from '../navbar/navbar.component';
 register();
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUser, faComments, faTrophy, faCalendarCheck, faStar, faHandshake, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import {
+  faUser,
+  faComments,
+  faTrophy,
+  faCalendarCheck,
+  faStar,
+  faHandshake,
+  faSignOutAlt,
+  faBookReader,
+  faDumbbell,
+  faMedal,
+  faPeopleGroup,
+  faUserFriends,
+  faCalendar,
+  faRunning,
+  faClipboardCheck,
+  faBolt,
+  faStarHalfAlt,
+  faHome,
+  faCalendarAlt,
+  faUserCircle,
+  faUsers,
+} from '@fortawesome/free-solid-svg-icons';
 
-library.add(faUser, faComments, faTrophy, faCalendarCheck, faStar, faHandshake, faSignOutAlt);
+library.add(
+  faUser,
+  faComments,
+  faTrophy,
+  faCalendarCheck,
+  faStar,
+  faHandshake,
+  faSignOutAlt,
+  faBookReader,
+  faDumbbell,
+  faMedal,
+  faPeopleGroup,
+  faUserFriends,
+  faCalendar,
+  faRunning,
+  faClipboardCheck,
+  faBolt,
+  faStarHalfAlt,
+  faHome,
+  faCalendarAlt,
+  faUserCircle,
+  faUsers,
+);
 
-import { ViewChild } from '@angular/core';
+import { ViewChild, AfterViewInit } from '@angular/core';
 import { NgClass } from '@angular/common';
 import SharedModule from 'app/shared/shared.module';
 import { fontAwesomeIcons } from 'app/config/font-awesome-icons';
@@ -44,7 +88,7 @@ import { fontAwesomeIcons } from 'app/config/font-awesome-icons';
     FontAwesomeModule,
   ],
 })
-export default class MainComponent implements OnInit {
+export default class MainComponent implements OnInit, AfterViewInit {
   @ViewChild(NavbarComponent) navbarComponent?: NavbarComponent;
 
   showNavbar = true;
