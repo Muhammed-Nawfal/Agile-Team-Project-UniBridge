@@ -55,18 +55,16 @@ export class ActivityMatchService {
    */
   getAvailableProfiles(
     activityType: ActivityType,
-    myProfileId: number,
+    myLogin: string | null | undefined, // 🔁 changed from ID
     filters: { filter1?: string; filter2?: string; filter3?: string } = {},
   ): Observable<IProfile[]> {
     const todayStr = dayjs().format(DATE_FORMAT);
     const declineCutoff = dayjs().subtract(14, 'day');
 
-    // 1) get raw candidates
     return this.getProfilesByActivity(activityType).pipe(
       switchMap(res => {
         const profiles = res.body ?? [];
 
-        // query all your matches (as requestor and as recipient), any status
         const baseParams = {
           'status.in': [Decision.PENDING, Decision.ACCEPT, Decision.DECLINED].join(','),
           'matchDate.greaterThanOrEqual': todayStr,
@@ -75,50 +73,46 @@ export class ActivityMatchService {
 
         const requested$ = this.query({
           ...baseParams,
-          'matchRequestorId.equals': myProfileId.toString(),
+          'matchRequestor.login.equals': myLogin, // ✅ uses login
         });
+
         const received$ = this.query({
           ...baseParams,
-          'userDetailsId.equals': myProfileId.toString(),
+          'userDetails.login.equals': myLogin, // ✅ uses login
         });
 
         return forkJoin({ requested: requested$, received: received$ }).pipe(
           map(({ requested, received }) => {
-            const blocked = new Set<number>();
+            const blockedLogins = new Set<string>();
 
-            // 2a) for each match you sent:
             (requested.body ?? []).forEach((m: IActivityMatch) => {
-              const otherId = m.userDetails?.id;
-              if (!otherId) return;
+              const otherLogin = m.userDetails?.login;
+              if (!otherLogin) return;
 
               if (m.status === Decision.DECLINED) {
-                // block only for 14 days after you declined
                 if (m.createdAt && dayjs(m.createdAt).isAfter(declineCutoff)) {
-                  blocked.add(otherId);
+                  blockedLogins.add(otherLogin);
                 }
               } else {
-                // PENDING or ACCEPT: always block until date passes
-                blocked.add(otherId);
+                blockedLogins.add(otherLogin);
               }
             });
 
-            // 2b) for each match you received:
             (received.body ?? []).forEach((m: IActivityMatch) => {
-              const otherId = m.matchRequestor?.id;
-              if (!otherId) return;
+              const otherLogin = m.matchRequestor?.login;
+              if (!otherLogin) return;
 
               if (m.status === Decision.DECLINED) {
-                // block only for 14 days after *they* declined you (use responseAt)
                 if (m.responseAt && dayjs(m.responseAt).isAfter(declineCutoff)) {
-                  blocked.add(otherId);
+                  blockedLogins.add(otherLogin);
                 }
               } else {
-                blocked.add(otherId);
+                blockedLogins.add(otherLogin);
               }
             });
 
-            // 3) filter out everyone in blocked set
-            return profiles.filter(p => !blocked.has(p.id));
+            // ✅ Use login to filter out own profile and blocked users
+            return profiles.filter(p => p.login && p.login !== myLogin && !blockedLogins.has(p.login));
           }),
         );
       }),
