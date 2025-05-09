@@ -376,22 +376,22 @@
             </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label" for="field_creator">Creator</label>
-            <select
-              class="form-select"
-              id="field_creator"
-              data-cy="creator"
-              name="creator"
-              formControlName="creator"
-              [compareWith]="compareProfile"
-            >
-              <option [ngValue]="null">Select Creator</option>
-              @for (profileOption of profilesSharedCollection; track $index) {
-                <option [ngValue]="profileOption">{{ profileOption.id }}</option>
-              }
-            </select>
-          </div>
+          <!--          <div class="mb-3">-->
+          <!--            <label class="form-label" for="field_creator">Creator</label>-->
+          <!--            <select-->
+          <!--              class="form-select"-->
+          <!--              id="field_creator"-->
+          <!--              data-cy="creator"-->
+          <!--              name="creator"-->
+          <!--              formControlName="creator"-->
+          <!--              [compareWith]="compareProfile"-->
+          <!--            >-->
+          <!--              <option [ngValue]="null">Select Creator</option>-->
+          <!--              @for (profileOption of profilesSharedCollection; track $index) {-->
+          <!--                <option [ngValue]="profileOption">{{ profileOption.id }}</option>-->
+          <!--              }-->
+          <!--            </select>-->
+          <!--          </div>-->
 
           <div class="visually-hidden">
             <div class="mb-3">
