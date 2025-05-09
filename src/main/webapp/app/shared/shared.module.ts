@@ -66,6 +66,8 @@ import {
   faStarHalf,
   faCalendar,
   faVolumeUp,
+  faPencilAlt, // for edit
+  faTrashAlt, // for delete
 } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
@@ -122,6 +124,8 @@ export default class SharedModule {
       faStarHalf,
       faCalendar,
       faVolumeUp,
+      faPencilAlt,
+      faTrashAlt,
     );
   }
 }

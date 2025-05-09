@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { Subject, interval, switchMap, takeUntil, of } from 'rxjs';
+import SharedModule from 'app/shared/shared.module'; // Add this for FontAwesome
 
 import dayjs from 'dayjs/esm';
 
@@ -12,7 +13,6 @@ import { IChat, NewChat } from '../chat.model';
 import { ChatService } from '../service/chat.service';
 import { MessageThreadService } from 'app/entities/message-thread/service/message-thread.service';
 import { ProfileService } from 'app/entities/profile/service/profile.service';
-import { AccountService } from 'app/core/auth/account.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ChatDeleteDialogComponent } from '../delete/chat-delete-dialog.component';
 
@@ -20,8 +20,8 @@ import { ChatDeleteDialogComponent } from '../delete/chat-delete-dialog.componen
   standalone: true,
   selector: 'jhi-chat',
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.scss'],
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule],
+  styleUrl: './chat.component.scss',
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, FormsModule, SharedModule],
 })
 export class ChatComponent implements OnInit, OnDestroy {
   @ViewChild('messageContainer', { static: true }) messageContainer!: ElementRef<HTMLElement>;
@@ -46,7 +46,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   private chatService = inject(ChatService);
   private threadService = inject(MessageThreadService);
-  private accountService = inject(AccountService);
   private profileService = inject(ProfileService);
   private modalService = inject(NgbModal);
 
@@ -107,48 +106,36 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.accountService.identity().subscribe();
+    // Get current user's profile - no need for takeUntil here as it's a one-time call
+    this.profileService.findMyProfile().subscribe({
+      next: myProfileRes => {
+        const myProfile = myProfileRes.body;
+        if (!myProfile?.id) return;
 
-    this.accountService
-      .getAuthenticationState()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(account => {
-        // Reset values on account change to ensure clean state
-        this.meId = 0;
-        this.otherId = 0;
-        this.chats = [];
-        this.userProfiles.clear(); // Clear cached profiles
+        this.meId = myProfile.id;
+        this.userProfiles.set(myProfile.id, {
+          firstName: myProfile.firstName ?? '',
+          lastName: myProfile.lastName ?? '',
+        });
 
-        if (account?.login) {
-          this.profileService.query({ 'userLogin.equals': account.login }).subscribe(profileResp => {
-            const prof = profileResp.body?.[0];
-            if (!prof) return;
+        // Route params subscription needs takeUntil for cleanup
+        this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
+          const id = Number(params['threadId']);
+          if (!id) {
+            this.router.navigate(['/message-thread']);
+            return;
+          }
 
-            this.meId = prof.id!;
-
-            // Cache current user's profile
-            if (prof.firstName || prof.lastName) {
-              this.userProfiles.set(prof.id, {
-                firstName: prof.firstName ?? '',
-                lastName: prof.lastName ?? '',
-              });
-            }
-
-            this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
-              const id = Number(params['threadId']);
-              if (!id) {
-                this.router.navigate(['/message-thread']);
-                return;
-              }
-
-              this.threadId = id;
-              this.loadThreadDetails();
-              this.loadMessages();
-              this.startPolling();
-            });
-          });
-        }
-      });
+          this.threadId = id;
+          this.loadThreadDetails();
+          this.loadMessages();
+          this.startPolling();
+        });
+      },
+      error: () => {
+        this.router.navigate(['/login']);
+      },
+    });
   }
 
   sendMessage(): void {
@@ -210,18 +197,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   getOtherUserName(): string {
     if (this.otherId && this.userProfiles.has(this.otherId)) {
       const profile = this.userProfiles.get(this.otherId)!;
-      return `${profile.firstName} ${profile.lastName}`.trim() || 'Unknown';
+      const name = `${profile.firstName} ${profile.lastName}`.trim();
+      return name || 'Unknown'; // Added login as fallback
     }
-
-    const contact = this.chats.find(chat => chat.receiver?.id === this.otherId || chat.sender?.id === this.otherId);
-    if (contact) {
-      const receiverName =
-        contact.receiver?.firstName && contact.receiver.lastName ? contact.receiver.firstName + ' ' + contact.receiver.lastName : null;
-      const senderName =
-        contact.sender?.firstName && contact.sender.lastName ? contact.sender.firstName + ' ' + contact.sender.lastName : null;
-      return receiverName ?? senderName ?? 'Unknown';
-    }
-
     return 'Unknown';
   }
 
@@ -340,35 +318,35 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   private cacheUserProfiles(): void {
-    // Extract unique user IDs from chats
     const userIds = new Set<number>();
     this.chats.forEach(chat => {
       if (chat.sender?.id) userIds.add(chat.sender.id);
       if (chat.receiver?.id) userIds.add(chat.receiver.id);
     });
 
-    // Cache any profiles not already cached
     userIds.forEach(id => {
-      if (!this.userProfiles.has(id) && id !== this.meId && id !== this.otherId) {
-        const profileInfo = this.chats.find(
-          c =>
-            (c.sender?.id === id && (c.sender.firstName ?? c.sender.lastName)) ??
-            (c.receiver?.id === id && (c.receiver.firstName ?? c.receiver.lastName)),
-        );
-
-        if (profileInfo) {
-          if (profileInfo.sender?.id === id) {
-            this.userProfiles.set(id, {
-              firstName: profileInfo.sender.firstName ?? '',
-              lastName: profileInfo.sender.lastName ?? '',
-            });
-          } else if (profileInfo.receiver?.id === id) {
-            this.userProfiles.set(id, {
-              firstName: profileInfo.receiver.firstName ?? '',
-              lastName: profileInfo.receiver.lastName ?? '',
-            });
-          }
-        }
+      if (!this.userProfiles.has(id)) {
+        this.profileService
+          .find(id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: profileRes => {
+              const profile = profileRes.body;
+              if (profile?.id) {
+                this.userProfiles.set(profile.id, {
+                  firstName: profile.firstName ?? '',
+                  lastName: profile.lastName ?? '',
+                });
+              }
+            },
+            error: () => {
+              // Set default values if profile fetch fails
+              this.userProfiles.set(id, {
+                firstName: 'Unknown',
+                lastName: 'User',
+              });
+            },
+          });
       }
     });
   }
@@ -376,34 +354,43 @@ export class ChatComponent implements OnInit, OnDestroy {
   private loadThreadDetails(): void {
     this.threadService
       .query({ 'id.equals': this.threadId, eagerload: true })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(res => {
-        const thread = res.body?.[0];
-        if (!thread) {
-          this.router.navigate(['/message-thread']);
-          return;
-        }
-
-        if (!this.meId) return;
-
-        // Find other participants and store their profile info
-        const participants = thread.participants ?? [];
-        participants.forEach(participant => {
-          if (participant.id && participant.id !== this.meId) {
-            // Set as other user if not already set
-            if (!this.otherId) {
-              this.otherId = participant.id;
-            }
-
-            // Cache profile info
-            if (participant.firstName || participant.lastName) {
-              this.userProfiles.set(participant.id, {
-                firstName: participant.firstName ?? '',
-                lastName: participant.lastName ?? '',
-              });
-            }
+      .pipe(
+        takeUntil(this.destroy$),
+        switchMap(res => {
+          const thread = res.body?.[0];
+          if (!thread) {
+            this.router.navigate(['/message-thread']);
+            return of(null);
           }
-        });
+
+          // Find other participants and fetch their profiles
+          const participants = thread.participants ?? [];
+          const participantRequests = participants
+            .filter(p => p.id && p.id !== this.meId)
+            .map(p => {
+              if (!this.otherId && p.id) {
+                this.otherId = p.id;
+              }
+              return this.profileService.find(p.id);
+            });
+
+          return participantRequests.length ? of(participantRequests) : of(null);
+        }),
+      )
+      .subscribe(requests => {
+        if (requests) {
+          requests.forEach(request => {
+            request.subscribe(profileRes => {
+              const profile = profileRes.body;
+              if (profile?.id) {
+                this.userProfiles.set(profile.id, {
+                  firstName: profile.firstName ?? '',
+                  lastName: profile.lastName ?? '',
+                });
+              }
+            });
+          });
+        }
       });
   }
 
