@@ -139,7 +139,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.errorMessage = undefined;
 
-    this.activityMatchService.getAvailableProfiles(this.buddyType, this.currentUserLogin).subscribe({
+    this.activityMatchService.getAvailableProfiles(this.buddyType, this.currentUserLogin?.trim().toLowerCase()).subscribe({
       next: profiles => {
         this.isLoading = false;
         this.profiles = profiles.filter(p => p.id !== this.currentUserProfileId); // Exclude self
@@ -286,7 +286,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
     this.errorMessage = undefined;
 
     this.activityMatchService
-      .getAvailableProfiles(this.buddyType, this.currentUserLogin)
+      .getAvailableProfiles(this.buddyType, this.currentUserLogin?.trim().toLowerCase())
       .pipe(
         map(profiles => {
           let filtered = profiles.filter(p => p.id !== this.currentUserProfileId); // Exclude self
