@@ -1,6 +1,6 @@
 <div class="chat-container">
   <div class="chat-header">
-    <button class="back-button" (click)="router.navigate(['/message-thread'])"><fa-icon icon="arrow-left"></fa-icon> Back</button>
+    <button class="back-button" (click)="router.navigate(['/message-thread'])">⬅️ Back</button>
     <div class="header-title">
       <div class="contact-avatar" *ngIf="otherId">{{ getContactInitial() }}</div>
       <div class="header-info">
@@ -53,12 +53,8 @@
 
         <!-- Actions for own messages -->
         <div *ngIf="isOwn(c) && editingChatId !== c.id" class="message-actions">
-          <button class="action-btn edit-btn" (click)="startEdit(c)" title="Edit">
-            <fa-icon icon="pencil-alt"></fa-icon>
-          </button>
-          <button class="action-btn delete-btn" (click)="deleteChat(c)" title="Delete">
-            <fa-icon icon="trash-alt"></fa-icon>
-          </button>
+          <button class="action-btn edit-btn" (click)="startEdit(c)" title="Edit">✏️</button>
+          <button class="action-btn delete-btn" (click)="deleteChat(c)" title="Delete">🗑️</button>
         </div>
       </div>
     </ng-container>
@@ -67,7 +63,7 @@
   <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="message-input-container">
     <input formControlName="message" class="message-input" placeholder="Type a message..." (keyup.enter)="sendMessage()" />
     <button type="submit" class="send-button" [disabled]="!messageForm.valid || isSending">
-      <fa-icon icon="paper-plane" *ngIf="!isSending"></fa-icon>
+      {{ isSending ? '⏳' : '📨' }}
       <span>{{ isSending ? 'Sending...' : '' }}</span>
     </button>
   </form>
