@@ -17,7 +17,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class FollowButtonComponent implements OnInit {
   @Input() targetProfileId!: number;
-  @Input() currentProfileId?: number; // Make this optional to support both approaches
   @Output() friendshipChanged = new EventEmitter<string>();
 
   // Icons
@@ -35,71 +34,6 @@ export class FollowButtonComponent implements OnInit {
 
   ngOnInit(): void {
     this.checkFriendshipStatus();
-  }
-
-  onButtonClick(): void {
-    // Skip if self or loading
-    if (this.friendshipStatus === 'SELF' || this.isLoading) {
-      return;
-    }
-
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    switch (this.friendshipStatus) {
-      case 'NOT_FRIENDS':
-        this.sendFriendRequest();
-        break;
-      case 'DECLINED':
-        this.sendFriendRequest(); // Treat DECLINED like NOT_FRIENDS
-        break;
-      case 'PENDING_RECEIVED':
-        this.acceptFriendRequest();
-        break;
-      case 'PENDING_SENT':
-        this.cancelFriendRequest();
-        break;
-      case 'ACCEPTED':
-        this.unfollowFriend();
-        break;
-    }
-  }
-
-  checkFriendshipStatus(): void {
-    this.isLoading = true;
-    const fromProfileId = this.getFromProfileId();
-
-    // Check if fromProfileId equals targetProfileId (self check)
-    if (fromProfileId === this.targetProfileId) {
-      this.friendshipStatus = 'SELF';
-      this.isLoading = false;
-      return;
-    }
-
-    // Use the original method with a single parameter (the target profile ID)
-    this.friendsListService
-      .checkFriendshipStatus(this.targetProfileId)
-      .pipe(finalize(() => (this.isLoading = false)))
-      .subscribe({
-        next: response => {
-          this.friendshipStatus = response.status;
-          this.friendsListId = response.friendsListId;
-
-          // If this is the current user's own profile, mark it as 'SELF'
-          if (response.status === 'SELF') {
-            this.friendshipStatus = 'SELF';
-          }
-        },
-        error: err => {
-          console.error('Error checking friendship status:', err);
-          this.friendshipStatus = 'NOT_FRIENDS';
-        },
-      });
-  }
-
-  // Get current profile ID from service if not provided as input
-  private getFromProfileId(): number {
-    return this.currentProfileId ?? this.friendsListService.getCurrentUserProfileId();
   }
 
   get buttonText(): string {
@@ -168,8 +102,57 @@ export class FollowButtonComponent implements OnInit {
     }
   }
 
+  onButtonClick(): void {
+    // Skip if self or loading
+    if (this.friendshipStatus === 'SELF' || this.isLoading) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    switch (this.friendshipStatus) {
+      case 'NOT_FRIENDS':
+        this.sendFriendRequest();
+        break;
+      case 'DECLINED':
+        this.sendFriendRequest(); // Treat DECLINED like NOT_FRIENDS
+        break;
+      case 'PENDING_RECEIVED':
+        this.acceptFriendRequest();
+        break;
+      case 'PENDING_SENT':
+        this.cancelFriendRequest();
+        break;
+      case 'ACCEPTED':
+        this.unfollowFriend();
+        break;
+    }
+  }
+
+  checkFriendshipStatus(): void {
+    this.isLoading = true;
+    this.friendsListService
+      .checkFriendshipStatus(this.targetProfileId)
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: response => {
+          this.friendshipStatus = response.status;
+          this.friendsListId = response.friendsListId;
+
+          // If this is the current user's own profile, mark it as 'SELF'
+          if (response.status === 'SELF') {
+            this.friendshipStatus = 'SELF';
+          }
+        },
+        error: err => {
+          console.error('Error checking friendship status:', err);
+          this.friendshipStatus = 'NOT_FRIENDS';
+        },
+      });
+  }
+
   private sendFriendRequest(): void {
-    // Use the original method with just the target profile ID
     this.friendsListService
       .sendFriendRequest(this.targetProfileId)
       .pipe(finalize(() => (this.isLoading = false)))
@@ -208,7 +191,6 @@ export class FollowButtonComponent implements OnInit {
       return;
     }
 
-    // Use the original method with friendsListId and decision
     this.friendsListService
       .respondToFriendRequest(this.friendsListId, Decision.ACCEPT)
       .pipe(finalize(() => (this.isLoading = false)))
@@ -230,7 +212,6 @@ export class FollowButtonComponent implements OnInit {
       return;
     }
 
-    // Use the original method with friendsListId and decision
     this.friendsListService
       .respondToFriendRequest(this.friendsListId, Decision.DECLINED)
       .pipe(finalize(() => (this.isLoading = false)))
@@ -254,7 +235,6 @@ export class FollowButtonComponent implements OnInit {
       return;
     }
 
-    // Use the original method with friendsListId and decision
     this.friendsListService
       .respondToFriendRequest(this.friendsListId, Decision.DECLINED)
       .pipe(finalize(() => (this.isLoading = false)))
