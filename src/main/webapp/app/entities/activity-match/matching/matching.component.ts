@@ -52,6 +52,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
   errorMessage?: string;
 
   currentUserProfileId?: number;
+  currentUserLogin?: string | null | undefined;
 
   // Properties for profile navigation
   currentProfileIndex = 0;
@@ -119,6 +120,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
           const me = resp.body?.[0];
           if (me?.id) {
             this.currentUserProfileId = me.id;
+            this.currentUserLogin = me.login;
             this.loadBuddies();
           } else {
             console.error('Could not find my profile');
@@ -137,7 +139,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.errorMessage = undefined;
 
-    this.activityMatchService.getAvailableProfiles(this.buddyType, this.currentUserProfileId).subscribe({
+    this.activityMatchService.getAvailableProfiles(this.buddyType, this.currentUserLogin).subscribe({
       next: profiles => {
         this.isLoading = false;
         this.profiles = profiles.filter(p => p.id !== this.currentUserProfileId); // Exclude self
@@ -284,7 +286,7 @@ export class MatchingComponent implements OnInit, OnDestroy {
     this.errorMessage = undefined;
 
     this.activityMatchService
-      .getAvailableProfiles(this.buddyType, this.currentUserProfileId)
+      .getAvailableProfiles(this.buddyType, this.currentUserLogin)
       .pipe(
         map(profiles => {
           let filtered = profiles.filter(p => p.id !== this.currentUserProfileId); // Exclude self
@@ -488,11 +490,6 @@ export class MatchingComponent implements OnInit, OnDestroy {
     if (!this.currentProfile || this.currentUserProfileId == null) {
       return;
     }
-
-    // run your “rejecting” animation
-    // const card = document.querySelector('.card');
-    // if (card) card.classList.add('rejecting');
-    // await new Promise(r => setTimeout(r, 300));
 
     this.animationClass = 'swipe-left';
 

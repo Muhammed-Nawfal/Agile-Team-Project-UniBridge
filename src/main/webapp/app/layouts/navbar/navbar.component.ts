@@ -12,12 +12,63 @@ import { EntityNavbarItems } from 'app/entities/entity-navbar-items';
 import NavbarItem from './navbar-item.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {
+  faUser,
+  faComments,
+  faTrophy,
+  faCalendarCheck,
+  faStar,
+  faHandshake,
+  faSignOutAlt,
+  faBookReader,
+  faDumbbell,
+  faMedal,
+  faPeopleGroup,
+  faUserFriends,
+  faCalendar,
+  faRunning,
+  faClipboardCheck,
+  faBolt,
+  faStarHalfAlt,
+  faHome,
+  faCalendarAlt,
+  faUserCircle,
+  faUsers,
+  faBullseye,
+} from '@fortawesome/free-solid-svg-icons';
+
+library.add(
+  faUser,
+  faComments,
+  faTrophy,
+  faCalendarCheck,
+  faStar,
+  faHandshake,
+  faSignOutAlt,
+  faBookReader,
+  faDumbbell,
+  faMedal,
+  faPeopleGroup,
+  faUserFriends,
+  faCalendar,
+  faRunning,
+  faClipboardCheck,
+  faBolt,
+  faStarHalfAlt,
+  faHome,
+  faCalendarAlt,
+  faUserCircle,
+  faUsers,
+  faBullseye,
+);
+
 @Component({
   standalone: true,
   selector: 'jhi-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  imports: [RouterModule, SharedModule, HasAnyAuthorityDirective],
+  imports: [RouterModule, SharedModule, HasAnyAuthorityDirective, FontAwesomeModule],
 })
 export default class NavbarComponent implements OnInit {
   version = VERSION.toLowerCase().startsWith('v') ? VERSION : `v${VERSION}`;
@@ -27,14 +78,14 @@ export default class NavbarComponent implements OnInit {
   navLinks = [
     { label: 'Home', route: '/', icon: 'home' },
     { label: 'Profile', route: '/profile', icon: 'user' },
-    { label: 'Matches', route: '/activity-match', icon: 'handshake' }, // using base handshake icon
+    { label: 'Matches', route: '/activity-match', icon: 'link' }, // using base handshake icon
     { label: 'Activities', route: '/activity', icon: 'star' },
     { label: 'Your Activities', route: '/my-activities', icon: 'calendar-alt' }, // changed to calendar-alt
     { label: 'Your Friends', route: '/friends-list', icon: 'user-friends' },
     { label: 'Booking', route: '/booking', icon: 'calendar-check' },
-    { label: 'Challenges', route: '/challenge', icon: 'bolt' }, // using base bolt icon
+    { label: 'Challenges', route: '/challenge', icon: 'bullseye' }, // using base bolt icon
     { label: 'Ranking', route: '/ranking', icon: 'trophy' },
-    { label: 'Review', route: '/review', icon: 'star-half-alt' }, // using star-half-alt consistently
+    { label: 'Review', route: '/review', icon: 'star' }, // using star-half-alt consistently
   ];
 
   hiddenRoutes = ['/', '/login', '/account/register', '/profile/my/edit', '/#next-section'];

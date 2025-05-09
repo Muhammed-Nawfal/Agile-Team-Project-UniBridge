@@ -65,32 +65,36 @@ export class ActivityMatchRequestsComponent implements OnInit, OnDestroy {
   /**
    * Fetch all pending match requests for the current user
    */
+
   loadMatchRequests(): void {
     this.isLoading = true;
+
     this.accountService
       .identity()
-      .pipe(
-        take(1),
-        switchMap(account => this.profileService.query({ 'userLogin.equals': account?.login }).pipe(take(1))),
-        take(1),
-      )
+      .pipe(take(1))
       .subscribe({
-        next: resp => {
-          const me = resp.body?.[0];
-          if (!me?.id) {
+        next: account => {
+          const login = account?.login;
+          if (!login) {
             this.matchRequests = [];
             this.isLoading = false;
             return;
           }
+
           this.activityMatchService
             .query({
-              'userDetailsId.equals': me.id,
+              'userDetails.login.equals': login,
               'status.equals': Decision.PENDING,
             })
             .pipe(takeUntil(this.destroy$))
             .subscribe({
-              next: listRes => {
-                this.matchRequests = (listRes.body ?? []).filter(r => r.matchRequestor?.id !== me.id);
+              next: res => {
+                this.matchRequests = (res.body ?? []).filter(
+                  r =>
+                    r.matchRequestor?.login !== account.login && // exclude self-sent
+                    r.userDetails?.login === account.login && // make sure it's actually sent *to* me
+                    r.status === Decision.PENDING,
+                );
                 this.isLoading = false;
                 this.focusFirstReadButton();
               },
