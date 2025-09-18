@@ -23,6 +23,26 @@ Unibridge is a full-stack web application designed to help university students c
 
 ---
 
+## 🎥 Demo
+
+Here’s a walkthrough of UniBridge:  
+[▶️ Watch the full demo (8 min)](https://drive.google.com/file/d/1EsQtj2pa3zs9j6kB8tFULylyM4YSesta/view?usp=sharing)
+
+### Screenshots
+
+- **Home page (my design)**
+  ![Home](src/app_screenshots/SS1.png)
+
+- **Activity Matching (my feature)**
+  ![Matching Page](src/app_screenshots/SS3.png)
+  ![Matching Requests Page](src/app_screenshots/SS5.png)
+  ![Upcoming Matches Page](src/app_screenshots/SS6.png)
+
+- **Profile**
+  ![Profile](src/app_screenshots/SS2.png)
+
+---
+
 ## 👥 Contributors
 
 | Name                          | Main Contribution(s)                                   |
