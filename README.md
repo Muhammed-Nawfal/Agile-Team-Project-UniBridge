@@ -39,7 +39,7 @@ Here’s a walkthrough of UniBridge:
   ![Upcoming Matches Page](src/app_screenshots/SS6.png)
 
 - **Profile**
-  ![Profile](src/app_screenshots/SS2.png)
+  ![Profile](src/app_screenshots/SS4.png)
 
 ---
 
