@@ -68,7 +68,10 @@ I was responsible for the design and implementation of the **Activity Matching**
 
 **Frontend (Angular)**  
 - Built a Tinder-style swipe interface for accepting/rejecting profiles.  
-- Developed the **Match Requests** page to view incoming match requests and the **Upcoming Matches** page, where users can viw scheduled matches. 
+- Developed the **Match Requests** page to view incoming match requests and the **Upcoming Matches** page, where users can viw scheduled matches.
+
+**Accessibility Feature**
+- Implemented an accessibility feature with **text-to-speech**, for visually impaired users to hover over buttons or click a page-level reader to have on-screen content spoken aloud.
 
 **Others**  
 - Contributed to shared frontend components such as the home page and navigation bar.  
