@@ -92,10 +92,3 @@ In the terminal, run:
 npm start
 ```
 Front-end runs at http://localhost:9000 in the browser
-
-### 📂 Project Structure
-
-/src/main/java        → Backend (Spring Boot)
-/src/main/webapp      → Frontend (Angular)
-/src/main/docker      → Docker configs
-.github / .gitlab-ci  → CI/CD workflows
