@@ -1,24 +1,61 @@
-# teamproject24
+# 🌉 Unibridge
 
-This application was generated using JHipster 8.7.3, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.7.3](https://www.jhipster.tech/documentation-archive/v8.7.3).
-This application was generated using JHipster 8.7.3 for the team project 2024-2025 module at the university of Birmingham.
+Unibridge is a full-stack web application designed to help university students connect with each other for **social, academic, and fitness activities**. Whether it’s finding a study buddy, joining a society session, scheduling a gym partner, or forming a sports team, Unibridge makes it simple to meet like-minded students.
 
-# Team 32
+---
 
-2. Add your name below:
+## ✨ Features
 
-   - Muhammed Nawfal Fareed Jaman mnf350@student.bham.ac.uk
-   - Rohit Mamtora rxm631@student.bham.ac.uk
-   - Eashan Nirav Nair EXS415@student.bham.ac.uk
-   - Hasaan Afroze hxa402@student.bham.ac.uk
-   - Ou Kai Ying kxo476@student.bham.ac.uk
-   - Aarij Khan axk1327@student.bham.ac.uk
-   - Dorian Alsop cxa339@student.bham.ac.uk
-   - Saw Yin Rui YXS518@student.bham.ac.uk
+- 🎯 **Activity Matching**  
+  Match with other students based on interests and activities. Users can swipe to match or reject a profile, and schedule upcoming sessions.
+  
+- ➕ **Activity Management**  
+  Create, browse, and join activities such as study groups, sports events, and society meetups.
+  
+  - 👥 **Friends List & Chat**  
+  Add friends and communicate directly with built-in messaging.  
 
-3. Modify [gdpr-policy.component.html](src/main/webapp/app/gdpr-policy/gdpr-policy.component.html) to add your team number (replace X) and team members to the contact section.
+- 🏆 **Challenges & Rankings**  
+  Compete with friends on challenges and track progress on leaderboards.  
 
-<!-- this is a comment: delete lines TODO: and 1. 2. 3. once done... -->
+- 📅 **Bookings**  
+  Reserve spots for events, pitch availability,room bookings and manage schedules.  
+
+---
+
+## 👥 Contributors
+
+| Name                          | Main Contribution(s)                                   |
+|-------------------------------|--------------------------------------------------------|
+| **Muhammed Nawfal Fareed Jaman** | Activity Matching                                   |
+| Rohit Mamtora                 | Profile creation and set-up                            |
+| Eashan Nirav Nair             | Chat & Messaging                                       |
+| Hasaan Afroze                 | Friends List                                           |
+| Ou Kai Ying                   | Bookings                                               |
+| Aarij Khan                    | Activity Management                                    |
+| Dorian Alsop                  | Rankings and Reviews                                   |
+| Saw Yin Rui                   | Challenges                                             |
+
+### Muhammed Nawfal Fareed Jaman – Activity Matching
+
+I was solely responsible for the design and implementation of the **Activity Matching** feature, which is the central part of UniBridge. I was responsible for both backend and frontend, combining database-driven filtering with a Tinder-style Angular interface.
+
+**Backend (Spring Boot & PostgreSQL)**  
+- Implemented the `ActivityMatch` entity with supporting **repository, service, and resource classes** to manage match requests and status updates.  
+- Designed a **preference-based SQL query** that used profile attributes such as gym skill level, preferred gym/study times, course, sports interests, societies, and much more to generate tailored match suggestions.  
+- Added **backend constraints** via enums (`PENDING`, `ACCEPTED`, `DECLINED`) to enforce match states. Rejected profiles were timestamped and excluded from suggestions for ~2 weeks before resurfacing.  
+- Extended **security configuration** so that only authenticated users could initiate matches.  
+
+**Frontend (Angular)**  
+- Built a **swipe-based UI** for browsing potential matches, enabling users to accept, reject, or send match requests. This was fully custom-built in Angular using TypeScript, HTML and CSS with Bootstrap.  
+- Developed the **Match Requests page** to view incoming requests and the **Upcoming Matches page**, where accepted matches are confirmed with details such as location and activity type.  
+- Connected all UI components to backend REST APIs via a front-end service file.  
+
+**Others**  
+- Delivered a **complete end-to-end flow**: profile preferences → tailored suggestions → request handling → confirmed matches.  
+- Implemented filtering logic to refine results by category, timing, and availability.  
+- Balanced **backend validation** with **frontend interactivity**, ensuring that match results were consistent with database rules while still offering an engaging user experience.  
+- Proposed the **original UniBridge concept** and contributed design ideas that shaped early feature prioritization. Also supported team development by building **common frontend components such as the home page and navbar**.  
 
 # Required software
 
