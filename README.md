@@ -1,13 +1,13 @@
 # 🌉 Unibridge
 
-Unibridge is a full-stack web application designed to help university students connect with each other for **social, academic, and fitness activities**. Whether it’s finding a study buddy, joining a society session, scheduling a gym partner, or forming a sports team, Unibridge makes it simple to meet like-minded students.
+UniBridge is a full-stack web application designed to help university students connect with each other for **social, academic, and fitness activities**. Whether it’s finding a study buddy, joining a society session, scheduling a gym partner, or forming a sports team, UniBridge makes it simple to meet like-minded students.
 
 ---
 
 ## ✨ Features
 
 - 🎯 **Activity Matching**  
-  Match with other students based on interests and activities. Users can swipe to match/reject a profile, and schedule upcoming sessions on gym preferences, sports interests, study habits, and availability.
+  Match with other students based on interests and activities. Users swipe to match or reject profiles, with matches suggested based on gym preferences, sports interests, study habits, and availability.
   
 - ➕ **Activity Management**  
   Create, browse, and join activities such as study groups, sports events, and society socials.
@@ -19,7 +19,7 @@ Unibridge is a full-stack web application designed to help university students c
   Compete with friends on challenges and track progress on leaderboards.  
 
 - 📅 **Bookings**  
-  Reserve spots for events, pitch availability,room bookings and manage schedules.  
+  Reserve spots for events, manage room bookings, and track schedules.
 
 ---
 
@@ -30,12 +30,12 @@ Here’s a walkthrough of UniBridge:
 
 ### Screenshots
 
-- **Home page (my design)**
+- **Home Page (my design)**
   ![Home](src/app_screenshots/SS1.png)
 
 - **Activity Matching (my feature)**
   ![Matching Page](src/app_screenshots/SS3.png)
-  ![Matching Requests Page](src/app_screenshots/SS5.png)
+  ![Match Requests Page](src/app_screenshots/SS5.png)
   ![Upcoming Matches Page](src/app_screenshots/SS6.png)
 
 - **Profile**
@@ -48,7 +48,7 @@ Here’s a walkthrough of UniBridge:
 | Name                          | Main Contribution(s)                                   |
 |-------------------------------|--------------------------------------------------------|
 | **Muhammed Nawfal Fareed Jaman** | Activity Matching                                   |
-| Rohit Mamtora                 | Profile creation and set-up                            |
+| Rohit Mamtora                 | Profile creation and setup                            |
 | Eashan Nirav Nair             | Chat & Messaging                                       |
 | Hasaan Afroze                 | Friends List                                           |
 | Ou Kai Ying                   | Bookings                                               |
@@ -63,26 +63,25 @@ I was responsible for the design and implementation of the **Activity Matching**
 **Backend (Spring Boot & PostgreSQL)**  
 - Implemented the `ActivityMatch` entity with supporting **repository, service, and resource classes** to manage match requests and status updates.  
 - Wrote an **SQL query** that used profile attributes (gym skill level, preferred gym/study times, course, sports interests,etc.) to generate match suggestions.  
-- Added **backend constraints** including a rejection timeout profiles so declined profiles reappear only after ~2 weeks.   
+- Added **backend constraints**, including a rejection timeout so declined profiles reappear only after 2 weeks.   
 - Extended **security configuration** so that only logged-in users could create matches.
 
 **Frontend (Angular)**  
 - Built a Tinder-style swipe interface for accepting/rejecting profiles.  
-- Developed the **Match Requests** page to view incoming match requests and the **Upcoming Matches** page, where users can viw scheduled matches.
+- Developed the **Match Requests** page to view incoming match requests and the **Upcoming Matches** page, where users can view scheduled matches.
 
 **Accessibility Feature**
-- Implemented an accessibility feature with **text-to-speech**, for visually impaired users to hover over buttons or click a page-level reader to have on-screen content spoken aloud.
+- Implemented a **text-to-speech** accessibility feature, allowing visually impaired users to hover over buttons or click a page-level reader to have on-screen content spoken aloud.
 
 **Others**  
-- Contributed to shared frontend components such as the home page and navigation bar.  
-- Was responsible for developing other components such as the **home page and navbar**.
+- Contributed to shared frontend components such as the **home page and navigation bar**.  
 
 ---
 
 ## 🛠️ Tech Stack
 
 - ☕ **Java** – Backend language  
-- 🌱 **Spring Boot** – REST APIs, and business logic  
+- 🌱 **Spring Boot** – REST APIs and business logic  
 - 🐘 **PostgreSQL** – Database
 - 🅰️ **Angular** – Frontend framework (TypeScript, HTML, CSS, Bootstrap)  
 - 📦 **Docker** – Containerization and deployment  
@@ -99,19 +98,19 @@ I was responsible for the design and implementation of the **Activity Matching**
 
 ### ▶️ Run Locally
 
-**Backend** (Spring Boot)
-In the terminal, run:
+**Backend (Spring Boot)**
+Run in terminal: 
 
 ```
 ./mvnw
 ```
 
-Back-end runs at `http://localhost:8080` in the browser
+Back-end runs at `http://localhost:8080`
 
-**Frontend** (Angular)
-In the terminal, run:
+**Frontend (Angular)**
+Run in terminal: 
 
 ```
 npm start
 ```
-Front-end runs at http://localhost:9000 in the browser
+Front-end runs at `http://localhost:9000`
